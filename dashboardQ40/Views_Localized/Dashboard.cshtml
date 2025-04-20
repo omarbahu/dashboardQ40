@@ -1,0 +1,134 @@
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Dashboard por Planta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold text-dark mb-0">
+            <i class="fas fa-chart-pie me-2 text-danger"></i>
+            Dashboard de Planta Configurado
+        </h4>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label for="planta" class="form-label">Planta</label>
+                    <select id="planta" class="form-select">
+                        <option value="Planta1">Planta 1</option>
+                        <option value="Planta2">Planta 2</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="linea" class="form-label">Línea</label>
+                    <select id="linea" class="form-select">
+                        <option value="Linea1">Línea 1</option>
+                        <option value="Linea2">Línea 2</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="variableY" class="form-label">Variable Y</label>
+                    <select id="variableY" class="form-select">
+                        <option value="BRIX">BRIX</option>
+                        <option value="CARBONATACIÓN">CARBONATACIÓN</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button onclick="loadUserDashboard()" class="btn btn-danger">
+                        <i class="fas fa-play me-1"></i> @Localizer["CargarDashboard"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body bg-light-subtle">
+            <div class="grid-stack" style="min-height: 300px;"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/8.2.0/gridstack.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/8.2.0/gridstack-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+    <script>
+        const grid = GridStack.init({ margin: 10 });
+
+        function loadUserDashboard() {
+            let planta = document.getElementById("planta").value;
+            let linea = document.getElementById("linea").value;
+            let variableY = document.getElementById("variableY").value;
+
+            fetch(`/api/DashboardTemplates/user/load?planta=${planta}&linea=${linea}&variableY=${variableY}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("No se encontró un dashboard para los filtros seleccionados.");
+                    return response.json@Localizer["();"]
+                })
+                .then(template => {
+                    if (!Array.isArray(template.widgets)) return console.error("widgets no es un array");
+                    grid.removeAll@Localizer["();"]
+                    template.widgets.forEach(widget => addWidgetFromConfig(widget));
+                })
+                .catch(error => console.error("❌ Error:", error));
+        }
+
+        function addWidgetFromConfig(widget) {
+            let widgetId = `chart-${Date.now()}@Localizer["`;"]
+
+            let el = document.createElement('div');
+            el.classList.add("grid-stack-item");
+            el.setAttribute("data-gs-w", "3");
+            el.setAttribute("data-gs-h", "2");
+            el.setAttribute("data-variablex", widget.VariableX);
+            el.setAttribute("data-widgettype", widget.WidgetType);
+
+            el.innerHTML = `<div class="grid-stack-item-content bg-white rounded shadow-sm p-2">
+                                        <div id="${widgetId}" style="width:100%; height:100%"></div>
+                                    </div>@Localizer["@Localizer["`;"]"]
+
+            grid.addWidget(el);
+
+            setTimeout(() => {
+                let chartElement = document.getElementById(widgetId);
+                if (chartElement) loadChart(chartElement, widget.VariableX, widget.WidgetType);
+            }, 300);
+        }
+
+        function loadChart(chartElement, variableX, chartType) {
+            let chart = echarts.init(chartElement);
+            let simulatedData = generateSimulatedData(chartType);
+            chart.setOption({
+                title: { text: `${chartType} - ${variableX}`, left: 'center', textStyle: { fontSize: 12 } },
+                tooltip: {},
+                xAxis: { type: 'category', data: Array(10).fill().map((_, i) => `Día ${i + 1}`) },
+                yAxis: { type: 'value' },
+                series: simulatedData
+            });
+        }
+
+        function generateSimulatedData(chartType) {
+            let rand = () => Math.floor(Math.random() * 100) + 1;
+            let seriesData = Array(10).fill().map(rand);
+            switch (chartType) {
+                case "ShangHai Index":
+                    return [{ name: "Valor", type: "line", data: seriesData }];
+                case "Campana Sigma":
+                    return [{ name: "Frecuencia", type: "bar", data: seriesData }];
+                case "Múltiples Ejes":
+                    return [
+                        { name: "Eje 1", type: "bar", data: seriesData },
+                        { name: "Eje 2", type: "line", data: seriesData.map(v => v / 2) }
+                    ];
+                default:
+                    return [{ name: "Valor", type: "line", data: seriesData }];
+            }
+        }
+    </script>
+}

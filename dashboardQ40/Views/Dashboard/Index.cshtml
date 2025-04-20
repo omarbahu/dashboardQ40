@@ -1,0 +1,360 @@
+﻿@model dynamic
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Dashboard Arca Planta Insurgentes";
+}
+
+<style>
+    .select2-selection--multiple {
+        max-height: 90px !important;
+        overflow-y: auto !important;
+    }
+
+    .select2-selection__rendered {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+        max-height: 88px;
+        overflow-y: auto;
+    }
+
+    .select2-selection__choice {
+        font-size: 12px;
+        padding: 2px 6px;
+        background-color: #e0f2fe;
+        border: 1px solid #38bdf8;
+        color: #0369a1;
+    }
+</style>
+
+
+<h2>Dashboard Arca Planta insurgentes</h2>
+<form id="selectionForm" target="_blank">
+    <!-- Renglón 1: filtros + botones -->
+    <div class="row row-cols-lg-auto g-2 align-items-end">
+        <!-- Fecha y Hora -->
+        <div class="col">
+            <label for="startDate" class="form-label">Desde:</label>
+            <input type="datetime-local" id="startDate" name="startDate" class="form-control form-control-sm" />
+        </div>
+        <div class="col">
+            <label for="endDate" class="form-label">Hasta:</label>
+            <input type="datetime-local" id="endDate" name="endDate" class="form-control form-control-sm" />
+        </div>
+
+        <!-- Línea -->
+        <div class="col">
+            <label for="line" class="form-label">Línea:</label>
+            <select id="line" name="line" class="form-select form-select-sm">
+                <option value="">Línea</option>
+                @if (ViewBag.Lines != null)
+                {
+                    foreach (var linea in ViewBag.Lines)
+                    {
+                        <option value="@linea.workplace">@linea.workplaceName</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <!-- SKU -->
+        <div class="col">
+            <label for="sku" class="form-label">SKU:</label>
+            <select id="sku" name="sku" class="form-select form-select-sm">
+                <option value="">SKU</option>
+            </select>
+        </div>
+
+        <!-- Variable Y -->
+        <div class="col">
+            <label for="variableY" class="form-label">Variable Y:</label>
+            <select id="variableY" name="variableY" class="form-select form-select-sm">
+                <option value="">Variable Y</option>
+                @foreach (var variableY in ViewBag.Variables.Keys)
+                {
+                    <option value="@variableY">@variableY</option>
+                }
+            </select>
+        </div>
+
+
+        <!-- Botones -->
+        <div class="col">
+            <label class="form-label d-block invisible">Acciones</label>
+            <button type="button" class="btn btn-primary btn-sm" onclick="submitForm('@Url.Action("SubmitSelection", "Dashboard")')">
+                📊 Reporte
+            </button>
+
+            <button type="button" class="btn btn-secondary btn-sm ms-1" onclick="submitForm('@Url.Action("SubmitSelectionDetail", "Dashboard")')">
+                🔍 Detalle
+            </button>
+        </div>
+    </div>
+
+    <!-- Renglón 2: solo Select2 a lo ancho -->
+    <div class="row mt-2">
+        <div class="col-12">
+            <label for="variablesX" class="form-label">Variables X:</label>
+            <select id="variablesX" name="variablesX[]" multiple="multiple" class="form-select form-select-sm w-100">
+            </select>
+        </div>
+    </div>
+</form>
+
+
+<!-- Botones separados fuera del formulario 
+<div class="row">
+    <div class="col-md-6">
+        <button type="button" class="btn btn-primary w-100" onclick="submitForm('/Dashboard/SubmitSelection')">
+            📊 Generar Reporte Unificado
+        </button>
+    </div>
+    <div class="col-md-6">
+        <button type="button" class="btn btn-secondary w-100" onclick="submitForm('/Dashboard/SubmitSelectionDetail')">
+            🔍 Generar Reporte Detallado
+        </button>
+    </div>
+</div>
+-->
+
+
+@section Scripts {
+    <!-- Cargar jQuery antes que Select2 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Cargar Select2 (CSS y JS) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+
+    <script>
+      
+        $(document).ready(function () {
+
+            if ($.fn.select2) {
+                $("#variablesX").select2({
+                    placeholder: "Seleccione variables X",
+                    width: 'resolve',
+                    allowClear: true
+                });
+            } else {
+                console.error("❌ Select2 no está cargado. Revisa la URL del CDN.");
+            }
+
+        });
+
+        function submitForm(actionUrl) {
+            let form = document.createElement("form");
+            form.method = "post";
+            form.action = actionUrl;
+            form.target = "_blank"; // 👉 Esta es la clave
+
+            // Obtener todos los elementos de entrada del formulario original
+            let originalForm = document.getElementById("selectionForm");
+            let inputs = originalForm.querySelectorAll("input, select");
+
+            // Copiar los valores seleccionados al nuevo formulario
+            inputs.forEach(input => {
+                if (input.type === "select-multiple") {
+                    Array.from(input.selectedOptions).forEach(option => {
+                        let hiddenInput = document.createElement("input");
+                        hiddenInput.type = "hidden";
+                        hiddenInput.name = input.name;
+                        hiddenInput.value = option.value;
+                        form.appendChild(hiddenInput);
+                    });
+                } else {
+                    let hiddenInput = document.createElement("input");
+                    hiddenInput.type = "hidden";
+                    hiddenInput.name = input.name;
+                    hiddenInput.value = input.value;
+                    form.appendChild(hiddenInput);
+                }
+            });
+
+            // Agregar el formulario al DOM y enviarlo
+            document.body.appendChild(form);
+            form.submit();
+
+            // Limpiar el formulario dinámico si quieres
+            document.body.removeChild(form);
+        }
+
+        const variables = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Variables));
+        
+
+        function updateVariablesX() {
+            const variableY = document.getElementById('variableY').value;
+            const variablesXSelect = document.getElementById('variablesX');
+            console.log(variablesXSelect);
+            console.log(variableY);
+            // Limpiar opciones previas
+            variablesXSelect.innerHTML = '';
+
+            if (variableY && variables[variableY]) {
+                
+                variables[variableY].forEach(variableX => {
+                    const option = document.createElement('option');
+                    option.value = variableX;
+                    option.textContent = variableX;
+                    variablesXSelect.appendChild(option);
+                });
+            }
+        }
+
+        function cargarProductos() {
+            var lineaId = $("#line").val();
+            var fechaInicial = $("#startDate").val();
+            var fechaFinal = $("#endDate").val();
+
+            if (lineaId && fechaInicial && fechaFinal) {
+                $.ajax({
+                    url: '@Url.Action("ObtenerProductos", "Dashboard")',
+                    type: 'GET',
+                    data: { lineaId: lineaId, fechaInicial: fechaInicial, fechaFinal: fechaFinal },
+                    success: function (data) {
+                        llenarDropdownSKU(data);
+                    },
+                    error: function () {
+                        alert("Error al cargar los skus.");
+                    }
+                });
+            }
+        }
+
+        // Ejecutar cuando cambie la línea o las fechas
+        $("#line, #startDate, #endDate").on("change", cargarProductos);
+
+        function llenarDropdownSKU(data) {
+            let productos = data.$values;
+            let dropdown = $("#sku");
+
+            // Limpiar opciones anteriores
+            dropdown.empty();
+            dropdown.append('<option value="">Seleccione un sku</option>');
+
+            // Agregar nuevas opciones
+            productos.forEach(producto => {
+                
+                dropdown.append(`<option value="${producto.manufacturingOrder}">${producto.manufacturingReferenceName}</option>`);
+            });
+        }
+
+        $("#sku").on("change", cargarVarY);
+
+        function cargarVarY() {
+            var sku = $("#sku").val();
+            
+            if (sku) {
+                $.ajax({
+                    url: '@Url.Action("ObtenerVarY", "Dashboard")',
+                    type: 'GET',
+                    data: { sku: sku }, // Simulación de un SKU, asegúrate de que tenga datos
+                    success: function (data) {
+                        console.log("📌 Respuesta de la API:", data); // 🔍 Verifica la estructura de la respuesta
+
+                        var dropdown = $("#variableY");
+                        dropdown.empty();
+                        dropdown.append('<option value="">Seleccione una variable Y</option>');
+
+                        // 📌 Verifica si "data.value.$values" existe y es un array
+                        var variables = (data.value && data.value.$values) ? data.value.$values : [];
+
+                        if (Array.isArray(variables)) {
+                            variables.forEach(function (variable) {
+                                dropdown.append(`<option value="${variable.codigo}">${variable.nombre}</option>`);
+                            });
+                        } else {
+                            console.error("⚠️ La respuesta de la API no tiene el formato esperado:", data);
+                        }
+                    },
+                    error: function (error) {
+                        console.error("❌ Error en AJAX:", error);
+                    }
+                });
+            }
+        }
+
+        $("#sku, #variableY").on("change", cargarVarX);
+
+        function cargarVarX() {
+            var sku = $("#sku").val();
+            var variableY = $("#variableY").val();
+
+
+            if (sku && variableY) {
+                $.ajax({
+                    url: '@Url.Action("ObtenerVarX", "Dashboard")',
+                    type: 'GET',
+                    data: { sku: sku, varY: variableY },
+                    success: function (data) {
+                        console.log("Respuesta del servidor:", data); // ✅ Aquí se imprime
+                        llenarVariableX(data);
+                    },
+                    error: function () {
+                        alert("Error al cargar los skus.");
+                    }
+                });
+            }
+        }
+
+        const isDev = @(ViewBag.produccion?.ToString() == "0" ? "true" : "false");
+
+
+        function llenarVariableX(data) {
+            let variablesX = data?.value?.$values || data?.$values || [];
+
+            if (!Array.isArray(variablesX) || variablesX.length === 0) {
+                console.warn("⚠️ Respuesta inválida o vacía:", data);
+                return;
+            }
+
+            const selectMultiple = $("#variablesX");
+
+            // Limpia opciones anteriores
+            selectMultiple.empty();
+
+            // Agrega nuevas opciones
+            variablesX.forEach(variableX => {
+                const value = variableX.codigo || variableX.controlOperation;
+                const name = variableX.nombre || variableX.controlOperationName;
+
+                if (value && name) {
+                    selectMultiple.append(`<option value="${value}">${name}</option>`);
+                }
+            });
+
+            // Inicializa o reinicializa Select2
+            if ($.fn.select2) {
+                if (selectMultiple.hasClass("select2-hidden-accessible")) {
+                    selectMultiple.select2("destroy");
+                }
+                selectMultiple.select2({
+                    placeholder: "Seleccione variables X",
+                    width: 'resolve',
+                    allowClear: true
+                });
+            }
+
+            // Preselección solo en desarrollo
+            if (isDev === true || isDev === "true") {
+                let preselect = ["BX-Y-7-201", "BX-Y-7-202"];
+                let disponibles = variablesX.map(v => v.codigo || v.controlOperation);
+                let seleccionables = preselect.filter(v => disponibles.includes(v));
+
+                if (seleccionables.length > 0) {
+                    selectMultiple.val(seleccionables).trigger("change");
+                    console.log("✅ Preseleccionados:", seleccionables);
+                }
+            }
+        }
+
+
+
+
+        //let valoresPreseleccionados = ["O-L7-1", "O-L7-10", "O-L7-11", "O-L7-12"];
+
+    </script>
+
+   
+}

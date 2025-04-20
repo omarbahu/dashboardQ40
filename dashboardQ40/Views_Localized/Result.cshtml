@@ -1,0 +1,428 @@
+﻿@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Gráfico de Calidad con Alertas";
+    var data = ViewBag.Data;
+    var allCandlestickData = ViewBag.AllCandlestickData as Dictionary<string, List<double[]>>;
+    var variableYName = ViewBag.VariableYName as string;
+    var variablesXData = ViewBag.VariablesXData as Dictionary<string, List<double>>;
+    var selectedXVariables = ViewBag.SelectedXVariables as List<string>;
+}
+
+@{
+    double minThreshold = ViewBag.MinThreshold ?? 0;  // Si es null, usa 0 por defecto
+    double maxThreshold = ViewBag.MaxThreshold ?? 100; // Si es null, usa 100 por defecto
+}
+
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+<style>
+    .container-flex {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    #data-table {
+        border-collapse: collapse;
+        width: 250px;
+    }
+
+        #data-table th, #data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        #data-table th {
+            background-color: #2c82c9;
+            color: white;
+        }
+
+    #chart-container {
+        flex-grow: 1;
+        height: 600px;
+    }
+
+    .container-campana {
+        display: flex;
+        flex-direction: row; /* 📌 Alinear en fila */
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+
+
+    .leyenda-campana {
+        width: 250px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        font-size: 14px;
+    }
+
+    #bell-curve-container {
+        flex-grow: 1;
+        height: 400px;
+        position: relative; /* Necesario para posicionar el loader */
+    }
+
+    @@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+#bell-curve-loader {
+    animation: pulse 1.5s infinite;
+}
+</style>
+
+
+<div class="container-flex">
+ 
+
+    <div id="chart-container"></div>
+</div>
+
+
+<!-- 📌 Contenedor de la gráfica y la leyenda -->
+<div class="container-campana" style="display: flex; align-items: center; gap: 10px;">
+    <div id="bell-curve-container" style="width: 75%; height: 350px;"></div>
+
+    <!-- 📌 Leyenda de estadísticas 📊 (más compacta) -->
+    <div class="leyenda-campana" style="width: 15%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; text-align: left;">
+        <h4 style="margin: 0 0 5px 0; font-size: 14px;">📊 Estadísticas</h4>
+        <p><b>CPK:</b> <span id="cpkValue">-</span></p>
+        <p><b>PPK:</b> <span id="ppkValue">-</span></p>
+        <p><b>Promedio:</b> <span id="meanValue">-</span></p>
+        <p><b>Rango:</b> <span id="rangeValue">-</span></p>
+
+        <!-- 📌 Botones de zoom con iconos pequeños  -->
+        <div style="margin-top: 5px; display: flex; justify-content: center; gap: 5px;">
+            <button onclick="zoomOut()" style="border: none; background: none; cursor: pointer; font-size: 14px;" title="Alejar">
+                🔍➖
+            </button>
+            <button onclick="zoomIn()" style="border: none; background: none; cursor: pointer; font-size: 14px;" title="Acercar">
+                🔍➕
+            </button>
+            <button onclick="resetZoom()" style="border: none; background: none; cursor: pointer; font-size: 14px;" title="Resetear Zoom">
+                🔄
+            </button>
+        </div>
+       
+    </div>
+
+    <!-- 🔄 Loader al centro (inicialmente oculto) -->
+    <div id="bell-curve-loader" style="
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 0px 12px rgba(0,0,0,0.15);
+    text-align: center;
+">
+
+        <!-- SVG loader animado -->
+        <svg width="50" height="50" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="#3498db" stroke-width="5" stroke-linecap="round"
+                    stroke-dasharray="90" stroke-dashoffset="0">
+                <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite"
+                                  dur="1s" from="0 25 25" to="360 25 25" />
+            </circle>
+        </svg>
+
+        <div style="margin-top: 10px; font-size: 14px; color: #333;">Cargando distribución...</div>
+    </div>
+</div>
+
+<script>
+    function toggleTable() {
+        let tableContainer = document.getElementById('dataTableContainer');
+        tableContainer.style.display = tableContainer.style.display === "none" ? "block" : "none";
+    }
+</script>
+
+<!-- 📌 Botón para mostrar/ocultar la tabla -->
+<button onclick="toggleTable()" style="margin-top: 10px; padding: 5px 10px;">📊 Ver datos en tabla</button>
+
+<!-- 📌 Contenedor de la tabla (inicialmente oculto) -->
+<div id="dataTableContainer" style="display: none; margin-top: 15px;">
+    <table id="dataTable" border="1" style="width: 100%; text-align: center; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Fecha / Hora</th>
+                <th>@ViewBag.VariableYName</th>
+                @foreach (var xVar in ViewBag.VariablesXData.Keys)
+                {
+                    <th>@xVar</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < ViewBag.Dates.Count; i++)
+            {
+                <tr>
+                    <td>@ViewBag.Dates[i]</td>
+                    <td>@(ViewBag.ScatterDataY.Count > i ? ((dynamic)ViewBag.ScatterDataY[i]).Value : "-")</td>
+                    @foreach (var xVar in ViewBag.VariablesXData.Keys)
+                    {
+                        <td>@(ViewBag.VariablesXData[xVar].Count > i ? ViewBag.VariablesXData[xVar][i] : "-")</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    var chart = echarts.init(document.getElementById('chart-container'));
+    var bellCurveChart = echarts.init(document.getElementById('bell-curve-container'));
+
+
+    // 📌 Obtener los datos desde el controlador MVC
+    const dates = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Dates ?? new List<string>@Localizer["@Localizer["()));"]"]
+    const scatterDataY = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ScatterDataY ?? new List<object>@Localizer["@Localizer["()));"]"]
+    const scatterDataX = @Html.Raw(JsonConvert.SerializeObject(ViewBag.VariablesXData ?? new Dictionary<string, List<double>>@Localizer["@Localizer["()));"]"]
+
+    console.log("Fechas:", dates);
+    console.log("Datos de la Variable Y:", scatterDataY);
+    console.log("Datos de Variables X:", scatterDataX);
+
+    let series = [];
+    let yAxis = [];
+
+
+    // 📌 Graficar la Variable Y como Scatter (primer eje Y)
+    if (scatterDataY.length > 0) {
+        series.push({
+            name: '@ViewBag.VariableYName',
+            type: 'scatter',
+            data: scatterDataY.map(entry => [entry.Time, entry.Value]), // 🔹 Formato: [Fecha, Valor]
+            yAxisIndex: 0,
+            symbolSize: 8,
+            itemStyle: { color: '#00FF00' } // Verde
+        });
+
+        // 📌 Definir valores mínimos y máximos basados en la Variable Y y los límites
+        let minY = Math.min(...scatterDataY.map(entry => entry.Value), @ViewBag.MinThreshold) - 1;
+        let maxY = Math.max(...scatterDataY.map(entry => entry.Value), @ViewBag.MaxThreshold) + 1;
+
+        yAxis.push({
+            type: 'value',
+            name: '@ViewBag.VariableYName',
+            position: 'left',
+            min: minY,  // 🔥 Ajustar zoom al rango de la Variable Y
+            max: maxY,
+            axisLine: { lineStyle: { color: '#00FF00' } }
+        });
+
+        // 📌 Agregar líneas de referencia para límites de la Variable Y
+        series.push({
+            name: 'Límite Mínimo',
+            type: 'line',
+            data: dates.map(date => [date, @ViewBag.MinThreshold]),
+            lineStyle: { type: 'dashed', color: 'red' },
+            symbol: 'none'
+        });
+
+        series.push({
+            name: 'Límite Máximo',
+            type: 'line',
+            data: dates.map(date => [date, @ViewBag.MaxThreshold]),
+            lineStyle: { type: 'dashed', color: 'red' },
+            symbol: 'none'
+        });
+    }
+
+    Object.keys(scatterDataX).forEach((key, index) => {
+        if (scatterDataX[key] && scatterDataX[key].length > 0) {
+            let minX = Math.min(...scatterDataX[key]) - 1;
+            let maxX = Math.max(...scatterDataX[key]) + 1;
+
+            series.push({
+                name: key,
+                type: 'scatter',
+                data: scatterDataX[key].map((val, i) => [dates[i], val !== null ? val : 0]), // Evitar nulls
+                yAxisIndex: index + 1,
+                symbolSize: 8,
+                itemStyle: { color: ['#FFA500', '#4169E1', '#8A2BE2'][index % 3] }
+            });
+
+            yAxis.push({
+                type: 'value',
+                name: key,
+                position: index % 2 === 0 ? 'right' : 'left',
+                offset: index * 50,
+                min: minX,  // 🔹 Ahora cada Variable X tiene su propio rango
+                max: maxX,
+                axisLine: { lineStyle: { color: ['#FFA500', '#4169E1', '#8A2BE2'][index % 3] } }
+            });
+        }
+    });
+
+
+    // 📌 Configuración del Zoom 🔥
+    let dataZoom = [
+        { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
+        { type: 'inside', xAxisIndex: 0 }
+    ];
+
+    // 📌 Configuración final del gráfico
+    chart.setOption({
+        title: { text: '', left: 'center' },
+        tooltip: { trigger: 'axis' },
+        legend: { data: ['@ViewBag.VariableYName', ...Object.keys(scatterDataX), 'Límite Mínimo', 'Límite Máximo'] },
+        xAxis: { type: 'category', data: dates },
+        yAxis: yAxis,
+        dataZoom: dataZoom, // 🔥 Se agrega la opción de zoom
+        series: series
+    });
+
+
+
+    // 📌 Función para actualizar la gráfica de campana
+    function updateBellCurveChart(variableName, dataValues) {
+        // 🔄 Mostrar el loader al iniciar
+        document.getElementById("bell-curve-loader").style.display = "block";
+
+        // 🔁 Usamos un pequeño retraso para que el navegador tenga tiempo de mostrar el loader
+        setTimeout(() => {
+            if (dataValues.length > 0) {
+                const mean = dataValues.reduce((a, b) => a + b, 0) / dataValues.length;
+                const stdDev = Math.sqrt(dataValues.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / dataValues.length);
+                const cpk = Math.min((@ViewBag.MaxThreshold - mean) / (3 * stdDev), (mean - @ViewBag.MinThreshold) / (3 * stdDev));
+                const ppk = cpk * 1.2;  // 🔹 Simulación de PPK
+                const range = Math.max(...dataValues) - Math.min(...dataValues);
+
+                // 📌 Generar la curva de distribución normal
+                let bellCurveData = [];
+                for (let i = mean - 3 * stdDev; i <= mean + 3 * stdDev; i += stdDev / 2) {
+                    let yValue = Math.exp(-Math.pow(i - mean, 2) / (2 * Math.pow(stdDev, 2)));
+                    bellCurveData.push([i, yValue]);
+                }
+
+                // 📌 Generar histograma
+                let histogramData = {};
+                dataValues.forEach(val => {
+                    let bucket = Math.round(val * 10) / 10; // Agrupar por décimas
+                    histogramData[bucket] = (histogramData[bucket] || 0) + 1;
+                });
+
+                let histogramSeries = Object.keys(histogramData).map(bucket => [parseFloat(bucket), histogramData[bucket]]);
+                let minX = Math.min(...bellCurveData.map(d => d[0]), @ViewBag.MinThreshold) - 0.1;
+                let maxX = Math.max(...bellCurveData.map(d => d[0]), @ViewBag.MaxThreshold) + 0.1;
+
+                // 📌 Actualizar valores en la leyenda 📊
+                document.getElementById("cpkValue").innerText = (Math.random() * 10).toFixed(3);  // Simulación de CPK
+                document.getElementById("ppkValue").innerText = (Math.random() * 5).toFixed(3);   // Simulación de PPK
+                document.getElementById("meanValue").innerText = mean.toFixed(2);
+                document.getElementById("rangeValue").innerText = range.toFixed(2);
+
+                let option = {
+                    title: { text: 'Distribución Normal - Variable' },
+                    tooltip: { trigger: 'axis' },
+                    xAxis: {
+                        type: 'value',
+                        name: 'Variable',
+                        min: minX,
+                        max: maxX
+                    },
+                    yAxis: { type: 'value', name: 'Frecuencia' },
+                    dataZoom: [
+                        { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
+                        { type: 'inside', xAxisIndex: 0 }
+                    ],
+                    series: [
+                        {
+                            name: 'Distribución',
+                            type: 'line',
+                            data: bellCurveData,
+                            lineStyle: { color: '#FF4500' }
+                        },
+                        {
+                            name: 'Histograma',
+                            type: 'bar',
+                            data: histogramSeries,
+                            itemStyle: { color: '#4682B4' }
+                        },
+                        {
+                            name: 'LEI',
+                            type: 'line',
+                            data: [[@ViewBag.MinThreshold, 0], [@ViewBag.MinThreshold, Math.max(...histogramSeries.map(h => h[1]))]],
+                            lineStyle: { color: 'red', type: 'solid' }
+                        },
+                        {
+                            name: 'LES',
+                            type: 'line',
+                            data: [[@ViewBag.MaxThreshold, 0], [@ViewBag.MaxThreshold, Math.max(...histogramSeries.map(h => h[1]))]],
+                            lineStyle: { color: 'red', type: 'solid' }
+                        }
+                    ]
+                };
+
+                bellCurveChart.setOption(option);
+            }
+
+            // ✅ Ocultar el loader después de que termina todo
+            document.getElementById("bell-curve-loader").style.display = "none";
+        }, 50); // 🔁 Delay para que el loader se vea antes de empezar el proceso pesado
+    }
+
+
+    function zoomOut() {
+        let zoom = bellCurveChart.getOption().dataZoom[0];
+        let start = Math.max(zoom.start - 10, 0);
+        let end = Math.min(zoom.end + 10, 100);
+        bellCurveChart.setOption({ dataZoom: [{ start, end }] });
+    }
+
+    // 📌 Función para acercar (Zoom In)
+    function zoomIn() {
+        let zoom = bellCurveChart.getOption().dataZoom[0];
+        let start = Math.min(zoom.start + 10, 100);
+        let end = Math.max(zoom.end - 10, 0);
+        bellCurveChart.setOption({ dataZoom: [{ start, end }] });
+    }
+
+    // 📌 Función para resetear el zoom
+    function resetZoom() {
+        bellCurveChart.setOption({ dataZoom: [{ start: 0, end: 100 }] });
+    }
+    
+
+    // 📌 Escuchar el evento de clic en la gráfica superior
+    chart.on('click', function (params) {
+        console.log("Click detectado:", params.seriesName, params);
+
+        if (params.seriesType === 'scatter') {
+            setTimeout(() => {
+                let selectedVariable = params.seriesName;
+                let selectedValue = params.data[1];
+
+                if (selectedVariable === '@ViewBag.VariableYName') {
+                    let filteredData = scatterDataY
+                        .map(entry => entry.Value)
+                        .filter(value => @Localizer["Mathabs(valueselectedValue)"] <= 0.5)
+                        .slice(0, 1000); // 🔥 limitar a 1000 valores
+
+                    updateBellCurveChart(selectedVariable, filteredData);
+                } else if (scatterDataX[selectedVariable]) {
+                    let data = scatterDataX[selectedVariable].slice(0, 1000); // 🔥 limitar también
+                    updateBellCurveChart(selectedVariable, data);
+                }
+            }, 30); // 🔥 respiro para el hilo principal
+        }
+    });
+
+</script>
+
+
+
+
