@@ -1,7 +1,8 @@
-﻿@{
+﻿@using System.Globalization
+@{
         var usuario = Context.Session.GetString("usuarioNombre") ?? "";
     }
-
+    @inject IStringLocalizer<dashboardQ40.Resources.Labels> Localizer
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,91 +97,95 @@
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
-            <div class="container-fluid px-4">
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/img/logo arca contal.png" class="logo-arca" alt="Logo Arca" />
-                    <span>Dashboard Q.40</span>
-                </a>
+        <header>
+        <p class="text-muted">Cultura activa: @System.Globalization.CultureInfo.CurrentCulture.Name</p>
+        <p>Test: @Localizer["FooterText"]</p>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
+                <div class="container-fluid px-4">
+                    <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/img/logo arca contal.png" class="logo-arca" alt="Logo Arca" />
+                        <span>@Localizer["AppTitle"]</span>
+                    </a>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Resumen">Resumen</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Trazability" asp-action="ReportTrazability">Reporte Lineal Trazabilidad</a>
-                        </li>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Zonas Operativas
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Noreste</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Planta 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 3</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Norte</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Planta 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 3</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Pacífico</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Planta 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 3</a></li>
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Occidente</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Planta 1</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 2</a></li>
-                                        <li><a class="dropdown-item" href="#">Planta 3</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index">@Localizer["Dashboard"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Resumen">@Localizer["Summary"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Trazability" asp-action="ReportTrazability">@Localizer["TraceabilityReport"]</a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @Localizer["OperationalZones"]
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionNoreste"]</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionNorte"]</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionPacifico"]</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionOccidente"]</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
+                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3 text-muted">@Localizer["Welcome"]</span>
+                        <span id="nombreUsuarioHeader" class="fw-bold text-dark">
+                            @usuario
+                        </span>
+                    </div>
                 </div>
-                <div class="d-flex align-items-center">
-                    <span class="me-3 text-muted">Bienvenido:</span>
-                    <span id="nombreUsuarioHeader" class="fw-bold text-dark">
-                        @usuario
-                    </span>
-                </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
 
-    <div class="container-fluid px-3">
-        <main role="main" class="pt-2 pb-2">
-            @RenderBody()
-        </main>
-    </div>
+        <div class="container-fluid px-3">
+            <main role="main" class="pt-2 pb-2">
+                @RenderBody()
+            </main>
+        </div>
 
-    <footer>
-        Sisteplant 2025 - Dashboard Quqality 4.0
-    </footer>
+        <footer>
+            @Localizer["FooterText"]
+        </footer>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

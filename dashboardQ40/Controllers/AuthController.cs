@@ -57,7 +57,8 @@ namespace dashboardQ40.Controllers
                     HttpContext.Session.SetString("usuarioNombre", ListAuthUser.First().appUserName);
                     HttpContext.Session.SetString("usuario", ListAuthUser.First().appUser);
                     HttpContext.Session.SetString("compania", company);
-                    HttpContext.Session.SetString("cultura", ListAuthUser.First().culture ?? "es-ES");
+                    HttpContext.Session.SetString("culture", ListAuthUser.First().culture ?? "es-ES");
+
 
                     return Json(new
                     {

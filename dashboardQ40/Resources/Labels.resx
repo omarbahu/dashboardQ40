@@ -117,46 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppTitle" xml:space="preserve">
-    <value>Dashboard Q.40</value>
-  </data>
-  <data name="Dashboard" xml:space="preserve">
-    <value>Dashboard</value>
-  </data>
-  <data name="FooterText" xml:space="preserve">
-    <value>Sisteplant 2025 - Dashboard Quqality 4.0</value>
-  </data>
-  <data name="OperationalZones" xml:space="preserve">
-    <value>Zonas Operativas</value>
-  </data>
-  <data name="Plant1" xml:space="preserve">
-    <value>Planta 1</value>
-  </data>
-  <data name="Plant2" xml:space="preserve">
-    <value>Planta 2</value>
-  </data>
-  <data name="Plant3" xml:space="preserve">
-    <value>Planta 3</value>
-  </data>
-  <data name="RegionNoreste" xml:space="preserve">
-    <value>Noreste</value>
-  </data>
-  <data name="RegionNorte" xml:space="preserve">
-    <value>Norte</value>
-  </data>
-  <data name="RegionOccidente" xml:space="preserve">
-    <value>Occidente</value>
-  </data>
-  <data name="RegionPacifico" xml:space="preserve">
-    <value>Pacífico</value>
-  </data>
-  <data name="Summary" xml:space="preserve">
-    <value>Resumen</value>
-  </data>
-  <data name="TraceabilityReport" xml:space="preserve">
-    <value>Reporte Lineal Trazabilidad</value>
-  </data>
-  <data name="Welcome" xml:space="preserve">
-    <value>Bienvenido:</value>
-  </data>
 </root>
