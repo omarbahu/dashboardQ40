@@ -48,6 +48,8 @@ namespace dashboardQ40.Controllers
                             culture = item.culture
                         };
 
+                        HttpContext.Session.SetString("culture", item.culture ?? "es-ES"); // ✅ necesario para que el middleware funcione
+
                         ListAuthUser.Add(AuthUser);
                     }
 

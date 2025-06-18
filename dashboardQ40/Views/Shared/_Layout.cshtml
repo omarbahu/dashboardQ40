@@ -2,7 +2,8 @@
 @{
         var usuario = Context.Session.GetString("usuarioNombre") ?? "";
     }
-    @inject IStringLocalizer<dashboardQ40.Resources.Labels> Localizer
+    @inject IStringLocalizer Localizer
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -234,23 +235,20 @@
             $.ajax({
                 url: '@Url.Action("ValidarUsuario", "Auth")',
                 type: 'GET',
-                data: {
-                    user: datos.user,
-                    company: datos.company
-                },
+                data: { user: datos.user, company: datos.company},
                 success: function (data) {
                     if (data.autorizado) {
-        if (!'@usuario') {
-            location.reload(); // Solo recarga si aún no había sesión al cargar
-        }
-    } else {
-        window.location.href = "/Home/NoAutorizado";
-    }
-                },
-                error: function () {
-                    alert("Error al validar el usuario.");
-                    window.location.href = "/Home/NoAutorizado";
-                }
+                        if (!'@usuario') {
+                            location.reload(); // Solo recarga si aún no había sesión al cargar
+                        }
+                        } else {
+                            window.location.href = "/Home/NoAutorizado";
+                        }
+                    },
+                    error: function () {
+                        alert("Error al validar el usuario.");
+                        window.location.href = "/Home/NoAutorizado";
+                    }
             });
         } else {
             console.log("❌ No se encontró la cookie válida.");

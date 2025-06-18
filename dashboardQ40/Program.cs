@@ -1,9 +1,10 @@
 ﻿using dashboardQ40.DAL;
-using dashboardQ40.Functions;
+using dashboardQ40.Middlewares;
 using dashboardQ40.Models;
 using dashboardQ40.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Serilog;
 using System.Globalization;
@@ -30,11 +31,18 @@ var supportedCultures = new[] { "es-ES", "en-US" };
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var cultures = supportedCultures.Select(c => new CultureInfo(c)).ToList();
-
     options.DefaultRequestCulture = new RequestCulture("es-ES");
     options.SupportedCultures = cultures;
     options.SupportedUICultures = cultures;
 });
+
+// ✅ REGISTRA el localizador base para @inject IStringLocalizer
+builder.Services.AddSingleton<IStringLocalizer>(sp =>
+{
+    var factory = sp.GetRequiredService<IStringLocalizerFactory>();
+    return factory.Create("Labels", typeof(Program).Assembly.GetName().Name);
+});
+
 
 // 🌐 Session
 builder.Services.AddSession(options =>
@@ -52,22 +60,22 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<WebServiceSettings>(builder.Configuration.GetSection("WebServiceSettings"));
 builder.Services.Configure<VariablesYConfig>(builder.Configuration.GetSection("VariablesY"));
 
-// 🌐 HttpClient para AuthService
+// 🌐 HttpClient y AuthService
 builder.Services.AddHttpClient<AuthService>();
 builder.Services.AddTransient<AuthService>();
 
-// 🌐 DB
+// 🌐 Base de datos
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DashboardConnection")));
 
-// 🌐 JSON config
+// 🌐 JSON
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-// 🛠️ Build
+// 🛠️ Compilar la app
 var app = builder.Build();
 
 // 🔐 Middleware de error y seguridad
@@ -82,24 +90,25 @@ else
     app.UseSwaggerUI();
 }
 
-// 🌍 Establecer cultura desde sesión
-
-
-// 🔒 HTTPS, Archivos, Session, Localización
+// 🔒 HTTPS, archivos estáticos, routing
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseSession();
-app.UseMiddleware<SetCultureMiddleware>();
 
-// ✅ Configuración de localización
-var localizationOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>()?.Value;
+// 🧠 Sesión
+app.UseSession();
+
+// 🌍 Localización: PRIMERO RequestLocalization
+var localizationOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
 app.UseRequestLocalization(localizationOptions);
 
+// 🌍 Cultura personalizada desde sesión
+app.UseMiddleware<SetCultureMiddleware>();
 
+// 🔐 Autorización
 app.UseAuthorization();
 
-// 🔄 Ruta principal
+// 📌 Rutas
 app.MapControllerRoute(
     name: "default",
     pattern: app.Environment.IsDevelopment()
@@ -107,4 +116,6 @@ app.MapControllerRoute(
         : "{controller=Dashboard}/{action=Index}/{id?}");
 
 app.MapControllers();
+
+// 🚀 Ejecutar
 app.Run();

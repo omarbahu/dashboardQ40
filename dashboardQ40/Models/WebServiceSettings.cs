@@ -16,7 +16,7 @@
         public string logFilePath { get; set; }
         public string QueryResultVarY_X { get; set; }
         public string QueryAuthUser { get; set; }
-        public string produccion { get; set; }
+        public bool Produccion { get; set; }
 
     }
 }

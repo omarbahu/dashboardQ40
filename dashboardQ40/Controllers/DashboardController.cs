@@ -79,7 +79,7 @@ namespace dashboardQ40.Controllers
                 { "CARBONATACIÓN", new List<string> { "TEMPERATURA", "PRESIÓN CO2", "POSICION DE MICRO", "SUMINISTRO DE PRESIÓN", "MAZELI", "PRESIÓN ENTRADA DEL SUBACARD", "PRESIÓN SALIDA DEL SUBACARD", "PRESIÓN DE CO2 EN SUBCARB" } }
             };
 
-            ViewBag.produccion = _settings.produccion;
+            ViewBag.produccion = _settings.Produccion;
 
             return View();
         }
@@ -153,7 +153,7 @@ namespace dashboardQ40.Controllers
 
             var VariableYEnv = "";
             var VariableYName = "";
-            if (_settings.produccion == "0")
+            if (!_settings.Produccion)
             {
                 //VariableYEnv = variableY;
                 switch (variableY)
@@ -273,7 +273,7 @@ namespace dashboardQ40.Controllers
 
             var VariableYEnv = "";
             var VariableYName = "";
-            if (_settings.produccion == "0")
+            if (!_settings.Produccion)
             {
                 //VariableYEnv = variableY;
                 switch (variableY)
@@ -397,7 +397,7 @@ namespace dashboardQ40.Controllers
                 Console.WriteLine(json);
                 _logger.LogInformation($"json de variables y: {json}");
 
-                bool esProduccion = _settings.produccion == "1"; // Lee desde appsettings
+                bool esProduccion = _settings.Produccion; // Lee desde appsettings
 
                 var variablesFiltradas = ListVariablesY
                     .Where(d => esProduccion || _variablesY.Keys.Any(prefijo => d.controlOperation.StartsWith(prefijo.Trim().ToUpper())))

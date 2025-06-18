@@ -1,5 +1,5 @@
-﻿using dashboardQ40.Functions;
-using dashboardQ40.Models;
+﻿using dashboardQ40.Models;
+using dashboardQ40.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data;

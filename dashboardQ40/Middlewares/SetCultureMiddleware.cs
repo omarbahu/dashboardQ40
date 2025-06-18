@@ -15,15 +15,19 @@ namespace dashboardQ40.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Obtener cultura guardada en sesión (ej: "es-ES" o "en-US")
-            var culture = context.Session.GetString("culture");
+            var culture = context.Session.GetString("culture") ?? "es-ES";
 
-            if (!string.IsNullOrEmpty(culture))
+            try
             {
                 var cultureInfo = new CultureInfo(culture);
-
                 CultureInfo.CurrentCulture = cultureInfo;
                 CultureInfo.CurrentUICulture = cultureInfo;
+            }
+            catch (CultureNotFoundException)
+            {
+                var defaultCulture = new CultureInfo("es-ES");
+                CultureInfo.CurrentCulture = defaultCulture;
+                CultureInfo.CurrentUICulture = defaultCulture;
             }
 
             await _next(context);

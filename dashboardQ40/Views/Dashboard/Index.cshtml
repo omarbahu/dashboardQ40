@@ -298,7 +298,8 @@
             }
         }
 
-        const isDev = @(ViewBag.produccion?.ToString() == "0" ? "true" : "false");
+        
+        const isDev = @(!ViewBag.produccion ? "true" : "false");
 
 
         function llenarVariableX(data) {
