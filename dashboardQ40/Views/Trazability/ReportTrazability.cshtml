@@ -3,17 +3,226 @@
 
 @{
     ViewBag.Title = "Reporte de Trazabilidad Hacia Atrás";
+
+    string jsonData = "{}"; // Valor por defecto
+
+    if (Model?.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
+    {
+        var tabla = Model.Trazabilidad;
+        var columnas = tabla.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList();
+
+        var filas = tabla.Rows.Cast<DataRow>().Select(r =>
+            columnas.ToDictionary(c => c, c => r[c]?.ToString() ?? "")
+        ).ToList();
+
+        var dataCompleta = new
+        {
+            columnas,
+            filas
+        };
+
+        jsonData = System.Text.Json.JsonSerializer.Serialize(dataCompleta);
+    }
 }
 
 <div class="container mt-5">
     <h2>Reporte de Trazabilidad Hacia Atrás</h2>
 
     <form method="get" action="@Url.Action("ReportTrazability", "Trazability")" class="d-flex align-items-center gap-2 mb-2">
-        <input type="text" name="searchBatch" class="form-control form-control-sm w-auto" placeholder="Buscar lote..." value="@Model.SearchBatch" style="max-width: 200px;" />
+        <input type="text" name="searchBatch" class="form-control form-control-sm w-auto" placeholder="Buscar lote..." value="@Model?.SearchBatch" style="max-width: 200px;" />
         <button type="submit" class="btn btn-sm btn-primary">Buscar</button>
     </form>
-    </BR></BR>
-    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
+
+
+    @if (Model?.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
+    {
+        <div id="visorTrazabilidad" style="height: 400px; width: 100%; margin-bottom: 30px;"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+        <script>
+            const chart = echarts.init(document.getElementById('visorTrazabilidad'));
+
+                const trazabilidadDebug = @Html.Raw(jsonData);
+    console.log("🧩 Columnas:", trazabilidadDebug.columnas);
+    console.log("🧾 Filas:", trazabilidadDebug.filas);
+    console.table(trazabilidadDebug.filas);
+
+            const rows = @Html.Raw(Json.Serialize(
+            Model.Trazabilidad.Rows.Cast<System.Data.DataRow>().Select(r => new
+            {
+                padre = r["batchIdentifier"].ToString(),       // lote padre
+                hijo = r["batchname"].ToString(),              // lote hijo
+                nombre = r["manufacturingReferenceName"].ToString(),
+                id = r["manufacturingReference"].ToString(),
+                inicio = r["startDate"].ToString(),
+                fin = r["endDate"].ToString()
+            })
+            ));
+
+            const data = [];
+            const links = [];
+            const added = new Map();
+
+            (rows.$values || []).forEach(r => {
+                // Nodo padre
+                if (!added.has(r.padre)) {
+                    added.set(r.padre, true);
+                    data.push({
+                        id: r.padre,
+                        name: r.padre,
+                        symbolSize: [140, 40],
+                        info: {
+                            sku: r.nombre,
+                            id: r.padre,
+                            inicio: r.inicio,
+                            fin: r.fin
+                        }
+                    });
+                }
+
+                // Nodo hijo
+                if (r.hijo && !added.has(r.hijo)) {
+                    added.set(r.hijo, true);
+                    data.push({
+                        id: r.hijo,
+                        name: r.hijo,
+                        symbolSize: [140, 40],
+                        info: {
+                            sku: r.nombre,
+                            id: r.hijo,
+                            inicio: r.inicio,
+                            fin: r.fin
+                        }
+                    });
+                }
+
+                // Conexión
+                if (r.padre && r.hijo) {
+                    links.push({ source: r.padre, target: r.hijo });
+                }
+            });
+
+            // Buscar raíz (padre que no es hijo)
+            const hijos = new Set(rows.$values.map(r => r.hijo));
+            const padres = [...new Set(rows.$values.map(r => r.padre))];
+            let rootId = padres.find(p => !hijos.has(p)) || padres[0];
+
+            function buildTreeSafe(rootId, visited = new Set()) {
+                if (visited.has(rootId)) return null; // evita recursión infinita
+                visited.add(rootId);
+
+                const rootNode = data.find(n => n.id === rootId);
+                if (!rootNode) return null;
+
+                const children = uniqueLinks
+                    .filter(link => link.source === rootId)
+                    .map(link => buildTreeSafe(link.target, new Set(visited)))
+                    .filter(child => child !== null);
+
+                return { ...rootNode, children };
+            }
+
+            const uniqueLinks = [];
+            const seenLinks = new Set();
+
+            links.forEach(link => {
+                const key = `${link.source}→${link.target}`;
+                if (!seenLinks.has(key)) {
+                    seenLinks.add(key);
+                    uniqueLinks.push(link);
+                }
+            });
+
+            chart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    enterable: true,
+                    confine: true,
+                    backgroundColor: '#fff',
+                    borderColor: '#ccc',
+                    borderWidth: 1,
+                    textStyle: { color: '#000' },
+                    formatter: function (params) {
+                        const info = params.data.info;
+                        if (!info) return 'Sin información';
+                        return `
+                                <div style="max-width: 240px; font-size: 12px;">
+                                    <b>Lote fabricado</b><br/>
+                                    <b>SKU:</b> ${info.sku}<br/>
+                                    <b>Identificador:</b> ${info.id}<br/>
+                                    <b>Inicio:</b> ${info.inicio}<br/>
+                                    <b>Fin:</b> ${info.fin}<br/>
+                                    <a href="javascript:void(0)" onclick="filtrarLote('${info.id}')">🔍 Ver detalle</a>
+                                </div>`;
+                    }
+                },
+                series: [{
+                    type: 'tree',
+                    layout: 'orthogonal',
+                    orient: 'LR',
+                    data: [buildTreeSafe(rootId)],
+                    symbol: 'rect',
+                    symbolSize: [140, 40],
+                    edgeShape: 'polyline',
+                    edgeForkPosition: '50%',
+                    label: {
+                        show: true,
+                        formatter: function (params) {
+                            return params.data.name || '';
+                        },
+                        position: 'inside', // 👈 centrado dentro del rectángulo
+                        verticalAlign: 'middle',
+                        align: 'center',     // 👈 centrado horizontalmente
+                        fontSize: 11,
+                        color: '#000'        // 👈 opcional, texto en negro para mejor visibilidad
+                    },
+
+                    leaves: {
+                        label: {
+                            show: true,
+                            position: 'inside',
+                            verticalAlign: 'middle',
+                            align: 'center',
+                            fontSize: 11,
+                            color: '#000'
+                        }
+                    },
+                    itemStyle: {
+                        borderColor: '#666',
+                        borderWidth: 1,
+                        color: '#eef9ff'
+                    },
+                    expandAndCollapse: true,
+                    initialTreeDepth: -1,
+                    lineStyle: {
+                        color: '#aaa',
+                        width: 2
+                    }
+                }]
+            });
+
+            function filtrarLote(id) {
+                const form = document.createElement('form');
+                form.method = 'get';
+                form.action = '@Url.Action("ReportTrazability", "Trazability")';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'searchBatch';
+                input.value = id;
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        </script>
+
+    }
+
+
+
+    <br /><br />
+    @if (Model?.StartDate.HasValue == true && Model.EndDate.HasValue == true)
     {
         <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
             <div style="flex: 1; min-width: 280px; padding-bottom: 10px;">
@@ -78,10 +287,13 @@
 
                                     foreach (DataRow c in Model.Checklist.Rows)
                                     {
-                                        if (c["batch"].ToString() == batch)
-                                        {
-                                            checklistFiltrados.Add(c);
-                                        }
+                        bool coincideBatch = !string.IsNullOrEmpty(c["batch"].ToString()) && c["batch"].ToString() == batch;
+                        bool coincideReferencia = c["manufacturingReference"].ToString() == batchRow["manufacturingReference"].ToString();
+
+                        if (coincideBatch || coincideReferencia)
+                        {
+                            checklistFiltrados.Add(c);
+                        }
                                     }
 
                     if (checklistFiltrados.Count == 0)
@@ -118,9 +330,11 @@
                                 }
                                 else
                                 {
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td></td> <!-- Lote -->
+                                    <td></td> <!-- Identificador Lote -->
+                                    <td></td> <!-- Inicio -->
+                                    <td></td> <!-- Fin -->
+                                    <td></td> <!-- SKU -->
                                 }
 
                                 <td>
@@ -212,11 +426,15 @@
             const inputStart = document.getElementById('startDateInput');
             const inputEnd = document.getElementById('endDateInput');
 
+            // 🎯 Rango de fechas reales desde el modelo
             const dateStart = new Date("@Model.StartDate.Value.ToString("yyyy-MM-ddTHH:mm:ss")");
-            const dateEnd = new Date(dateStart.getTime() + 24 * 60 * 60 * 1000); // Solo para demo
+            const dateEnd = new Date("@Model.EndDate.Value.ToString("yyyy-MM-ddTHH:mm:ss")");
 
+
+            // ⏱ Total en milisegundos
             const totalMs = dateEnd - dateStart;
 
+            // 🕓 Crear marcas horarias cada 1 hora
             function generatePipPositions(totalMs) {
                 const positions = [];
                 const hourInMs = 60 * 60 * 1000;
@@ -231,7 +449,7 @@
             noUiSlider.create(rangeSlider, {
                 start: [0, totalMs],
                 connect: true,
-                step: 15 * 60 * 1000,
+                step: 15 * 60 * 1000, // cada 15 minutos
                 range: {
                     min: 0,
                     max: totalMs
@@ -254,31 +472,48 @@
                     mode: 'positions',
                     values: generatePipPositions(totalMs),
                     density: 2,
-                    stepped: true
+                    stepped: true,
+                    format: {
+                        to: v => {
+                            const time = new Date(dateStart.getTime() + v);
+                            return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        }
+                    }
                 }
+
             });
 
+            // 📅 Mostrar valores formateados
             rangeSlider.noUiSlider.on('update', function (values) {
                 const msStart = parseInt(values[0]);
                 const msEnd = parseInt(values[1]);
+
                 const newStart = new Date(dateStart.getTime() + msStart);
                 const newEnd = new Date(dateStart.getTime() + msEnd);
-                displayStart.textContent = newStart.toLocaleString();
-                displayEnd.textContent = newEnd.toLocaleString();
-                inputStart.value = newStart.getFullYear() + '-' +
-                    String(newStart.getMonth() + 1).padStart(2, '0') + '-' +
-                    String(newStart.getDate()).padStart(2, '0') + 'T' +
-                    String(newStart.getHours()).padStart(2, '0') + ':' +
-                    String(newStart.getMinutes()).padStart(2, '0');
 
-                inputEnd.value = newEnd.getFullYear() + '-' +
-                    String(newEnd.getMonth() + 1).padStart(2, '0') + '-' +
-                    String(newEnd.getDate()).padStart(2, '0') + 'T' +
-                    String(newEnd.getHours()).padStart(2, '0') + ':' +
-                    String(newEnd.getMinutes()).padStart(2, '0');
+                displayStart.textContent = newStart.toLocaleString('es-MX', { hour: '2-digit', minute: '2-digit' });
+                displayEnd.textContent = newEnd.toLocaleString('es-MX', { hour: '2-digit', minute: '2-digit' });
+
+
+
+                inputStart.value = toLocalDatetimeValue(newStart);
+                inputEnd.value = toLocalDatetimeValue(newEnd);
+
+                console.log("🧪 Fecha generada - inputStart.value:", inputStart.value);
+                console.log("🧪 Fecha generada - inputEnd.value:", inputEnd.value);
             });
 
+              function toLocalDatetimeValue(date) {
+                    return date.getFullYear() + '-' +
+                        String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(date.getDate()).padStart(2, '0') + 'T' +
+                        String(date.getHours()).padStart(2, '0') + ':' +
+                        String(date.getMinutes()).padStart(2, '0');
+                }
+
+            // Inicializar al máximo
             rangeSlider.noUiSlider.set([0, totalMs]);
+
         </script>
     }
 }

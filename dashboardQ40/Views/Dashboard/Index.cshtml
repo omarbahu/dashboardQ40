@@ -81,7 +81,7 @@
         <!-- Botones -->
         <div class="col">
             <label class="form-label d-block invisible">Acciones</label>
-            <button type="button" class="btn btn-primary btn-sm" onclick="submitForm('@Url.Action("SubmitSelection", "Dashboard")')">
+            <button id="btnReporte" type="button" class="btn btn-primary btn-sm" onclick="submitForm('@Url.Action("SubmitSelection", "Dashboard")')">
                 📊 Reporte
             </button>
 
@@ -97,6 +97,9 @@
             <label for="variablesX" class="form-label">Variables X:</label>
             <select id="variablesX" name="variablesX[]" multiple="multiple" class="form-select form-select-sm w-100">
             </select>
+            <div id="noVariablesX" class="text-danger mt-2" style="display: none;">
+                ⚠️ No se encontraron variables X con datos para este rango de fechas.
+            </div>
         </div>
     </div>
 </form>
@@ -279,14 +282,21 @@
 
         function cargarVarX() {
             var sku = $("#sku").val();
-            var variableY = $("#variableY").val();
+            var variableY = "";
+            var valor = $("#variableY").val();
+            var fechaInicial = $("#startDate").val();
+            var fechaFinal = $("#endDate").val();
+            var lineaId = $("#line").val();
 
+            if (valor && valor.length >= 3) {
+                variableY = valor;
+            }
 
             if (sku && variableY) {
                 $.ajax({
                     url: '@Url.Action("ObtenerVarX", "Dashboard")',
                     type: 'GET',
-                    data: { sku: sku, varY: variableY },
+                    data: { sku: sku, varY: variableY, fechaInicial: fechaInicial, fechaFinal: fechaFinal, lineaId: lineaId },
                     success: function (data) {
                         console.log("Respuesta del servidor:", data); // ✅ Aquí se imprime
                         llenarVariableX(data);
@@ -303,33 +313,60 @@
 
 
         function llenarVariableX(data) {
-            let variablesX = data?.value?.$values || data?.$values || [];
+            console.log("📦 Datos recibidos en llenarVariableX:", data);
 
-            if (!Array.isArray(variablesX) || variablesX.length === 0) {
-                console.warn("⚠️ Respuesta inválida o vacía:", data);
+            let variablesX = Array.isArray(data?.$values) ? data.$values : [];
+            console.log("🔍 Variables X procesadas:", variablesX);
+
+            const selectMultiple = $("#variablesX");
+            const mensajeSinDatos = $("#noVariablesX");
+            const botonReporte = $("#btnReporte");
+
+            // Limpia el select
+            selectMultiple.empty();
+
+            // Reinicia Select2 antes de modificar el contenido
+            if ($.fn.select2 && selectMultiple.hasClass("select2-hidden-accessible")) {
+                selectMultiple.select2("destroy");
+            }
+
+            // Sin datos
+            if (!variablesX || !Array.isArray(variablesX) || variablesX.length === 0) {
+                console.warn("⚠️ No hay variables X con datos.");
+
+                selectMultiple.append('<option disabled selected>No hay variables X con datos en este periodo</option>');
+                selectMultiple.prop('disabled', true);
+
+                if ($.fn.select2) {
+                    selectMultiple.select2({
+                        placeholder: "No disponible",
+                        width: 'resolve'
+                    });
+                }
+
+                mensajeSinDatos.show();
+                botonReporte.prop("disabled", true);
+
                 return;
             }
 
-            const selectMultiple = $("#variablesX");
+            // ✅ Hay datos: habilita todo
+            mensajeSinDatos.hide();
+            selectMultiple.prop('disabled', false);
+            botonReporte.prop("disabled", false);
 
-            // Limpia opciones anteriores
-            selectMultiple.empty();
-
-            // Agrega nuevas opciones
+            // Llenar opciones
             variablesX.forEach(variableX => {
-                const value = variableX.codigo || variableX.controlOperation;
-                const name = variableX.nombre || variableX.controlOperationName;
+                const value = variableX.controlOperation;
+                const name = variableX.controlOperationName;
 
                 if (value && name) {
                     selectMultiple.append(`<option value="${value}">${name}</option>`);
                 }
             });
 
-            // Inicializa o reinicializa Select2
+            // Reinicia Select2 con opciones válidas
             if ($.fn.select2) {
-                if (selectMultiple.hasClass("select2-hidden-accessible")) {
-                    selectMultiple.select2("destroy");
-                }
                 selectMultiple.select2({
                     placeholder: "Seleccione variables X",
                     width: 'resolve',
@@ -337,17 +374,10 @@
                 });
             }
 
-            // Preselección solo en desarrollo
-            if (isDev === true || isDev === "true") {
-                let preselect = ["BX-Y-7-201", "BX-Y-7-202"];
-                let disponibles = variablesX.map(v => v.codigo || v.controlOperation);
-                let seleccionables = preselect.filter(v => disponibles.includes(v));
-
-                if (seleccionables.length > 0) {
-                    selectMultiple.val(seleccionables).trigger("change");
-                    console.log("✅ Preseleccionados:", seleccionables);
-                }
-            }
+            // 🟡 (opcional) Si solo hay una, seleccionarla automáticamente
+            const todasLasClaves = variablesX.map(v => v.controlOperation);
+            selectMultiple.val(todasLasClaves).trigger("change");
+            console.log("✅ Se seleccionaron automáticamente:", todasLasClaves);
         }
 
 

@@ -72,11 +72,13 @@ namespace dashboardQ40.Services
             );
         }
 
-        public static async Task<result_Q_VarY> getVarXByvarY(string token, string url, string company, string sku, string varY)
+        public static async Task<result_Q_VarY> getVarXByvarY(string token, string url, string company, string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
         {
             HttpClient client = Method_Headers(token, url);
+            var fe1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss");
+            var fe2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var jsonBody = "{ 'COMP': '" + company + "','SKU': '" + sku + "','VARY': '" + varY.Substring(0, 3) + "%'}";
+            var jsonBody = "{ 'COMP': '" + company + "','SKU': '" + sku + "','VARY': '" + varY.Substring(0, 3) + "%','F1': '" + fe1 + "', 'F2': '" + fe2 + "','WP': '" + lineaId + "'}";
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_VarY>(
                 client,

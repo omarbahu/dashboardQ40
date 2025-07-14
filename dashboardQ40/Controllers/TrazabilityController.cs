@@ -60,6 +60,7 @@ namespace dashboardQ40.Controllers
 
                         var filtradas = checklist.AsEnumerable()
                             .Where(row =>
+                                !row.IsNull("executionDate") && // 🛡️ Evita el error
                                 row.Field<DateTime>("executionDate") >= startDate.Value &&
                                 row.Field<DateTime>("executionDate") <= endDate.Value);
 

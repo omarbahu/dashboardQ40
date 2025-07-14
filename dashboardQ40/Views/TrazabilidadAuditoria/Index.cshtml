@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "Trazabilidad para auditoría";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Trazabilidad para auditoría</h2>
+
+    <!-- Sección de selección -->
+    <div id="opcionesIniciales" class="text-center">
+        <button class="btn btn-lg btn-primary m-3" onclick="mostrarFormulario('nuevo')">
+            📝 Crear nuevo reporte
+        </button>
+        <button class="btn btn-lg btn-secondary m-3" onclick="mostrarFormulario('ver')">
+            📂 Ver reportes anteriores
+        </button>
+    </div>
+
+    <!-- Formulario nuevo reporte -->
+    <div id="formNuevo" style="display:none;">
+        <div class="card p-4">
+            <h4>📄 Nuevo reporte de trazabilidad</h4>
+            <hr />
+            <form id="formGuardar">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="fechaHora">Fecha y hora</label>
+                        
+                        <input type="datetime-local" class="form-control" id="fechaHora" name="FechaHora" value="2025-07-12T09:00" />
+                        
+                        
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="horaInicio">Hora inicio</label>
+                        <input type="time" class="form-control" id="horaInicio" name="HoraInicio" value="09:00" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="horaFin">Hora fin</label>
+                        <input type="time" class="form-control" id="horaFin" name="HoraFin" value="10:00" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="motivo">Motivo de la trazabilidad</label>
+                    <textarea class="form-control" id="motivo" name="motivo" rows="2"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="lote">Lote</label>
+                        
+                        <input type="text" class="form-control" id="lote" name="Lote" value="ABC123" />
+                        
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="revision">Revisión</label>
+                        
+                        <input type="text" class="form-control" id="revision" name="Revision" value="Rev. 1" />
+                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="usuarioVobo">Usuario VoBo</label>
+                        
+                        <input type="text" class="form-control" id="usuarioVobo" name="UsuarioVobo" value="Juan Pérez" />
+                        
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="efic">Eficiencia producto terminado (%)</label>
+                        
+                        <input type="number" class="form-control" id="efic" name="PorcEficProductoTerminado" value="95.5" />
+                        
+                    </div>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" value="1" id="trazaProducto" />
+                    <label class="form-check-label" for="trazaProducto">
+                        ¿Requiere trazabilidad de materia prima?
+                    </label>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">Guardar reporte</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="regresar()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sección de historial (placeholder) -->
+    <div id="formHistorial" style="display:none;">
+        <div class="card p-4">
+            <h4>📂 Reportes anteriores</h4>
+            <p class="text-muted">Aquí podrás consultar reportes ya registrados.</p>
+            <!-- Aquí irá la tabla de historial más adelante -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function mostrarFormulario(tipo) {
+            document.getElementById("opcionesIniciales").style.display = "none";
+            if (tipo === 'nuevo') {
+                document.getElementById("formNuevo").style.display = "block";
+            } else if (tipo === 'ver') {
+                document.getElementById("formHistorial").style.display = "block";
+            }
+        }
+
+        function regresar() {
+            document.getElementById("formNuevo").style.display = "none";
+            document.getElementById("formHistorial").style.display = "none";
+            document.getElementById("opcionesIniciales").style.display = "block";
+        }
+
+        $("#formGuardar").submit(function (e) {
+            e.preventDefault();
+
+            const data = {
+                FechaHora: $("#fechaHora").val(),
+                HoraInicio: $("#horaInicio").val(),
+                HoraFin: $("#horaFin").val(),
+                MotivoTrazabilidad: $("#motivo").val(),
+                TrazaProductoMp: $("#trazaProducto").is(":checked"),
+                PorcEficProductoTerminado: parseFloat($("#efic").val()) || 0,
+                Lote: $("#lote").val(),
+                Revision: $("#revision").val(),
+                UsuarioVobo: $("#usuarioVobo").val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("GuardarReporte", "TrazabilidadAuditoria")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (res) {
+                    if (res.success) {
+                        //alert("✅ " + res.mensaje);
+                        $("#formGuardar")[0].reset();
+                        window.location.href = '/TrazabilidadAuditoria/AuditReport';
+                    } else {
+                        alert("❌ Error inesperado.");
+                    }
+                },
+                error: function (err) {
+                    console.error(err);
+                    alert("❌ Error al guardar.");
+                }
+            });
+        });
+    </script>
+}

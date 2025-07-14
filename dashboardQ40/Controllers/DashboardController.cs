@@ -437,7 +437,7 @@ namespace dashboardQ40.Controllers
             }
         }
 
-        public async Task<JsonResult> ObtenerVarX(string sku, string varY)
+        public async Task<JsonResult> ObtenerVarX(string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
         {
             string token = HttpContext.Session.GetString("AuthToken"); // Obtener el token de la sesión
 
@@ -453,7 +453,7 @@ namespace dashboardQ40.Controllers
                         token.ToString(),
                         _settings.QueryVarX,
                         _settings.Company,
-                        sku,varY);
+                        sku,varY, fechaInicial, fechaFinal, lineaId);
                 await Task.WhenAll(dataResultP);
 
                 var resultado = Json(dataResultP.Result.result);

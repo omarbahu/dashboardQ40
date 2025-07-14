@@ -76,11 +76,82 @@
 #bell-curve-loader {
     animation: pulse 1.5s infinite;
 }
+
+    #loaderOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .loaderContent {
+        text-align: center;
+    }
+
+    .bubbles {
+        width: 50px;
+        height: 50px;
+        margin: auto;
+        position: relative;
+    }
+
+        .bubbles::before,
+        .bubbles::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            animation: bubble 1s infinite ease-in-out;
+        }
+
+        .bubbles::before {
+            width: 20px;
+            height: 20px;
+            background-color: #e11d48;
+            left: 0;
+        }
+
+        .bubbles::after {
+            width: 20px;
+            height: 20px;
+            background-color: #0284c7;
+            right: 0;
+            animation-delay: 0.5s;
+        }
+
+    @@keyframes bubble {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.7;
+        }
+
+        50% {
+            transform: translateY(-15px);
+            opacity: 1;
+        }
+    }
+
+    .loaderText {
+        margin-top: 10px;
+        font-size: 1rem;
+        color: #333;
+        font-weight: 500;
+    }
 </style>
 
 
 <div class="container-flex">
- 
+    <div id="loaderOverlay">
+        <div class="loaderContent">
+            <div class="bubbles"></div>
+            <p class="loaderText">Cargando análisis de calidad...</p>
+        </div>
+    </div>
 
     <div id="chart-container"></div>
 </div>
@@ -185,6 +256,11 @@
     var chart = echarts.init(document.getElementById('chart-container'));
     var bellCurveChart = echarts.init(document.getElementById('bell-curve-container'));
 
+
+    window.addEventListener("load", function () {
+        const loader = document.getElementById("loaderOverlay");
+        if (loader) loader.style.display = "none";
+    });
 
     // 📌 Obtener los datos desde el controlador MVC
     const dates = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Dates ?? new List<string>()));

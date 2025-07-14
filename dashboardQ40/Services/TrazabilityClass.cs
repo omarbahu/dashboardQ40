@@ -1,5 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using static dashboardQ40.Models.Models;
 
 namespace dashboardQ40.Services
@@ -208,7 +210,7 @@ WHERE NOT ( CTE.batch is null );
                         FROM ControlProcedureResult CPR
                         INNER JOIN CProcResultWithValuesStatus V ON V.idControlProcedureResult = CPR.idControlProcedureResult AND V.company = CPR.company
                         left join CPResultWithRefAndContext CPrrc on V.company = CPrrc.company and V.idControlProcedureResult = CPrrc.idControlProcedureResult
-                        WHERE CPR.company = @company AND CPR.manufacturingReference = @reference
+                        WHERE CPR.company = @company AND CPR.manufacturingOrder = @reference
                         AND CPR.launchingDate BETWEEN @start AND @end", connection);
 
                     cmdChecklist.Parameters.AddWithValue("@company", company);
@@ -249,7 +251,7 @@ WHERE NOT ( CTE.batch is null );
 
                 if (startDate != DBNull.Value && endDate != DBNull.Value)
                 {
-                    condiciones.Add($"(CPR.company = @company AND CPR.manufacturingReference = @ref{index} AND CPR.launchingDate BETWEEN @start{index} AND @end{index})");
+                    condiciones.Add($"(CPR.company = @company AND CPR.executionDate is not NULL AND CPR.manufacturingOrder = @ref{index} AND CPR.launchingDate BETWEEN @start{index} AND @end{index})");
                     parameters.Add(new SqlParameter($"@ref{index}", reference));
                     parameters.Add(new SqlParameter($"@start{index}", Convert.ToDateTime(startDate)));
                     parameters.Add(new SqlParameter($"@end{index}", Convert.ToDateTime(endDate)));
@@ -284,14 +286,18 @@ WHERE NOT ( CTE.batch is null );
 
                     if (param.Value == DBNull.Value || param.Value == null)
                         valueFormatted = "NULL";
-                    else if (param.Value is string || param.Value is DateTime)
-                        valueFormatted = $"'{param.Value}'";
-                    else if (param.Value is bool)
-                        valueFormatted = (bool)param.Value ? "1" : "0";
+                    else if (param.Value is DateTime dt)
+                        valueFormatted = $"'{dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}'";
+                    else if (param.Value is string s)
+                        valueFormatted = $"'{s.Replace("'", "''")}'";
+                    else if (param.Value is bool b)
+                        valueFormatted = b ? "1" : "0";
                     else
                         valueFormatted = param.Value.ToString();
 
-                    simulatedQuery = simulatedQuery.Replace(param.ParameterName, valueFormatted);
+                    // 🛡️ Reemplaza solo el parámetro exacto (por ejemplo, @batch0 y no @batch01)
+                    simulatedQuery = Regex.Replace(simulatedQuery, $@"(?<!\w){Regex.Escape(param.ParameterName)}(?!\w)", valueFormatted);
+
                 }
 
                 System.Diagnostics.Debug.WriteLine("🔍 Query SQL simulado para SSMS:");
