@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Detalle del reporte de trazabilidad";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @model FormatoViewModel    
 }
 
 <style>
@@ -86,7 +87,7 @@
     }
 </style>
 
-<div class="container mt-4">
+<div class="container-fluid mt-4 px-4">
     <table class="traza-bloque">
         <tr>
             <td rowspan="2"><img src="/ruta/logo_arca.png" alt="Logo Arca" height="40" /></td>
@@ -168,7 +169,7 @@
                                 <!-- Aquí van los inputs, grids o formularios -->
                                 if (partialViewName != null)
                                 {
-                                @await Html.PartialAsync(partialViewName)
+                                    @await Html.PartialAsync(partialViewName, Model)                                
                                 }
                                 else
                                 {

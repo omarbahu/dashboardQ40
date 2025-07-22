@@ -1,0 +1,32 @@
+﻿@model BloqueJarabeSimpleModel
+
+<h5 class="bg-secondary text-white p-1">@Model.TituloBloque</h5>
+
+<table class="tabla-trazabilidad">
+    <thead>
+        <tr>
+            <th rowspan="2">Descripción</th>
+            <th colspan="@Model.EncabezadosSku.Count">
+                SKU QUEJA / ANTERIOR / OTRO INVOLUCRADO
+            </th>
+        </tr>
+        <tr>
+            @foreach (var encabezado in Model.EncabezadosSku)
+            {
+                <th>@encabezado</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fila in Model.Registros)
+        {
+            <tr>
+                <td>@fila.DescripcionCampo</td>
+                @foreach (var valor in fila.ValoresPorSku)
+                {
+                    <td>@valor</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

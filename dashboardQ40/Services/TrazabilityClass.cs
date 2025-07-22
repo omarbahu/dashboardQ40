@@ -118,10 +118,20 @@ WHERE NOT ( CTE.batch is null );
                     command.Parameters.AddWithValue("@company", company);
                     command.Parameters.AddWithValue("@batch", batch);
 
+                    string queryLog = sqlQuery
+    .Replace("@company", $"'{company}'")
+    .Replace("@batch", $"'{batch}'");
+
+                    Console.WriteLine("SQL ejecutado:\n" + queryLog);
+
                     // Ejecutar la consulta y llenar el DataTable
                     DataTable resultTable = new DataTable();
                     SqlDataAdapter adapter = new SqlDataAdapter(command);
                     adapter.Fill(resultTable);
+
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(resultTable, Newtonsoft.Json.Formatting.Indented);
+                    Console.WriteLine("Resultado JSON:\n" + json);
+
                     return resultTable;
                 }
             }
@@ -308,5 +318,144 @@ WHERE NOT ( CTE.batch is null );
 
             return checklist;
         }
+
+
+        public static DataTable GetTraceabilityAudit(string company, long batch, string connectionString)
+        {
+            // Configura tu cadena de conexión aquí
+            //string connectionString = "Server=PCMX01\\SQLSERVER2017;Database=captor;User Id=sa;Password=Sisteplant+2017;";
+
+            // Consulta SQL recursiva
+            string sqlQuery = @"
+                WITH RecursivoCTE AS (
+ SELECT 
+	RC.company,
+	RC.consumedReference as manufacturingReference,
+    MR.manufacturingReferenceName as manufacturingReferenceName,
+	RC.consumedBatch as batch,
+	RC.batch as Batchpadre, 
+    RC.batchIdentifier,
+    RC.batchIdentifier as batchname,
+    RC.startDate,RC.endDate,MR.isRawMaterial,
+    1 AS Nivel -- Nivel 0 para los padres
+FROM TraceabilityNodeRelations RC	
+inner join manufacturingreference MR on MR.manufacturingReference = RC.manufacturingReference and MR.company = RC.company
+WHERE RC.company = @company and RC.batch = @batch 
+ UNION ALL
+  -- Recursividad: encuentra los hijos
+    SELECT 
+        t.company,
+        t.consumedReference as manufacturingReference,
+        MR2.manufacturingReferenceName as manufacturingReferenceName,
+        t.consumedBatch as batch,
+        t.batch as Batchpadre, 
+        t.batchIdentifier,
+        bth.batchIdentifier as batchname,
+        t.startDate,t.endDate,MR2.isRawMaterial,
+        cte.Nivel + 1 -- Incrementa el nivel para los hijos
+    FROM TraceabilityNodeRelations t
+    inner join manufacturingreference MR2 on MR2.manufacturingReference = t.manufacturingReference and MR2.company = t.company
+    inner join Batch bth on bth.batch = t.consumedBatch and bth.company = t.company
+    INNER JOIN RecursivoCTE cte
+        ON t.batch = cte.batch and t.company = @company
+),
+RowNumCTE AS (
+    SELECT *,
+           ROW_NUMBER() OVER (PARTITION BY Nivel ORDER BY batch) AS rn
+    FROM RecursivoCTE
+)
+-- Selección final
+SELECT distinct
+	RC3.manufacturingReference as Padre,
+	null as Hijo,
+	RC3.company,
+	RC3.manufacturingReference ,
+    MR2.manufacturingReferenceName as manufacturingReferenceName,
+	RC3.batch,
+	0 as Batchpadre,
+    RC3.batchIdentifier,
+    RC3.batchIdentifier as batchname,
+    RC3.startDate,RC3.endDate,MR2.isRawMaterial,
+	0, 
+    0 AS Nivel -- Nivel 0 para los padres
+FROM TraceabilityNodeRelations RC3	
+inner join manufacturingreference MR2 on MR2.manufacturingReference = RC3.manufacturingReference and MR2.company = RC3.company
+--left join ControlProcedureResult CPR on CPR.company = RC3.company and CPR.batch = RC3.batch
+--left join CProcResultWithValuesStatus CPrvs on CPrvs.company = CPR.company and CPrvs.idControlProcedureResult = CPR.idControlProcedureResult
+--left join CPResultWithRefAndContext CPrrc on CPrvs.company = CPrrc.company and CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
+WHERE RC3.company = @company and RC3.batch = @batch 
+union all
+SELECT
+    CASE 
+        WHEN Nivel = 0 AND rn = 1 
+        THEN CTE.manufacturingReference 
+        ELSE NULL 
+    END AS Padre,
+    CASE WHEN Nivel > 0 THEN CTE.manufacturingReference ELSE NULL END AS Hijo,
+    CTE.company,    
+    CTE.manufacturingReference,
+    MR3.manufacturingReferenceName as manufacturingReferenceName,
+	CTE.batch,
+    CTE.Batchpadre,
+    CTE.batchIdentifier,
+    bth3.batchIdentifier as batchname,
+    CTE.startDate,CTE.endDate,MR3.isRawMaterial,
+    rn, 
+	Nivel
+FROM RowNumCTE CTE
+inner join manufacturingreference MR3 on MR3.manufacturingReference = CTE.manufacturingReference and MR3.company = CTE.company
+inner join Batch bth3 on bth3.batch = CTE.batch and bth3.company = CTE.company
+-- Condición corregida para filtrar registros donde Padre y Hijo sean NULL
+WHERE NOT ( CTE.batch is null );
+            ";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    // Añadir parámetros
+                    command.Parameters.AddWithValue("@company", company);
+                    command.Parameters.AddWithValue("@batch", batch);
+
+                    string queryLog = sqlQuery
+    .Replace("@company", $"'{company}'")
+    .Replace("@batch", $"'{batch}'");
+
+                    Console.WriteLine("SQL ejecutado:\n" + queryLog);
+
+                    // Ejecutar la consulta y llenar el DataTable
+                    DataTable resultTable = new DataTable();
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    adapter.Fill(resultTable);
+
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(resultTable, Newtonsoft.Json.Formatting.Indented);
+                    Console.WriteLine("Resultado JSON:\n" + json);
+
+                    return resultTable;
+                }
+            }
+        }
+
+
+        public static List<TrazabilidadNode> ConvertirDataTableATrazabilidad(DataTable dt)
+        {
+            return dt.AsEnumerable().Select(row => new TrazabilidadNode
+            {
+                Padre = row["Padre"].ToString(),
+                Hijo = row["Hijo"].ToString(),
+                Company = row["company"].ToString(),
+                ManufacturingReference = row["manufacturingReference"].ToString(),
+                ManufacturingReferenceName = row["manufacturingReferenceName"].ToString(),
+                Batch = Convert.ToInt64(row["batch"]),
+                BatchPadre = Convert.ToInt64(row["Batchpadre"]),
+                BatchIdentifier = row["batchIdentifier"].ToString(),
+                BatchName = row["batchname"].ToString(),
+                StartDate = Convert.ToDateTime(row["startDate"]),
+                EndDate = Convert.ToDateTime(row["endDate"]),
+                IsRawMaterial = Convert.ToBoolean(row["isRawMaterial"]),
+                Nivel = Convert.ToInt32(row["Nivel"])
+            }).ToList();
+        }
+
     }
 }

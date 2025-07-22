@@ -1,0 +1,40 @@
+﻿@model BloqueEntregaInformacionModel
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-entrega">
+            <h4 class="mb-0">Registros de Tiempo de Entrega de Información o Actividades</h4>
+        </button>
+    </h2>
+    <div id="collapse-entrega" class="accordion-collapse collapse show">
+        <div class="accordion-body">
+            <table class="tabla-trazabilidad">
+                <thead>
+                    <tr class="bg-header">
+                        <th>NOMBRE DE LA PERSONA</th>
+                        <th>HORA</th>
+                        <th>PUESTO</th>
+                        <th>ÁREA</th>
+                        <th>ACTIVIDAD</th>
+                        <th>PAPEL/ELECTRÓNICO</th>
+                        <th>OBSERVACIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Registros)
+                    {
+                        <tr>
+                            <td>@item.NombrePersona</td>
+                            <td>@item.Hora</td>
+                            <td>@item.Puesto</td>
+                            <td>@item.Area</td>
+                            <td>@item.Actividad</td>
+                            <td>@item.MedioEntrega</td>
+                            <td>@item.Observaciones</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

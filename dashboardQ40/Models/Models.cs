@@ -131,5 +131,14 @@
          CPrvs.controlOperation, CPrvs.controlOperationName, 
 CPrvs.resultValue, CPrvs.minTolerance, CPrvs.maxTolerance, CPrrc.executionDate
         */
+
+        public class SqlMappingConfig
+        {
+            public string Query { get; set; }
+            public Dictionary<string, string> ColumnMappings { get; set; }
+            public string DescripcionField { get; set; } // campo para el join con el diccionario de descripciones
+        }
+
+
     }
 }

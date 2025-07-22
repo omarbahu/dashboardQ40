@@ -1,0 +1,62 @@
+﻿@model BloqueProductoTerminadoModel
+
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sku">
+            <h4 class="mb-0">Información del Producto Terminado / SKU</h4>
+        </button>
+    </h2>
+    <div id="collapse-sku" class="accordion-collapse collapse show">
+        <div class="accordion-body">
+            <table class="tabla-trazabilidad">
+                <tr class="bg-header">
+                    <th colspan="5">INFORMACIÓN DEL PRODUCTO TERMINADO / SKU</th>
+                </tr>
+                <tr>
+                    <td class="bg-label">DESCRIPCIÓN DEL PRODUCTO:</td>
+                    <td colspan="2">@Model.DescripcionProducto<span title="Dato automático">🟢</span></td>
+                    <td class="bg-label">CÓDIGO:</td>
+                    <td colspan="2">@Model.CodigoProducto<span title="Dato automático">🟢</span></td>
+                </tr>
+                <tr>
+                    <td class="bg-label">ENCARGADO DE PRUEBAS DEL TURNO IMPLICADO:</td>
+                    <td colspan="2">@Model.EncargadoPruebas</td>
+                    <td class="bg-label">SUPERVISOR DE JARABES:</td>
+                    <td colspan="2">@Model.SupervisorJarabes</td>
+                </tr>
+                <tr>
+                    <td class="bg-label">LLENADORA:</td>
+                    <td colspan="2">@Model.Llenadora</td>
+                    <td class="bg-label">VACÍOS AL MOMENTO DE LA ELAB. JARABE TERMINADO:</td>
+                    <td colspan="2">@Model.VacioJarabeTerminado</td>
+                </tr>
+                <tr>
+                    <td class="bg-label">CANTIDAD DE PRODUCTO TERMINADO ELABORADO:</td>
+                    <td colspan="2">@Model.CantidadElaborada<span title="Dato automático">🟢</span></td>
+                    <td class="bg-label">SUPERVISOR DE CALIDAD DEL TURNO IMPLICADO:</td>
+                    <td colspan="2">@Model.SupervisorCalidad</td>
+                </tr>
+                <tr>
+                    <td class="bg-label">FECHA DE PRODUCCIÓN:</td>
+                    <td colspan="2">@Model.FechaProduccion<span title="Dato automático">🟢</span></td>
+                    <td class="bg-label">SUPERVISOR DE PRODUCCIÓN DEL TURNO IMPLICADO:</td>
+                    <td colspan="2">@Model.SupervisorProduccion</td>
+                </tr>
+                <tr>
+                    <td class="bg-label">INICIO DE PRODUCCIÓN:</td>
+                    <td colspan="2">@Model.InicioProduccion<span title="Dato automático">🟢</span></td>
+                    <td class="bg-label">FIN DE PRODUCCIÓN:</td>
+                    <td colspan="2">@Model.FinProduccion<span title="Dato automático">🟢</span></td>
+
+                </tr>
+                <tr>
+                    <td class="bg-label">Nº DE LÍNEA</td>
+                    <td colspan="2">@Model.NumeroLinea</td>
+                    <td class="bg-label">SUPERVISOR DE MANTENIMIENTO DEL TURNO IMPLICADO:</td>
+                    <td colspan="2">@Model.SupervisorMantenimiento</td>
+
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
