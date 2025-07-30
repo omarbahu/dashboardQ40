@@ -115,6 +115,7 @@ namespace dashboardQ40.Controllers
             return View(modelo);
         }
 
+
         private BatchInfo ObtenerBatchDesdeLote(string lote, string connStr, string company)
         {
             return TrazabilityClass.GetBatchInfoByText(lote, connStr, company);

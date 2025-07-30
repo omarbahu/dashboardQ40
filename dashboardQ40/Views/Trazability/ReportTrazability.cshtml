@@ -43,9 +43,9 @@
             const chart = echarts.init(document.getElementById('visorTrazabilidad'));
 
                 const trazabilidadDebug = @Html.Raw(jsonData);
-    console.log("🧩 Columnas:", trazabilidadDebug.columnas);
-    console.log("🧾 Filas:", trazabilidadDebug.filas);
-    console.table(trazabilidadDebug.filas);
+    //console.log("🧩 Columnas:", trazabilidadDebug.columnas);
+    //console.log("🧾 Filas:", trazabilidadDebug.filas);
+    //console.table(trazabilidadDebug.filas);
 
             const rows = @Html.Raw(Json.Serialize(
             Model.Trazabilidad.Rows.Cast<System.Data.DataRow>().Select(r => new
@@ -58,6 +58,8 @@
                 fin = r["endDate"].ToString()
             })
             ));
+
+            console.log("🎯 Lotes padre-hijo:", rows);
 
             const data = [];
             const links = [];
@@ -162,29 +164,41 @@
                     orient: 'LR',
                     data: [buildTreeSafe(rootId)],
                     symbol: 'rect',
-                    symbolSize: [140, 40],
+                    symbolSize: [160, 70], // Aumenta el tamaño del rectángulo
                     edgeShape: 'polyline',
                     edgeForkPosition: '50%',
+                    top: '10%',
+                    left: '5%',
+                    bottom: '10%',
+                    right: '20%',
+                    // 👇👇 Espaciado entre niveles horizontales y verticales
+                    nodePadding: 30,    // Aumenta espacio entre nodos hermanos
                     label: {
                         show: true,
                         formatter: function (params) {
-                            return params.data.name || '';
+                            const info = params.data.info;
+                            if (!info) return params.data.name || '';
+                            return [
+                                `{b|${params.data.name}}`,
+                                `{s|${info.sku.substr(0,20)}}`
+                            ].join('\n');
                         },
-                        position: 'inside', // 👈 centrado dentro del rectángulo
+                        position: 'inside',
                         verticalAlign: 'middle',
-                        align: 'center',     // 👈 centrado horizontalmente
+                        align: 'center',
                         fontSize: 11,
-                        color: '#000'        // 👈 opcional, texto en negro para mejor visibilidad
+                        rich: {
+                            b: { fontWeight: 'bold', fontSize: 12 },
+                            s: { fontSize: 10 }
+                        }
                     },
-
                     leaves: {
                         label: {
                             show: true,
                             position: 'inside',
                             verticalAlign: 'middle',
                             align: 'center',
-                            fontSize: 11,
-                            color: '#000'
+                            fontSize: 11
                         }
                     },
                     itemStyle: {
@@ -199,6 +213,7 @@
                         width: 2
                     }
                 }]
+
             });
 
             function filtrarLote(id) {

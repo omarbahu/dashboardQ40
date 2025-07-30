@@ -92,8 +92,49 @@
     </div>
 </div>
 
+<!-- Loading overlay con fondo gris -->
+<div id="global-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+    <div class="spinner-border text-light" style="width: 4rem; height: 4rem;" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+    <div class="mt-3 text-white fw-bold text-center" id="mensaje-loader">
+        Generando reporte...<br />
+        Cargando bloques del reporte, por favor espere.
+    </div>
+</div>
+
 @section Scripts {
     <script>
+        const bloques = [
+            "Materia prima",
+            "Producto terminado",
+            "Registro de tiempos",
+            "Información de jarabes",
+            "Liberación sensorial",
+            "Checklist de limpieza",
+            "Datos de proceso"
+        ];
+
+        let intervaloBloques;
+
+        function iniciarAnimacionBloques() {
+            let i = 0;
+            const loader = $("#mensaje-loader");
+            loader.html("Generando reporte...<br/>");
+            intervaloBloques = setInterval(() => {
+                loader.html(`Generando reporte...<br/>Cargando bloque: ${bloques[i % bloques.length]}...`);
+                i++;
+            }, 1500); // puedes ajustar la velocidad
+        }
+
+        function detenerAnimacionBloques() {
+            clearInterval(intervaloBloques);
+            $("#mensaje-loader").html("Reporte generado, redirigiendo...");
+        }
+
+        $(document).ready(function () {
+            $("#global-loader").fadeOut(); // Oculta el loader al cargar la nueva página
+        });
         function mostrarFormulario(tipo) {
             document.getElementById("opcionesIniciales").style.display = "none";
             if (tipo === 'nuevo') {
@@ -125,6 +166,9 @@
                 horaQueja: $("#horaQueja").val()
             };
 
+            $("#global-loader").show();
+            iniciarAnimacionBloques(); // Inicia rotación de bloques
+
             $.ajax({
                 url: '@Url.Action("GuardarReporte", "TrazabilidadAuditoria")',
                 type: 'POST',
@@ -134,15 +178,18 @@
                     if (res.success) {
                         //alert("✅ " + res.mensaje);
                         $("#formGuardar")[0].reset();
+                        
                         window.location.href = '/TrazabilidadAuditoria/AuditReport?lote=' + encodeURIComponent(data.Lote) + '&horaQueja=' + encodeURIComponent(data.horaQueja);
-
+                        
                     } else {
                         alert("❌ Error inesperado.");
                     }
                 },
                 error: function (err) {
                     console.error(err);
+                    detenerAnimacionBloques();
                     alert("❌ Error al guardar.");
+                    $("#global-loader").hide();
                 }
             });
         });
