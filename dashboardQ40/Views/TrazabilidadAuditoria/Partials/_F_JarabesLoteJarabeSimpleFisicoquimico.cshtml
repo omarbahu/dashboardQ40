@@ -1,11 +1,11 @@
-﻿@model BloqueJarabeSimpleModel
+﻿@model BloqueAnalisisFisicoquimicoModel
 
 <h5 class="bg-secondary text-white p-1">@Model.TituloBloque</h5>
 
 <table class="tabla-trazabilidad">
     <thead>
         <tr>
-            <th>Campo</th>
+            <th>Parámetro</th>
             @foreach (var col in Model.EncabezadosSku)
             {
                 <th>@col</th>
@@ -16,13 +16,12 @@
         @foreach (var fila in Model.Registros)
         {
             <tr>
-                <td>@fila.DescripcionCampo</td>
-                @foreach (var val in fila.ValoresPorSku)
+                <td>@fila.DescripcionParametro</td>
+                @foreach (var val in fila.ValoresPorLote)
                 {
                     <td>@val</td>
                 }
             </tr>
         }
     </tbody>
-
 </table>

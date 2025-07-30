@@ -27,13 +27,13 @@
             </button>
         </h2>
         <div id="collapse-jarabes" class="accordion-collapse collapse show">
-            <div class="accordion-body">
+            <div class="accordion-body">                
                 
-                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabesLoteJarabeSimple)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabesLoteJarabeSimpleContacto)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueAnalisisFisicoquimicoJarabeSimple)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAnalisisSensorialJarabeSimple)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabeTerminado)
-                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAnalisisFisicoquimicoJarabeTerminado)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueAnalisisFisicoquimicoJarabeTerminado)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAnalisisSensorialJarabeTerminado)
 
             </div>

@@ -23,12 +23,9 @@
             <hr />
             <form id="formGuardar">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="fechaHora">Fecha y hora</label>
-                        
-                        <input type="datetime-local" class="form-control" id="fechaHora" name="FechaHora" value="2025-07-12T09:00" />
-                        
-                        
+                    <div class="col-md-3 mb-3">
+                        <label for="fechaHora">Fecha y hora del reporte</label>                        
+                        <input type="datetime-local" class="form-control" id="fechaHora" name="FechaHora" value="2025-07-12T09:00" />                        
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="horaInicio">Hora inicio</label>
@@ -38,6 +35,10 @@
                         <label for="horaFin">Hora fin</label>
                         <input type="time" class="form-control" id="horaFin" name="HoraFin" value="10:00" />
                     </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="revision">Revisión</label>
+                        <input type="text" class="form-control" id="revision" name="Revision" value="Rev. 1" />
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -46,32 +47,23 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="lote">Lote</label>
-                        
-                        <input type="text" class="form-control" id="lote" name="Lote" value="07AGO25-7" />
-                        
+                    <div class="col-md-3 mb-3">
+                        <label for="lote">Lote</label>                        
+                        <input type="text" class="form-control" id="lote" name="Lote" value="07AGO25-7" />                        
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="revision">Revisión</label>
-                        
-                        <input type="text" class="form-control" id="revision" name="Revision" value="Rev. 1" />
-                        
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-3 mb-3">
+                        <label>Hora de la queja:</label>
+                        <input type="time" id="horaQueja" name="horaQueja" class="form-control" value="18:50" />
+                    </div>                
+                    <div class="col-md-3 mb-3">
                         <label for="usuarioVobo">Usuario VoBo</label>
                         
                         <input type="text" class="form-control" id="usuarioVobo" name="UsuarioVobo" value="Margarita Antonio" />
                         
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="efic">Eficiencia producto terminado (%)</label>
-                        
-                        <input type="number" class="form-control" id="efic" name="PorcEficProductoTerminado" value="95.5" />
-                        
+                    <div class="col-md-3 mb-3">
+                        <label for="efic">Eficiencia producto terminado (%)</label>                        
+                        <input type="number" class="form-control" id="efic" name="PorcEficProductoTerminado" value="95.5" />                        
                     </div>
                 </div>
 
@@ -129,7 +121,8 @@
                 PorcEficProductoTerminado: parseFloat($("#efic").val()) || 0,
                 Lote: $("#lote").val(),
                 Revision: $("#revision").val(),
-                UsuarioVobo: $("#usuarioVobo").val()
+                UsuarioVobo: $("#usuarioVobo").val(),
+                horaQueja: $("#horaQueja").val()
             };
 
             $.ajax({
@@ -141,7 +134,7 @@
                     if (res.success) {
                         //alert("✅ " + res.mensaje);
                         $("#formGuardar")[0].reset();
-                        window.location.href = '/TrazabilidadAuditoria/AuditReport?lote=' + encodeURIComponent(data.Lote);
+                        window.location.href = '/TrazabilidadAuditoria/AuditReport?lote=' + encodeURIComponent(data.Lote) + '&horaQueja=' + encodeURIComponent(data.horaQueja);
 
                     } else {
                         alert("❌ Error inesperado.");

@@ -109,6 +109,11 @@
             public int BatchId { get; set; }
             public DateTime? StartDate { get; set; }
             public DateTime? EndDate { get; set; }
+            public long BatchCreation { get; set; }
+            public string manufacturingReference { get; set; }
+            public double quantity { get; set; }
+            public string workplace { get; set; }
+            public double initialQuantity { get; set; }
         }
 
         public class result_Q_authUser

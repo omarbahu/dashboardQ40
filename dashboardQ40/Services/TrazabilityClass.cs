@@ -144,7 +144,7 @@ WHERE NOT ( CTE.batch is null );
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string query = @"
-            SELECT B.batch, BC.startDate, BC.endDate
+            SELECT B.batch, BC.startDate, BC.endDate, BC.workplace, BC.manufacturingReference, BC.quantity, BC.batchCreation, B.initialQuantity 
             FROM Batch B
             INNER JOIN BatchCreation BC ON B.batch = BC.batch AND B.company = BC.company
             WHERE B.company = @company AND B.batchIdentifier LIKE @searchText";
@@ -162,6 +162,11 @@ WHERE NOT ( CTE.batch is null );
                             info.BatchId = reader.GetInt32(0);                    // batch
                             info.StartDate = reader.IsDBNull(1) ? null : reader.GetDateTime(1); // startDate
                             info.EndDate = reader.IsDBNull(2) ? null : reader.GetDateTime(2);   // endDate
+                            info.BatchCreation = (int)reader.GetInt32(6);
+                            info.workplace = reader.GetString(3);
+                            info.manufacturingReference = reader.GetString(4);
+                            info.quantity = (long)reader.GetDecimal(5);
+                            info.initialQuantity = (long)reader.GetDecimal(7);
                         }
                     }
                 }

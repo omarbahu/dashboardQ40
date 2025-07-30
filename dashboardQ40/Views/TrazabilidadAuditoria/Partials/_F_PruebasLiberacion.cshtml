@@ -1,4 +1,4 @@
-﻿@model List<PruebaLiberacionModel>
+﻿@model List<PruebaLiberacionRow>
 
 <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
     <thead>
@@ -16,7 +16,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td style="border: 1px dotted #000; padding-left: 5px;">@item.Parametro</td>
+                <td style="border: 1px dotted #000; padding-left: 5px;">@item.ControlOperationName</td>
                 <td style="border: 1px dotted #000; text-align: center;">@item.InicioCorrida</td>
                 <td style="border: 1px dotted #000; text-align: center;">@item.MedioCorrida</td>
                 <td style="border: 1px dotted #000; text-align: center;">@item.FinCorrida</td>

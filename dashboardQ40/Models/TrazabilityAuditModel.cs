@@ -14,6 +14,7 @@
         public string Lote { get; set; }
         public string Revision { get; set; }
         public string UsuarioVobo { get; set; }
+        public TimeSpan horaQueja { get; set; }
     }
 
     // Models/PersonaReporte.cs
@@ -43,11 +44,13 @@ public class FormatoViewModel
     public BloqueJarabeSimpleModel BloqueJarabesLoteJarabeSimpleContacto { get; set; }
     public BloqueJarabeSimpleModel BloqueAnalisisSensorialJarabeSimple { get; set; }
     public BloqueJarabeSimpleModel BloqueJarabeTerminado { get; set; }
-    public BloqueJarabeSimpleModel BloqueAnalisisFisicoquimicoJarabeTerminado { get; set; }
+    public BloqueAnalisisFisicoquimicoModel BloqueAnalisisFisicoquimicoJarabeTerminado { get; set; }
     public BloqueJarabeSimpleModel BloqueAnalisisSensorialJarabeTerminado { get; set; }
 
-    public List<PruebaLiberacionModel> BloquePruebasLiberacion { get; set; } = new();
+    public List<PruebaLiberacionRow> BloquePruebasLiberacion { get; set; } = new();
     public List<LiberacionSensorialProductoModel> BloqueLiberacionSensorialProducto { get; set; } = new();
+    public BloqueAnalisisFisicoquimicoModel BloqueAnalisisFisicoquimicoJarabeSimple { get; set; }
+
 
     // ...
 }
@@ -167,3 +170,31 @@ public class LoteDescripcionInfo
     public string ManufacturingReferenceName { get; set; }
 }
 
+public class BloqueAnalisisFisicoquimicoModel
+{
+    public string TituloBloque { get; set; }
+    public List<string> EncabezadosSku { get; set; } // SKU QUEJA, ANTERIOR, ETC.
+    public List<RegistroAnalisisFisicoquimico> Registros { get; set; }
+}
+
+public class RegistroAnalisisFisicoquimico
+{
+    public string DescripcionParametro { get; set; } // pH, BRIX, TURBIDEZ...
+    public List<string> ValoresPorLote { get; set; }  // columnas dinámicas
+}
+
+public class ResultadoAnalisisFisicoquimico
+{
+    public long Lote { get; set; }               // 🔁 batch
+    public string OperacionNombre { get; set; }  // controlOperationName
+    public string Atributo { get; set; }         // resultAttribute
+    public string Valor { get; set; }            // resultValue
+}
+
+public class PruebaLiberacionRow
+{
+    public string ControlOperationName { get; set; }
+    public string InicioCorrida { get; set; }
+    public string MedioCorrida { get; set; }
+    public string FinCorrida { get; set; }
+}

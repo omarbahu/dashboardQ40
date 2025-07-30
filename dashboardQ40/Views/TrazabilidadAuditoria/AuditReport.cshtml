@@ -86,11 +86,21 @@
         padding-left: 6px;
     }
 </style>
+<div id="progressContainer" class="my-3">
+    <div class="progress">
+        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+             role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100">
+            0%
+        </div>
+    </div>
+</div>
 
+
+<div id="contenidoPrincipal" style="display:none;">
 <div class="container-fluid mt-4 px-4">
     <table class="traza-bloque">
         <tr>
-            <td rowspan="2"><img src="/ruta/logo_arca.png" alt="Logo Arca" height="40" /></td>
+            <td rowspan="2"><img src="/img/logo arca contal.png" alt="Logo Arca" height="40" /></td>
             <td colspan="5" class="titulo-reporte">Bebidas Mundiales – Planta Insurgentes</td>
             <td rowspan="2" class="encabezado-subtitulo">EDICIÓN:<br>15/NOV/2024</td>
         </tr>
@@ -183,3 +193,34 @@
         }
     </div>
 </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.addEventListener('load', function () {
+            // Mostrar loader por unos segundos
+            const loadingContainer = document.getElementById("loadingContainer");
+            const content = document.getElementById("contenidoPrincipal");
+
+            let steps = [
+                "Inicializando reporte...",
+                "Cargando materias primas...",
+                "Cargando jarabes...",
+                "Cargando análisis...",
+                "Listo"
+            ];
+            let i = 0;
+            let interval = setInterval(() => {
+                document.getElementById("loadingMessage").textContent = steps[i];
+                i++;
+                if (i >= steps.length) {
+                    clearInterval(interval);
+                    loadingContainer.style.display = "none";
+                    content.style.display = "block";
+                }
+            }, 600);
+        });
+    </script>
+}
+
+
