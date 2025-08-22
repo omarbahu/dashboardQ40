@@ -1,0 +1,23 @@
+﻿@model FormatoViewModel
+
+<div class="accordion" id="accordion-jarabes2">
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapsejarabes2">
+                <h4 class="mb-0">Información de Jarabes</h4>
+            </button>
+        </h2>
+        <div id="collapsejarabes2" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabesLoteJarabeSimpleContacto)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueAnalisisFisicoquimicoJarabeSimple)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAnalisisSensorialJarabeSimple)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabeTerminado)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueAnalisisFisicoquimicoJarabeTerminado)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAnalisisSensorialJarabeTerminado)
+
+            </div>
+        </div>
+    </div>
+</div>

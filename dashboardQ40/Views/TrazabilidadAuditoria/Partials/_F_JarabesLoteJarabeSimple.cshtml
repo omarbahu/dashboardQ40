@@ -1,6 +1,10 @@
 ﻿@model BloqueJarabeSimpleModel
 
-<h5 class="bg-secondary text-white p-1">@Model.TituloBloque</h5>
+<table class="tabla-trazabilidad">
+    <tr class="bg-header">
+        <th colspan="5">@Model.TituloBloque</th>
+    </tr>
+</table>
 
 <table class="tabla-trazabilidad">
     <thead>
@@ -19,7 +23,7 @@
                 <td>@fila.DescripcionCampo</td>
                 @foreach (var val in fila.ValoresPorSku)
                 {
-                    <td>@val</td>
+                    <td>@val<span title="Dato automático">🟢</span></td>
                 }
             </tr>
         }

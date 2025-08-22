@@ -1,25 +1,27 @@
 ﻿@model List<PruebaLiberacionRow>
 
-<table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+<table class="tabla-trazabilidad">
     <thead>
-        <tr style="background-color: #9BD2E3; font-weight: bold; text-align: center;">
-            <td colspan="4" style="border: 1px solid #000;">PRUEBAS DE LIBERACIÓN</td>
+        <tr class="bg-header">
+        
+            <td colspan="4" >PRUEBAS DE LIBERACIÓN</td>
         </tr>
-        <tr style="background-color: #9BD2E3; text-align: center;">
-            <td style="border: 1px solid #000; width: 40%;">&nbsp;</td>
-            <td style="border: 1px solid #000; width: 20%;">INICIO CORRIDA</td>
-            <td style="border: 1px solid #000; width: 20%;">MEDIO CORRIDA</td>
-            <td style="border: 1px solid #000; width: 20%;">FIN CORRIDA</td>
+        <tr class="bg-header">
+
+            <td >&nbsp;</td>
+            <td >INICIO CORRIDA</td>
+            <td >MEDIO CORRIDA</td>
+            <td >FIN CORRIDA</td>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td style="border: 1px dotted #000; padding-left: 5px;">@item.ControlOperationName</td>
-                <td style="border: 1px dotted #000; text-align: center;">@item.InicioCorrida</td>
-                <td style="border: 1px dotted #000; text-align: center;">@item.MedioCorrida</td>
-                <td style="border: 1px dotted #000; text-align: center;">@item.FinCorrida</td>
+                <td>@item.ControlOperationName<span title="Dato automático">🟢</span></td>
+                <td>@item.InicioCorrida<span title="Dato automático">🟢</span></td>
+                <td>@item.MedioCorrida<span title="Dato automático">🟢</span></td>
+                <td>@item.FinCorrida<span title="Dato automático">🟢</span></td>
             </tr>
         }
     </tbody>

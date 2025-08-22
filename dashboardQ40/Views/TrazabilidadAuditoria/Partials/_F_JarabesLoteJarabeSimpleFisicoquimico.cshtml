@@ -1,27 +1,39 @@
 ﻿@model BloqueAnalisisFisicoquimicoModel
 
-<h5 class="bg-secondary text-white p-1">@Model.TituloBloque</h5>
-
 <table class="tabla-trazabilidad">
-    <thead>
-        <tr>
-            <th>Parámetro</th>
-            @foreach (var col in Model.EncabezadosSku)
-            {
-                <th>@col</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var fila in Model.Registros)
-        {
-            <tr>
-                <td>@fila.DescripcionParametro</td>
-                @foreach (var val in fila.ValoresPorLote)
+    <tr class="bg-header">
+        <th colspan="5">@Model.TituloBloque</th>
+    </tr>
+</table>
+@if (Model.EncabezadosSku != null && Model.Registros != null)
+{
+    <table class="tabla-trazabilidad">
+        <thead>
+            <tr class="bg-header">
+                <th>Parámetro</th>
+                @foreach (var col in Model.EncabezadosSku)
                 {
-                    <td>@val</td>
+                    <th>@col</th>
                 }
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var fila in Model.Registros)
+            {
+                <tr>
+                    <td>@fila.DescripcionParametro</td>
+                    @foreach (var val in fila.ValoresPorLote)
+                    {
+                        <td>@val<span title="Dato automático">🟢</span></td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">
+        No hay información disponible para este bloque.
+    </div>
+}

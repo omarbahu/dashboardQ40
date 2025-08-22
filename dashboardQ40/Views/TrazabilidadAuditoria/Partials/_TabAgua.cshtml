@@ -1,0 +1,96 @@
+﻿@model FormatoViewModel
+
+<div class="accordion" id="accordion-Agua">
+
+    <!-- Acordeón: Datos de Tratamiento de Agua -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAgua">
+                <h4 class="mb-0">Datos de Tratamiento de Agua</h4>
+            </button>
+        </h2>
+        <div id="collapseAgua" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+
+                <!-- 1. Información General de Tratamiento de Agua -->
+                <table class="tabla-trazabilidad">
+                    <tr class="bg-header"><th colspan="2">Información General de Tratamiento de Agua</th></tr>
+                    <tr><td>Lote de Cloro/Desinfectante Recirculado</td><td>HPHY0424-2</td></tr>
+                    <tr><td>Lote de Polielectrolito</td><td>NA</td></tr>
+                    <tr><td>Lote de Carbón Activado</td><td>CAR0323-2</td></tr>
+                    <tr><td>Lote de Cal</td><td>NA</td></tr>
+                    <tr><td>Lote de Ácido Clorhídrico</td><td>ACH0424-03 / ACH0424-02</td></tr>
+                    <tr><td>Lote de Ácido Sulfúrico</td><td>NA</td></tr>
+                    <tr><td>Lote de Arena Silica</td><td>ARS1122-2</td></tr>
+                    <tr><td>Lote de Resina Desmineralizadora</td><td>DES1123</td></tr>
+                    <tr><td>Lote de Resina Descloradora</td><td>LSZ1123-2</td></tr>
+                    <tr><td>Lote de Cartuchos Pulidores</td><td>CYM1123-04</td></tr>
+                    <tr><td>Información de Limpiezas/Backwash/Filtros/Sanitización</td><td>NA</td></tr>
+                    <tr><td>Información de Sanitización del Sistema</td><td>Limpieza SRO 23/06/24 / Llenado de Tanque de SRO 23/06/24 (cambio cartuchos polipropileno)</td></tr>
+                    <tr><td>Registro de Llenado de Tanques de Contacto del Agua Suave</td><td>NA</td></tr>
+                    <tr><td>Tiempo de Retención de Tanques</td><td>4</td></tr>
+                    <tr><td>Número de Cargas en el Turno</td><td>1</td></tr>
+                    <tr><td>Volumen Promedio por Carga</td><td>5</td></tr>
+                    <tr><td>Total de Litros en el Turno</td><td>5</td></tr>
+                </table>
+
+                <!-- 2. Análisis Fisicoquímicos del Agua Cruda, Tratada Clorada, Suavizada y Recuperada -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="5">Análisis Fisicoquímicos del Agua Cruda, Tratada Clorada, Suavizada y Recuperada</th></tr>
+                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Tipo de Agua</th></tr>
+                    <tr><td>pH</td><td>6.5</td><td>6.8</td><td>6.6</td><td>Tratada Clorada</td></tr>
+                    <tr><td>Conductividad</td><td>35</td><td>32</td><td>30</td><td>Suavizada</td></tr>
+                    <tr><td>Cloro</td><td>0.5</td><td>0.4</td><td>0.3</td><td>Recuperada</td></tr>
+                    <tr><td>Turbidez</td><td>1.1</td><td>1.0</td><td>1.1</td><td>Cruda</td></tr>
+                </table>
+
+                <!-- 3. Agua tratada usada en jarabe simple -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="5">Análisis del Agua Tratada Utilizada en la Elab. del Jarabe Simple</th></tr>
+                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Lote Agua Tratada</th></tr>
+                    <tr><td>Aluminio</td><td>NA</td><td>NA</td><td>NA</td><td>83210234</td></tr>
+                    <tr><td>Cloruros</td><td>14</td><td>15</td><td>14</td><td>83210234</td></tr>
+                    <tr><td>Sulfatos</td><td>28</td><td>26</td><td>27</td><td>83210234</td></tr>
+                    <tr><td>Turbidez</td><td>1.3</td><td>1.2</td><td>1.3</td><td>83210234</td></tr>
+                </table>
+
+                <!-- 4. Agua tratada usada en jarabe terminado -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="5">Análisis del Agua Tratada Utilizada en la Elab. del Jarabe Terminado</th></tr>
+                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Lote Agua Tratada</th></tr>
+                    <tr><td>Aluminio</td><td>NA</td><td>NA</td><td>NA</td><td>83210235</td></tr>
+                    <tr><td>Cloruros</td><td>15</td><td>14</td><td>14</td><td>83210235</td></tr>
+                    <tr><td>Sulfatos</td><td>28</td><td>27</td><td>28</td><td>83210235</td></tr>
+                    <tr><td>Turbidez</td><td>1.4</td><td>1.3</td><td>1.4</td><td>83210235</td></tr>
+                </table>
+
+                <!-- 5. Agua tratada en PT + sin recuperada -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="5">Análisis del Agua Tratada Utilizada en la Elab. del Jarabe PT + Sin Recuperada</th></tr>
+                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Lote Agua Tratada</th></tr>
+                    <tr><td>Aluminio</td><td>NA</td><td>NA</td><td>NA</td><td>83210236</td></tr>
+                    <tr><td>Cloruros</td><td>16</td><td>16</td><td>15</td><td>83210236</td></tr>
+                    <tr><td>Sulfatos</td><td>29</td><td>30</td><td>29</td><td>83210236</td></tr>
+                    <tr><td>Turbidez</td><td>1.5</td><td>1.6</td><td>1.5</td><td>83210236</td></tr>
+                </table>
+
+                <!-- 6. Agua suave sin queja -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="4">Lote y Análisis Fisicoquímicos de Agua Suave Utilizada sin Queja</th></tr>
+                    <tr class="bg-header"><th>Lote</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th></tr>
+                    <tr><td>SUAVE-270624</td><td>2</td><td>2</td><td>2</td></tr>
+                </table>
+
+                <!-- 7. Resultados de Análisis Sensorial -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="4">Resultados de Análisis Sensorial del Agua Tratada</th></tr>
+                    <tr class="bg-header"><th>Evaluador</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th></tr>
+                    <tr><td>Liderador</td><td>Misael Santos</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>Referencia</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</div>

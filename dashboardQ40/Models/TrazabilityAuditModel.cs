@@ -50,10 +50,14 @@ public class FormatoViewModel
     public List<PruebaLiberacionRow> BloquePruebasLiberacion { get; set; } = new();
     public List<LiberacionSensorialProductoModel> BloqueLiberacionSensorialProducto { get; set; } = new();
     public BloqueAnalisisFisicoquimicoModel BloqueAnalisisFisicoquimicoJarabeSimple { get; set; }
+    public BloqueAnalisisFisicoquimicoModel BloqueCO2 { get; set; }
 
+    public BloqueAnalisisFisicoquimicoModel BloqueAzucar { get; set; }
+    public BloqueAnalisisFisicoquimicoModel BloqueFructuosa1 { get; set; }
 
     // ...
 }
+
 
 public class BloqueMateriaPrimaModel
 {
@@ -189,6 +193,7 @@ public class ResultadoAnalisisFisicoquimico
     public string OperacionNombre { get; set; }  // controlOperationName
     public string Atributo { get; set; }         // resultAttribute
     public string Valor { get; set; }            // resultValue
+    public int TipoOperacion { get; set; }
 }
 
 public class PruebaLiberacionRow

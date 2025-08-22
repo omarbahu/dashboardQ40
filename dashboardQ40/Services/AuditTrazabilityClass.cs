@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Win32;
 using System.Data.SqlClient;
 using static dashboardQ40.Models.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -191,13 +192,13 @@ namespace dashboardQ40.Services
 
                 Registros = new List<RegistroJarabeSimple>
                 { 
-        new() { DescripcionCampo = "LOTE DE JARABE SIMPLE (NÚM. BATCH):", ValoresPorSku = new() { "JS001", "JS000", "JS002", "JS003", "JS004", "JS005" } },
+       /* new() { DescripcionCampo = "LOTE DE JARABE SIMPLE (NÚM. BATCH):", ValoresPorSku = new() { "JS001", "JS000", "JS002", "JS003", "JS004", "JS005" } },
         new() { DescripcionCampo = "# TANQUE DONDE SE ALMACENO EL JARABE SIMPLE:", ValoresPorSku = new() { "T01", "T01", "T02", "T03", "T04", "T05" } },
         new() { DescripcionCampo = "TIPO DE AZUCAR UTILIZADA:", ValoresPorSku = new() { "Refinada", "Refinada", "Mascabado", "Refinada", "Orgánica", "Refinada" } },
         new() { DescripcionCampo = "LOTE DE AZUCAR:", ValoresPorSku = new() { "AZ001", "AZ002", "AZ003", "AZ004", "AZ005", "AZ006" } },
         new() { DescripcionCampo = "FECHA DE ELABORACION DEL JARABE SIMPLE:", ValoresPorSku = new() { "10/10/2024", "09/10/2024", "11/10/2024", "12/10/2024", "13/10/2024", "14/10/2024" } },
         // ... repite para los demás campos visibles
-        }
+        */}
             };
         }
 
@@ -212,12 +213,12 @@ namespace dashboardQ40.Services
         },
                 Registros = new List<RegistroJarabeSimple>
         {
-            new() { DescripcionCampo = "LIBERADOR 1:", ValoresPorSku = new() { "María", "Luis", "Karla", "Pepe", "Sofía", "Laura", "Aprobado" } },
+          /*  new() { DescripcionCampo = "LIBERADOR 1:", ValoresPorSku = new() { "María", "Luis", "Karla", "Pepe", "Sofía", "Laura", "Aprobado" } },
             new() { DescripcionCampo = "LIBERADOR 2:", ValoresPorSku = new() { "José", "Ana", "Miguel", "Elena", "Mario", "Beatriz", "Aprobado" } },
             new() { DescripcionCampo = "LOTE:", ValoresPorSku = new() { "L-001", "L-000", "L-002", "L-003", "L-004", "L-005", "L-001" } },
             new() { DescripcionCampo = "FECHA:", ValoresPorSku = new() { "15/10/2024", "14/10/2024", "16/10/2024", "17/10/2024", "18/10/2024", "19/10/2024", "15/10/2024" } },
             new() { DescripcionCampo = "REFERENCIA:", ValoresPorSku = new() { "REF-01", "REF-02", "REF-03", "REF-04", "REF-05", "REF-06", "REF-01" } },
-        }
+        */}
             };
         }
 
@@ -233,7 +234,7 @@ namespace dashboardQ40.Services
 
             // 1. Obtener nodos de jarabe Terminado ordenados por hora
             var nodosJarabeTerminado = trazabilidadNodos
-                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains("JARABE TERMINADO"))
+                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains("JARABE TERM"))
                 .OrderBy(n => n.StartDate)
                 .ToList();
 
@@ -414,12 +415,12 @@ namespace dashboardQ40.Services
                 EncabezadosSku = new List<string> { "SKU QUEJA", "ANTERIOR", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "RESULTADO PANEL" },
                 Registros = new List<RegistroJarabeSimple>
         {
-            new() { DescripcionCampo = "LIBERADOR 1:", ValoresPorSku = new() { "Juan P.", "Luis G.", "Ana R.", "Carlos S.", "Marta C.", "✅" } },
+           /* new() { DescripcionCampo = "LIBERADOR 1:", ValoresPorSku = new() { "Juan P.", "Luis G.", "Ana R.", "Carlos S.", "Marta C.", "✅" } },
             new() { DescripcionCampo = "LIBERADOR 2:", ValoresPorSku = new() { "Laura D.", "Beatriz Z.", "Ricardo M.", "Silvia V.", "Alejandro B.", "✅" } },
             new() { DescripcionCampo = "LOTE:", ValoresPorSku = new() { "JT001", "JT002", "JT003", "JT004", "JT005", "-" } },
             new() { DescripcionCampo = "FECHA:", ValoresPorSku = new() { "15/10/2024", "14/10/2024", "13/10/2024", "12/10/2024", "11/10/2024", "-" } },
             new() { DescripcionCampo = "REFERENCIA:", ValoresPorSku = new() { "REF-101", "REF-102", "REF-103", "REF-104", "REF-105", "-" } }
-        }
+        */}
             };
         }
 
@@ -428,21 +429,22 @@ namespace dashboardQ40.Services
             // Aquí simulas los datos. Después puedes cambiarlos por una consulta a DB.
             var lista = new List<PruebaLiberacionModel>
     {
-        new PruebaLiberacionModel { Parametro = "BRIX FRESCO:", InicioCorrida = "NA", MedioCorrida = "NA", FinCorrida = "NA" },
-        new PruebaLiberacionModel { Parametro = "BRIX/CONCENTRACIÓN:", InicioCorrida = "12.43", MedioCorrida = "12.38", FinCorrida = "12.38" },
-        new PruebaLiberacionModel { Parametro = "GAS:", InicioCorrida = "3.71", MedioCorrida = "3.64", FinCorrida = "3.68" },
-        new PruebaLiberacionModel { Parametro = "APARIENCIA:", InicioCorrida = "SIN APARIENCIA ANOMALA", MedioCorrida = "SIN APARIENCIA ANOMALA", FinCorrida = "SIN APARIENCIA ANOMALA" },
-        new PruebaLiberacionModel { Parametro = "CONTENIDO NETO:", InicioCorrida = "1511.08", MedioCorrida = "1507.32", FinCorrida = "1499.82" },
-        new PruebaLiberacionModel { Parametro = "TORQUE:", InicioCorrida = "10.23", MedioCorrida = "12.42", FinCorrida = "12.02" },
-        new PruebaLiberacionModel { Parametro = "ACIDEZ:", InicioCorrida = "NA", MedioCorrida = "NA", FinCorrida = "NA" },
-        new PruebaLiberacionModel { Parametro = "PH:", InicioCorrida = "NA", MedioCorrida = "NA", FinCorrida = "NA" },
-        new PruebaLiberacionModel { Parametro = "PRUEBA DE FUGA:", InicioCorrida = "OK", MedioCorrida = "OK", FinCorrida = "OK" },
-        new PruebaLiberacionModel { Parametro = "CÓDIGO LEGIBLE:", InicioCorrida = "OK", MedioCorrida = "OK", FinCorrida = "OK" },
-        new PruebaLiberacionModel { Parametro = "OLOR:", InicioCorrida = "SIN OLOR ANOMALO", MedioCorrida = "SIN OLOR ANOMALO", FinCorrida = "SIN OLOR ANOMALO" },
-        new PruebaLiberacionModel { Parametro = "SABOR:", InicioCorrida = "SIN SABOR ANOMALO", MedioCorrida = "SIN SABOR ANOMALO", FinCorrida = "SIN SABOR ANOMALO" },
-        new PruebaLiberacionModel { Parametro = "LOTE DE AGUA TRATADA:", InicioCorrida = "10241843", MedioCorrida = "10241843", FinCorrida = "10246563" },
-        new PruebaLiberacionModel { Parametro = "ENJUAGUE FINAL - LOTE DE AGUA:", InicioCorrida = "15/10/2024", MedioCorrida = "15/10/2024", FinCorrida = "15/10/2024" },
-    };
+                /*   new PruebaLiberacionModel { Parametro = "BRIX FRESCO:", InicioCorrida = "NA", MedioCorrida = "NA", FinCorrida = "NA" },
+                   new PruebaLiberacionModel { Parametro = "BRIX/CONCENTRACIÓN:", InicioCorrida = "12.43", MedioCorrida = "12.38", FinCorrida = "12.38" },
+                   new PruebaLiberacionModel { Parametro = "GAS:", InicioCorrida = "3.71", MedioCorrida = "3.64", FinCorrida = "3.68" },
+                   new PruebaLiberacionModel { Parametro = "APARIENCIA:", InicioCorrida = "SIN APARIENCIA ANOMALA", MedioCorrida = "SIN APARIENCIA ANOMALA", FinCorrida = "SIN APARIENCIA ANOMALA" },
+                   new PruebaLiberacionModel { Parametro = "CONTENIDO NETO:", InicioCorrida = "1511.08", MedioCorrida = "1507.32", FinCorrida = "1499.82" },
+                   new PruebaLiberacionModel { Parametro = "TORQUE:", InicioCorrida = "10.23", MedioCorrida = "12.42", FinCorrida = "12.02" },
+                   new PruebaLiberacionModel { Parametro = "ACIDEZ:", InicioCorrida = "NA", MedioCorrida = "NA", FinCorrida = "NA" },
+                   new PruebaLiberacionModel { Parametro = "PH:", InicioCorrida = "NA", MedioCorrida = "NA", FinCorrida = "NA" },
+                   new PruebaLiberacionModel { Parametro = "PRUEBA DE FUGA:", InicioCorrida = "OK", MedioCorrida = "OK", FinCorrida = "OK" },
+                   new PruebaLiberacionModel { Parametro = "CÓDIGO LEGIBLE:", InicioCorrida = "OK", MedioCorrida = "OK", FinCorrida = "OK" },
+                   new PruebaLiberacionModel { Parametro = "OLOR:", InicioCorrida = "SIN OLOR ANOMALO", MedioCorrida = "SIN OLOR ANOMALO", FinCorrida = "SIN OLOR ANOMALO" },
+                   new PruebaLiberacionModel { Parametro = "SABOR:", InicioCorrida = "SIN SABOR ANOMALO", MedioCorrida = "SIN SABOR ANOMALO", FinCorrida = "SIN SABOR ANOMALO" },
+                   new PruebaLiberacionModel { Parametro = "LOTE DE AGUA TRATADA:", InicioCorrida = "10241843", MedioCorrida = "10241843", FinCorrida = "10246563" },
+                   new PruebaLiberacionModel { Parametro = "ENJUAGUE FINAL - LOTE DE AGUA:", InicioCorrida = "15/10/2024", MedioCorrida = "15/10/2024", FinCorrida = "15/10/2024" },
+               */
+            };
 
             return lista;
         }
@@ -453,7 +455,7 @@ namespace dashboardQ40.Services
             // A modo de ejemplo, te lo dejo simulado:
             return new List<LiberacionSensorialProductoModel>
     {
-        new() {
+       /* new() {
             Panelista = "Hector Meraz/ Marcos Rogel/Jonathan Mata",
             FechaLiberacion = "16-oct-24",
             Producto = "Manzana 1.5",
@@ -470,7 +472,7 @@ namespace dashboardQ40.Services
             ResultadoPanel = "IN-PASA"
         },
         // ...otros registros
-    };
+    */};
         }
 
 
@@ -701,250 +703,144 @@ namespace dashboardQ40.Services
 
 
 
-        public static BloqueAnalisisFisicoquimicoModel ObtenerAnalisisFisicoquimicoJarabeSimple(
+        public static BloqueAnalisisFisicoquimicoModel ObtenerAnalisisFisicoquimico(
     List<TrazabilidadNode> trazabilidadNodos,
     long batchPadre,
     TimeSpan horaQueja,
     string company,
     string connStr,
-    IConfiguration _configuration) // 👈 aquí
+    IConfiguration _configuration, string bloque, string titulobloque, string query) // 👈 aquí
 
         {
             var nodoPadre = trazabilidadNodos.FirstOrDefault(x => x.Batch == batchPadre);
             DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
             DateTime fechaHoraQueja = fechaProduccion + horaQueja;
 
-            // 1. Lotes de jarabe simple
+            // 1. Lotes de jarabe simple bb 
             var nodosJarabeSimple = trazabilidadNodos
-                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains("JARABE SIMPLE"))
+                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains(bloque))
                 .OrderBy(n => n.StartDate)
                 .ToList();
-
-            var jarabeActivo = nodosJarabeSimple
-                .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
-
-            var lotesSeleccionados = new List<TrazabilidadNode>();
-            if (jarabeActivo != null)
+            if (nodosJarabeSimple.Count() > 0)
             {
-                lotesSeleccionados.Add(jarabeActivo);
-                var anteriores = nodosJarabeSimple
-                    .Where(n => n.EndDate < jarabeActivo.StartDate)
-                    .OrderByDescending(n => n.EndDate)
-                    .Take(4)
-                    .ToList();
-                lotesSeleccionados.AddRange(anteriores);
-            }
-            else
-            {
-                lotesSeleccionados = nodosJarabeSimple
-                    .Where(n => n.EndDate < fechaHoraQueja)
-                    .OrderByDescending(n => n.EndDate)
-                    .Take(5)
-                    .ToList();
-            }
 
-            int totalColumnas = Math.Max(2, lotesSeleccionados.Count);
-            while (lotesSeleccionados.Count < totalColumnas)
-                lotesSeleccionados.Add(null);
 
-            var encabezados = new List<string>();
-            for (int i = 0; i < totalColumnas; i++)
-                encabezados.Add(i == 0 ? "SKU QUEJA" : "ANTERIOR");
+                var jarabeActivo = nodosJarabeSimple
+                    .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
 
-            // 2. Ejecutar query SQL
-            var parametros = new Dictionary<string, object>
+                var lotesSeleccionados = new List<TrazabilidadNode>();
+                if (jarabeActivo != null)
+                {
+                    lotesSeleccionados.Add(jarabeActivo);
+                    var anteriores = nodosJarabeSimple
+                        .Where(n => n.EndDate < jarabeActivo.StartDate)
+                        .OrderByDescending(n => n.EndDate)
+                        .Take(4)
+                        .ToList();
+                    lotesSeleccionados.AddRange(anteriores);
+                }
+                else
+                {
+                    lotesSeleccionados = nodosJarabeSimple;
+                }
+
+                int totalColumnas = Math.Max(2, lotesSeleccionados.Count);
+                while (lotesSeleccionados.Count < totalColumnas)
+                    lotesSeleccionados.Add(null);
+
+                var encabezados = new List<string>();
+                for (int i = 0; i < totalColumnas; i++)
+                    encabezados.Add(i == 0 ? "SKU QUEJA" : "ANTERIOR");
+
+                // 2. Ejecutar query SQL
+                var parametros = new Dictionary<string, object>
             {
                 { "@company", company },
                 { "{lotes}", string.Join(",", lotesSeleccionados.Where(l => l != null).Select(l => l.Batch)) }
             };
 
-            var resultados = DynamicSqlService.EjecutarQuery<ResultadoAnalisisFisicoquimico>(
-                "AnalisisFisicoquimicoJarabeSimple",
-            parametros,
-                null,
-                _configuration,
-                connStr
-            );
+                var resultados = DynamicSqlService.EjecutarQuery<ResultadoAnalisisFisicoquimico>(
+                    query,
+                parametros,
+                    null,
+                    _configuration,
+                    connStr
+                );
 
-            // 3. Obtener lista única de parámetros (campos verticales)
-            var nombresParametros = resultados
-                .Select(r => r.OperacionNombre?.Trim())
-                .Where(n => !string.IsNullOrWhiteSpace(n))
-                .Distinct()
-                .OrderBy(n => n)
-                .ToList();
+                // 3. Obtener lista única de parámetros (campos verticales)
+                var nombresParametros = resultados
+                    .Select(r => r.OperacionNombre?.Trim())
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
+                    .Distinct()
+                    .OrderBy(n => n)
+                    .ToList();
 
-            var registros = nombresParametros
-                .Select(nombre => new RegistroAnalisisFisicoquimico
+                var registros = nombresParametros
+                    .Select(nombre => new RegistroAnalisisFisicoquimico
+                    {
+                        DescripcionParametro = nombre,
+                        ValoresPorLote = new List<string>()
+                    })
+                    .ToList();
+
+                // 4. Llenar columnas
+                foreach (var lote in lotesSeleccionados)
                 {
-                    DescripcionParametro = nombre,
-                    ValoresPorLote = new List<string>()
-                })
-                .ToList();
-
-            // 4. Llenar columnas
-            foreach (var lote in lotesSeleccionados)
-            {
-                foreach (var registro in registros)
-                {
-                    if (lote == null)
+                    foreach (var registro in registros)
                     {
-                        registro.ValoresPorLote.Add("N/A");
-                        continue;
+                        if (lote == null)
+                        {
+                            registro.ValoresPorLote.Add("N/A");
+                            continue;
+                        }
+
+                        var resultado = resultados.FirstOrDefault(r =>
+                            r.Lote == lote.Batch &&
+                            r.OperacionNombre?.Trim().Equals(registro.DescripcionParametro, StringComparison.OrdinalIgnoreCase) == true);
+
+                        string valorFinal;
+
+                        if (resultado.TipoOperacion == 1)
+                        {
+                            valorFinal = string.IsNullOrWhiteSpace(resultado.Valor) ? "N/A" : resultado.Valor;
+                        }
+                        else if (resultado.TipoOperacion == 2)
+                        {
+                            if (resultado.Atributo == "1")
+                                valorFinal = "✔";
+                            else if (resultado.Atributo == "0")
+                                valorFinal = "✘";
+                            else
+                                valorFinal = "N/A";
+                        }
+                        else
+                        {
+                            valorFinal = "N/A";
+                        }
+
+                        registro.ValoresPorLote.Add(valorFinal);
+
                     }
-
-                    var resultado = resultados.FirstOrDefault(r =>
-                        r.Lote == lote.Batch &&
-                        r.OperacionNombre?.Trim().Equals(registro.DescripcionParametro, StringComparison.OrdinalIgnoreCase) == true);
-
-                    string valorFinal;
-
-                    if (resultado == null)
-                    {
-                        valorFinal = "N/A";
-                    }
-                    else
-                    {
-                        valorFinal = !string.IsNullOrWhiteSpace(resultado.Valor)
-                            ? resultado.Valor
-                            : (resultado.Atributo ?? "N/A");
-                    }
-
-                    registro.ValoresPorLote.Add(valorFinal);
-
                 }
-            }
 
-            return new BloqueAnalisisFisicoquimicoModel
+                return new BloqueAnalisisFisicoquimicoModel
+                {
+                    TituloBloque = titulobloque,
+                    EncabezadosSku = encabezados,
+                    Registros = registros
+                };
+            } else
             {
-                TituloBloque = "ANÁLISIS FISICOQUÍMICOS DE JARABE SIMPLE",
-                EncabezadosSku = encabezados,
-                Registros = registros
-            };
+                return new BloqueAnalisisFisicoquimicoModel
+                {
+                    TituloBloque = titulobloque,
+                    EncabezadosSku = null,
+                    Registros = null
+                };
+            }
         }
 
 
-        public static BloqueAnalisisFisicoquimicoModel ObtenerAnalisisFisicoquimicoJarabeTerminado(
-    List<TrazabilidadNode> trazabilidadNodos,
-    long batchPadre,
-    TimeSpan horaQueja,
-    string company,
-    string connStr,
-    IConfiguration _configuration) // 👈 aquí
-
-        {
-            var nodoPadre = trazabilidadNodos.FirstOrDefault(x => x.Batch == batchPadre);
-            DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
-            DateTime fechaHoraQueja = fechaProduccion + horaQueja;
-
-            // 1. Lotes de jarabe simple
-            var nodosJarabeSimple = trazabilidadNodos
-                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains("JARABE TERMINADO"))
-                .OrderBy(n => n.StartDate)
-                .ToList();
-
-            var jarabeActivo = nodosJarabeSimple
-                .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
-
-            var lotesSeleccionados = new List<TrazabilidadNode>();
-            if (jarabeActivo != null)
-            {
-                lotesSeleccionados.Add(jarabeActivo);
-                var anteriores = nodosJarabeSimple
-                    .Where(n => n.EndDate < jarabeActivo.StartDate)
-                    .OrderByDescending(n => n.EndDate)
-                    .Take(4)
-                    .ToList();
-                lotesSeleccionados.AddRange(anteriores);
-            }
-            else
-            {
-                lotesSeleccionados = nodosJarabeSimple
-                    .Where(n => n.EndDate < fechaHoraQueja)
-                    .OrderByDescending(n => n.EndDate)
-                    .Take(5)
-                    .ToList();
-            }
-
-            int totalColumnas = Math.Max(2, lotesSeleccionados.Count);
-            while (lotesSeleccionados.Count < totalColumnas)
-                lotesSeleccionados.Add(null);
-
-            var encabezados = new List<string>();
-            for (int i = 0; i < totalColumnas; i++)
-                encabezados.Add(i == 0 ? "SKU QUEJA" : "ANTERIOR");
-
-            // 2. Ejecutar query SQL
-            var parametros = new Dictionary<string, object>
-            {
-                { "@company", company },
-                { "{lotes}", string.Join(",", lotesSeleccionados.Where(l => l != null).Select(l => l.Batch)) }
-            };
-
-            var resultados = DynamicSqlService.EjecutarQuery<ResultadoAnalisisFisicoquimico>(
-                "AnalisisFisicoquimicoJarabeTerminado",
-            parametros,
-                null,
-                _configuration,
-                connStr
-            );
-
-            // 3. Obtener lista única de parámetros (campos verticales)
-            var nombresParametros = resultados
-                .Select(r => r.OperacionNombre?.Trim())
-                .Where(n => !string.IsNullOrWhiteSpace(n))
-                .Distinct()
-                .OrderBy(n => n)
-                .ToList();
-
-            var registros = nombresParametros
-                .Select(nombre => new RegistroAnalisisFisicoquimico
-                {
-                    DescripcionParametro = nombre,
-                    ValoresPorLote = new List<string>()
-                })
-                .ToList();
-
-            // 4. Llenar columnas
-            foreach (var lote in lotesSeleccionados)
-            {
-                foreach (var registro in registros)
-                {
-                    if (lote == null)
-                    {
-                        registro.ValoresPorLote.Add("N/A");
-                        continue;
-                    }
-
-                    var resultado = resultados.FirstOrDefault(r =>
-                        r.Lote == lote.Batch &&
-                        r.OperacionNombre?.Trim().Equals(registro.DescripcionParametro, StringComparison.OrdinalIgnoreCase) == true);
-
-                    string valorFinal;
-
-                    if (resultado == null)
-                    {
-                        valorFinal = "N/A";
-                    }
-                    else
-                    {
-                        valorFinal = !string.IsNullOrWhiteSpace(resultado.Valor)
-                            ? resultado.Valor
-                            : (resultado.Atributo ?? "N/A");
-                    }
-
-                    registro.ValoresPorLote.Add(valorFinal);
-
-                }
-            }
-
-            return new BloqueAnalisisFisicoquimicoModel
-            {
-                TituloBloque = "ANÁLISIS FISICOQUÍMICOS DE JARABE TERMINADO",
-                EncabezadosSku = encabezados,
-                Registros = registros
-            };
-        }
 
         public static async Task<List<PruebaLiberacionRow>> ObtenerPruebasLiberacionJarabeTerminadoAsync(
     DateTime? startDate,
@@ -971,7 +867,7 @@ namespace dashboardQ40.Services
     INNER JOIN ControlProcedureOperation CPO
         ON CPR.company = CPO.company AND CPR.controlProcedure = CPO.controlProcedure
     INNER JOIN CProcResultWithValuesStatus CPrvs
-        ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult
+        ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult and CPO.controlOperation = CPrvs.controlOperation
     WHERE CPrvs.launchingDate BETWEEN @StartDate AND @EndDate
       AND CPR.company = @Company
       AND CPrvs.workplace = @Workplace
@@ -995,7 +891,7 @@ namespace dashboardQ40.Services
                 INNER JOIN ControlProcedureOperation CPO
                     ON CPR.company = CPO.company AND CPR.controlProcedure = CPO.controlProcedure
                 INNER JOIN CProcResultWithValuesStatus CPrvs
-                    ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult
+                    ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult and CPO.controlOperation = CPrvs.controlOperation
                 WHERE CPR.company = @Company
                   AND CPrvs.workplace = @Workplace
                   AND CPR.manufacturingOrder = @Reference
@@ -1018,7 +914,7 @@ namespace dashboardQ40.Services
                 INNER JOIN ControlProcedureOperation CPO
                     ON CPR.company = CPO.company AND CPR.controlProcedure = CPO.controlProcedure
                 INNER JOIN CProcResultWithValuesStatus CPrvs
-                    ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult
+                    ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult and CPO.controlOperation = CPrvs.controlOperation
                 WHERE CPR.company = @Company
                   AND CPrvs.workplace = @Workplace
                   AND CPR.manufacturingOrder = @Reference
@@ -1042,7 +938,7 @@ namespace dashboardQ40.Services
                 INNER JOIN ControlProcedureOperation CPO
                     ON CPR.company = CPO.company AND CPR.controlProcedure = CPO.controlProcedure
                 INNER JOIN CProcResultWithValuesStatus CPrvs
-                    ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult
+                    ON CPrvs.company = CPR.company AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult and CPO.controlOperation = CPrvs.controlOperation
                 WHERE CPR.company = @Company
                   AND CPrvs.workplace = @Workplace
                   AND CPR.manufacturingOrder = @Reference

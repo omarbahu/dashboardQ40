@@ -1,0 +1,72 @@
+﻿@model FormatoViewModel
+
+<div class="accordion" id="accordion-embotellado2">
+
+    <!-- Acordeón: Información de Embotellado -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button  py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmbotellado2">
+                <h4 class="mb-0">Información de Embotellado</h4>
+
+            </button>
+        </h2>
+        <div id="collapseEmbotellado2" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_PruebasLiberacion.cshtml", Model.BloquePruebasLiberacion)
+
+
+                <!-- Subbloque: Área Sensoriales -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header">
+                        <th colspan="6">Liberación de Producto Terminado - Área Sensoriales</th>
+                    </tr>
+                    <tr class="bg-header">
+                        <th>Panelista</th>
+                        <th>Fecha Liberación</th>
+                        <th>Producto</th>
+                        <th>Código MTRA</th>
+                        <th>Referencia</th>
+                        <th>Resultado del Panel</th>
+                    </tr>
+                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                </table>
+
+                <!-- Subbloque: Arranque de Línea -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header">
+                        <th colspan="5">Liberación de Producto Terminado al Arranque de Línea</th>
+                    </tr>
+                    <tr class="bg-header">
+                        <th>Panelista</th>
+                        <th>Fecha Liberación</th>
+                        <th>Producto</th>
+                        <th>Código Muestra</th>
+                        <th>Resultado del Panel</th>
+                    </tr>
+                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                </table>
+
+                <!-- Subbloque: Muestras de Retención -->
+                <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header">
+                        <th colspan="3">Muestras de Retención Producto Terminado / Materia Prima Involucrada</th>
+                    </tr>
+                    <tr class="bg-header">
+                        <th>Anterior al SKU Reportado</th>
+                        <th>Posterior al SKU Reportado</th>
+                        <th>Hora</th>
+                    </tr>
+                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+
+
+</div>

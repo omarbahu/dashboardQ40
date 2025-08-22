@@ -52,7 +52,15 @@ namespace dashboardQ40.Controllers
             string company = _configuration.GetConnectionString("company");
 
             var batchInfo = ObtenerBatchDesdeLote(lote, connStr, company);
-            if (batchInfo.BatchId <= 0) return View();
+            if (batchInfo == null || batchInfo.BatchId <= 0)
+            {
+                // Opción 1: Muestra una vista vacía o con mensaje personalizado
+                ViewBag.Mensaje = $"El lote '{lote}' no fue encontrado o no tiene información.";
+                return View("LoteNoEncontrado");
+
+                // Opción 2: Redirige a otra página
+                // return RedirectToAction("Index");
+            }            
 
             var trazabilidadNodos = ObtenerTrazabilidadCompleta(company, batchInfo.BatchId, connStr);
             var bloqueMateriaPrima = ObtenerBloqueMateriaPrima(trazabilidadNodos, company, connStr);
@@ -79,35 +87,44 @@ namespace dashboardQ40.Controllers
                 batchInfoJT = ObtenerBatchDesdeLote(jarabeActivo.BatchIdentifier, connStr, company);
             }
 
-            var bloqueLiberacion = await AuditTrazabilityClass.ObtenerPruebasLiberacionJarabeTerminadoAsync(
-                batchInfo.StartDate,
-                batchInfo.EndDate,
-                batchInfo.workplace,
-                company,
-                batchInfo.manufacturingReference,
-                connStr);
-
+            var bloqueLiberacion = await AuditTrazabilityClass.ObtenerPruebasLiberacionJarabeTerminadoAsync(batchInfo.StartDate,batchInfo.EndDate,batchInfo.workplace,company,batchInfo.manufacturingReference,connStr);
+            var registrotiempo = AuditTrazabilityClass.ObtenerEntregaInformacion(lote);
+            var LoteJarabeSimple = AuditTrazabilityClass.ObtenerJarabeSimpleConContacto(trazabilidadNodos, batchInfo.BatchId, horaQueja);
+            var AnalisisFisicoquimicoJarabeSimple = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "JARABE SIMPLE", "ANÁLISIS FISICOQUÍMICOS DE JARABE SIMPLE", "AnalisisFisicoquimico");
+            var AnalisisSensorialJarabeSimple = AuditTrazabilityClass.ObtenerAnalisisSensorialJarabeSimple(lote);
+            var JarabeTerminado = AuditTrazabilityClass.ObtenerJarabeTerminado(trazabilidadNodos, batchInfo.BatchId, horaQueja, batchInfoJT);
+            var AnalisisFisicoquimicoJarabeTerminado = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "JARABE TERM", "ANÁLISIS FISICOQUÍMICOS DE JARABE TERMINADO", "AnalisisFisicoquimico");
+            var AnalisisSensorialJarabeTerminado = AuditTrazabilityClass.ObtenerAnalisisSensorialJarabeTerminado(lote);
+            var Azucar = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "AZUCAR", "AZÚCAR", "AnalisisFisicoquimico");
+            var fructuosa1 = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "FRUCTOSA", "FRUCTOSA SILO 1", "AnalisisFisicoquimico");
+            var co2 = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "CO2", "CO2", "AnalisisFisicoquimico");
             var modelo = new FormatoViewModel
             {
                 Lote = lote,
+                
+                //datos para formato 
                 BloqueMateriaPrima = bloqueMateriaPrima,
                 BloqueProductoTerminado = bloqueProdTerm,
-                BloqueRegistroTiempo = AuditTrazabilityClass.ObtenerEntregaInformacion(lote),
-                //BloqueJarabesLoteJarabeSimple = AuditTrazabilityClass.ObtenerJarabeSimplePorLote(lote),                
+                BloqueRegistroTiempo = registrotiempo,                
                 
                 // Jarabe simple
-                BloqueJarabesLoteJarabeSimpleContacto = AuditTrazabilityClass.ObtenerJarabeSimpleConContacto(trazabilidadNodos, batchInfo.BatchId, horaQueja),
-                BloqueAnalisisFisicoquimicoJarabeSimple = AuditTrazabilityClass.ObtenerAnalisisFisicoquimicoJarabeSimple(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration),
-                BloqueAnalisisSensorialJarabeSimple = AuditTrazabilityClass.ObtenerAnalisisSensorialJarabeSimple(lote),
+                BloqueJarabesLoteJarabeSimpleContacto = LoteJarabeSimple,                
+                BloqueAnalisisFisicoquimicoJarabeSimple = AnalisisFisicoquimicoJarabeSimple,                
+                BloqueAnalisisSensorialJarabeSimple = AnalisisSensorialJarabeSimple,
 
                 // Jarabe terminado
-                BloqueJarabeTerminado = AuditTrazabilityClass.ObtenerJarabeTerminado(trazabilidadNodos, batchInfo.BatchId, horaQueja, batchInfoJT),
-                BloqueAnalisisFisicoquimicoJarabeTerminado = AuditTrazabilityClass.ObtenerAnalisisFisicoquimicoJarabeTerminado(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration),
-                BloqueAnalisisSensorialJarabeTerminado = AuditTrazabilityClass.ObtenerAnalisisSensorialJarabeTerminado(lote),
-
+                BloqueJarabeTerminado = JarabeTerminado,
+                //"ANÁLISIS FISICOQUÍMICOS DE JARABE SIMPLE"  "JARABE SIMPLE" "AnalisisFisicoquimicoJarabeSimple"
+                BloqueAnalisisFisicoquimicoJarabeTerminado = AnalisisFisicoquimicoJarabeTerminado,
+                BloqueAnalisisSensorialJarabeTerminado = AnalisisSensorialJarabeTerminado,
                 
 
-                BloquePruebasLiberacion = bloqueLiberacion
+                //BloquePruebasLiberacion = bloqueLiberacion,
+
+                //datos para materias primas 
+                BloqueAzucar = Azucar,
+                BloqueFructuosa1 = fructuosa1,
+                BloqueCO2 = co2
             };
 
             

@@ -2,7 +2,6 @@
 
 <div class="accordion" id="accordion-MP">
     @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_MateriaPrima.cshtml", Model.BloqueMateriaPrima)
-
 </div>
 
 <!-- Información del Producto Terminado / SKU -->
@@ -10,23 +9,20 @@
     @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_SKU.cshtml", Model.BloqueProductoTerminado)
 </div>
 
-
-<!-- Registros de Tiempo de Entrega de Información o Actividades -->
+<!-- Registros de Tiempo de Entrega de Información o Actividades 
 <div class="accordion" id="accordion-registro-tiempo">
     @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_RegistroTiempo.cshtml", Model.BloqueRegistroTiempo)
 </div>
-
-
-
+-->
 <!-- Información de Jarabes -->
 <div class="accordion" id="accordion-jarabes">
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-jarabes">
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapsejarabes">
                 <h4 class="mb-0">Información de Jarabes</h4>
             </button>
         </h2>
-        <div id="collapse-jarabes" class="accordion-collapse collapse show">
+        <div id="collapsejarabes" class="accordion-collapse collapse show">
             <div class="accordion-body">                
                 
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabesLoteJarabeSimpleContacto)
@@ -49,8 +45,9 @@
     <!-- Acordeón: Información de Embotellado -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmbotellado">
-                Información de Embotellado
+            <button class="accordion-button  py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmbotellado">
+                <h4 class="mb-0">Información de Embotellado</h4>
+                
             </button>
         </h2>
         <div id="collapseEmbotellado" class="accordion-collapse collapse show">
@@ -121,8 +118,9 @@
     <!-- Acordeón: Información de Lavado -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLavado">
-                Información de Proceso de Lavado
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLavado">
+                
+                <h4 class="mb-0">Información de Proceso de Lavado</h4>
             </button>
         </h2>
         <div id="collapseLavado" class="accordion-collapse collapse show">
@@ -222,8 +220,9 @@
     <!-- Acordeón: Inspección de Envase -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInspeccion">
-                Datos de Inspección de Envase
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInspeccion">
+                
+                <h4 class="mb-0">Datos de Inspección de Envase</h4>
             </button>
         </h2>
         <div id="collapseInspeccion" class="accordion-collapse collapse show">
@@ -327,8 +326,8 @@
     <!-- Acordeón: Datos de Tratamiento de Agua -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAgua">
-                Datos de Tratamiento de Agua
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAgua">
+                <h4 class="mb-0">Datos de Tratamiento de Agua</h4>
             </button>
         </h2>
         <div id="collapseAgua" class="accordion-collapse collapse show">
@@ -426,8 +425,9 @@
     <!-- Acordeón: Información de Producción -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProduccion">
-                Información de Producción
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProduccion">
+                
+                <h4 class="mb-0">Información de Producción</h4>
             </button>
         </h2>
         <div id="collapseProduccion" class="accordion-collapse collapse show">
@@ -464,8 +464,9 @@
     <!-- Acordeón: Datos de Materias Primas -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMateriasPrimas">
-                Datos de Materias Primas
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMateriasPrimas">
+                
+                <h4 class="mb-0">Datos de Materias Primas</h4>
             </button>
         </h2>
         <div id="collapseMateriasPrimas" class="accordion-collapse collapse show">
@@ -599,9 +600,9 @@
 
 
 
-
+<!--
 <div class="accordion" id="accordion-MateriasMicrobiologia">
-    <!-- Acordeón: Datos de Microbiología -->
+    
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMicrobiologia">
@@ -621,69 +622,69 @@
                         <th>OTRO INVOLUCRADO</th>
                     </tr>
 
-                    <!-- AGUA CRUDA -->
+                    
                     <tr><td rowspan="5">AGUA CRUDA</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>N.A</td><td>N.A</td><td>N.A</td><td>&lt;1</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>&lt;1</td></tr>
                     <tr><td>Pseudomonas aeruginosa</td><td>N.A</td><td>N.A</td><td>N.A</td><td>&lt;1</td></tr>
                     <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
 
-                    <!-- AGUA TRATADA -->
+                    
                     <tr><td rowspan="4">AGUA TRATADA</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Pseudomonas aeruginosa</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
 
-                    <!-- AGUA SUAVE -->
+                    
                     <tr><td rowspan="4">AGUA SUAVE</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
 
-                    <!-- SANEO EMBOTELLADO DE LÍNEA -->
+                    
                     <tr><td rowspan="5">SANEO EMBOTELLADO DE LÍNEA</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>2</td><td>1</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>1</td><td>1</td></tr>
                     <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>NEGATIVO</td></tr>
 
-                    <!-- SANEO TANQUE JARABE -->
+                    
                     <tr><td rowspan="5">SANEO TANQUE JARABE</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>2</td><td>&lt;1</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>18</td></tr>
                     <tr><td>Coliformes totales, fecales y E. coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>NEGATIVO</td></tr>
                     <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>NEGATIVO</td></tr>
 
-                    <!-- EMPAQUE -->
+                    
                     <tr><td rowspan="5">EMPAQUE</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Coliformes totales, fecales y E. coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
 
-                    <!-- AZÚCAR -->
+                    
                     <tr><td rowspan="3">AZÚCAR</td><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Levadura</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Hongos (Moho)</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
 
-                    <!-- JARABE SIMPLE -->
+                    
                     <tr><td rowspan="3">JARABE SIMPLE</td><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Levadura</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Hongos (Moho)</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
 
-                    <!-- JARABE TERMINADO -->
+                    
                     <tr><td rowspan="3">JARABE TERMINADO</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Coliformes totales, fecales y E. coli</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
 
-                    <!-- PRODUCTO TERMINADO -->
+                    
                     <tr><td rowspan="5">PRODUCTO TERMINADO</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>15/10/2024</td><td>3</td><td>N.A</td><td>1</td></tr>
                     <tr><td>Cuenta de Mesofilicos Totales</td><td>15/10/2024</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Coliformes totales, fecales y E. coli</td><td>15/10/2024</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
                     <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
 
-                    <!-- FRUCTOSA -->
+                    
                     <tr><td rowspan="3">FRUCTOSA</td><td>Recuento total de mesófilos</td><td>14/10/2024</td><td>&lt;1</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Levadura</td><td>14/10/2024</td><td>&lt;1</td><td>&lt;1</td><td>&lt;1</td></tr>
                     <tr><td>Hongos (Moho)</td><td>14/10/2024</td><td>&lt;1</td><td>&lt;1</td><td>&lt;1</td></tr>
@@ -693,14 +694,15 @@
         </div>
     </div>
 </div>
-
+-->
 
 <div class="accordion" id="accordion-Limpieza">
     <!-- Acordeón: Datos de Limpieza y Saneamiento -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLimpieza">
-                Datos de Limpieza y Saneamiento
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLimpieza">
+                
+                <h4 class="mb-0">Datos de Limpieza y Saneamiento</h4>
             </button>
         </h2>
         <div id="collapseLimpieza" class="accordion-collapse collapse show">
@@ -803,9 +805,9 @@
                         <td>NA</td>
                     </tr>
                 </table>
-
-                <h5 class="mt-4">ANÁLISIS SENSORIAL DE SANEO TANQUE JAR. TERMINADO SKU QUEJA 513</h5>
+                <br />
                 <table class="tabla-trazabilidad">
+                    <tr class="bg-header"><th colspan="5">ANÁLISIS SENSORIAL DE SANEO TANQUE JAR. TERMINADO</th></tr>
                     <tr class="bg-header">
                         <th>LOTE / FECHA / NOMBRE</th>
                         <th>RESULTADO PANEL</th>
@@ -815,9 +817,10 @@
                     <tr><td>LOTE: 10239066</td><td>REFERENCIA: Agua tratada</td></tr>
                     <tr><td>FECHA: 14/10/2024</td><td></td></tr>
                 </table>
-
-                <h5 class="mt-4">ANÁLISIS SENSORIAL DE SANEO LÍNEA SKU QUEJA</h5>
+                <br />
+                
                 <table class="tabla-trazabilidad">
+                    <tr class="bg-header"><th colspan="5">ANÁLISIS SENSORIAL DE SANEO</th></tr>
                     <tr class="bg-header">
                         <th>FECHA / NOMBRE</th>
                         <th>RESULTADO PANEL</th>
@@ -834,7 +837,7 @@
     </div>
 </div>
 
-
+<!--
 <div class="accordion" id="accordion-Mantenimiento">
     <div class="accordion-item">
         <h2 class="accordion-header">
@@ -866,8 +869,8 @@
 </div>
 
 
-
-
+-->
+<!--
 
 <div class="accordion" id="accordion-Logistica">
     <div class="accordion-item">
@@ -889,7 +892,9 @@
     </div>
 </div>
 
+-->
 
+<!-- 
 
 <div class="accordion" id="accordion-Ventas">
     <div class="accordion-item">
@@ -909,13 +914,14 @@
     </div>
 </div>
 
-
+-->
 
 <div class="accordion" id="accordion-Resultados">
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResultados">
-                RESULTADOS DE LA TRAZABILIDAD
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResultados">
+                
+                <h4 class="mb-0">RESULTADOS DE LA TRAZABILIDAD</h4>
             </button>
         </h2>
         <div id="collapseResultados" class="accordion-collapse collapse show">

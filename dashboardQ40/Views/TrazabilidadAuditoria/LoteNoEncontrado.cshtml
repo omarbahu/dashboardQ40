@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Lote no encontrado";
+    var mensaje = ViewBag.Mensaje as string ?? "Lote no encontrado.";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">⚠ Lote no encontrado</h4>
+        <p>@mensaje</p>
+        <hr>
+        <p class="mb-0">
+            Verifica que el número de lote esté bien escrito o intenta con otro.
+        </p>
+    </div>
+    <a href="javascript:history.back()" class="btn btn-primary">← Volver</a>
+</div>
