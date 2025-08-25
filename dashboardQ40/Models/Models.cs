@@ -82,6 +82,7 @@
 
         public class result_varY
         {
+            public int contador{ get; set; }
             public string controlOperation { get; set; }
             public string controlOperationName { get; set; }
         }
@@ -145,5 +146,38 @@ CPrvs.resultValue, CPrvs.minTolerance, CPrvs.maxTolerance, CPrrc.executionDate
         }
 
 
+        public sealed class YRawRow
+        {
+            public string controlOperation { get; set; } = "";
+            public string controlOperationName { get; set; } = "";
+            public DateTime executionDate { get; set; }
+            public double? resultValue { get; set; }
+            public double? minTolerance { get; set; }
+            public double? maxTolerance { get; set; }
+        }
+
+        public sealed class YSummary
+        {
+            public string Codigo { get; set; } = "";
+            public string Nombre { get; set; } = "";
+            public int Tests { get; set; }
+            public int CoverageDays { get; set; }
+            public int TotalDays { get; set; }
+            public int OOS { get; set; }
+            public double? Mean { get; set; }
+            public DateTime? LastTs { get; set; }
+            public double? LastValue { get; set; }
+            // opcional: public List<(DateTime d, double mean)> Spark { get; set; } = new();
+
+            public List<double> Spark { get; set; } = new();
+        }
+
+        public sealed class ResultEnvelope<T>
+        {
+            public T result { get; set; }
+        }
+
+        // Fila “cruda” (lo que devuelve TU query completo)
+      
     }
 }

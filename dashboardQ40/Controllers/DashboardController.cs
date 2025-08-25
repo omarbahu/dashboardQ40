@@ -357,110 +357,241 @@ namespace dashboardQ40.Controllers
         }
 
 
-        public async Task<JsonResult> ObtenerVarY(string sku)
+        [HttpGet]
+        [HttpGet]
+        public async Task<JsonResult> ObtenerVarY(string sku, DateTime startDate, DateTime endDate, string line)
         {
-            string token = HttpContext.Session.GetString("AuthToken"); // Obtener el token de la sesión
-
-            var ListVariablesY = new List<result_varY>();
-
+            var token = HttpContext.Session.GetString("AuthToken");
             if (string.IsNullOrEmpty(token))
-            {
-                return Json(new { error = "Token no disponible" });
-            }
-            else
-            {
-                var dataResultP = getDataQuality.getVarYBysku(
-                        token.ToString(),
-                        _settings.QueryVarY,
-                        _settings.Company,
-                        sku);
-                await Task.WhenAll(dataResultP);
+                return Json(new { value = Array.Empty<object>(), error = "Token no disponible" });
 
-                if (dataResultP.Result.result != null)
+            // 1) Llamada al WS que devuelve FILAS CRUDAS (resultValue, min/maxTolerance, executionDate, etc.)
+            //    ⚠️ Esta llamada usa getVarYRows (ver la clase en el punto 2).
+            var dataTask = getDataQuality.getVarYRows(
+                token,
+                _settings.QueryVarY,   // tu endpoint/URL configurada para este query
+                _settings.Company,
+                sku,
+                startDate,
+                endDate,
+                line
+            );
+
+            await Task.WhenAll(dataTask);
+
+            // Materializamos a lista para poder usar .Count, .ToList(), etc.
+            var rows = (dataTask.Result?.result ?? Enumerable.Empty<YRawRow>()).ToList();
+            if (rows.Count == 0)
+                return Json(new { value = Array.Empty<object>() });
+
+            // 2) Construir el objeto que espera tu UI (cards + spark)
+            int totalDays = (int)(endDate.Date - startDate.Date).TotalDays + 1;
+
+            // ... arriba no cambies nada
+
+            var items = rows
+                .GroupBy(r => new {
+                    Op = (r.controlOperation ?? "").Trim().ToUpper(),
+                    Name = (r.controlOperationName ?? "").Trim()
+                })
+                .Select(g =>
                 {
-                    foreach (var item in dataResultP.Result.result)
-                    {
-                        string controlOp = item.controlOperation?.Trim().ToUpper(); // Limpiar espacios y mayúsculas
-                        string controlOpName = item.controlOperationName?.Trim();
+                    var ordered = g.OrderBy(r => r.executionDate).ToList();
+                    int tests = ordered.Count;
 
-                    
-                        var varY = new result_varY
-                        {
-                            controlOperation = controlOp,
-                            controlOperationName = controlOpName
-                        };
-                        ListVariablesY.Add(varY);
+                    // Último registro (para "last" y tolerancias)
+                    DateTime? lastTs = null; double? lastVal = null;
+                    double? lsl = null, usl = null;
+                    if (tests > 0)
+                    {
+                        var last = ordered[^1];
+                        lastTs = last.executionDate;
+                        lastVal = last.resultValue;
+                        lsl = last.minTolerance;
+                        usl = last.maxTolerance;
                     }
-                }
 
-                string json = JsonSerializer.Serialize(ListVariablesY, new JsonSerializerOptions { WriteIndented = true });
-                Console.WriteLine(json);
-                _logger.LogInformation($"json de variables y: {json}");
+                    // Cobertura y OOS
+                    int coverageDays = ordered.Select(r => r.executionDate.Date).Distinct().Count();
+                    int oos = ordered.Count(r =>
+                        r.resultValue.HasValue &&
+                        r.minTolerance.HasValue &&
+                        r.maxTolerance.HasValue &&
+                        (r.resultValue.Value < r.minTolerance.Value ||
+                         r.resultValue.Value > r.maxTolerance.Value));
 
-                bool esProduccion = _settings.Produccion; // Lee desde appsettings
+                    // Media
+                    double? mean = null;
+                    var valsAll = ordered.Where(r => r.resultValue.HasValue).Select(r => r.resultValue!.Value).ToList();
+                    if (valsAll.Count > 0) mean = valsAll.Average();
 
-                var variablesFiltradas = ListVariablesY
-                    .Where(d => esProduccion || _variablesY.Keys.Any(prefijo => d.controlOperation.StartsWith(prefijo.Trim().ToUpper())))
-                    .Select(d =>
+                    // 🔹 SPARK: ÚLTIMOS 10 CONTROLES (no por día)
+                    var last10Vals = ordered
+                        .Where(r => r.resultValue.HasValue)
+                        .OrderByDescending(r => r.executionDate)
+                        .Take(10)
+                        .Select(r => r.resultValue!.Value)
+                        .Reverse()             // para que se dibuje cronológicamente izquierda→derecha
+                        .ToList();
+
+                    return new
                     {
-                        if (esProduccion)
-                        {
-                            return new
-                            {
-                                Codigo = d.controlOperation,
-                                Nombre = d.controlOperationName
-                            };
-                        }
-                        else
-                        {
-                            var kvp = _variablesY.FirstOrDefault(p => d.controlOperation.StartsWith(p.Key));
-                            return new
-                            {
-                                Codigo = kvp.Key,
-                                Nombre = kvp.Value
-                            };
-                        }
-                    })
-                    .Distinct()
+                        codigo = g.Key.Op,
+                        nombre = $"[{tests}] {g.Key.Name}",
+                        tests = tests,
+                        cov = $"{coverageDays}/{totalDays} días",
+                        last = lastTs.HasValue
+                                    ? $"{lastTs:dd-MM-yy HH:mm} ({(lastVal.HasValue ? lastVal.Value.ToString("0.##") : "—")})"
+                                    : "—",
+                        oos = oos,
+                        mean = mean,
+                        spark = last10Vals,   // 👈 ahora es una lista simple con los últimos 10
+                        lsl = lsl,          // 👈 límites (si existen)
+                        usl = usl
+                    };
+                })
+                .OrderByDescending(x => x.tests)
+                .ToList();
+
+            return Json(new { value = items });
+
+        }
+
+
+
+
+
+        [HttpGet]
+        public async Task<JsonResult> ObtenerVarX(
+    string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
+        {
+            string token = HttpContext.Session.GetString("AuthToken");
+            if (string.IsNullOrEmpty(token))
+                return Json(new { error = "Token no disponible" });
+
+            // 1) Traer lista de X ligadas a la Y y QUITAR DUPLICADOS por código
+            var prefix = (varY?.Length >= 3 ? varY.Substring(0, 3) : varY ?? "") + "%";
+            var opsTask = getDataQuality.getVarXByvarY(
+                token, _settings.QueryVarX, _settings.Company,
+                sku, prefix, fechaInicial, fechaFinal, lineaId);
+
+            await Task.WhenAll(opsTask);
+
+            var opsRaw = opsTask.Result?.result ?? new List<result_varY>();
+            var ops = opsRaw
+                .Where(o => !string.IsNullOrWhiteSpace(o.controlOperation))
+                .GroupBy(o => o.controlOperation)           // ← DEDUP por código
+                .Select(g => g.First())
+                .ToList();
+
+            if (ops.Count == 0)
+                return Json(new { value = Array.Empty<object>() });
+
+            // 2) Para cada X única, pedir resultados en paralelo
+            var tasks = new List<Task<result_Q_Resultados>>();
+            foreach (var op in ops)
+            {
+                tasks.Add(getDataQuality.getResultsByVarX(
+                    token, _settings.QueryResultVarY_X, _settings.Company,
+                    lineaId, fechaInicial, fechaFinal, op.controlOperation));
+            }
+
+            await Task.WhenAll(tasks);
+
+            // 3) Construir resumen por X (agrupando muestreos por DÍA)
+            var items = new List<object>();
+
+            foreach (var t in tasks)
+            {
+                var rows = t.Result?.result ?? new List<result_Resultados>();
+                if (rows.Count == 0) continue;
+
+                var ordered = rows
+                    .Where(r => r.executionDate != null)
+                    .OrderBy(r => r.executionDate)
                     .ToList();
 
-                string json2 = JsonSerializer.Serialize(variablesFiltradas, new JsonSerializerOptions { WriteIndented = true });
-                
-                _logger.LogInformation($"json de variablesfiltradas y: {json2}");
+                // Último registro real
+                var last = ordered[^1];
+                DateTime? lastTs = last.executionDate;
+                double? lastVal = last.resultValue;
 
-                _logger.LogInformation($"Total de variables Y en el diccionario: {_variablesY.Count}");
-                _logger.LogInformation($"Total de variables encontradas en la BD: {ListVariablesY.Count}");
-                _logger.LogInformation($"Total de variables filtradas para el dropdown: {variablesFiltradas.Count}");
+                // LSL / USL (primer no nulo)
+                double? lsl = ordered.Select(r => r.minTolerance).FirstOrDefault(v => v.HasValue);
+                double? usl = ordered.Select(r => r.maxTolerance).FirstOrDefault(v => v.HasValue);
 
-                return Json(new { value = variablesFiltradas });
+                // CKlists: contar DÍAS con dato (no cada muestra)
+                int tests = ordered
+                    .Where(r => r.resultValue.HasValue)
+                    .Select(r => r.executionDate.Date)
+                    .Distinct()
+                    .Count();
 
+                // Spark: promedio por DÍA en [fechaInicial, fechaFinal], reducido a 10 puntos
+                var spark = BuildSparkX(ordered, fechaInicial, fechaFinal, 10);
+
+                // Nombre/código desde la fila
+                string value = last.controlOperation ?? "";
+                string name = last.controlOperationName ?? value;
+
+                items.Add(new
+                {
+                    value,
+                    name,
+                    tests, // ← ahora son días (CKlists)
+                    last = lastTs.HasValue
+                            ? $"{lastTs:dd-MM-yy HH:mm} ({(lastVal.HasValue ? lastVal.Value.ToString("0.##") : "—")})"
+                            : "—",
+                    lsl,
+                    usl,
+                    spark
+                });
             }
+
+            // (Opcional) Ordena por nombre para que no “salten”
+            items = items.OrderBy(i => (string)i.GetType().GetProperty("name")!.GetValue(i)!).ToList();
+
+            return Json(new { value = items });
         }
 
-        public async Task<JsonResult> ObtenerVarX(string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
+        // Helpers SIN cambios
+        private static List<double> BuildSparkX(IEnumerable<result_Resultados> rows, DateTime f1, DateTime f2, int points)
         {
-            string token = HttpContext.Session.GetString("AuthToken"); // Obtener el token de la sesión
+            var byDay = rows
+                .Where(r => r.resultValue.HasValue)
+                .Where(r => r.executionDate >= f1 && r.executionDate <= f2)
+                .GroupBy(r => r.executionDate.Date)                   // ← prom. POR DÍA
+                .OrderBy(g => g.Key)
+                .Select(g => g.Average(x => x.resultValue!.Value))
+                .ToList();
 
-            var ListVariablesY = new List<result_varY>();
-
-            if (string.IsNullOrEmpty(token))
-            {
-                return Json(new { error = "Token no disponible" });
-            }
-            else
-            {
-                var dataResultP = getDataQuality.getVarXByvarY(
-                        token.ToString(),
-                        _settings.QueryVarX,
-                        _settings.Company,
-                        sku,varY, fechaInicial, fechaFinal, lineaId);
-                await Task.WhenAll(dataResultP);
-
-                var resultado = Json(dataResultP.Result.result);
-                return resultado;
-
-            }
+            if (byDay.Count <= points) return byDay;
+            return Downsample(byDay, points);
         }
+
+
+        // reduce un array largo a 'target' puntos promediando ventanas
+        private static List<double> Downsample(IList<double> src, int target)
+        {
+            if (src == null || src.Count == 0) return new();
+            if (src.Count <= target) return src.ToList();
+
+            var step = (double)src.Count / target;
+            var outp = new List<double>(target);
+
+            for (int i = 0; i < target; i++)
+            {
+                int a = (int)Math.Round(i * step);
+                int b = (int)Math.Round((i + 1) * step);
+                a = Math.Clamp(a, 0, src.Count - 1);
+                b = Math.Clamp(b, 0, src.Count);
+                if (b <= a) b = Math.Min(a + 1, src.Count);
+                var slice = src.Skip(a).Take(b - a).ToList();
+                outp.Add(slice.Average());
+            }
+            return outp;
+        }
+
 
 
         public IActionResult ConfigDashboard()
@@ -484,6 +615,8 @@ namespace dashboardQ40.Controllers
             return View("DetailResult"); // 📌 Sin ruta completa, solo el nombre
         }
 
+
+       
     }
 
 }

@@ -29,9 +29,59 @@
     <h2>Reporte de Trazabilidad Hacia Atrás</h2>
 
     <form method="get" action="@Url.Action("ReportTrazability", "Trazability")" class="d-flex align-items-center gap-2 mb-2">
-        <input type="text" name="searchBatch" class="form-control form-control-sm w-auto" placeholder="Buscar lote..." value="@Model?.SearchBatch" style="max-width: 200px;" />
-        <button type="submit" class="btn btn-sm btn-primary">Buscar</button>
+        <input id="txtSearchBatch" type="text" name="searchBatch" class="form-control form-control-sm w-auto"
+               placeholder="Buscar lote..." value="@Model?.SearchBatch" style="max-width: 200px;" />
+        <button id="btnBuscar" type="submit" class="btn btn-sm btn-primary">Buscar</button>
+
+        <button type="button" id="btnBuscarPorFechas" class="btn btn-sm btn-outline-secondary">
+            Buscar por fechas…
+        </button>
     </form>
+
+    <!-- Modal: Buscar lotes por fechas -->
+    <div class="modal fade" id="modalBuscarLotes" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Buscar lotes por rango de fechas</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label mb-1">Fecha inicio</label>
+                            <input id="fechaIni" type="date" class="form-control form-control-sm" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label mb-1">Fecha fin</label>
+                            <input id="fechaFin" type="date" class="form-control form-control-sm" />
+                        </div>
+                        <div class="col-12 col-md-4 d-flex align-items-end">
+                            <button id="btnConsultarLotes" class="btn btn-sm btn-primary w-100">Consultar</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive border rounded">
+                        <table class="table table-sm table-hover align-middle mb-0" id="tablaLotes">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:160px;">Lote</th>
+                                    <th>Descripción / SKU</th>
+                                    <th style="width:180px;">Inicio</th>
+                                    <th style="width:180px;">Fin</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div id="msgLotes" class="small text-muted mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     @if (Model?.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
@@ -42,16 +92,13 @@
         <script>
             const chart = echarts.init(document.getElementById('visorTrazabilidad'));
 
-                const trazabilidadDebug = @Html.Raw(jsonData);
-    //console.log("🧩 Columnas:", trazabilidadDebug.columnas);
-    //console.log("🧾 Filas:", trazabilidadDebug.filas);
-    //console.table(trazabilidadDebug.filas);
+            const trazabilidadDebug = @Html.Raw(jsonData);
 
             const rows = @Html.Raw(Json.Serialize(
             Model.Trazabilidad.Rows.Cast<System.Data.DataRow>().Select(r => new
             {
-                padre = r["batchIdentifier"].ToString(),       // lote padre
-                hijo = r["batchname"].ToString(),              // lote hijo
+                padre = r["batchIdentifier"].ToString(),
+                hijo = r["batchname"].ToString(),
                 nombre = r["manufacturingReferenceName"].ToString(),
                 id = r["manufacturingReference"].ToString(),
                 inicio = r["startDate"].ToString(),
@@ -59,74 +106,40 @@
             })
             ));
 
-            console.log("🎯 Lotes padre-hijo:", rows);
-
             const data = [];
             const links = [];
             const added = new Map();
 
             (rows.$values || []).forEach(r => {
-                // Nodo padre
                 if (!added.has(r.padre)) {
                     added.set(r.padre, true);
                     data.push({
                         id: r.padre,
                         name: r.padre,
                         symbolSize: [140, 40],
-                        info: {
-                            sku: r.nombre,
-                            id: r.padre,
-                            inicio: r.inicio,
-                            fin: r.fin
-                        }
+                        info: { sku: r.nombre, id: r.padre, inicio: r.inicio, fin: r.fin }
                     });
                 }
-
-                // Nodo hijo
                 if (r.hijo && !added.has(r.hijo)) {
                     added.set(r.hijo, true);
                     data.push({
                         id: r.hijo,
                         name: r.hijo,
                         symbolSize: [140, 40],
-                        info: {
-                            sku: r.nombre,
-                            id: r.hijo,
-                            inicio: r.inicio,
-                            fin: r.fin
-                        }
+                        info: { sku: r.nombre, id: r.hijo, inicio: r.inicio, fin: r.fin }
                     });
                 }
-
-                // Conexión
                 if (r.padre && r.hijo) {
                     links.push({ source: r.padre, target: r.hijo });
                 }
             });
 
-            // Buscar raíz (padre que no es hijo)
             const hijos = new Set(rows.$values.map(r => r.hijo));
             const padres = [...new Set(rows.$values.map(r => r.padre))];
             let rootId = padres.find(p => !hijos.has(p)) || padres[0];
 
-            function buildTreeSafe(rootId, visited = new Set()) {
-                if (visited.has(rootId)) return null; // evita recursión infinita
-                visited.add(rootId);
-
-                const rootNode = data.find(n => n.id === rootId);
-                if (!rootNode) return null;
-
-                const children = uniqueLinks
-                    .filter(link => link.source === rootId)
-                    .map(link => buildTreeSafe(link.target, new Set(visited)))
-                    .filter(child => child !== null);
-
-                return { ...rootNode, children };
-            }
-
             const uniqueLinks = [];
             const seenLinks = new Set();
-
             links.forEach(link => {
                 const key = `${link.source}→${link.target}`;
                 if (!seenLinks.has(key)) {
@@ -134,6 +147,18 @@
                     uniqueLinks.push(link);
                 }
             });
+
+            function buildTreeSafe(rootId, visited = new Set()) {
+                if (visited.has(rootId)) return null;
+                visited.add(rootId);
+                const rootNode = data.find(n => n.id === rootId);
+                if (!rootNode) return null;
+                const children = uniqueLinks
+                    .filter(link => link.source === rootId)
+                    .map(link => buildTreeSafe(link.target, new Set(visited)))
+                    .filter(child => child !== null);
+                return { ...rootNode, children };
+            }
 
             chart.setOption({
                 tooltip: {
@@ -148,14 +173,14 @@
                         const info = params.data.info;
                         if (!info) return 'Sin información';
                         return `
-                                <div style="max-width: 240px; font-size: 12px;">
-                                    <b>Lote fabricado</b><br/>
-                                    <b>SKU:</b> ${info.sku}<br/>
-                                    <b>Identificador:</b> ${info.id}<br/>
-                                    <b>Inicio:</b> ${info.inicio}<br/>
-                                    <b>Fin:</b> ${info.fin}<br/>
-                                    <a href="javascript:void(0)" onclick="filtrarLote('${info.id}')">🔍 Ver detalle</a>
-                                </div>`;
+                                        <div style="max-width: 240px; font-size: 12px;">
+                                            <b>Lote fabricado</b><br/>
+                                            <b>SKU:</b> ${info.sku}<br/>
+                                            <b>Identificador:</b> ${info.id}<br/>
+                                            <b>Inicio:</b> ${info.inicio}<br/>
+                                            <b>Fin:</b> ${info.fin}<br/>
+                                            <a href="javascript:void(0)" onclick="filtrarLote('${info.id}')">🔍 Ver detalle</a>
+                                        </div>`;
                     }
                 },
                 series: [{
@@ -164,265 +189,50 @@
                     orient: 'LR',
                     data: [buildTreeSafe(rootId)],
                     symbol: 'rect',
-                    symbolSize: [160, 70], // Aumenta el tamaño del rectángulo
+                    symbolSize: [160, 70],
                     edgeShape: 'polyline',
                     edgeForkPosition: '50%',
                     top: '10%',
                     left: '5%',
                     bottom: '10%',
                     right: '20%',
-                    // 👇👇 Espaciado entre niveles horizontales y verticales
-                    nodePadding: 30,    // Aumenta espacio entre nodos hermanos
+                    nodePadding: 30,
                     label: {
                         show: true,
                         formatter: function (params) {
                             const info = params.data.info;
                             if (!info) return params.data.name || '';
-                            return [
-                                `{b|${params.data.name}}`,
-                                `{s|${info.sku.substr(0,20)}}`
-                            ].join('\n');
+                            return [`{b|${params.data.name}}`, `{s|${info.sku.substr(0, 20)}}`].join('\n');
                         },
                         position: 'inside',
                         verticalAlign: 'middle',
                         align: 'center',
                         fontSize: 11,
-                        rich: {
-                            b: { fontWeight: 'bold', fontSize: 12 },
-                            s: { fontSize: 10 }
-                        }
+                        rich: { b: { fontWeight: 'bold', fontSize: 12 }, s: { fontSize: 10 } }
                     },
                     leaves: {
-                        label: {
-                            show: true,
-                            position: 'inside',
-                            verticalAlign: 'middle',
-                            align: 'center',
-                            fontSize: 11
-                        }
+                        label: { show: true, position: 'inside', verticalAlign: 'middle', align: 'center', fontSize: 11 }
                     },
-                    itemStyle: {
-                        borderColor: '#666',
-                        borderWidth: 1,
-                        color: '#eef9ff'
-                    },
+                    itemStyle: { borderColor: '#666', borderWidth: 1, color: '#eef9ff' },
                     expandAndCollapse: true,
                     initialTreeDepth: -1,
-                    lineStyle: {
-                        color: '#aaa',
-                        width: 2
-                    }
+                    lineStyle: { color: '#aaa', width: 2 }
                 }]
-
             });
 
-            function filtrarLote(id) {
+            window.filtrarLote = function (id) {
                 const form = document.createElement('form');
                 form.method = 'get';
                 form.action = '@Url.Action("ReportTrazability", "Trazability")';
-
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'searchBatch';
                 input.value = id;
-
                 form.appendChild(input);
                 document.body.appendChild(form);
                 form.submit();
-            }
+            };
         </script>
-
-    }
-
-
-
-    <br /><br />
-    @if (Model?.StartDate.HasValue == true && Model.EndDate.HasValue == true)
-    {
-        <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
-            <div style="flex: 1; min-width: 280px; padding-bottom: 10px;">
-                <div id="rangeSlider"></div>
-            </div>
-
-            <div class="small d-flex gap-2 flex-wrap align-items-center">
-                <span><strong>Desde:</strong> <span id="displayStart"></span></span>
-                <span><strong>Hasta:</strong> <span id="displayEnd"></span></span>
-
-                <form method="get" action="@Url.Action("ReportTrazability", "Trazability")" class="d-flex align-items-center gap-2">
-                    <input type="hidden" name="searchBatch" value="@Model.SearchBatch" />
-                    <input type="hidden" id="startDateInput" name="startDate" />
-                    <input type="hidden" id="endDateInput" name="endDate" />
-                    <button type="submit" class="btn btn-sm btn-outline-secondary">🔍 Filtrar</button>
-                </form>
-            </div>
-        </div>
-    }
-    </BR></BR>
-    @if (Model.Checklist != null && Model.Checklist.Rows.Count > 0)
-    {
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Lote</th>
-                    <th>Identificador Lote</th>
-                    <th>Inicio</th>
-                    <th>Fin</th>
-                    <th>SKU</th>                    
-                    <th>Línea</th>
-                    <th>Variable</th>
-                    <th>Resultado</th>
-                    <th>Min</th>
-                    <th>Max</th>
-
-                    <!-- Nuevas columnas estadísticas -->
-                    <th>Conteo</th>
-                    <th>Defectos</th>
-                    <th>Media</th>
-                    <th>Sigma</th>
-                    <th>Cp</th>
-                    <th>Cpk</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    string previousBatch = string.Empty;
-                    string previousManufacturingReference = string.Empty;
-                }
-
-                @foreach (System.Data.DataRow batchRow in Model.Trazabilidad.Rows)
-                {
-                    string batch = batchRow["batch"].ToString();
-                    string batchIdentifier = batchRow["batchname"].ToString();
-                    string creacionLote = batchRow["startDate"].ToString();
-                    string finLote = batchRow["endDate"].ToString();
-                    string manufacturingReference = batchRow["manufacturingReferencename"].ToString();
-
-                    // Obtener checklist asociados a este batch
-                                    var checklistFiltrados = new List<DataRow>();
-
-                                    foreach (DataRow c in Model.Checklist.Rows)
-                                    {
-                        bool coincideBatch = !string.IsNullOrEmpty(c["batch"].ToString()) && c["batch"].ToString() == batch;
-                        bool coincideReferencia = c["manufacturingReference"].ToString() == batchRow["manufacturingReference"].ToString();
-
-                        if (coincideBatch || coincideReferencia)
-                        {
-                            checklistFiltrados.Add(c);
-                        }
-                                    }
-
-                    if (checklistFiltrados.Count == 0)
-                    {
-                        // Mostrar solo la fila del batch, sin checklist
-                        <tr>
-                            <td>@batch</td>
-                            <td>@batchIdentifier</td>
-                            <td>@creacionLote</td>
-                            <td>@finLote</td>
-                            <td>@manufacturingReference</td>
-                            <td colspan="12">Sin registros de checklist</td>
-                        </tr>
-                    }
-                    else
-                    {
-                        bool mostrarInfoLote = true;
-
-                        foreach (var row in checklistFiltrados)
-                        {
-                            string variable = row["controlOperationName"].ToString();
-                            string key = $"{batch}|{variable}";
-                            var stats = Model.Estadisticas.ContainsKey(key) ? Model.Estadisticas[key] : null;
-
-                            <tr>
-                                @if (mostrarInfoLote)
-                                {
-                                    <td>@batch</td>
-                                    <td>@batchIdentifier</td>
-                                    <td>@creacionLote</td>
-                                    <td>@finLote</td>
-                                    <td>@manufacturingReference</td>
-                                    mostrarInfoLote = false; // Ya mostramos, ahora ocultar en siguientes
-                                }
-                                else
-                                {
-                                    <td></td> <!-- Lote -->
-                                    <td></td> <!-- Identificador Lote -->
-                                    <td></td> <!-- Inicio -->
-                                    <td></td> <!-- Fin -->
-                                    <td></td> <!-- SKU -->
-                                }
-
-                                <td>
-                                    @if (!string.IsNullOrEmpty(@row["workplace"].ToString()))
-                                    {
-                                        @row["workplace"]
-                                    }
-                                </td>
-                                <td>@variable</td>
-                                <td>
-                                    @if (!string.IsNullOrEmpty(row["resultValue"].ToString()))
-                                    {
-                                        @row["resultValue"]
-                                    }
-                                    else
-                                    {
-                                        if (row["resultAttribute"].ToString() == "1")
-                                        {
-                                            <i class="fa fa-check-circle text-success" title="OK"></i>
-                                        }
-                                        else
-                                        {
-                                            <i class="fa fa-times-circle text-danger" title="NOK"></i>
-                                        }
-                                    }
-                                </td>
-                                <td>@row["minTolerance"]</td>
-                                <td>@row["maxTolerance"]</td>
-
-                                <td>@(stats?.Conteo ?? 0)</td>
-                                <td>@(stats?.Defectos ?? 0)</td>
-                                <td>@(stats?.Media.ToString("0.00") ?? "-")</td>
-                                <td>@(stats?.Sigma.ToString("0.00") ?? "-")</td>
-                                <td>@(stats?.Cp.ToString("0.00") ?? "-")</td>
-                                <td>@(stats?.Cpk.ToString("0.00") ?? "-")</td>
-                            </tr>
-                        }
-                    }
-                }
-            </tbody>
-        </table>
-    }
-    else if (Model.Checklist != null)
-    {
-        <div class="alert alert-warning">No se encontraron checklist para el lote o rango seleccionado.</div>
-    }
-
-    @if (Model.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
-{
-        <h4>Estructura de Lotes (Jerarquía de Trazabilidad)</h4>
-        <table class="table table-bordered table-sm">
-            <thead>
-                <tr>
-                    <th>Padre</th>
-                    <th>Hijo</th>
-                    <th>Lote</th>
-                    <th>Identificador</th>
-                    <th>Nivel</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (System.Data.DataRow row in Model.Trazabilidad.Rows)
-                {
-                    <tr>
-                        <td>@row["Padre"]</td>
-                        <td>@row["Hijo"]</td>
-                        <td>@row["batch"]</td>
-                        <td>@row["batchIdentifier"]</td>
-                        <td>@row["Nivel"]</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
     }
 
     <button class="btn btn-primary" onclick="window.print()">Imprimir Reporte</button>
@@ -432,105 +242,276 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
 
-    @if (Model.StartDate.HasValue && Model.EndDate.HasValue)
-    {
-        <script>
-            const rangeSlider = document.getElementById('rangeSlider');
-            const displayStart = document.getElementById('displayStart');
-            const displayEnd = document.getElementById('displayEnd');
-            const inputStart = document.getElementById('startDateInput');
-            const inputEnd = document.getElementById('endDateInput');
+    <!-- Script del modal SIEMPRE cargado -->
+    <script>
+        (function () {
+            if (!window.bootstrap) return;
 
-            // 🎯 Rango de fechas reales desde el modelo
-            const dateStart = new Date("@Model.StartDate.Value.ToString("yyyy-MM-ddTHH:mm:ss")");
-            const dateEnd = new Date("@Model.EndDate.Value.ToString("yyyy-MM-ddTHH:mm:ss")");
+            var modalEl = document.getElementById('modalBuscarLotes');
+            if (!modalEl) return;
+            var modalBuscarLotes = new bootstrap.Modal(modalEl);
 
+            document.getElementById('btnBuscarPorFechas')?.addEventListener('click', function () {
+                const hoy = new Date().toISOString().slice(0, 10);
+                document.getElementById('fechaIni').value = hoy;
+                document.getElementById('fechaFin').value = hoy;
+                document.querySelector('#tablaLotes tbody').innerHTML = '';
+                document.getElementById('msgLotes').textContent = '';
+                modalBuscarLotes.show();
+            });
 
-            // ⏱ Total en milisegundos
-            const totalMs = dateEnd - dateStart;
+            var btnConsultar = document.getElementById('btnConsultarLotes');
+            if (btnConsultar) {
+                btnConsultar.addEventListener('click', async function (ev) {
+                    ev.preventDefault();
 
-            // 🕓 Crear marcas horarias cada 1 hora
-            function generatePipPositions(totalMs) {
-                const positions = [];
-                const hourInMs = 60 * 60 * 1000;
-                const totalHours = Math.floor(totalMs / hourInMs);
-                for (let i = 0; i <= totalHours; i++) {
-                    const percent = (i * hourInMs * 100) / totalMs;
-                    positions.push(Math.min(percent, 100));
-                }
-                return positions;
+                    const ini = document.getElementById('fechaIni').value;
+                    const fin = document.getElementById('fechaFin').value;
+                    const msg = document.getElementById('msgLotes');
+                    const tbody = document.querySelector('#tablaLotes tbody');
+                    tbody.innerHTML = '';
+
+                    if (!ini || !fin) { msg.textContent = 'Selecciona ambas fechas.'; return; }
+                    if (ini > fin) { msg.textContent = 'La fecha inicio no puede ser mayor que la fecha fin.'; return; }
+
+                    msg.textContent = 'Buscando lotes...';
+
+                    try {
+                        const url = `@Url.Action("BuscarLotesPorFechas", "Trazability")?fechaIni=${encodeURIComponent(ini)}&fechaFin=${encodeURIComponent(fin)}`;
+                        const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                        if (!resp.ok) throw new Error('Error de red');
+
+                        const data = await resp.json();
+                        console.log('🔎 Lotes recibidos:', data);
+
+                        // 👇 Maneja formato Newtonsoft: { $id: "1", $values: [...] }
+                        const items = Array.isArray(data) ? data : (data && Array.isArray(data.$values) ? data.$values : []);
+
+                        if (!items.length) { msg.textContent = 'Sin resultados.'; return; }
+
+                        items.forEach(x => {
+                            const lote = x.lote ?? x.batchIdentifier ?? x.batch ?? '';
+                            const desc = x.descripcion ?? x.manufacturingReferenceName ?? '';
+                            const inicio = x.inicio ?? x.startDate ?? '';
+                            const finv = x.fin ?? x.endDate ?? '';
+
+                            const tr = document.createElement('tr');
+                            tr.style.cursor = 'pointer';
+                            tr.innerHTML = `
+                      <td><code>${lote}</code></td>
+                      <td>${desc}</td>
+                      <td>${fmtSmart(inicio)}</td>
+                      <td>${fmtSmart(finv)}</td>
+                    `;
+                            tr.addEventListener('click', function () {
+                                document.getElementById('txtSearchBatch').value = lote || '';
+                                modalBuscarLotes.hide();
+                                document.getElementById('btnBuscar').closest('form').submit();
+                            });
+                            tbody.appendChild(tr);
+                        });
+
+                        msg.textContent = `${items.length} lote(s) encontrados. Da clic para seleccionar.`;
+                    } catch (e) {
+                        console.error(e);
+                        msg.textContent = 'Error al consultar los lotes.';
+                    }
+                });
             }
 
-            noUiSlider.create(rangeSlider, {
-                start: [0, totalMs],
-                connect: true,
-                step: 15 * 60 * 1000, // cada 15 minutos
-                range: {
-                    min: 0,
-                    max: totalMs
-                },
-                format: {
-                    to: v => parseInt(v),
-                    from: v => parseInt(v)
-                },
-                tooltips: [
-                    {
-                        to: v => new Date(dateStart.getTime() + v).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        from: () => 0
-                    },
-                    {
-                        to: v => new Date(dateStart.getTime() + v).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        from: () => 0
-                    }
-                ],
-                pips: {
-                    mode: 'positions',
-                    values: generatePipPositions(totalMs),
-                    density: 2,
-                    stepped: true,
-                    format: {
-                        to: v => {
-                            const time = new Date(dateStart.getTime() + v);
-                            return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        }
+            function fmtSmart(v) {
+                if (!v) return '';
+                // Si viene ISO (con 'T'), formatea; si viene en texto local, déjalo tal cual
+                if (typeof v === 'string' && v.includes('T')) {
+                    const d = new Date(v);
+                    if (!isNaN(d)) {
+                        return d.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
                     }
                 }
-
-            });
-
-            // 📅 Mostrar valores formateados
-            rangeSlider.noUiSlider.on('update', function (values) {
-                const msStart = parseInt(values[0]);
-                const msEnd = parseInt(values[1]);
-
-                const newStart = new Date(dateStart.getTime() + msStart);
-                const newEnd = new Date(dateStart.getTime() + msEnd);
-
-                displayStart.textContent = newStart.toLocaleString('es-MX', { hour: '2-digit', minute: '2-digit' });
-                displayEnd.textContent = newEnd.toLocaleString('es-MX', { hour: '2-digit', minute: '2-digit' });
+                return v.toString();
+            }
+        })();
+    </script>
 
 
 
-                inputStart.value = toLocalDatetimeValue(newStart);
-                inputEnd.value = toLocalDatetimeValue(newEnd);
-
-                console.log("🧪 Fecha generada - inputStart.value:", inputStart.value);
-                console.log("🧪 Fecha generada - inputEnd.value:", inputEnd.value);
-            });
-
-              function toLocalDatetimeValue(date) {
-                    return date.getFullYear() + '-' +
-                        String(date.getMonth() + 1).padStart(2, '0') + '-' +
-                        String(date.getDate()).padStart(2, '0') + 'T' +
-                        String(date.getHours()).padStart(2, '0') + ':' +
-                        String(date.getMinutes()).padStart(2, '0');
-                }
-
-            // Inicializar al máximo
-            rangeSlider.noUiSlider.set([0, totalMs]);
-
-        </script>
-    }
 }
 
+<br />
+<br />
+@if (Model?.StartDate.HasValue == true && Model.EndDate.HasValue == true)
+{
+    <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+        <div style="flex: 1; min-width: 280px; padding-bottom: 10px;">
+            <div id="rangeSlider"></div>
+        </div>
 
+        <div class="small d-flex gap-2 flex-wrap align-items-center">
+            <span><strong>Desde:</strong> <span id="displayStart"></span></span>
+            <span><strong>Hasta:</strong> <span id="displayEnd"></span></span>
+
+            <form method="get" action="@Url.Action("ReportTrazability", "Trazability")" class="d-flex align-items-center gap-2">
+                <input type="hidden" name="searchBatch" value="@Model.SearchBatch" />
+                <input type="hidden" id="startDateInput" name="startDate" />
+                <input type="hidden" id="endDateInput" name="endDate" />
+                <button type="submit" class="btn btn-sm btn-outline-secondary">🔍 Filtrar</button>
+            </form>
+        </div>
+    </div>
+}
+</BR></BR>
+
+@if (Model.Checklist != null && Model.Checklist.Rows.Count > 0)
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Lote</th>
+                <th>Identificador Lote</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>SKU</th>
+                <th>Línea</th>
+                <th>Variable</th>
+                <th>Resultado</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th>Conteo</th>
+                <th>Defectos</th>
+                <th>Media</th>
+                <th>Sigma</th>
+                <th>Cp</th>
+                <th>Cpk</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                string previousBatch = string.Empty;
+                string previousManufacturingReference = string.Empty;
+            }
+
+            @foreach (System.Data.DataRow batchRow in Model.Trazabilidad.Rows)
+            {
+                string batch = batchRow["batch"].ToString();
+                string batchIdentifier = batchRow["batchname"].ToString();
+                string creacionLote = batchRow["startDate"].ToString();
+                string finLote = batchRow["endDate"].ToString();
+                string manufacturingReference = batchRow["manufacturingReferencename"].ToString();
+
+                // Obtener checklist asociados a este batch
+                var checklistFiltrados = new List<DataRow>();
+                foreach (DataRow c in Model.Checklist.Rows)
+                {
+                    bool coincideBatch = !string.IsNullOrEmpty(c["batch"].ToString()) && c["batch"].ToString() == batch;
+                    bool coincideReferencia = c["manufacturingReference"].ToString() == batchRow["manufacturingReference"].ToString();
+                    if (coincideBatch || coincideReferencia)
+                    {
+                        checklistFiltrados.Add(c);
+                    }
+                }
+
+                if (checklistFiltrados.Count == 0)
+                {
+                    <tr>
+                        <td>@batch</td>
+                        <td>@batchIdentifier</td>
+                        <td>@creacionLote</td>
+                        <td>@finLote</td>
+                        <td>@manufacturingReference</td>
+                        <td colspan="12">Sin registros de checklist</td>
+                    </tr>
+                }
+                else
+                {
+                    bool mostrarInfoLote = true;
+                    foreach (var row in checklistFiltrados)
+                    {
+                        string variable = row["controlOperationName"].ToString();
+                        string key = $"{batch}|{variable}";
+                        var stats = Model.Estadisticas.ContainsKey(key) ? Model.Estadisticas[key] : null;
+
+                        <tr>
+                            @if (mostrarInfoLote)
+                            {
+                                <td>@batch</td>
+                                <td>@batchIdentifier</td>
+                                <td>@creacionLote</td>
+                                <td>@finLote</td>
+                                <td>@manufacturingReference</td>
+                                mostrarInfoLote = false;
+                            }
+                            else
+                            {
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            }
+
+                            <td>@(string.IsNullOrEmpty(row["workplace"].ToString()) ? "" : row["workplace"])</td>
+                            <td>@variable</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(row["resultValue"].ToString()))
+                                {
+                                    @row["resultValue"]
+                                }
+                                else
+                                {
+                                    if (row["resultAttribute"].ToString() == "1")
+                                    {
+                                        <i class="fa fa-check-circle text-success" title="OK"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa fa-times-circle text-danger" title="NOK"></i>
+                                    }
+                                }
+                            </td>
+                            <td>@row["minTolerance"]</td>
+                            <td>@row["maxTolerance"]</td>
+                            <td>@(stats?.Conteo ?? 0)</td>
+                            <td>@(stats?.Defectos ?? 0)</td>
+                            <td>@(stats?.Media.ToString("0.00") ?? "-")</td>
+                            <td>@(stats?.Sigma.ToString("0.00") ?? "-")</td>
+                            <td>@(stats?.Cp.ToString("0.00") ?? "-")</td>
+                            <td>@(stats?.Cpk.ToString("0.00") ?? "-")</td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+}
+else if (Model.Checklist != null)
+{
+    <div class="alert alert-warning">No se encontraron checklist para el lote o rango seleccionado.</div>
+}
+
+@if (Model.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
+{
+    <h4>Estructura de Lotes (Jerarquía de Trazabilidad)</h4>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                <th>Padre</th>
+                <th>Hijo</th>
+                <th>Lote</th>
+                <th>Identificador</th>
+                <th>Nivel</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (System.Data.DataRow row in Model.Trazabilidad.Rows)
+            {
+                <tr>
+                    <td>@row["Padre"]</td>
+                    <td>@row["Hijo"]</td>
+                    <td>@row["batch"]</td>
+                    <td>@row["batchIdentifier"]</td>
+                    <td>@row["Nivel"]</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

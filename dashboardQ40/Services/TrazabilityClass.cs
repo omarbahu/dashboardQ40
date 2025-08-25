@@ -442,6 +442,51 @@ WHERE NOT ( CTE.batch is null );
         }
 
 
+        public static DataTable GetBatchbyDates(string company, DateTime F1, DateTime F2, string connectionString)
+        {
+            // Configura tu cadena de conexión aquí
+            //string connectionString = "Server=PCMX01\\SQLSERVER2017;Database=captor;User Id=sa;Password=Sisteplant+2017;";
+
+            // Consulta SQL recursiva
+            string sqlQuery = @"
+                select distinct b.batchIdentifier, b.manufacturingReference, MR.manufacturingReferenceName, W.workplace, w.workplaceName,
+B.startDate, B.endDate
+from TraceabilityNodeRelations B
+inner join ManufacturingReference MR on B.company = MR.company and B.manufacturingReference = MR.manufacturingReference
+inner join Workplace W on W.company = B.company and W.workplace = B.consumptionWorkplace
+where B.startDate between @fecha1 and @fecha2 and B.company = @company
+order by b.batchIdentifier;
+            ";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    // Añadir parámetros
+                    command.Parameters.AddWithValue("@company", company);
+                    command.Parameters.AddWithValue("@fecha1", F1);
+                    command.Parameters.AddWithValue("@fecha2", F2);
+
+                    string queryLog = sqlQuery
+    .Replace("@company", $"'{company}'")
+    .Replace("@fecha1", $"'{F1}'")
+                    .Replace("@fecha2", $"'{F2}'");
+
+                    Console.WriteLine("SQL ejecutado:\n" + queryLog);
+
+                    // Ejecutar la consulta y llenar el DataTable
+                    DataTable resultTable = new DataTable();
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    adapter.Fill(resultTable);
+
+                    string json = Newtonsoft.Json.JsonConvert.SerializeObject(resultTable, Newtonsoft.Json.Formatting.Indented);
+                    Console.WriteLine("Resultado JSON:\n" + json);
+
+                    return resultTable;
+                }
+            }
+        }
+
         public static List<TrazabilidadNode> ConvertirDataTableATrazabilidad(DataTable dt)
         {
             return dt.AsEnumerable().Select(row => new TrazabilidadNode

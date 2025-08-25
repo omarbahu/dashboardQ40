@@ -5,46 +5,141 @@
 }
 
 <style>
-    .select2-selection--multiple {
-        max-height: 90px !important;
-        overflow-y: auto !important;
+    /* ====== Selects "estado" ocultos (se usan para el POST) ====== */
+    #variableY, #variablesX { display: none !important; }
+
+    /* ====== Cards layout ====== */
+    .cards-section-title{ margin-top:18px; margin-bottom:10px; font-weight:700; font-size:1.1rem; }
+    .cards-grid{
+        display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px;
+    }
+    @@media (max-width:1200px){ .cards-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @@media (max-width:768px){ .cards-grid{ grid-template-columns:1fr; } }
+
+    .card-y, .card-x, .card-y-context{
+        position:relative; border:1px solid #d1d5db; border-radius:14px; background:#fff;
+        padding:12px 14px; box-shadow:0 1px 0 rgba(0,0,0,0.03); cursor:pointer;
+        transition:border-color .15s ease, box-shadow .15s ease, transform .04s ease;
+    }
+    .card-y:hover, .card-x:hover{ border-color:#94a3b8; box-shadow:0 2px 7px rgba(0,0,0,0.06); }
+    .card-y.selected{ border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.12); }
+    .card-x.selected{ border-color:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,.12); }
+
+    .card-title{ font-weight:700; color:#111827; margin:0 0 4px 0; font-size:.98rem; padding-left:28px; position:relative; min-height:22px; }
+
+    .card-y .radio-dot{ position:absolute; top:2px; left:0; width:18px; height:18px; border-radius:6px; border:2px solid #334155; background:#fff; }
+    .card-y.selected .radio-dot{ background:#2563eb; border-color:#2563eb; }
+    .card-y.selected .radio-dot::after{ content:''; position:absolute; top:3px; left:3px; width:8px; height:8px; border-radius:4px; background:#fff; }
+
+    .card-x .checkbox{ position:absolute; top:2px; left:0; width:18px; height:18px; border-radius:4px; border:2px solid #334155; background:#fff; }
+    .card-x.selected .checkbox{ background:#22c55e; border-color:#22c55e; }
+    .card-x.selected .checkbox::after{ content:''; position:absolute; left:4px; top:1px; width:6px; height:10px; border:2px solid #fff;
+        border-top-color:transparent; border-left-color:transparent; transform:rotate(45deg); }
+
+    .badge{ display:inline-block; border-radius:12px; padding:2px 8px; font-size:.74rem; border:1px solid transparent; margin-right:6px; margin-top:6px; }
+    .b-primary{ background:#e8eefc; border-color:#93c5fd; color:#1d4ed8; }
+    .b-warn{ background:#fef3c7; border-color:#f59e0b; color:#92400e; }
+    .b-safe{ background:#e5f7ee; border-color:#34d399; color:#065f46; }
+    .b-muted{ background:#f3f4f6; border-color:#d1d5db; color:#374151; }
+
+    .meta-row{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding-left:28px; }
+    .spark{ margin-left:auto; width:140px; height:36px; border-radius:8px; background:#f9fafb; border:1px solid #e5e7eb; }
+
+    .cards-toolbar{ display:flex; gap:8px; align-items:center; margin:6px 0 12px 0; flex-wrap:wrap; }
+    .chip{ border-radius:12px; padding:4px 10px; border:1px solid #9ca3af; background:#f3f4f6; font-size:.78rem; }
+
+    .empty-msg{ color:#9ca3af; font-style:italic; padding:8px 0; }
+
+    /* Helpers visibilidad */
+    .hidden{ display:none !important; }
+
+    .spark {
+        width: 160px;
+        height: 32px;
     }
 
-    .select2-selection__rendered {
+        .spark canvas, .spark svg {
+            display: block !important;
+        }
+    /* ayuda a evitar que colapse */
+
+
+    /* ===== Compactación de cards y spark ===== */
+    .card-y {
+        padding: 10px 12px;
+    }
+    /* antes 12px 14px */
+    .card-title {
+        font-size: .95rem;
+        margin: 0 0 2px 0;
+        padding-left: 24px;
+        min-height: auto;
+    }
+
+    .meta-row {
+        padding-left: 24px; /* antes 28px */
         display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between; /* badges izq, spark der */
         flex-wrap: wrap;
-        gap: 2px;
-        max-height: 88px;
-        overflow-y: auto;
     }
 
-    .select2-selection__choice {
-        font-size: 12px;
-        padding: 2px 6px;
-        background-color: #e0f2fe;
-        border: 1px solid #38bdf8;
-        color: #0369a1;
+    .badge {
+        margin-top: 2px;
+        padding: 1px 8px;
     }
+    /* badges más densas */
+
+    /* spark más pequeño y con buena disposición */
+
+        .spark canvas, .spark svg {
+            display: block !important;
+        }
+
+    .spark {
+        width: 128px; /* antes 160 */
+        height: 28px; /* antes 32  */
+        margin-left: auto;
+        border-radius: 8px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+    }
+
+    .meta-row {
+        gap: 6px;
+    }
+
+    .badge {
+        font-size: .72rem;
+        padding: 2px 7px;
+    }
+
+
 </style>
 
 
-<h2>Dashboard Arca Planta insurgentes</h2>
+<h4>Reporte de calidad Y y X Planta insurgentes</h4>
+
 <form id="selectionForm" target="_blank">
     <!-- Renglón 1: filtros + botones -->
     <div class="row row-cols-lg-auto g-2 align-items-end">
-        <!-- Fecha y Hora -->
         <div class="col">
-            <label for="startDate" class="form-label">Desde:</label>
+            <label for="startDate" class="form-label">Desde:</label>            
+        </div>
+        <div class="col">            
             <input type="datetime-local" id="startDate" name="startDate" class="form-control form-control-sm" />
         </div>
         <div class="col">
-            <label for="endDate" class="form-label">Hasta:</label>
+            <label for="endDate" class="form-label">Hasta:</label>            
+        </div>
+        <div class="col">            
             <input type="datetime-local" id="endDate" name="endDate" class="form-control form-control-sm" />
         </div>
-
-        <!-- Línea -->
         <div class="col">
-            <label for="line" class="form-label">Línea:</label>
+            <label for="line" class="form-label">Línea:</label>            
+        </div>
+        <div class="col">
             <select id="line" name="line" class="form-select form-select-sm">
                 <option value="">Línea</option>
                 @if (ViewBag.Lines != null)
@@ -57,106 +152,307 @@
             </select>
         </div>
 
-        <!-- SKU -->
         <div class="col">
             <label for="sku" class="form-label">SKU:</label>
+            
+        </div>
+        <div class="col">
+            
             <select id="sku" name="sku" class="form-select form-select-sm">
                 <option value="">SKU</option>
             </select>
         </div>
 
-        <!-- Variable Y -->
-        <div class="col">
-            <label for="variableY" class="form-label">Variable Y:</label>
-            <select id="variableY" name="variableY" class="form-select form-select-sm">
+        <!-- Selects ocultos (estado) -->
+        <div class="col d-none">
+            <label for="variableY" class="form-label">Variable Y (hidden):</label>
+            <select id="variableYSelect" name="variableYSelect" class="form-select form-select-sm">
                 <option value="">Variable Y</option>
-                @foreach (var variableY in ViewBag.Variables.Keys)
-                {
-                    <option value="@variableY">@variableY</option>
+                @if (ViewBag.Variables != null) {
+                    foreach (var variableY in ViewBag.Variables.Keys) {
+                        <option value="@variableY">@variableY</option>
+                    }
                 }
             </select>
         </div>
-
-
-        <!-- Botones -->
-        <div class="col">
-            <label class="form-label d-block invisible">Acciones</label>
-            <button id="btnReporte" type="button" class="btn btn-primary btn-sm" onclick="submitForm('@Url.Action("SubmitSelection", "Dashboard")')">
-                📊 Reporte
-            </button>
-
-            <button type="button" class="btn btn-secondary btn-sm ms-1" onclick="submitForm('@Url.Action("SubmitSelectionDetail", "Dashboard")')">
-                🔍 Detalle
-            </button>
+        <div class="col d-none">
+            <label for="variablesX" class="form-label">Variables X (hidden):</label>
+            <select id="variablesX" name="variablesX[]" multiple="multiple" class="form-select form-select-sm w-100"></select>
         </div>
+
+      
     </div>
 
-    <!-- Renglón 2: solo Select2 a lo ancho -->
-    <div class="row mt-2">
-        <div class="col-12">
-            <label for="variablesX" class="form-label">Variables X:</label>
-            <select id="variablesX" name="variablesX[]" multiple="multiple" class="form-select form-select-sm w-100">
-            </select>
-            <div id="noVariablesX" class="text-danger mt-2" style="display: none;">
-                ⚠️ No se encontraron variables X con datos para este rango de fechas.
+    <!-- ===== Aviso cuando faltan filtros ===== -->
+    <div id="filtersHint" class="alert alert-light border mt-3" role="alert">
+        Selecciona <b>Desde</b>, <b>Hasta</b>, <b>Línea</b> y <b>SKU</b> para ver las variables disponibles.
+    </div>
+
+    <!-- ========== Paso 1: Cards Y (visible solo cuando hay filtros completos) ========== -->
+    <div id="secYWrap" class="hidden">
+        <div class="cards-section-title">1) Selecciona una Variable Y</div>
+<!-- 
+        <div class="cards-toolbar">
+            <span class="chip">☑ Solo con datos</span>
+            <span class="chip">Orden: Más datos ▼</span>
+            <span class="chip">Buscar 🔎</span>
+        </div>
+                -->
+        <div id="cardsY" class="cards-grid"></div>
+        <div id="cardsYEmpty" class="empty-msg" style="display:none;">No hay variables Y con datos para el periodo.</div>
+    </div>
+
+    <!-- ========== Paso 2: Contexto Y (visible solo tras seleccionar Y) ========== -->
+    <div id="secYContextWrap" class="hidden">
+        <div class="cards-section-title">2) Variable Y seleccionada y Variables X relacionadas</div>
+        <div id="cardYContext" class="card-y-context">
+            <div class="card-title" style="padding-left:0;" id="ctxTitle">—</div>
+            <div class="meta-row" style="padding-left:0;">
+                <span class="badge b-primary">Autocontroles: —</span>
+                <span class="badge b-warn" id="ctxOOS" style="display:none;">OOS: — ⚠</span>
+                <span class="badge b-safe">Cobertura: —/— días</span>
+                <span class="badge b-muted">Último: —</span>
+                <div class="spark"></div>
             </div>
         </div>
     </div>
+
+    <!-- ========== Paso 3: Cards X (visible solo tras seleccionar Y) ========== -->
+    <div id="secXWrap" class="hidden">
+        <div class="cards-section-title">3) Selecciona Variables X a graficar</div>
+        <div id="cardsX" class="cards-grid" style="grid-template-columns:repeat(2, minmax(0,1fr));"></div>
+        <div id="noVariablesX" class="text-danger mt-2" style="display:none;">
+            ⚠️ No se encontraron variables X con datos para este rango de fechas.
+        </div>
+    </div>
+
+      <div class="col">
+            <label class="form-label d-block invisible">Acciones</label>
+            <button id="btnReporte" type="button" class="btn btn-primary btn-sm" disabled
+                    onclick="submitForm('@Url.Action("SubmitSelection", "Dashboard")')">
+                📊 Reporte
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm ms-1" disabled id="btnDetalle"
+                    onclick="submitForm('@Url.Action("SubmitSelectionDetail", "Dashboard")')">
+                🔍 Detalle
+            </button>
+        </div>
+
+    <input type="hidden" id="variableY" name="variableY" />
 </form>
 
 
-<!-- Botones separados fuera del formulario 
-<div class="row">
-    <div class="col-md-6">
-        <button type="button" class="btn btn-primary w-100" onclick="submitForm('/Dashboard/SubmitSelection')">
-            📊 Generar Reporte Unificado
-        </button>
-    </div>
-    <div class="col-md-6">
-        <button type="button" class="btn btn-secondary w-100" onclick="submitForm('/Dashboard/SubmitSelectionDetail')">
-            🔍 Generar Reporte Detallado
-        </button>
-    </div>
-</div>
--->
-
-
 @section Scripts {
-    <!-- Cargar jQuery antes que Select2 -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Cargar Select2 (CSS y JS) -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
     <script>
-      
-        $(document).ready(function () {
+        // ======= Helpers de UI (HTML para cards) =======
+        function yCardHtml(item, selected) {
+            return `
+                    <div class="card-y ${selected ? 'selected' : ''}" data-code="${item.codigo}" data-name="${item.nombre}">
+                        <div class="radio-dot"></div>
+                        <div class="card-title">${item.nombre}</div>
+                        <div class="meta-row">
+                            <span class="badge b-primary">CKlists: ${item.tests ?? '—'}</span>
+                            ${(item.oos ?? 0) > 0 ? `<span class="badge b-warn">OOS: ${item.oos} ⚠</span>` : ``}
+                            <span class="badge b-muted">Last: ${item.last ?? '—'}</span>
+                                    <div class="spark" id="spark-${item.codigo}"></div>  <!-- 🔹 nuevo -->
+                        </div>
+                    </div>`;
+        }
+        function xCardHtml(item, selected) {
+            const sid = cssSafeId(item.value);
+            return `
+            <div class="card-x ${selected ? 'selected' : ''}" data-value="${item.value}" data-name="${item.name}">
+              <div class="checkbox"></div>
+              <div class="card-title">${item.name}</div>
+              <div class="meta-row">
+                <span class="badge b-primary">CKlists: ${item.tests ?? '—'}</span>
+                <span class="badge b-muted">Last: ${item.last ?? '—'}</span>
+                <div class="spark" id="sparkx-${sid}"></div>
+              </div>
+            </div>`;
+        }
 
-            if ($.fn.select2) {
-                $("#variablesX").select2({
-                    placeholder: "Seleccione variables X",
-                    width: 'resolve',
-                    allowClear: true
-                });
-            } else {
-                console.error("❌ Select2 no está cargado. Revisa la URL del CDN.");
+
+
+        function cssSafeId(s) {
+            return String(s == null ? '' : s).replace(/[^A-Za-z0-9_-]/g, '_');
+        }
+
+        // ======= Estado / visibilidad por pasos =======
+        function filtersReady() {
+            return $("#startDate").val() && $("#endDate").val() && $("#line").val() && $("#sku").val();
+        }
+
+        function updateReportButtons() {
+            const hasY = !!$("#variableY").val();
+            const hasX = $("#variablesX option").length > 0;
+            const enable = hasY && hasX;
+            $("#btnReporte, #btnDetalle").prop("disabled", !enable);
+        }
+
+        function resetYAndX() {
+            // borra Y y X visual/estado
+            $("#variableY").val("");
+            $("#variablesX").empty();
+
+            $("#cardsY").empty();
+            $("#cardsYEmpty").hide();
+
+            $("#cardsX").empty();
+            $("#noVariablesX").hide();
+
+            $("#secYContextWrap").addClass("hidden");
+            $("#secXWrap").addClass("hidden");
+            updateReportButtons();
+        }
+
+        function updateSectionsVisibility() {
+            if (!filtersReady()) {
+                $("#filtersHint").removeClass("hidden");
+                $("#secYWrap, #secYContextWrap, #secXWrap").addClass("hidden");
+                resetYAndX();
+                return;
             }
+            // Filtros OK → mostramos Paso 1 y ocultamos 2–3 hasta que elijan Y
+            $("#filtersHint").addClass("hidden");
+            $("#secYWrap").removeClass("hidden");
+            $("#secYContextWrap, #secXWrap").addClass("hidden");
+            updateReportButtons();
+        }
 
-        });
+        // ======= Render de Y y selección =======
+        function renderYCards(items) {
+            const $wrap = $("#cardsY"), $empty = $("#cardsYEmpty");
+            $wrap.empty();
+            if (!items || !items.length) { $empty.show(); return; }
+            $empty.hide();
+            const selectedCode = $("#variableY").val() || '';
+            items.forEach(it => $wrap.append(yCardHtml(it, String(it.codigo) === String(selectedCode))));
+            $("#cardsY .card-y").off("click").on("click", function () {
+                selectY($(this).data("code"), $(this).data("name"));
+            });
+        }
+        function selectY(code, name) {
+            $("#cardsY .card-y").removeClass("selected");
+            $(`#cardsY .card-y[data-code="${code}"]`).addClass("selected");
 
+            // 🔒 Guarda SIEMPRE el CÓDIGO en el hidden
+            $("#variableY").val(code).trigger('change');
+
+            console.log("✅ Y seleccionada:", { code, name, valHidden: $("#variableY").val() });
+
+            // Contexto visible
+            $("#ctxTitle").text(name);
+            $("#secYContextWrap").removeClass("hidden");
+
+            // Cargar X
+            cargarVarX();
+            updateReportButtons();
+        }
+
+        // ======= Render de X =======
+        function renderXCards(items) {
+            const $wrap = $("#cardsX"), $msg = $("#noVariablesX"), $selectX = $("#variablesX");
+            $wrap.empty(); $selectX.empty();
+
+            if (!items || !items.length) {
+                $msg.show();
+                $("#secXWrap").removeClass("hidden");
+                updateReportButtons();
+                return;
+            }
+            $msg.hide();
+
+            const selectedValues = [];
+            items.forEach(obj => {
+                const html = xCardHtml(obj, true); // por defecto seleccionadas
+                $wrap.append(html);
+                selectedValues.push(obj.value);
+                $selectX.append(`<option value="${obj.value}" selected>${obj.name}</option>`);
+            });
+
+            $("#secXWrap").removeClass("hidden");
+            updateReportButtons();
+
+            // Toggle selección
+            $("#cardsX .card-x").off("click").on("click", function () {
+                const value = $(this).data("value"), name = $(this).data("name");
+                $(this).toggleClass("selected");
+                if ($(this).hasClass("selected")) {
+                    if ($selectX.find(`option[value="${value}"]`).length === 0) {
+                        $selectX.append(`<option value="${value}" selected>${name}</option>`);
+                    } else {
+                        $selectX.find(`option[value="${value}"]`).prop("selected", true);
+                    }
+                } else {
+                    $selectX.find(`option[value="${value}"]`).remove();
+                }
+                updateReportButtons();
+            });
+        }
+
+
+        function renderXSparks(items) {
+            if (!window.echarts) return;
+
+            items.forEach(it => {
+                const sid = cssSafeId(it.value);
+                const dom = document.getElementById(`sparkx-${sid}`);
+                if (!dom) return;
+
+                const series = (it.spark ?? []).map(Number).filter(Number.isFinite);
+                if (series.length < 2) { dom.innerHTML = ''; return; }
+
+                const pool = series.concat(
+                    (it.lsl != null && isFinite(it.lsl)) ? [Number(it.lsl)] : [],
+                    (it.usl != null && isFinite(it.usl)) ? [Number(it.usl)] : []
+                );
+                let min = Math.min.apply(null, pool), max = Math.max.apply(null, pool);
+                const pad = Math.max((max - min) * 0.15, 1e-6);
+
+                const option = {
+                    animation: false,
+                    grid: { left: 0, right: 0, top: 0, bottom: 0 },
+                    xAxis: { type: 'category', show: false, data: series.map((_, i) => i) },
+                    yAxis: { type: 'value', show: false, min: min - pad, max: max + pad },
+                    tooltip: {
+                        trigger: 'axis', confine: true,
+                        formatter: p => {
+                            const v = p?.[p.length - 1]?.data ?? '';
+                            const lim = (it.lsl != null && it.usl != null) ? `<br/>LSL/USL: ${it.lsl} / ${it.usl}` : '';
+                            return `Últimos ${series.length}<br/>Valor: <b>${v}</b>${lim}`;
+                        }
+                    },
+                    series: [
+                        (it.lsl != null && it.usl != null) ? {
+                            type: 'line', data: [],
+                            markArea: { silent: true, itemStyle: { color: 'rgba(56,189,248,.18)' }, data: [[{ yAxis: it.lsl }, { yAxis: it.usl }]] }
+                        } : null,
+                        { type: 'line', data: series, smooth: false, symbol: 'none', lineStyle: { width: 2 }, areaStyle: { opacity: .15 } }
+                    ].filter(Boolean)
+                };
+
+                const chart = echarts.init(dom, null, { renderer: 'svg' });
+                chart.setOption(option);
+            });
+        }
+
+
+
+
+        // ======= Envío (misma función que tenías) =======
         function submitForm(actionUrl) {
             let form = document.createElement("form");
             form.method = "post";
             form.action = actionUrl;
-            form.target = "_blank"; // 👉 Esta es la clave
+            form.target = "_blank";
 
-            // Obtener todos los elementos de entrada del formulario original
             let originalForm = document.getElementById("selectionForm");
             let inputs = originalForm.querySelectorAll("input, select");
 
-            // Copiar los valores seleccionados al nuevo formulario
             inputs.forEach(input => {
                 if (input.type === "select-multiple") {
                     Array.from(input.selectedOptions).forEach(option => {
@@ -175,217 +471,277 @@
                 }
             });
 
-            // Agregar el formulario al DOM y enviarlo
             document.body.appendChild(form);
             form.submit();
-
-            // Limpiar el formulario dinámico si quieres
             document.body.removeChild(form);
         }
+        window.submitForm = submitForm;
 
-        const variables = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Variables));
-        
-
-        function updateVariablesX() {
-            const variableY = document.getElementById('variableY').value;
-            const variablesXSelect = document.getElementById('variablesX');
-            console.log(variablesXSelect);
-            console.log(variableY);
-            // Limpiar opciones previas
-            variablesXSelect.innerHTML = '';
-
-            if (variableY && variables[variableY]) {
-                
-                variables[variableY].forEach(variableX => {
-                    const option = document.createElement('option');
-                    option.value = variableX;
-                    option.textContent = variableX;
-                    variablesXSelect.appendChild(option);
-                });
-            }
-        }
-
+        // ======= AJAX: productos (SKU) en base a filtros =======
         function cargarProductos() {
             var lineaId = $("#line").val();
             var fechaInicial = $("#startDate").val();
             var fechaFinal = $("#endDate").val();
 
+            // cada cambio de filtro -> reset UI y visibilidad
+            updateSectionsVisibility();
+
             if (lineaId && fechaInicial && fechaFinal) {
                 $.ajax({
                     url: '@Url.Action("ObtenerProductos", "Dashboard")',
                     type: 'GET',
-                    data: { lineaId: lineaId, fechaInicial: fechaInicial, fechaFinal: fechaFinal },
-                    success: function (data) {
-                        llenarDropdownSKU(data);
-                    },
-                    error: function () {
-                        alert("Error al cargar los skus.");
-                    }
+                    data: { lineaId, fechaInicial, fechaFinal },
+                    success: llenarDropdownSKU,
+                    error: function () { alert("Error al cargar los skus."); }
                 });
+            } else {
+                // si falta algo, vaciamos SKU
+                $("#sku").empty().append('<option value="">SKU</option>');
             }
         }
+        function llenarDropdownSKU(data) {
+            let productos = data.$values || [];
+            let $dd = $("#sku");
+            $dd.empty().append('<option value="">SKU</option>');
+            productos.forEach(p => {
+                $dd.append(`<option value="${p.manufacturingOrder}">${p.manufacturingReferenceName}</option>`);
+            });
+            // no disparamos nada hasta que el usuario elija SKU
+            updateSectionsVisibility();
+        }
 
-        // Ejecutar cuando cambie la línea o las fechas
         $("#line, #startDate, #endDate").on("change", cargarProductos);
 
-        function llenarDropdownSKU(data) {
-            let productos = data.$values;
-            let dropdown = $("#sku");
-
-            // Limpiar opciones anteriores
-            dropdown.empty();
-            dropdown.append('<option value="">Seleccione un sku</option>');
-
-            // Agregar nuevas opciones
-            productos.forEach(producto => {
-                
-                dropdown.append(`<option value="${producto.manufacturingOrder}">${producto.manufacturingReferenceName}</option>`);
-            });
-        }
-
-        $("#sku").on("change", cargarVarY);
+        // ======= AJAX: Y en base a SKU (y filtros listos) =======
+        $("#sku").on("change", function () {
+            updateSectionsVisibility();
+            cargarVarY();
+        });
 
         function cargarVarY() {
+            if (!filtersReady()) return;
+
             var sku = $("#sku").val();
-            
-            if (sku) {
-                $.ajax({
-                    url: '@Url.Action("ObtenerVarY", "Dashboard")',
-                    type: 'GET',
-                    data: { sku: sku }, // Simulación de un SKU, asegúrate de que tenga datos
-                    success: function (data) {
-                        console.log("📌 Respuesta de la API:", data); // 🔍 Verifica la estructura de la respuesta
+            const fechaInicial = $("#startDate").val();
+            const fechaFinal = $("#endDate").val();
+            const lineaId = $("#line").val();
 
-                        var dropdown = $("#variableY");
-                        dropdown.empty();
-                        dropdown.append('<option value="">Seleccione una variable Y</option>');
-
-                        // 📌 Verifica si "data.value.$values" existe y es un array
-                        var variables = (data.value && data.value.$values) ? data.value.$values : [];
-
-                        if (Array.isArray(variables)) {
-                            variables.forEach(function (variable) {
-                                dropdown.append(`<option value="${variable.codigo}">${variable.nombre}</option>`);
-                            });
-                        } else {
-                            console.error("⚠️ La respuesta de la API no tiene el formato esperado:", data);
-                        }
-                    },
-                    error: function (error) {
-                        console.error("❌ Error en AJAX:", error);
-                    }
-                });
-            }
-        }
-
-        $("#sku, #variableY").on("change", cargarVarX);
-
-        function cargarVarX() {
-            var sku = $("#sku").val();
-            var variableY = "";
-            var valor = $("#variableY").val();
-            var fechaInicial = $("#startDate").val();
-            var fechaFinal = $("#endDate").val();
-            var lineaId = $("#line").val();
-
-            if (valor && valor.length >= 3) {
-                variableY = valor;
-            }
-
-            if (sku && variableY) {
-                $.ajax({
-                    url: '@Url.Action("ObtenerVarX", "Dashboard")',
-                    type: 'GET',
-                    data: { sku: sku, varY: variableY, fechaInicial: fechaInicial, fechaFinal: fechaFinal, lineaId: lineaId },
-                    success: function (data) {
-                        console.log("Respuesta del servidor:", data); // ✅ Aquí se imprime
-                        llenarVariableX(data);
-                    },
-                    error: function () {
-                        alert("Error al cargar los skus.");
-                    }
-                });
-            }
-        }
-
-        
-        const isDev = @(!ViewBag.produccion ? "true" : "false");
-
-
-        function llenarVariableX(data) {
-            console.log("📦 Datos recibidos en llenarVariableX:", data);
-
-            let variablesX = Array.isArray(data?.$values) ? data.$values : [];
-            console.log("🔍 Variables X procesadas:", variablesX);
-
-            const selectMultiple = $("#variablesX");
-            const mensajeSinDatos = $("#noVariablesX");
-            const botonReporte = $("#btnReporte");
-
-            // Limpia el select
-            selectMultiple.empty();
-
-            // Reinicia Select2 antes de modificar el contenido
-            if ($.fn.select2 && selectMultiple.hasClass("select2-hidden-accessible")) {
-                selectMultiple.select2("destroy");
-            }
-
-            // Sin datos
-            if (!variablesX || !Array.isArray(variablesX) || variablesX.length === 0) {
-                console.warn("⚠️ No hay variables X con datos.");
-
-                selectMultiple.append('<option disabled selected>No hay variables X con datos en este periodo</option>');
-                selectMultiple.prop('disabled', true);
-
-                if ($.fn.select2) {
-                    selectMultiple.select2({
-                        placeholder: "No disponible",
-                        width: 'resolve'
-                    });
-                }
-
-                mensajeSinDatos.show();
-                botonReporte.prop("disabled", true);
-
+            if (!sku) {
+                $("#cardsY").empty(); $("#cardsYEmpty").hide();
+                $("#secYWrap").addClass("hidden"); $("#secYContextWrap").addClass("hidden"); $("#secXWrap").addClass("hidden");
+                resetYAndX();
                 return;
             }
 
-            // ✅ Hay datos: habilita todo
-            mensajeSinDatos.hide();
-            selectMultiple.prop('disabled', false);
-            botonReporte.prop("disabled", false);
+            $.ajax({
+                url: '@Url.Action("ObtenerVarY", "Dashboard")',
+                type: 'GET',
+                data: { sku: sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId },
+                success: function (data) {
+                    // value puede venir plano o con $values
+                    const itemsRaw =
+                        (data?.value?.$values) ?? (data?.$values) ?? data?.value ?? [];
 
-            // Llenar opciones
-            variablesX.forEach(variableX => {
-                const value = variableX.controlOperation;
-                const name = variableX.controlOperationName;
+                    // 🔹 normaliza spark aquí
+                    const items = itemsRaw.map(it => ({
+                        ...it,
+                        spark: normalizeSpark(it.spark)
+                    }));
 
-                if (value && name) {
-                    selectMultiple.append(`<option value="${value}">${name}</option>`);
-                }
+                    resetYAndX();
+                    $("#secYWrap").removeClass("hidden");
+                    $("#secYContextWrap, #secXWrap").addClass("hidden");
+
+                    renderYCards(items);
+                    renderAllSparks(items);   // ← ahora cada it.spark es SIEMPRE un array
+
+                    // debug opcional
+                    // console.table(items.map(x => ({ codigo: x.codigo, sparkLen: x.spark.length })));
+                },
+
+                error: function (error) { console.error("❌ Error en AJAX:", error); }
             });
+        }
 
-            // Reinicia Select2 con opciones válidas
-            if ($.fn.select2) {
-                selectMultiple.select2({
-                    placeholder: "Seleccione variables X",
-                    width: 'resolve',
-                    allowClear: true
-                });
+
+        function normalizeSpark(raw) {
+            if (!raw) return [];
+            // ya es arreglo
+            if (Array.isArray(raw)) {
+                return raw.map(Number).filter(Number.isFinite);
             }
+            // objeto con $values (System.Text.Json/Newtonsoft preserve refs)
+            if (raw && Array.isArray(raw.$values)) {
+                return raw.$values.map(Number).filter(Number.isFinite);
+            }
+            // viene como texto (JSON o "1,2,3")
+            if (typeof raw === 'string') {
+                const s = raw.trim();
+                if (s.startsWith('[') && s.endsWith(']')) {
+                    try {
+                        const arr = JSON.parse(s);
+                        if (Array.isArray(arr)) return arr.map(Number).filter(Number.isFinite);
+                    } catch (_) { }
+                }
+                return s.split(/[,\s;]+/).map(Number).filter(Number.isFinite);
+            }
+            return [];
+        }
 
-            // 🟡 (opcional) Si solo hay una, seleccionarla automáticamente
-            const todasLasClaves = variablesX.map(v => v.controlOperation);
-            selectMultiple.val(todasLasClaves).trigger("change");
-            console.log("✅ Se seleccionaron automáticamente:", todasLasClaves);
+        function toArrayMaybe(v) {
+            if (!v) return [];
+            if (Array.isArray(v)) return v;
+            if (v.$values && Array.isArray(v.$values)) return v.$values;
+            return [];
+        }
+
+        function renderAllSparks(items) {
+            if (!window.echarts) return;
+
+            items.forEach(it => {
+                const dom = document.getElementById(`spark-${it.codigo}`);
+                if (!dom) return;
+
+                const series = toArrayMaybe(it.spark).map(Number).filter(n => Number.isFinite(n));
+                if (series.length < 2) { dom.innerHTML = ''; return; }
+
+                // Incluye límites (si existen) para calcular la escala
+                const limits = [];
+                if (it.lsl != null && isFinite(it.lsl)) limits.push(Number(it.lsl));
+                if (it.usl != null && isFinite(it.usl)) limits.push(Number(it.usl));
+
+                const valuesForScale = series.concat(limits);
+                let min = Math.min.apply(null, valuesForScale);
+                let max = Math.max.apply(null, valuesForScale);
+                if (!isFinite(min) || !isFinite(max)) { // por si no hubo límites válidos
+                    min = Math.min.apply(null, series);
+                    max = Math.max.apply(null, series);
+                }
+                const pad = Math.max((max - min) * 0.15, 1e-6);
+                const yMin = min - pad;
+                const yMax = max + pad;
+
+                const option = {
+                    animation: false,
+                    grid: { left: 0, right: 0, top: 0, bottom: 0 },
+                    xAxis: { type: 'category', show: false, data: series.map((_, i) => i) },
+                    yAxis: { type: 'value', show: false, min: yMin, max: yMax },
+
+                    tooltip: {
+                        trigger: 'axis',
+                        confine: true,
+                        formatter: (params) => {
+                            const p = params[params.length - 1];
+                            const v = p ? p.data : '';
+                            const lim = (it.lsl != null && it.usl != null)
+                                ? `<br/>LSL/USL: ${it.lsl} / ${it.usl}`
+                                : '';
+                            return `Últimos ${series.length}<br/>Valor: <b>${v}</b>${lim}`;
+                        }
+                    },
+
+                    series: [
+                        // Banda de tolerancia (si hay LSL/USL)
+                        (it.lsl != null && it.usl != null) ? {
+                            type: 'line',
+                            data: [],
+                            markArea: {
+                                silent: true,
+                                itemStyle: { color: 'rgba(56, 189, 248, .18)' },
+                                data: [[{ yAxis: it.lsl }, { yAxis: it.usl }]]
+                            }
+                        } : null,
+                        // Línea de los últimos 10 controles
+                        {
+                            type: 'line',
+                            data: series,
+                            smooth: false,
+                            symbol: 'none',
+                            lineStyle: { width: 2 },
+                            areaStyle: { opacity: 0.15 }
+                        }
+                    ].filter(Boolean)
+                };
+
+                const chart = echarts.init(dom, null, { renderer: 'svg' });
+                chart.setOption(option);
+            });
         }
 
 
 
 
-        //let valoresPreseleccionados = ["O-L7-1", "O-L7-10", "O-L7-11", "O-L7-12"];
 
+        // ======= AJAX: X en base a Y seleccionada =======
+        function cargarVarX() {
+            const sku = $("#sku").val();
+            // 👇 toma SIEMPRE el código (del hidden) y, por seguridad, de la card seleccionada si faltara
+            const varYCode = $("#variableY").val() || $("#cardsY .card-y.selected").attr("data-code") || "";
+            const fechaInicial = $("#startDate").val();
+            const fechaFinal = $("#endDate").val();
+            const lineaId = $("#line").val();
+
+            if (!(sku && varYCode)) {
+                console.warn("⚠️ No se puede cargar X: faltan sku o varYCode", { sku, varYCode });
+                $("#cardsX").empty(); $("#noVariablesX").hide();
+                return;
+            }
+
+            // limpieza visual previa
+            $("#cardsX").empty();
+            $("#noVariablesX").hide();
+            $("#secXWrap").removeClass("hidden");
+
+            console.log("➡️ ObtenerVarX params (se envía CÓDIGO):", {
+                sku, varY: varYCode, fechaInicial, fechaFinal, lineaId
+            });
+
+            $.ajax({
+                url: '@Url.Action("ObtenerVarX", "Dashboard")',
+                type: 'GET',
+                data: {
+                    sku: sku,
+                    varY: varYCode,         // 👈 SOLO el CÓDIGO
+                    fechaInicial: fechaInicial,
+                    fechaFinal: fechaFinal,
+                    lineaId: lineaId
+                },
+                cache: false,
+                success: function (data) {
+                    const raw = Array.isArray(data) ? data
+                        : Array.isArray(data?.$values) ? data.$values
+                            : Array.isArray(data?.value?.$values) ? data.value.$values
+                                : [];
+
+                    // 🔸 Mantén todos los campos que manda el backend y normaliza spark
+                    const items = raw.map(v => ({
+                        value: v.value ?? v.controlOperation ?? v.codigo ?? v.id ?? v.variableCode ?? v.key ?? "",
+                        name: v.name ?? v.controlOperationName ?? v.nombre ?? v.variableName ?? v.title ?? "",
+                        tests: v.tests ?? 0,
+                        last: v.last ?? "—",
+                        lsl: v.lsl,
+                        usl: v.usl,
+                        spark: normalizeSpark(v.spark)
+                    })).filter(it => it.value && it.name);
+
+                    renderXCards(items);
+                    renderXSparks(items);      // ← ahora sí hay datos para el mini-spark
+                },
+
+
+                error: function (xhr) {
+                    console.error("❌ Error en ObtenerVarX:", xhr);
+                    $("#cardsX").empty();
+                    $("#noVariablesX").show();
+                }
+            });
+        }
+
+      
+
+        // ======= Inicial =======
+        $(document).ready(function () {
+            updateSectionsVisibility(); // arranca en Estado 0 (filtros faltantes)
+        });
     </script>
-
-   
 }

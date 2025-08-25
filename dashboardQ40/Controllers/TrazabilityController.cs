@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data;
 using static dashboardQ40.Models.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
+using System.Data.SqlClient;
+using System.Linq;                         // Linq
+
+
 
 namespace dashboardQ40.Controllers
 {
@@ -85,8 +91,52 @@ namespace dashboardQ40.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> BuscarLotesPorFechas(DateTime fechaIni, DateTime fechaFin)
+        {
+            // Normaliza fin al final del día si quieres incluir todo el día
+            var fin = fechaFin.Date.AddDays(1).AddTicks(-1);
+
+            string connStr = _configuration.GetConnectionString("CaptorConnection");
+            string company = _configuration.GetConnectionString("company");
+
+            DataTable batchs = TrazabilityClass.GetBatchbyDates(company, fechaIni, fin, connStr);
+            // TODO: reemplaza por tu servicio/consulta real
+            // Debe devolver: lote, descripcion (o SKU), inicio, fin
+            // Si no hay filas, regresa lista vacía
+            if (batchs == null || batchs.Rows.Count == 0)
+                return new JsonResult(Array.Empty<object>());
+
+            // Mapea DataTable -> JSON-friendly
+            var lista = batchs.AsEnumerable().Select(r => new
+            {
+                lote = r.Table.Columns.Contains("batchIdentifier")
+                                ? (r["batchIdentifier"]?.ToString() ?? "")
+                                : (r.Table.Columns.Contains("batch") ? r["batch"]?.ToString() ?? "" : ""),
+                descripcion = r.Table.Columns.Contains("manufacturingReferenceName")
+                                ? (r["manufacturingReferenceName"]?.ToString() ?? "")
+                                : "",
+                inicio = GetNullableDate(r, "startDate"),
+                fin = GetNullableDate(r, "endDate")
+            }).ToList();
+
+            return new JsonResult(lista);
+        }
 
 
+        private static DateTime? GetNullableDate(DataRow row, string colName)
+        {
+            if (!row.Table.Columns.Contains(colName)) return null;
+            var val = row[colName];
+            if (val == DBNull.Value || val == null) return null;
+
+            if (val is DateTime dt) return dt;
+
+            // A veces vienen como string ISO/SQL
+            if (DateTime.TryParse(val.ToString(), out var parsed)) return parsed;
+
+            return null;
+        }
     }
 
 
