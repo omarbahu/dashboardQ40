@@ -1,32 +1,34 @@
 ﻿@model FormatoViewModel
+@inject IStringLocalizer Localizer
 
 <div class="accordion" id="accordion-embotellado2">
 
     <!-- Acordeón: Información de Embotellado -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button  py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmbotellado2">
-                <h4 class="mb-0">Información de Embotellado</h4>
-
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmbotellado2">
+                <h4 class="mb-0">@Localizer["Bottling_Header"]</h4>
             </button>
         </h2>
+
         <div id="collapseEmbotellado2" class="accordion-collapse collapse show">
             <div class="accordion-body">
-                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_PruebasLiberacion.cshtml", Model.BloquePruebasLiberacion)
 
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_PruebasLiberacion.cshtml",
+                         Model.BloquePruebasLiberacion)
 
                 <!-- Subbloque: Área Sensoriales -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header">
-                        <th colspan="6">Liberación de Producto Terminado - Área Sensoriales</th>
+                        <th colspan="6">@Localizer["Sensory_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>Panelista</th>
-                        <th>Fecha Liberación</th>
-                        <th>Producto</th>
-                        <th>Código MTRA</th>
-                        <th>Referencia</th>
-                        <th>Resultado del Panel</th>
+                        <th>@Localizer["Sensory_Analyst"]</th>
+                        <th>@Localizer["Sensory_ReleaseDate"]</th>
+                        <th>@Localizer["Sensory_Product"]</th>
+                        <th>@Localizer["Sensory_Code"]</th>
+                        <th>@Localizer["Sensory_Reference"]</th>
+                        <th>@Localizer["Sensory_Result"]</th>
                     </tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
@@ -36,14 +38,14 @@
                 <!-- Subbloque: Arranque de Línea -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header">
-                        <th colspan="5">Liberación de Producto Terminado al Arranque de Línea</th>
+                        <th colspan="5">@Localizer["LineStart_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>Panelista</th>
-                        <th>Fecha Liberación</th>
-                        <th>Producto</th>
-                        <th>Código Muestra</th>
-                        <th>Resultado del Panel</th>
+                        <th>@Localizer["LineStart_Analyst"]</th>
+                        <th>@Localizer["LineStart_ReleaseDate"]</th>
+                        <th>@Localizer["LineStart_Product"]</th>
+                        <th>@Localizer["LineStart_SampleCode"]</th>
+                        <th>@Localizer["LineStart_Result"]</th>
                     </tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
@@ -53,12 +55,12 @@
                 <!-- Subbloque: Muestras de Retención -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header">
-                        <th colspan="3">Muestras de Retención Producto Terminado / Materia Prima Involucrada</th>
+                        <th colspan="3">@Localizer["Retention_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>Anterior al SKU Reportado</th>
-                        <th>Posterior al SKU Reportado</th>
-                        <th>Hora</th>
+                        <th>@Localizer["Retention_PrevSKU"]</th>
+                        <th>@Localizer["Retention_NextSKU"]</th>
+                        <th>@Localizer["Retention_Time"]</th>
                     </tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                 </table>
@@ -66,7 +68,5 @@
             </div>
         </div>
     </div>
-
-
 
 </div>

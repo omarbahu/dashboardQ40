@@ -1,8 +1,6 @@
 ﻿@model dynamic
 @using Newtonsoft.Json
-@{
-    ViewData["Title"] = "Dashboard Arca Planta Insurgentes";
-}
+@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
 
 <style>
     /* ====== Selects "estado" ocultos (se usan para el POST) ====== */
@@ -119,160 +117,265 @@
 </style>
 
 
-<h4>Reporte de calidad Y y X Planta insurgentes</h4>
-
+@{
+    ViewData["Title"] = Localizer["DashboardTitle"]; // "Quality Dashboard - Insurgentes Plant"
+}
 <form id="selectionForm" target="_blank">
-    <!-- Renglón 1: filtros + botones -->
+    <!-- Row 1: filters + buttons -->
     <div class="row row-cols-lg-auto g-2 align-items-end">
         <div class="col">
-            <label for="startDate" class="form-label">Desde:</label>            
+            <label for="startDate" class="form-label">@Localizer["From"]</label>
         </div>
-        <div class="col">            
+        <div class="col">
             <input type="datetime-local" id="startDate" name="startDate" class="form-control form-control-sm" />
         </div>
+
         <div class="col">
-            <label for="endDate" class="form-label">Hasta:</label>            
+            <label for="endDate" class="form-label">@Localizer["To"]</label>
         </div>
-        <div class="col">            
+        <div class="col">
             <input type="datetime-local" id="endDate" name="endDate" class="form-control form-control-sm" />
         </div>
+
+        <!-- País / Planta -->
         <div class="col">
-            <label for="line" class="form-label">Línea:</label>            
+            <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
         </div>
         <div class="col">
-            <select id="line" name="line" class="form-select form-select-sm">
-                <option value="">Línea</option>
-                @if (ViewBag.Lines != null)
+            <select id="pais" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
                 {
-                    foreach (var linea in ViewBag.Lines)
-                    {
-                        <option value="@linea.workplace">@linea.workplaceName</option>
-                    }
+                    <option value="@p.Code">@p.Name</option>
                 }
             </select>
         </div>
-
         <div class="col">
-            <label for="sku" class="form-label">SKU:</label>
-            
+            <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
         </div>
         <div class="col">
-            
+            <select id="planta" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
+        <!-- Línea -->
+        <div class="col">
+            <label for="line" class="form-label">@Localizer["XR_Line"]</label>
+        </div>
+        <div class="col">
+            <select id="line" name="line" class="form-select form-select-sm"></select>
+        </div>
+
+        <div class="col">
+            <label for="sku" class="form-label">SKU</label>
+        </div>
+        <div class="col">
             <select id="sku" name="sku" class="form-select form-select-sm">
-                <option value="">SKU</option>
+                <option value="">@Localizer["SkuPlaceholder"]</option>
             </select>
         </div>
 
-        <!-- Selects ocultos (estado) -->
+        <!-- Hidden selects (state) -->
         <div class="col d-none">
-            <label for="variableY" class="form-label">Variable Y (hidden):</label>
+            <label for="variableY" class="form-label">@Localizer["YVariableHidden"]</label>
             <select id="variableYSelect" name="variableYSelect" class="form-select form-select-sm">
-                <option value="">Variable Y</option>
-                @if (ViewBag.Variables != null) {
-                    foreach (var variableY in ViewBag.Variables.Keys) {
+                <option value="">@Localizer["YVariablePlaceholder"]</option>
+                @if (ViewBag.Variables != null)
+                {
+                    foreach (var variableY in ViewBag.Variables.Keys)
+                    {
                         <option value="@variableY">@variableY</option>
                     }
                 }
             </select>
         </div>
         <div class="col d-none">
-            <label for="variablesX" class="form-label">Variables X (hidden):</label>
+            <label for="variablesX" class="form-label">@Localizer["XVariablesHidden"]</label>
             <select id="variablesX" name="variablesX[]" multiple="multiple" class="form-select form-select-sm w-100"></select>
         </div>
-
-      
     </div>
 
-    <!-- ===== Aviso cuando faltan filtros ===== -->
+    <!-- Hint when filters are missing -->
     <div id="filtersHint" class="alert alert-light border mt-3" role="alert">
-        Selecciona <b>Desde</b>, <b>Hasta</b>, <b>Línea</b> y <b>SKU</b> para ver las variables disponibles.
+        @Localizer["FiltersHint"]
     </div>
 
-    <!-- ========== Paso 1: Cards Y (visible solo cuando hay filtros completos) ========== -->
+    <!-- Step 1: Y Cards -->
     <div id="secYWrap" class="hidden">
-        <div class="cards-section-title">1) Selecciona una Variable Y</div>
-<!-- 
-        <div class="cards-toolbar">
-            <span class="chip">☑ Solo con datos</span>
-            <span class="chip">Orden: Más datos ▼</span>
-            <span class="chip">Buscar 🔎</span>
-        </div>
-                -->
+        <div class="cards-section-title">@Localizer["Step1_SelectY"]</div>
         <div id="cardsY" class="cards-grid"></div>
-        <div id="cardsYEmpty" class="empty-msg" style="display:none;">No hay variables Y con datos para el periodo.</div>
+        <div id="cardsYEmpty" class="empty-msg" style="display:none;">@Localizer["NoYVariables"]</div>
     </div>
 
-    <!-- ========== Paso 2: Contexto Y (visible solo tras seleccionar Y) ========== -->
+    <!-- Step 2: Y Context -->
     <div id="secYContextWrap" class="hidden">
-        <div class="cards-section-title">2) Variable Y seleccionada y Variables X relacionadas</div>
+        <div class="cards-section-title">@Localizer["Step2_YAndRelatedX"]</div>
         <div id="cardYContext" class="card-y-context">
             <div class="card-title" style="padding-left:0;" id="ctxTitle">—</div>
             <div class="meta-row" style="padding-left:0;">
-                <span class="badge b-primary">Autocontroles: —</span>
-                <span class="badge b-warn" id="ctxOOS" style="display:none;">OOS: — ⚠</span>
-                <span class="badge b-safe">Cobertura: —/— días</span>
-                <span class="badge b-muted">Último: —</span>
+                <span class="badge b-primary">@Localizer["Checklists"]: —</span>
+                <span class="badge b-warn" id="ctxOOS" style="display:none;">@Localizer["OOS"]: — ⚠</span>
+                <span class="badge b-safe">@Localizer["CoverageDays"]</span>
+                <span class="badge b-muted">@Localizer["Last"]: —</span>
                 <div class="spark"></div>
             </div>
         </div>
     </div>
 
-    <!-- ========== Paso 3: Cards X (visible solo tras seleccionar Y) ========== -->
+    <!-- Step 3: X Cards -->
     <div id="secXWrap" class="hidden">
-        <div class="cards-section-title">3) Selecciona Variables X a graficar</div>
+        <div class="cards-section-title">@Localizer["Step3_SelectX"]</div>
         <div id="cardsX" class="cards-grid" style="grid-template-columns:repeat(2, minmax(0,1fr));"></div>
         <div id="noVariablesX" class="text-danger mt-2" style="display:none;">
-            ⚠️ No se encontraron variables X con datos para este rango de fechas.
+            ⚠️ @Localizer["NoXVariables"]
         </div>
     </div>
 
-      <div class="col">
-            <label class="form-label d-block invisible">Acciones</label>
-            <button id="btnReporte" type="button" class="btn btn-primary btn-sm" disabled
-                    onclick="submitForm('@Url.Action("SubmitSelection", "Dashboard")')">
-                📊 Reporte
-            </button>
-            <button type="button" class="btn btn-secondary btn-sm ms-1" disabled id="btnDetalle"
-                    onclick="submitForm('@Url.Action("SubmitSelectionDetail", "Dashboard")')">
-                🔍 Detalle
-            </button>
-        </div>
+    <div class="col">
+        <label class="form-label d-block invisible">@Localizer["Actions"]</label>
+        <button id="btnReporte" type="button" class="btn btn-primary btn-sm" disabled
+                onclick="submitForm('@Url.Action("SubmitSelection", "Dashboard")')">
+            📊 @Localizer["Report"]
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm ms-1" disabled id="btnDetalle"
+                onclick="submitForm('@Url.Action("SubmitSelectionDetail", "Dashboard")')">
+            🔍 @Localizer["Detail"]
+        </button>
+    </div>
 
     <input type="hidden" id="variableY" name="variableY" />
 </form>
+
+
 
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
+    <!-- Diccionario de textos para JS -->
+    <script>
+        window.T = {
+            CKlists: '@Localizer["Checklists"]',
+            OOS: '@Localizer["OOS"]',
+            Last: '@Localizer["Last"]',
+            CoverageDaysFmt: '@Localizer["CoverageDaysFmt"]', // e.g. "{0}/{1} days"
+            FiltersHint: '@Localizer["FiltersHint"]',
+            Step1_SelectY: '@Localizer["Step1_SelectY"]',
+            Step2_YAndRelatedX: '@Localizer["Step2_YAndRelatedX"]',
+            Step3_SelectX: '@Localizer["Step3_SelectX"]',
+            NoYVariables: '@Localizer["NoYVariables"]',
+            NoXVariables: '@Localizer["NoXVariables"]',
+            ErrorLoadSkus: '@Localizer["ErrorLoadSkus"]',
+            Tooltip_LastN: '@Localizer["Tooltip_LastN"]',     // "Last {0}"
+            Tooltip_Value: '@Localizer["Tooltip_Value"]',     // "Value"
+            Tooltip_Limits: '@Localizer["Tooltip_Limits"]'    // "LSL/USL"
+        };
+    </script>
+
+    <script>
+// Etiquetas (puedes cambiarlas o usar Localizer)
+const LABELS = {
+  Select: "-- Selecciona --",
+  Line:   "@Localizer["XR_Line"]",
+  Plant:  "@Localizer["XR_Plant"]"
+};
+
+// Todas las companies (Company, CompanyName, CountryCode) desde backend
+const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+
+// Helpers
+function toArray(data){
+  if(!data) return [];
+  if(Array.isArray(data)) return data;
+  if(Array.isArray(data.$values)) return data.$values;
+  if(Array.isArray(data.value?.$values)) return data.value.$values;
+  if(Array.isArray(data.value)) return data.value;
+  return [];
+}
+function resetSelect($el, placeholder){
+  $el.empty().append(new Option(placeholder, ""));
+}
+
+// 1) País → cargar Plantas
+function fillPlants(countryCode){
+  const $planta = $("#planta");
+  resetSelect($planta, LABELS.Plant);
+  resetSelect($("#line"), LABELS.Line); // limpiar línea
+
+  if(!countryCode) return;
+
+  const plants = COMPANIES
+    .filter(c => c.CountryCode === countryCode)
+    .sort((a,b)=> a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+  plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+}
+
+// 2) Planta → cargar Líneas (AJAX)
+function loadLinesByCompany(companyId){
+  const $line = $("#line");
+  resetSelect($line, LABELS.Line);
+  if(!companyId) return;
+
+  $.ajax({
+                url: '@Url.Action("ObtenerLineas", "Dashboard")', // usa el endpoint que ya tienes
+    type: 'GET',
+    data: { company: companyId },
+    success: function(data){
+      const lines = toArray(data)
+        .sort((a,b)=> (a.workplaceName||a.name).localeCompare((b.workplaceName||b.name), 'es'));
+      lines.forEach(l => {
+        const id   = l.workplace ?? l.id;
+        const name = l.workplaceName ?? l.name;
+        $line.append(new Option(name, id));
+      });
+    },
+    error: function(xhr){ console.error("ObtenerLineas_XR error", xhr); }
+  });
+}
+
+// Eventos
+$("#pais").on("change", function(){ fillPlants(this.value); });
+$("#planta").on("change", function(){ loadLinesByCompany(this.value); });
+
+// Init opcional: seleccionar el primer país y disparar el llenado
+$(function(){
+  const $pais = $("#pais");
+  if($pais[0] && $pais[0].options.length > 1){
+    $pais[0].selectedIndex = 1;
+    $pais.trigger("change");
+  }
+});
+</script>
+
     <script>
         // ======= Helpers de UI (HTML para cards) =======
         function yCardHtml(item, selected) {
             return `
-                    <div class="card-y ${selected ? 'selected' : ''}" data-code="${item.codigo}" data-name="${item.nombre}">
-                        <div class="radio-dot"></div>
-                        <div class="card-title">${item.nombre}</div>
-                        <div class="meta-row">
-                            <span class="badge b-primary">CKlists: ${item.tests ?? '—'}</span>
-                            ${(item.oos ?? 0) > 0 ? `<span class="badge b-warn">OOS: ${item.oos} ⚠</span>` : ``}
-                            <span class="badge b-muted">Last: ${item.last ?? '—'}</span>
-                                    <div class="spark" id="spark-${item.codigo}"></div>  <!-- 🔹 nuevo -->
-                        </div>
-                    </div>`;
+                        <div class="card-y ${selected ? 'selected' : ''}" data-code="${item.codigo}" data-name="${item.nombre}">
+                            <div class="radio-dot"></div>
+                            <div class="card-title">${item.nombre}</div>
+                            <div class="meta-row">
+                                <span class="badge b-primary">${T.CKlists}: ${item.tests ?? '—'}</span>
+                                ${(item.oos ?? 0) > 0 ? `<span class="badge b-warn">${T.OOS}: ${item.oos} ⚠</span>` : ``}
+                                <span class="badge b-muted">${T.Last}: ${item.last ?? '—'}</span>
+                                <div class="spark" id="spark-${item.codigo}"></div>
+                            </div>
+                        </div>`;
         }
         function xCardHtml(item, selected) {
             const sid = cssSafeId(item.value);
             return `
-            <div class="card-x ${selected ? 'selected' : ''}" data-value="${item.value}" data-name="${item.name}">
-              <div class="checkbox"></div>
-              <div class="card-title">${item.name}</div>
-              <div class="meta-row">
-                <span class="badge b-primary">CKlists: ${item.tests ?? '—'}</span>
-                <span class="badge b-muted">Last: ${item.last ?? '—'}</span>
-                <div class="spark" id="sparkx-${sid}"></div>
-              </div>
-            </div>`;
+                    <div class="card-x ${selected ? 'selected' : ''}" data-value="${item.value}" data-name="${item.name}">
+                      <div class="checkbox"></div>
+                      <div class="card-title">${item.name}</div>
+                      <div class="meta-row">
+                        <span class="badge b-primary">${T.CKlists}: ${item.tests ?? '—'}</span>
+                        <span class="badge b-muted">${T.Last}: ${item.last ?? '—'}</span>
+                        <div class="spark" id="sparkx-${sid}"></div>
+                      </div>
+                    </div>`;
         }
 
 
@@ -281,53 +384,46 @@
             return String(s == null ? '' : s).replace(/[^A-Za-z0-9_-]/g, '_');
         }
 
-        // ======= Estado / visibilidad por pasos =======
-        function filtersReady() {
-            return $("#startDate").val() && $("#endDate").val() && $("#line").val() && $("#sku").val();
-        }
+        function cssSafeId(s) { return String(s ?? '').replace(/[^A-Za-z0-9_-]/g, '_'); }
+
+        // ======= Estado / visibilidad =======
+        function filtersReady() { return $("#startDate").val() && $("#endDate").val() && $("#line").val() && $("#sku").val(); }
 
         function updateReportButtons() {
             const hasY = !!$("#variableY").val();
             const hasX = $("#variablesX option").length > 0;
-            const enable = hasY && hasX;
-            $("#btnReporte, #btnDetalle").prop("disabled", !enable);
+            $("#btnReporte, #btnDetalle").prop("disabled", !(hasY && hasX));
         }
 
         function resetYAndX() {
-            // borra Y y X visual/estado
             $("#variableY").val("");
             $("#variablesX").empty();
-
             $("#cardsY").empty();
             $("#cardsYEmpty").hide();
-
             $("#cardsX").empty();
             $("#noVariablesX").hide();
-
-            $("#secYContextWrap").addClass("hidden");
-            $("#secXWrap").addClass("hidden");
+            $("#secYContextWrap, #secXWrap").addClass("hidden");
             updateReportButtons();
         }
 
         function updateSectionsVisibility() {
             if (!filtersReady()) {
-                $("#filtersHint").removeClass("hidden");
+                $("#filtersHint").removeClass("hidden").text(T.FiltersHint);
                 $("#secYWrap, #secYContextWrap, #secXWrap").addClass("hidden");
-                resetYAndX();
-                return;
+                resetYAndX(); return;
             }
-            // Filtros OK → mostramos Paso 1 y ocultamos 2–3 hasta que elijan Y
             $("#filtersHint").addClass("hidden");
             $("#secYWrap").removeClass("hidden");
             $("#secYContextWrap, #secXWrap").addClass("hidden");
             updateReportButtons();
         }
 
+
         // ======= Render de Y y selección =======
         function renderYCards(items) {
             const $wrap = $("#cardsY"), $empty = $("#cardsYEmpty");
             $wrap.empty();
-            if (!items || !items.length) { $empty.show(); return; }
+            if (!items || !items.length) { $empty.text(T.NoYVariables).show(); return; }
             $empty.hide();
             const selectedCode = $("#variableY").val() || '';
             items.forEach(it => $wrap.append(yCardHtml(it, String(it.codigo) === String(selectedCode))));
@@ -338,55 +434,42 @@
         function selectY(code, name) {
             $("#cardsY .card-y").removeClass("selected");
             $(`#cardsY .card-y[data-code="${code}"]`).addClass("selected");
-
-            // 🔒 Guarda SIEMPRE el CÓDIGO en el hidden
             $("#variableY").val(code).trigger('change');
-
-            console.log("✅ Y seleccionada:", { code, name, valHidden: $("#variableY").val() });
-
-            // Contexto visible
             $("#ctxTitle").text(name);
             $("#secYContextWrap").removeClass("hidden");
-
-            // Cargar X
             cargarVarX();
             updateReportButtons();
         }
 
         // ======= Render de X =======
+
         function renderXCards(items) {
             const $wrap = $("#cardsX"), $msg = $("#noVariablesX"), $selectX = $("#variablesX");
             $wrap.empty(); $selectX.empty();
 
             if (!items || !items.length) {
-                $msg.show();
+                $msg.text(T.NoXVariables).show();
                 $("#secXWrap").removeClass("hidden");
-                updateReportButtons();
-                return;
+                updateReportButtons(); return;
             }
             $msg.hide();
 
-            const selectedValues = [];
             items.forEach(obj => {
-                const html = xCardHtml(obj, true); // por defecto seleccionadas
-                $wrap.append(html);
-                selectedValues.push(obj.value);
+                $wrap.append(xCardHtml(obj, true));
                 $selectX.append(`<option value="${obj.value}" selected>${obj.name}</option>`);
             });
 
             $("#secXWrap").removeClass("hidden");
             updateReportButtons();
 
-            // Toggle selección
             $("#cardsX .card-x").off("click").on("click", function () {
                 const value = $(this).data("value"), name = $(this).data("name");
                 $(this).toggleClass("selected");
                 if ($(this).hasClass("selected")) {
-                    if ($selectX.find(`option[value="${value}"]`).length === 0) {
+                    if ($selectX.find(`option[value="${value}"]`).length === 0)
                         $selectX.append(`<option value="${value}" selected>${name}</option>`);
-                    } else {
+                    else
                         $selectX.find(`option[value="${value}"]`).prop("selected", true);
-                    }
                 } else {
                     $selectX.find(`option[value="${value}"]`).remove();
                 }
@@ -395,52 +478,39 @@
         }
 
 
+
         function renderXSparks(items) {
             if (!window.echarts) return;
-
             items.forEach(it => {
-                const sid = cssSafeId(it.value);
-                const dom = document.getElementById(`sparkx-${sid}`);
-                if (!dom) return;
-
+                const sid = cssSafeId(it.value), dom = document.getElementById(`sparkx-${sid}`); if (!dom) return;
                 const series = (it.spark ?? []).map(Number).filter(Number.isFinite);
                 if (series.length < 2) { dom.innerHTML = ''; return; }
-
                 const pool = series.concat(
-                    (it.lsl != null && isFinite(it.lsl)) ? [Number(it.lsl)] : [],
-                    (it.usl != null && isFinite(it.usl)) ? [Number(it.usl)] : []
+                    (isFinite(it.lsl) ? [Number(it.lsl)] : []),
+                    (isFinite(it.usl) ? [Number(it.usl)] : [])
                 );
                 let min = Math.min.apply(null, pool), max = Math.max.apply(null, pool);
                 const pad = Math.max((max - min) * 0.15, 1e-6);
-
                 const option = {
-                    animation: false,
-                    grid: { left: 0, right: 0, top: 0, bottom: 0 },
+                    animation: false, grid: { left: 0, right: 0, top: 0, bottom: 0 },
                     xAxis: { type: 'category', show: false, data: series.map((_, i) => i) },
                     yAxis: { type: 'value', show: false, min: min - pad, max: max + pad },
                     tooltip: {
                         trigger: 'axis', confine: true,
                         formatter: p => {
                             const v = p?.[p.length - 1]?.data ?? '';
-                            const lim = (it.lsl != null && it.usl != null) ? `<br/>LSL/USL: ${it.lsl} / ${it.usl}` : '';
-                            return `Últimos ${series.length}<br/>Valor: <b>${v}</b>${lim}`;
+                            const lim = (isFinite(it.lsl) && isFinite(it.usl)) ? `<br/>${T.Tooltip_Limits}: ${it.lsl} / ${it.usl}` : '';
+                            return `${T.Tooltip_LastN.replace('{0}', series.length)}<br/>${T.Tooltip_Value}: <b>${v}</b>${lim}`;
                         }
                     },
                     series: [
-                        (it.lsl != null && it.usl != null) ? {
-                            type: 'line', data: [],
-                            markArea: { silent: true, itemStyle: { color: 'rgba(56,189,248,.18)' }, data: [[{ yAxis: it.lsl }, { yAxis: it.usl }]] }
-                        } : null,
-                        { type: 'line', data: series, smooth: false, symbol: 'none', lineStyle: { width: 2 }, areaStyle: { opacity: .15 } }
+                        (isFinite(it.lsl) && isFinite(it.usl)) ? { type: 'line', data: [], markArea: { silent: true, itemStyle: { color: 'rgba(56,189,248,.18)' }, data: [[{ yAxis: it.lsl }, { yAxis: it.usl }]] } } : null,
+                        { type: 'line', data: series, symbol: 'none', lineStyle: { width: 2 }, areaStyle: { opacity: .15 } }
                     ].filter(Boolean)
                 };
-
-                const chart = echarts.init(dom, null, { renderer: 'svg' });
-                chart.setOption(option);
+                echarts.init(dom, null, { renderer: 'svg' }).setOption(option);
             });
         }
-
-
 
 
         // ======= Envío (misma función que tenías) =======
@@ -478,38 +548,29 @@
         window.submitForm = submitForm;
 
         // ======= AJAX: productos (SKU) en base a filtros =======
-        function cargarProductos() {
-            var lineaId = $("#line").val();
-            var fechaInicial = $("#startDate").val();
-            var fechaFinal = $("#endDate").val();
-
-            // cada cambio de filtro -> reset UI y visibilidad
+         function cargarProductos(){
+            var lineaId=$("#line").val(), fechaInicial=$("#startDate").val(), fechaFinal=$("#endDate").val();
             updateSectionsVisibility();
-
-            if (lineaId && fechaInicial && fechaFinal) {
+            if (lineaId && fechaInicial && fechaFinal){
                 $.ajax({
-                    url: '@Url.Action("ObtenerProductos", "Dashboard")',
-                    type: 'GET',
-                    data: { lineaId, fechaInicial, fechaFinal },
-                    success: llenarDropdownSKU,
-                    error: function () { alert("Error al cargar los skus."); }
+                    url:'@Url.Action("ObtenerProductos","Dashboard")',
+                    type:'GET',
+                    data:{lineaId,fechaInicial,fechaFinal},
+                    success:llenarDropdownSKU,
+                    error:function(){ alert(T.ErrorLoadSkus); }
                 });
             } else {
-                // si falta algo, vaciamos SKU
-                $("#sku").empty().append('<option value="">SKU</option>');
+                $("#sku").empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
             }
         }
+
         function llenarDropdownSKU(data) {
             let productos = data.$values || [];
             let $dd = $("#sku");
-            $dd.empty().append('<option value="">SKU</option>');
-            productos.forEach(p => {
-                $dd.append(`<option value="${p.manufacturingOrder}">${p.manufacturingReferenceName}</option>`);
-            });
-            // no disparamos nada hasta que el usuario elija SKU
+            $dd.empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
+            productos.forEach(p => { $dd.append(`<option value="${p.manufacturingOrder}">${p.manufacturingReferenceName}</option>`); });
             updateSectionsVisibility();
         }
-
         $("#line, #startDate, #endDate").on("change", cargarProductos);
 
         // ======= AJAX: Y en base a SKU (y filtros listos) =======
@@ -520,200 +581,95 @@
 
         function cargarVarY() {
             if (!filtersReady()) return;
-
             var sku = $("#sku").val();
-            const fechaInicial = $("#startDate").val();
-            const fechaFinal = $("#endDate").val();
-            const lineaId = $("#line").val();
-
-            if (!sku) {
-                $("#cardsY").empty(); $("#cardsYEmpty").hide();
-                $("#secYWrap").addClass("hidden"); $("#secYContextWrap").addClass("hidden"); $("#secXWrap").addClass("hidden");
-                resetYAndX();
-                return;
-            }
+            const fechaInicial = $("#startDate").val(), fechaFinal = $("#endDate").val(), lineaId = $("#line").val();
+            if (!sku) { $("#cardsY").empty(); $("#cardsYEmpty").hide(); $("#secYWrap,#secYContextWrap,#secXWrap").addClass("hidden"); resetYAndX(); return; }
 
             $.ajax({
                 url: '@Url.Action("ObtenerVarY", "Dashboard")',
                 type: 'GET',
-                data: { sku: sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId },
+                data: { sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId },
                 success: function (data) {
-                    // value puede venir plano o con $values
-                    const itemsRaw =
-                        (data?.value?.$values) ?? (data?.$values) ?? data?.value ?? [];
-
-                    // 🔹 normaliza spark aquí
-                    const items = itemsRaw.map(it => ({
-                        ...it,
-                        spark: normalizeSpark(it.spark)
-                    }));
-
+                    const itemsRaw = (data?.value?.$values) ?? (data?.$values) ?? data?.value ?? [];
+                    const items = itemsRaw.map(it => ({ ...it, spark: normalizeSpark(it.spark) }));
                     resetYAndX();
                     $("#secYWrap").removeClass("hidden");
-                    $("#secYContextWrap, #secXWrap").addClass("hidden");
-
                     renderYCards(items);
-                    renderAllSparks(items);   // ← ahora cada it.spark es SIEMPRE un array
-
-                    // debug opcional
-                    // console.table(items.map(x => ({ codigo: x.codigo, sparkLen: x.spark.length })));
+                    renderAllSparks(items);
                 },
-
-                error: function (error) { console.error("❌ Error en AJAX:", error); }
+                error: function (err) { console.error("Error ObtenerVarY:", err); }
             });
         }
 
 
         function normalizeSpark(raw) {
             if (!raw) return [];
-            // ya es arreglo
-            if (Array.isArray(raw)) {
-                return raw.map(Number).filter(Number.isFinite);
-            }
-            // objeto con $values (System.Text.Json/Newtonsoft preserve refs)
-            if (raw && Array.isArray(raw.$values)) {
-                return raw.$values.map(Number).filter(Number.isFinite);
-            }
-            // viene como texto (JSON o "1,2,3")
+            if (Array.isArray(raw)) return raw.map(Number).filter(Number.isFinite);
+            if (raw && Array.isArray(raw.$values)) return raw.$values.map(Number).filter(Number.isFinite);
             if (typeof raw === 'string') {
                 const s = raw.trim();
-                if (s.startsWith('[') && s.endsWith(']')) {
-                    try {
-                        const arr = JSON.parse(s);
-                        if (Array.isArray(arr)) return arr.map(Number).filter(Number.isFinite);
-                    } catch (_) { }
-                }
+                if (s.startsWith('[') && s.endsWith(']')) { try { const arr = JSON.parse(s); if (Array.isArray(arr)) return arr.map(Number).filter(Number.isFinite); } catch (_) { } }
                 return s.split(/[,\s;]+/).map(Number).filter(Number.isFinite);
             }
             return [];
         }
 
-        function toArrayMaybe(v) {
-            if (!v) return [];
-            if (Array.isArray(v)) return v;
-            if (v.$values && Array.isArray(v.$values)) return v.$values;
-            return [];
-        }
+        // ======= Sparks (Y y X) =======
+        function toArrayMaybe(v) { if (!v) return []; if (Array.isArray(v)) return v; if (v.$values && Array.isArray(v.$values)) return v.$values; return []; }
 
         function renderAllSparks(items) {
             if (!window.echarts) return;
-
             items.forEach(it => {
-                const dom = document.getElementById(`spark-${it.codigo}`);
-                if (!dom) return;
-
-                const series = toArrayMaybe(it.spark).map(Number).filter(n => Number.isFinite(n));
+                const dom = document.getElementById(`spark-${it.codigo}`); if (!dom) return;
+                const series = toArrayMaybe(it.spark).map(Number).filter(Number.isFinite);
                 if (series.length < 2) { dom.innerHTML = ''; return; }
-
-                // Incluye límites (si existen) para calcular la escala
-                const limits = [];
-                if (it.lsl != null && isFinite(it.lsl)) limits.push(Number(it.lsl));
-                if (it.usl != null && isFinite(it.usl)) limits.push(Number(it.usl));
-
-                const valuesForScale = series.concat(limits);
-                let min = Math.min.apply(null, valuesForScale);
-                let max = Math.max.apply(null, valuesForScale);
-                if (!isFinite(min) || !isFinite(max)) { // por si no hubo límites válidos
-                    min = Math.min.apply(null, series);
-                    max = Math.max.apply(null, series);
-                }
+                const limits = []; if (isFinite(it.lsl)) limits.push(Number(it.lsl)); if (isFinite(it.usl)) limits.push(Number(it.usl));
+                const pool = series.concat(limits);
+                let min = Math.min.apply(null, pool), max = Math.max.apply(null, pool);
+                if (!isFinite(min) || !isFinite(max)) { min = Math.min.apply(null, series); max = Math.max.apply(null, series); }
                 const pad = Math.max((max - min) * 0.15, 1e-6);
-                const yMin = min - pad;
-                const yMax = max + pad;
 
                 const option = {
-                    animation: false,
-                    grid: { left: 0, right: 0, top: 0, bottom: 0 },
+                    animation: false, grid: { left: 0, right: 0, top: 0, bottom: 0 },
                     xAxis: { type: 'category', show: false, data: series.map((_, i) => i) },
-                    yAxis: { type: 'value', show: false, min: yMin, max: yMax },
-
+                    yAxis: { type: 'value', show: false, min: min - pad, max: max + pad },
                     tooltip: {
-                        trigger: 'axis',
-                        confine: true,
-                        formatter: (params) => {
-                            const p = params[params.length - 1];
-                            const v = p ? p.data : '';
-                            const lim = (it.lsl != null && it.usl != null)
-                                ? `<br/>LSL/USL: ${it.lsl} / ${it.usl}`
-                                : '';
-                            return `Últimos ${series.length}<br/>Valor: <b>${v}</b>${lim}`;
+                        trigger: 'axis', confine: true,
+                        formatter: p => {
+                            const v = p?.[p.length - 1]?.data ?? '';
+                            const lim = (isFinite(it.lsl) && isFinite(it.usl)) ? `<br/>${T.Tooltip_Limits}: ${it.lsl} / ${it.usl}` : '';
+                            return `${T.Tooltip_LastN.replace('{0}', series.length)}<br/>${T.Tooltip_Value}: <b>${v}</b>${lim}`;
                         }
                     },
-
                     series: [
-                        // Banda de tolerancia (si hay LSL/USL)
-                        (it.lsl != null && it.usl != null) ? {
-                            type: 'line',
-                            data: [],
-                            markArea: {
-                                silent: true,
-                                itemStyle: { color: 'rgba(56, 189, 248, .18)' },
-                                data: [[{ yAxis: it.lsl }, { yAxis: it.usl }]]
-                            }
-                        } : null,
-                        // Línea de los últimos 10 controles
-                        {
-                            type: 'line',
-                            data: series,
-                            smooth: false,
-                            symbol: 'none',
-                            lineStyle: { width: 2 },
-                            areaStyle: { opacity: 0.15 }
-                        }
+                        (isFinite(it.lsl) && isFinite(it.usl)) ? { type: 'line', data: [], markArea: { silent: true, itemStyle: { color: 'rgba(56,189,248,.18)' }, data: [[{ yAxis: it.lsl }, { yAxis: it.usl }]] } } : null,
+                        { type: 'line', data: series, symbol: 'none', lineStyle: { width: 2 }, areaStyle: { opacity: .15 } }
                     ].filter(Boolean)
                 };
-
-                const chart = echarts.init(dom, null, { renderer: 'svg' });
-                chart.setOption(option);
+                echarts.init(dom, null, { renderer: 'svg' }).setOption(option);
             });
         }
 
 
-
-
-
-        // ======= AJAX: X en base a Y seleccionada =======
+        // ======= AJAX (X) =======
         function cargarVarX() {
             const sku = $("#sku").val();
-            // 👇 toma SIEMPRE el código (del hidden) y, por seguridad, de la card seleccionada si faltara
             const varYCode = $("#variableY").val() || $("#cardsY .card-y.selected").attr("data-code") || "";
-            const fechaInicial = $("#startDate").val();
-            const fechaFinal = $("#endDate").val();
-            const lineaId = $("#line").val();
+            const fechaInicial = $("#startDate").val(), fechaFinal = $("#endDate").val(), lineaId = $("#line").val();
+            if (!(sku && varYCode)) { $("#cardsX").empty(); $("#noVariablesX").hide(); return; }
 
-            if (!(sku && varYCode)) {
-                console.warn("⚠️ No se puede cargar X: faltan sku o varYCode", { sku, varYCode });
-                $("#cardsX").empty(); $("#noVariablesX").hide();
-                return;
-            }
-
-            // limpieza visual previa
-            $("#cardsX").empty();
-            $("#noVariablesX").hide();
-            $("#secXWrap").removeClass("hidden");
-
-            console.log("➡️ ObtenerVarX params (se envía CÓDIGO):", {
-                sku, varY: varYCode, fechaInicial, fechaFinal, lineaId
-            });
+            $("#cardsX").empty(); $("#noVariablesX").hide(); $("#secXWrap").removeClass("hidden");
 
             $.ajax({
                 url: '@Url.Action("ObtenerVarX", "Dashboard")',
                 type: 'GET',
-                data: {
-                    sku: sku,
-                    varY: varYCode,         // 👈 SOLO el CÓDIGO
-                    fechaInicial: fechaInicial,
-                    fechaFinal: fechaFinal,
-                    lineaId: lineaId
-                },
+                data: { sku, varY: varYCode, fechaInicial, fechaFinal, lineaId },
                 cache: false,
                 success: function (data) {
                     const raw = Array.isArray(data) ? data
                         : Array.isArray(data?.$values) ? data.$values
                             : Array.isArray(data?.value?.$values) ? data.value.$values
                                 : [];
-
-                    // 🔸 Mantén todos los campos que manda el backend y normaliza spark
                     const items = raw.map(v => ({
                         value: v.value ?? v.controlOperation ?? v.codigo ?? v.id ?? v.variableCode ?? v.key ?? "",
                         name: v.name ?? v.controlOperationName ?? v.nombre ?? v.variableName ?? v.title ?? "",
@@ -725,14 +681,11 @@
                     })).filter(it => it.value && it.name);
 
                     renderXCards(items);
-                    renderXSparks(items);      // ← ahora sí hay datos para el mini-spark
+                    renderXSparks(items);
                 },
-
-
                 error: function (xhr) {
-                    console.error("❌ Error en ObtenerVarX:", xhr);
-                    $("#cardsX").empty();
-                    $("#noVariablesX").show();
+                    console.error("Error ObtenerVarX:", xhr);
+                    $("#cardsX").empty(); $("#noVariablesX").text(T.NoXVariables).show();
                 }
             });
         }

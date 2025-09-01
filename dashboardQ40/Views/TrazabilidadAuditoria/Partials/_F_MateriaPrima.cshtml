@@ -1,10 +1,10 @@
 ﻿@model BloqueMateriaPrimaModel
-
+@inject IStringLocalizer Localizer
 
 <div class="accordion-item">
     <h2 class="accordion-header">
         <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-MP">
-            <h4 class="mb-0">Información de la Materia Prima (Empaque, Ingredientes, Ayuda de Proceso)</h4>
+            <h4 class="mb-0">@Localizer["RawMat_Header"]</h4>
         </button>
     </h2>
     <div id="collapse-MP" class="accordion-collapse collapse show">
@@ -12,32 +12,32 @@
             <table class="tabla-trazabilidad">
                 <thead>
                     <tr class="bg-header">
-                        <th rowspan="2">Descripción</th>
-                        <th colspan="2">Proveedor</th>
-                        <th colspan="2">Lote Externo MP</th>
-                        <th colspan="2">Lote Interno MP</th>
-                        <th colspan="2">Fecha de Recepción</th>
-                        <th colspan="2">Cantidad Involucrada</th>
-                        <th colspan="2">Supervisión</th>
+                        <th rowspan="2">@Localizer["RawMat_Description"]</th>
+                        <th colspan="2">@Localizer["RawMat_Supplier"]</th>
+                        <th colspan="2">@Localizer["RawMat_ExternalLot"]</th>
+                        <th colspan="2">@Localizer["RawMat_InternalLot"]</th>
+                        <th colspan="2">@Localizer["RawMat_ReceptionDate"]</th>
+                        <th colspan="2">@Localizer["RawMat_Quantity"]</th>
+                        <th colspan="2">@Localizer["RawMat_Supervision"]</th>
                     </tr>
                     <tr class="bg-subheader">
-                        <th colspan="2">Nombre</th>
-                        <th colspan="2">Código</th>
-                        <th colspan="2">Código</th>
-                        <th colspan="2">dd/mm/yyyy</th>
-                        <th colspan="2">Unidad</th>
-                        <th>Control Calidad</th>
-                        <th>Almacén</th>
+                        <th colspan="2">@Localizer["RawMat_SupplierName"]</th>
+                        <th colspan="2">@Localizer["RawMat_SupplierCode"]</th>
+                        <th colspan="2">@Localizer["RawMat_InternalCode"]</th>
+                        <th colspan="2">@Localizer["RawMat_DateFormat"]</th>
+                        <th colspan="2">@Localizer["RawMat_Unit"]</th>
+                        <th>@Localizer["RawMat_QC"]</th>
+                        <th>@Localizer["RawMat_Warehouse"]</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.Registros)
                     {
                         <tr>
-                            <td class="bg-label">@item.Descripcion<span title="Dato automático">🟢</span></td>
+                            <td class="bg-label">@item.Descripcion<span title="@Localizer["RawMat_AutoData"]">🟢</span></td>
                             <td colspan="2">@item.Proveedor</td>
                             <td colspan="2">@item.LoteExterno</td>
-                            <td colspan="2">@item.LoteInterno<span title="Dato automático">🟢</span></td>
+                            <td colspan="2">@item.LoteInterno<span title="@Localizer["RawMat_AutoData"]">🟢</span></td>
                             <td colspan="2">@item.FechaRecepcion</td>
                             <td colspan="2">@item.Cantidad</td>
                             <td>@Model.SupervisorCalidad</td>
@@ -49,89 +49,3 @@
         </div>
     </div>
 </div>
-
-<!-- 
-<div class="accordion-item">
-    <h2 class="accordion-header">
-        <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-MP">
-            <h4>Información de la Materia Prima (Empaque, Ingredientes, Ayuda de Proceso)</h4>
-        </button>
-    </h2>
-    <div id="collapse-MP" class="accordion-collapse collapse show">
-        <div class="accordion-body">
-            <table class="tabla-trazabilidad">
-                <tr class="bg-header">
-                    <th rowspan="2">Descripción de la materia prima</th>
-                    <th colspan="2">Proveedor</th>
-                    <th colspan="2">Lote externo MP</th>
-                    <th colspan="2">Lote interno MP</th>
-                    <th colspan="2">Fecha de recepción</th>
-                    <th colspan="2">Cantidad involucrada</th>
-                    <th colspan="2">Supervisión</th>
-                </tr>
-                <tr class="bg-subheader">
-                    <th colspan="2">Nombre</th>
-                    <th colspan="2">Código</th>
-                    <th colspan="2">Código</th>
-                    <th colspan="2">dd/mm/yyyy</th>
-                    <th colspan="2">Unidad</th>
-                    <th>Control Calidad</th>
-                    <th>Almacén</th>
-                </tr>
-                <tr>
-                    <td class="bg-label">Azúcar</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">15/NOV/2024</td>
-                    <td colspan="2">3,200 kg</td>
-                    <td>Margarita Aceves</td>
-                    <td>Raul Juarez</td>
-                </tr>
-                <tr>
-                    <td class="bg-label">Fructosa</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">15/NOV/2024</td>
-                    <td colspan="2">1,082 kg</td>
-                    <td>Margarita Aceves</td>
-                    <td>Raul Juarez</td>
-                </tr>
-                <tr>
-                    <td class="bg-label">CO2</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">15/NOV/2024</td>
-                    <td colspan="2">4,748 piezas</td>
-                    <td>Margarita Aceves</td>
-                    <td>Raul Juarez</td>
-                </tr>
-                <tr>
-                    <td class="bg-label">N2</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">15/NOV/2024</td>
-                    <td colspan="2">9564 piezas</td>
-                    <td>Margarita Aceves</td>
-                    <td>Raul Juarez</td>
-                </tr>
-                <tr>
-                    <td class="bg-label">Envase (PET 1.5L)</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">BEPPT</td>
-                    <td colspan="2">15/NOV/2024</td>
-                    <td colspan="2">N/A</td>
-                    <td>Margarita Aceves</td>
-                    <td>Raul Juarez</td>
-                </tr>
-            </table>
-
-        </div>
-    </div>
-</div>
-
--->

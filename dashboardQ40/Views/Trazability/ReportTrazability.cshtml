@@ -1,10 +1,11 @@
 ﻿@using System.Data
 @model dashboardQ40.Models.TrazabilidadConChecklistViewModel
+@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
 
 @{
-    ViewBag.Title = "Reporte de Trazabilidad Hacia Atrás";
+    ViewBag.Title = Localizer["Trace_BackwardReport_Title"]; // "Backward Traceability Report"
 
-    string jsonData = "{}"; // Valor por defecto
+    string jsonData = "{}"; // default
 
     if (Model?.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
     {
@@ -15,26 +16,21 @@
             columnas.ToDictionary(c => c, c => r[c]?.ToString() ?? "")
         ).ToList();
 
-        var dataCompleta = new
-        {
-            columnas,
-            filas
-        };
-
+        var dataCompleta = new { columnas, filas };
         jsonData = System.Text.Json.JsonSerializer.Serialize(dataCompleta);
     }
 }
 
 <div class="container mt-5">
-    <h2>Reporte de Trazabilidad Hacia Atrás</h2>
+    <h2>@Localizer["Trace_BackwardReport_Header"]</h2>
 
     <form method="get" action="@Url.Action("ReportTrazability", "Trazability")" class="d-flex align-items-center gap-2 mb-2">
         <input id="txtSearchBatch" type="text" name="searchBatch" class="form-control form-control-sm w-auto"
-               placeholder="Buscar lote..." value="@Model?.SearchBatch" style="max-width: 200px;" />
-        <button id="btnBuscar" type="submit" class="btn btn-sm btn-primary">Buscar</button>
+               placeholder="@Localizer["Trace_SearchBatch_Placeholder"]" value="@Model?.SearchBatch" style="max-width: 200px;" />
+        <button id="btnBuscar" type="submit" class="btn btn-sm btn-primary">@Localizer["Search"]</button>
 
         <button type="button" id="btnBuscarPorFechas" class="btn btn-sm btn-outline-secondary">
-            Buscar por fechas…
+            @Localizer["Trace_SearchByDates"]
         </button>
     </form>
 
@@ -43,21 +39,21 @@
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Buscar lotes por rango de fechas</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <h5 class="modal-title">@Localizer["Trace_Modal_Title"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@Localizer["Close"]"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row g-2 mb-3">
                         <div class="col-12 col-md-4">
-                            <label class="form-label mb-1">Fecha inicio</label>
+                            <label class="form-label mb-1">@Localizer["Date_Start"]</label>
                             <input id="fechaIni" type="date" class="form-control form-control-sm" />
                         </div>
                         <div class="col-12 col-md-4">
-                            <label class="form-label mb-1">Fecha fin</label>
+                            <label class="form-label mb-1">@Localizer["Date_End"]</label>
                             <input id="fechaFin" type="date" class="form-control form-control-sm" />
                         </div>
                         <div class="col-12 col-md-4 d-flex align-items-end">
-                            <button id="btnConsultarLotes" class="btn btn-sm btn-primary w-100">Consultar</button>
+                            <button id="btnConsultarLotes" class="btn btn-sm btn-primary w-100">@Localizer["Consult"]</button>
                         </div>
                     </div>
 
@@ -65,10 +61,10 @@
                         <table class="table table-sm table-hover align-middle mb-0" id="tablaLotes">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width:160px;">Lote</th>
-                                    <th>Descripción / SKU</th>
-                                    <th style="width:180px;">Inicio</th>
-                                    <th style="width:180px;">Fin</th>
+                                    <th style="width:160px;">@Localizer["Lot"]</th>
+                                    <th>@Localizer["Description_SKU"]</th>
+                                    <th style="width:180px;">@Localizer["Start"]</th>
+                                    <th style="width:180px;">@Localizer["End"]</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -77,7 +73,7 @@
                     <div id="msgLotes" class="small text-muted mt-2"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">@Localizer["Close"]</button>
                 </div>
             </div>
         </div>
@@ -90,6 +86,17 @@
 
         <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
         <script>
+            // ===== Textos para JS =====
+            window.TRZ = {
+                NoInfo: '@Localizer["NoInfo"]',                       // "No information"
+                ManufacturedLot: '@Localizer["ManufacturedLot"]',     // "Manufactured lot"
+                SKU: '@Localizer["SKU"]',                              // "SKU"
+                Identifier: '@Localizer["Identifier"]',                // "Identifier"
+                Start: '@Localizer["Start"]',                          // "Start"
+                End: '@Localizer["End"]',                              // "End"
+                ViewDetail: '@Localizer["ViewDetail"]'                 // "View detail"
+            };
+
             const chart = echarts.init(document.getElementById('visorTrazabilidad'));
 
             const trazabilidadDebug = @Html.Raw(jsonData);
@@ -134,18 +141,15 @@
                 }
             });
 
-            const hijos = new Set(rows.$values.map(r => r.hijo));
-            const padres = [...new Set(rows.$values.map(r => r.padre))];
+            const hijos = new Set((rows.$values || []).map(r => r.hijo));
+            const padres = [...new Set((rows.$values || []).map(r => r.padre))];
             let rootId = padres.find(p => !hijos.has(p)) || padres[0];
 
             const uniqueLinks = [];
             const seenLinks = new Set();
             links.forEach(link => {
                 const key = `${link.source}→${link.target}`;
-                if (!seenLinks.has(key)) {
-                    seenLinks.add(key);
-                    uniqueLinks.push(link);
-                }
+                if (!seenLinks.has(key)) { seenLinks.add(key); uniqueLinks.push(link); }
             });
 
             function buildTreeSafe(rootId, visited = new Set()) {
@@ -171,15 +175,15 @@
                     textStyle: { color: '#000' },
                     formatter: function (params) {
                         const info = params.data.info;
-                        if (!info) return 'Sin información';
+                        if (!info) return TRZ.NoInfo;
                         return `
                                         <div style="max-width: 240px; font-size: 12px;">
-                                            <b>Lote fabricado</b><br/>
-                                            <b>SKU:</b> ${info.sku}<br/>
-                                            <b>Identificador:</b> ${info.id}<br/>
-                                            <b>Inicio:</b> ${info.inicio}<br/>
-                                            <b>Fin:</b> ${info.fin}<br/>
-                                            <a href="javascript:void(0)" onclick="filtrarLote('${info.id}')">🔍 Ver detalle</a>
+                                            <b>${TRZ.ManufacturedLot}</b><br/>
+                                            <b>${TRZ.SKU}:</b> ${info.sku}<br/>
+                                            <b>${TRZ.Identifier}:</b> ${info.id}<br/>
+                                            <b>${TRZ.Start}:</b> ${info.inicio}<br/>
+                                            <b>${TRZ.End}:</b> ${info.fin}<br/>
+                                            <a href="javascript:void(0)" onclick="filtrarLote('${info.id}')">🔍 ${TRZ.ViewDetail}</a>
                                         </div>`;
                     }
                 },
@@ -202,7 +206,8 @@
                         formatter: function (params) {
                             const info = params.data.info;
                             if (!info) return params.data.name || '';
-                            return [`{b|${params.data.name}}`, `{s|${info.sku.substr(0, 20)}}`].join('\n');
+                            const skuShort = (info.sku || '').substring(0, 20);
+                            return [`{b|${params.data.name}}`, `{s|${skuShort}}`].join('\n');
                         },
                         position: 'inside',
                         verticalAlign: 'middle',
@@ -210,9 +215,7 @@
                         fontSize: 11,
                         rich: { b: { fontWeight: 'bold', fontSize: 12 }, s: { fontSize: 10 } }
                     },
-                    leaves: {
-                        label: { show: true, position: 'inside', verticalAlign: 'middle', align: 'center', fontSize: 11 }
-                    },
+                    leaves: { label: { show: true, position: 'inside', verticalAlign: 'middle', align: 'center', fontSize: 11 } },
                     itemStyle: { borderColor: '#666', borderWidth: 1, color: '#eef9ff' },
                     expandAndCollapse: true,
                     initialTreeDepth: -1,
@@ -235,7 +238,7 @@
         </script>
     }
 
-    <button class="btn btn-primary" onclick="window.print()">Imprimir Reporte</button>
+    <button class="btn btn-primary" onclick="window.print()">@Localizer["PrintReport"]</button>
 </div>
 
 @section Scripts {
@@ -271,23 +274,21 @@
                     const tbody = document.querySelector('#tablaLotes tbody');
                     tbody.innerHTML = '';
 
-                    if (!ini || !fin) { msg.textContent = 'Selecciona ambas fechas.'; return; }
-                    if (ini > fin) { msg.textContent = 'La fecha inicio no puede ser mayor que la fecha fin.'; return; }
+                    if (!ini || !fin) { msg.textContent = '@Localizer["SelectBothDates"]'; return; }
+                    if (ini > fin) { msg.textContent = '@Localizer["StartNotAfterEnd"]'; return; }
 
-                    msg.textContent = 'Buscando lotes...';
+                    msg.textContent = '@Localizer["SearchingBatches"]';
 
                     try {
                         const url = `@Url.Action("BuscarLotesPorFechas", "Trazability")?fechaIni=${encodeURIComponent(ini)}&fechaFin=${encodeURIComponent(fin)}`;
                         const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                        if (!resp.ok) throw new Error('Error de red');
+                        if (!resp.ok) throw new Error('net');
 
                         const data = await resp.json();
-                        console.log('🔎 Lotes recibidos:', data);
 
-                        // 👇 Maneja formato Newtonsoft: { $id: "1", $values: [...] }
                         const items = Array.isArray(data) ? data : (data && Array.isArray(data.$values) ? data.$values : []);
 
-                        if (!items.length) { msg.textContent = 'Sin resultados.'; return; }
+                        if (!items.length) { msg.textContent = '@Localizer["NoResults"]'; return; }
 
                         items.forEach(x => {
                             const lote = x.lote ?? x.batchIdentifier ?? x.batch ?? '';
@@ -298,11 +299,11 @@
                             const tr = document.createElement('tr');
                             tr.style.cursor = 'pointer';
                             tr.innerHTML = `
-                      <td><code>${lote}</code></td>
-                      <td>${desc}</td>
-                      <td>${fmtSmart(inicio)}</td>
-                      <td>${fmtSmart(finv)}</td>
-                    `;
+                                        <td><code>${lote}</code></td>
+                                        <td>${desc}</td>
+                                        <td>${fmtSmart(inicio)}</td>
+                                        <td>${fmtSmart(finv)}</td>
+                                    `;
                             tr.addEventListener('click', function () {
                                 document.getElementById('txtSearchBatch').value = lote || '';
                                 modalBuscarLotes.hide();
@@ -311,20 +312,20 @@
                             tbody.appendChild(tr);
                         });
 
-                        msg.textContent = `${items.length} lote(s) encontrados. Da clic para seleccionar.`;
+                        msg.textContent = items.length + ' @Localizer["LotsFound_ClickToSelect"]';
                     } catch (e) {
                         console.error(e);
-                        msg.textContent = 'Error al consultar los lotes.';
+                        msg.textContent = '@Localizer["ErrorFetchingBatches"]';
                     }
                 });
             }
 
             function fmtSmart(v) {
                 if (!v) return '';
-                // Si viene ISO (con 'T'), formatea; si viene en texto local, déjalo tal cual
                 if (typeof v === 'string' && v.includes('T')) {
                     const d = new Date(v);
                     if (!isNaN(d)) {
+                        // Puedes cambiar 'es-MX' si quieres hacerlo dependiente de CultureInfo.CurrentUICulture.Name
                         return d.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
                     }
                 }
@@ -332,9 +333,6 @@
             }
         })();
     </script>
-
-
-
 }
 
 <br />
@@ -347,14 +345,14 @@
         </div>
 
         <div class="small d-flex gap-2 flex-wrap align-items-center">
-            <span><strong>Desde:</strong> <span id="displayStart"></span></span>
-            <span><strong>Hasta:</strong> <span id="displayEnd"></span></span>
+            <span><strong>@Localizer["From"]</strong> <span id="displayStart"></span></span>
+            <span><strong>@Localizer["To"]</strong> <span id="displayEnd"></span></span>
 
             <form method="get" action="@Url.Action("ReportTrazability", "Trazability")" class="d-flex align-items-center gap-2">
                 <input type="hidden" name="searchBatch" value="@Model.SearchBatch" />
                 <input type="hidden" id="startDateInput" name="startDate" />
                 <input type="hidden" id="endDateInput" name="endDate" />
-                <button type="submit" class="btn btn-sm btn-outline-secondary">🔍 Filtrar</button>
+                <button type="submit" class="btn btn-sm btn-outline-secondary">🔍 @Localizer["Filter"]</button>
             </form>
         </div>
     </div>
@@ -366,22 +364,22 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
-                <th>Lote</th>
-                <th>Identificador Lote</th>
-                <th>Inicio</th>
-                <th>Fin</th>
-                <th>SKU</th>
-                <th>Línea</th>
-                <th>Variable</th>
-                <th>Resultado</th>
-                <th>Min</th>
-                <th>Max</th>
-                <th>Conteo</th>
-                <th>Defectos</th>
-                <th>Media</th>
-                <th>Sigma</th>
-                <th>Cp</th>
-                <th>Cpk</th>
+                <th>@Localizer["Lot"]</th>
+                <th>@Localizer["BatchIdentifier"]</th>
+                <th>@Localizer["Start"]</th>
+                <th>@Localizer["End"]</th>
+                <th>@Localizer["SKU"]</th>
+                <th>@Localizer["Line"]</th>
+                <th>@Localizer["Variable"]</th>
+                <th>@Localizer["Result"]</th>
+                <th>@Localizer["Min"]</th>
+                <th>@Localizer["Max"]</th>
+                <th>@Localizer["Count"]</th>
+                <th>@Localizer["Defects"]</th>
+                <th>@Localizer["Mean"]</th>
+                <th>@Localizer["Sigma"]</th>
+                <th>@Localizer["Cp"]</th>
+                <th>@Localizer["Cpk"]</th>
             </tr>
         </thead>
         <tbody>
@@ -418,7 +416,7 @@
                         <td>@creacionLote</td>
                         <td>@finLote</td>
                         <td>@manufacturingReference</td>
-                        <td colspan="12">Sin registros de checklist</td>
+                        <td colspan="12">@Localizer["NoChecklistRecords"]</td>
                     </tr>
                 }
                 else
@@ -485,20 +483,20 @@
 }
 else if (Model.Checklist != null)
 {
-    <div class="alert alert-warning">No se encontraron checklist para el lote o rango seleccionado.</div>
+    <div class="alert alert-warning">@Localizer["NoChecklistForSelection"]</div>
 }
 
 @if (Model.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
 {
-    <h4>Estructura de Lotes (Jerarquía de Trazabilidad)</h4>
+    <h4>@Localizer["LotsStructure_Header"]</h4>
     <table class="table table-bordered table-sm">
         <thead>
             <tr>
-                <th>Padre</th>
-                <th>Hijo</th>
-                <th>Lote</th>
-                <th>Identificador</th>
-                <th>Nivel</th>
+                <th>@Localizer["Parent"]</th>
+                <th>@Localizer["Child"]</th>
+                <th>@Localizer["Lot"]</th>
+                <th>@Localizer["BatchIdentifier"]</th>
+                <th>@Localizer["Level"]</th>
             </tr>
         </thead>
         <tbody>

@@ -1,82 +1,106 @@
-﻿@{
+﻿@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
+@{
     ViewData["Title"] = "Trazabilidad para auditoría";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Trazabilidad para auditoría</h2>
+    <h2 class="text-center mb-4">@Localizer["AuditTraceability_Title"]</h2>
 
     <!-- Sección de selección -->
     <div id="opcionesIniciales" class="text-center">
         <button class="btn btn-lg btn-primary m-3" onclick="mostrarFormulario('nuevo')">
-            📝 Crear nuevo reporte
+            📝 @Localizer["AuditTraceability_CreateNewReport"]
         </button>
         <button class="btn btn-lg btn-secondary m-3" onclick="mostrarFormulario('ver')">
-            📂 Ver reportes anteriores
+            📂 @Localizer["AuditTraceability_ViewPreviousReports"]
         </button>
     </div>
 
     <!-- Formulario nuevo reporte -->
     <div id="formNuevo" style="display:none;">
         <div class="card p-4">
-            <h4>📄 Nuevo reporte de trazabilidad</h4>
+            <h4>📄 @Localizer["AuditTraceability_NewReportTitle"]</h4>
             <hr />
             <form id="formGuardar">
                 <div class="row">
+                <!-- País / Planta -->
+                    <div class="col">
+                        <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
+                    </div>
+                    <div class="col">
+                        <select id="pais" class="form-select form-select-sm">
+                            <option value="">-- Selecciona --</option>
+                            @foreach (var p in ViewBag.Countries)
+                            {
+                                <option value="@p.Code">@p.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
+                    </div>
+                    <div class="col">
+                        <select id="planta" class="form-select form-select-sm">
+                            <option value="">-- Selecciona --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="fechaHora">Fecha y hora del reporte</label>                        
-                        <input type="datetime-local" class="form-control" id="fechaHora" name="FechaHora" value="2025-07-12T09:00" />                        
+                        <label for="fechaHora">@Localizer["AuditTraceability_ReportDateTime_Label"]</label>
+                        <input type="datetime-local" class="form-control" id="fechaHora" name="FechaHora" value="2025-07-12T09:00" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="horaInicio">Hora inicio</label>
+                        <label for="horaInicio">@Localizer["Common_StartTime"]</label>
                         <input type="time" class="form-control" id="horaInicio" name="HoraInicio" value="09:00" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="horaFin">Hora fin</label>
+                        <label for="horaFin">@Localizer["Common_EndTime"]</label>
                         <input type="time" class="form-control" id="horaFin" name="HoraFin" value="10:00" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="revision">Revisión</label>
+                        <label for="revision">@Localizer["Common_Revision"]</label>
                         <input type="text" class="form-control" id="revision" name="Revision" value="Rev. 1" />
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="motivo">Motivo de la trazabilidad</label>
-                    <textarea class="form-control" id="motivo" name="motivo" rows="2"></textarea>
+                    <label for="motivo">@Localizer["AuditTraceability_Reason_Label"]</label>
+                    <textarea class="form-control" id="motivo" name="motivo" rows="2"
+                              placeholder="@Localizer["AuditTraceability_Reason_Placeholder"]"></textarea>
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="lote">Lote</label>                        
-                        <input type="text" class="form-control" id="lote" name="Lote" value="28OCT25-7" />                        
+                        <label for="lote">@Localizer["Common_Batch"]</label>
+                        <input type="text" class="form-control" id="lote" name="Lote" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label>Hora de la queja:</label>
-                        <input type="time" id="horaQueja" name="horaQueja" class="form-control" value="23:35" />
-                    </div>                
-                    <div class="col-md-3 mb-3">
-                        <label for="usuarioVobo">Usuario VoBo</label>
-                        
-                        <input type="text" class="form-control" id="usuarioVobo" name="UsuarioVobo" value="Margarita Antonio" />
-                        
+                        <label for="horaQueja">@Localizer["AuditTraceability_ComplaintTime"]</label>
+                        <input type="time" id="horaQueja" name="horaQueja" class="form-control" value="09:30" />
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="efic">Eficiencia producto terminado (%)</label>                        
-                        <input type="number" class="form-control" id="efic" name="PorcEficProductoTerminado" value="95.5" />                        
+                        <label for="usuarioVobo">@Localizer["Common_ApprovalUser"]</label>
+                        <input type="text" class="form-control" id="usuarioVobo" name="UsuarioVobo" value="Juan Pérez" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="efic">@Localizer["AuditTraceability_FG_EfficiencyPct"]</label>
+                        <input type="number" class="form-control" id="efic" name="PorcEficProductoTerminado" value="95.5" />
                     </div>
                 </div>
 
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" value="1" id="trazaProducto" />
                     <label class="form-check-label" for="trazaProducto">
-                        ¿Requiere trazabilidad de materia prima?
+                        @Localizer["AuditTraceability_RequireRMTraceability_Question"]
                     </label>
                 </div>
 
                 <div class="text-end">
-                    <button type="submit" class="btn btn-success">Guardar reporte</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="regresar()">Cancelar</button>
+                    <button type="submit" class="btn btn-success">@Localizer["Common_Save"]</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="regresar()">
+                        @Localizer["Common_Cancel"]
+                    </button>
                 </div>
             </form>
         </div>
@@ -85,56 +109,121 @@
     <!-- Sección de historial (placeholder) -->
     <div id="formHistorial" style="display:none;">
         <div class="card p-4">
-            <h4>📂 Reportes anteriores</h4>
-            <p class="text-muted">Aquí podrás consultar reportes ya registrados.</p>
+            <h4>📂 @Localizer["AuditTraceability_PreviousReportsTitle"]</h4>
+            <p class="text-muted">@Localizer["AuditTraceability_PreviousReportsDesc"]</p>
             <!-- Aquí irá la tabla de historial más adelante -->
         </div>
     </div>
 </div>
 
-<!-- Loading overlay con fondo gris -->
+<!-- Loading overlay -->
 <div id="global-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
     <div class="spinner-border text-light" style="width: 4rem; height: 4rem;" role="status">
-        <span class="visually-hidden">Cargando...</span>
+        <span class="visually-hidden">@Localizer["Common_Loading"]</span>
     </div>
     <div class="mt-3 text-white fw-bold text-center" id="mensaje-loader">
-        Generando reporte...<br />
-        Cargando bloques del reporte, por favor espere.
+        @Localizer["Loader_GeneratingReport"]<br />
+        @Localizer["Loader_LoadingBlocks_PleaseWait"]
     </div>
 </div>
 
 @section Scripts {
+
     <script>
-        const bloques = [
-            "Materia prima",
-            "Producto terminado",
-            "Registro de tiempos",
-            "Información de jarabes",
-            "Liberación sensorial",
-            "Checklist de limpieza",
-            "Datos de proceso"
-        ];
+        // Etiquetas (puedes cambiarlas o usar Localizer)
+        const LABELS = {
+            Select: "-- Selecciona --",
+            Line: "@Localizer["XR_Line"]",
+            Plant: "@Localizer["XR_Plant"]"
+        };
+
+        // Todas las companies (Company, CompanyName, CountryCode) desde backend
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+
+        // Helpers
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            return [];
+        }
+        function resetSelect($el, placeholder) {
+            $el.empty().append(new Option(placeholder, ""));
+        }
+
+        // 1) País → cargar Plantas
+        function fillPlants(countryCode) {
+            const $planta = $("#planta");
+            resetSelect($planta, LABELS.Plant);
+            resetSelect($("#line"), LABELS.Line); // limpiar línea
+
+            if (!countryCode) return;
+
+            const plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+        }
+
+       
+        // Eventos
+        $("#pais").on("change", function () { fillPlants(this.value); });
+
+
+        // Init opcional: seleccionar el primer país y disparar el llenado
+        $(function () {
+            const $pais = $("#pais");
+            if ($pais[0] && $pais[0].options.length > 1) {
+                $pais[0].selectedIndex = 1;
+                $pais.trigger("change");
+            }
+        });
+    </script>
+
+
+    <script>
+        // Diccionario JS desde Localizer
+        const T = {
+            Blocks: [
+                "@Localizer["Block_RawMaterials"]",
+                "@Localizer["Block_FinishedProduct"]",
+                "@Localizer["Block_TimeLog"]",
+                "@Localizer["Block_SyrupsInfo"]",
+                "@Localizer["Block_SensoryRelease"]",
+                "@Localizer["Block_CleaningChecklist"]",
+                "@Localizer["Block_ProcessData"]"
+            ],
+            LoaderGenerating: "@Localizer["Loader_GeneratingReport"]",
+            LoaderLoadingBlock: "@Localizer["Loader_LoadingBlock"]",
+            LoaderReportReady: "@Localizer["Loader_ReportReadyRedirect"]",
+            ErrorUnexpected: "@Localizer["Common_ErrorUnexpected"]",
+            ErrorSaving: "@Localizer["Common_ErrorSaving"]"
+        };
 
         let intervaloBloques;
 
         function iniciarAnimacionBloques() {
             let i = 0;
             const loader = $("#mensaje-loader");
-            loader.html("Generando reporte...<br/>");
+            loader.html(T.LoaderGenerating + "<br/>");
             intervaloBloques = setInterval(() => {
-                loader.html(`Generando reporte...<br/>Cargando bloque: ${bloques[i % bloques.length]}...`);
+                loader.html(`${T.LoaderGenerating}<br/>${T.LoaderLoadingBlock} ${T.Blocks[i % T.Blocks.length]}...`);
                 i++;
-            }, 1500); // puedes ajustar la velocidad
+            }, 1500);
         }
 
         function detenerAnimacionBloques() {
             clearInterval(intervaloBloques);
-            $("#mensaje-loader").html("Reporte generado, redirigiendo...");
+            $("#mensaje-loader").html(T.LoaderReportReady);
         }
 
         $(document).ready(function () {
-            $("#global-loader").fadeOut(); // Oculta el loader al cargar la nueva página
+            $("#global-loader").fadeOut();
         });
+
         function mostrarFormulario(tipo) {
             document.getElementById("opcionesIniciales").style.display = "none";
             if (tipo === 'nuevo') {
@@ -163,11 +252,13 @@
                 Lote: $("#lote").val(),
                 Revision: $("#revision").val(),
                 UsuarioVobo: $("#usuarioVobo").val(),
-                horaQueja: $("#horaQueja").val()
+                horaQueja: $("#horaQueja").val(),
+                company: $("#planta").val()
+
             };
 
             $("#global-loader").show();
-            iniciarAnimacionBloques(); // Inicia rotación de bloques
+            iniciarAnimacionBloques();
 
             $.ajax({
                 url: '@Url.Action("GuardarReporte", "TrazabilidadAuditoria")',
@@ -176,19 +267,16 @@
                 data: JSON.stringify(data),
                 success: function (res) {
                     if (res.success) {
-                        //alert("✅ " + res.mensaje);
                         $("#formGuardar")[0].reset();
-                        
-                        window.location.href = '/TrazabilidadAuditoria/AuditReport?lote=' + encodeURIComponent(data.Lote) + '&horaQueja=' + encodeURIComponent(data.horaQueja);
-                        
+                        window.location.href = '/TrazabilidadAuditoria/AuditReport?lote=' + encodeURIComponent(data.Lote) + '&horaQueja=' + encodeURIComponent(data.horaQueja) + '&company=' + encodeURIComponent(data.company);
                     } else {
-                        alert("❌ Error inesperado.");
+                        alert("❌ " + T.ErrorUnexpected);
                     }
                 },
                 error: function (err) {
                     console.error(err);
                     detenerAnimacionBloques();
-                    alert("❌ Error al guardar.");
+                    alert("❌ " + T.ErrorSaving);
                     $("#global-loader").hide();
                 }
             });

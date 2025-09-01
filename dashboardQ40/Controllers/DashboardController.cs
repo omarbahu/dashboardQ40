@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 using System.Text.Json;
 using static dashboardQ40.Models.Models;
 
@@ -16,13 +18,15 @@ namespace dashboardQ40.Controllers
         private readonly AuthService _authService;
         private readonly Dictionary<string, string> _variablesY;
         private readonly ILogger<DashboardController> _logger;
-    
+        private readonly IConfiguration _configuration;
+
 
         public DashboardController(IOptions<WebServiceSettings> settings, AuthService authService, IConfiguration configuration, ILogger<DashboardController> logger)
         {
             _settings = settings.Value;
             _authService = authService;
             _logger = logger;
+            _configuration = configuration;
 
             // 📌 Cargar la configuración manualmente
             _variablesY = configuration.GetSection("VariablesY").Get<Dictionary<string, string>>() ?? new Dictionary<string, string>();
@@ -38,50 +42,94 @@ namespace dashboardQ40.Controllers
                 HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
             }
 
-            var ListLineas = new List<result_lineas>();
-            var lineas = new result_lineas();
+            var ListCompanies = new List<result_companies>();
+            var companies = new List<CompanyOption>();
+
             if (token != null)
             {
-               
 
-                Task<result_Q_Lineas> dataResultP = getDataQuality.getLinesByCompany(
+
+                Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
                         token.access_token.ToString(),
-                        _settings.QueryLineas,
+                        _settings.QueryCompany,
                         _settings.Company,
                         _settings.trazalog);
-                await Task.WhenAll(dataResultP);
+                await Task.WhenAll(dataResultComp);
 
-                if (dataResultP.Result.result != null)
+                if (dataResultComp.Result.result != null)
                 {
-                    foreach (var item in dataResultP.Result.result)
+                    foreach (var item in dataResultComp.Result.result)
                     {
-                        var linea = new result_lineas
+                        CultureInfo ci;
+                        RegionInfo ri;
+                        try
                         {
-                            workplace = item.workplace,
-                            workplaceName = item.workplaceName,
-                            workMode = item.workMode
-                        };
+                            ci = new CultureInfo(item.culture);   // p.ej. "es-MX"
+                            ri = new RegionInfo(ci.Name);         // p.ej. "MX"
+                        }
+                        catch
+                        {
+                            ci = CultureInfo.InvariantCulture;
+                            ri = new RegionInfo("US");            // fallback
+                        }
 
-                        ListLineas.Add(linea);
+                        companies.Add(new CompanyOption
+                        {
+                            Company = item.company,
+                            CompanyName = item.companyName,
+                            Culture = ci.Name,
+                            CountryCode = ri.TwoLetterISORegionName
+                        });
                     }
 
                 }
 
             }
-                // Simulando datos para los selectores
-            ViewBag.Lines = ListLineas;
-            ViewBag.Products = new List<string> { "600 ml CC REGULAR", "600 ml CC LIGHT", "600 ml CC SIN AZUCAR", "500 ml CC REGULAR" };
+            var countries = companies
+                  .GroupBy(c => c.CountryCode)
+                  .Select(g =>
+                  {
+                      var r = new RegionInfo(g.Key); // admite "MX","US","ES"
+                      return new { Code = g.Key, Name = r.NativeName }; // "México", "Estados Unidos"
+                  })
+                  .OrderBy(x => x.Name)
+                  .ToList();
 
-            // Variables Y y sus respectivas Variables X asociadas
-            ViewBag.Variables = new Dictionary<string, List<string>>
-            {
-                { "BRIX BEBIDA", new List<string> { "BRIX BEBIDA", "FRECUENCIA BOMBA DE AGUA", "FRECUENCIA BOMBA DE JARABE", "FRECUENCIA DE BOMBA DE MEZCLA" } },
-                { "CARBONATACIÓN", new List<string> { "TEMPERATURA", "PRESIÓN CO2", "POSICION DE MICRO", "SUMINISTRO DE PRESIÓN", "MAZELI", "PRESIÓN ENTRADA DEL SUBACARD", "PRESIÓN SALIDA DEL SUBACARD", "PRESIÓN DE CO2 EN SUBCARB" } }
-            };
+            // Simulando datos para los selectores
+
+
+
+            ViewBag.Companies = companies;                 // lista completa
+            ViewBag.Countries = countries;                 // países únicos
+            ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
 
             ViewBag.produccion = _settings.Produccion;
 
             return View();
+        }
+
+
+        [HttpGet("ObtenerLineas")]
+        public async Task<IActionResult> ObtenerLineas(string company)
+        {
+            var token = HttpContext.Session.GetString("AuthToken");
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(company))
+                return Json(Array.Empty<object>());
+
+            // Llama a tu servicio; ajusta nombres de método y settings
+            var resp = await getDataQuality.getLinesByCompany(
+                token,
+                _settings.QueryLineas, // tu query
+                company,                  // si lo pides, o quítalo
+                _settings.trazalog                             // filtro de company
+            );
+
+            var list = resp?.result?.Select(w => new {
+                workplace = w.workplace,           // id
+                workplaceName = w.workplaceName    // nombre
+            }) ?? Enumerable.Empty<object>();
+
+            return Json(list);
         }
 
         public IActionResult Resumen()
@@ -357,7 +405,7 @@ namespace dashboardQ40.Controllers
         }
 
 
-        [HttpGet]
+
         [HttpGet]
         public async Task<JsonResult> ObtenerVarY(string sku, DateTime startDate, DateTime endDate, string line)
         {
@@ -592,6 +640,26 @@ namespace dashboardQ40.Controllers
             return outp;
         }
 
+        [HttpGet]
+        public IActionResult ResumenCPKs(DateTime startDate, DateTime endDate, int tzOffset = 0)
+        {
+            if (startDate >= endDate)
+            {
+                ViewBag.ErrorMessage = "La fecha de fin debe ser mayor a la fecha de inicio.";
+                return View(new List<CapabilityRow>());
+            }
+
+
+            string connStr = _configuration.GetConnectionString("CaptorConnection");
+            string company = _configuration.GetConnectionString("company");
+
+            // Si las fechas vienen en hora local del navegador, ajusta a UTC:
+            var fromUtc = startDate.AddMinutes(-tzOffset);
+            var toUtc = endDate.AddMinutes(-tzOffset);
+
+            var rows = CpkService.GetResumenCpk(company, fromUtc, toUtc, connStr);
+            return View("Resumen", rows);   // <- fuerza usar Resumen.cshtml
+        }
 
 
         public IActionResult ConfigDashboard()
@@ -616,7 +684,9 @@ namespace dashboardQ40.Controllers
         }
 
 
-       
+ 
+
+
     }
 
 }

@@ -1,9 +1,10 @@
 ﻿@model BloqueEntregaInformacionModel
+@inject IStringLocalizer Localizer
 
 <div class="accordion-item">
     <h2 class="accordion-header">
         <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-entrega">
-            <h4 class="mb-0">Registros de Tiempo de Entrega de Información o Actividades</h4>
+            <h4 class="mb-0">@Localizer["InfoDelivery_Header"]</h4>
         </button>
     </h2>
     <div id="collapse-entrega" class="accordion-collapse collapse show">
@@ -11,13 +12,13 @@
             <table class="tabla-trazabilidad">
                 <thead>
                     <tr class="bg-header">
-                        <th>NOMBRE DE LA PERSONA</th>
-                        <th>HORA</th>
-                        <th>PUESTO</th>
-                        <th>ÁREA</th>
-                        <th>ACTIVIDAD</th>
-                        <th>PAPEL/ELECTRÓNICO</th>
-                        <th>OBSERVACIONES</th>
+                        <th>@Localizer["InfoDelivery_PersonName"]</th>
+                        <th>@Localizer["InfoDelivery_Hour"]</th>
+                        <th>@Localizer["InfoDelivery_Position"]</th>
+                        <th>@Localizer["InfoDelivery_Area"]</th>
+                        <th>@Localizer["InfoDelivery_Activity"]</th>
+                        <th>@Localizer["InfoDelivery_DeliveryMode"]</th>
+                        <th>@Localizer["InfoDelivery_Observations"]</th>
                     </tr>
                 </thead>
                 <tbody>

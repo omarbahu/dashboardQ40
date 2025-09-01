@@ -1,4 +1,5 @@
 ﻿@model FormatoViewModel
+@inject IStringLocalizer Localizer
 
 <div class="accordion" id="accordion-MP">
     @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_MateriaPrima.cshtml", Model.BloqueMateriaPrima)
@@ -9,96 +10,85 @@
     @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_SKU.cshtml", Model.BloqueProductoTerminado)
 </div>
 
-<!-- Registros de Tiempo de Entrega de Información o Actividades 
-<div class="accordion" id="accordion-registro-tiempo">
-    @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_RegistroTiempo.cshtml", Model.BloqueRegistroTiempo)
-</div>
--->
 <!-- Información de Jarabes -->
 <div class="accordion" id="accordion-jarabes">
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapsejarabes">
-                <h4 class="mb-0">Información de Jarabes</h4>
+                <h4 class="mb-0">@Localizer["Syrups_Header"]</h4>
             </button>
         </h2>
         <div id="collapsejarabes" class="accordion-collapse collapse show">
-            <div class="accordion-body">                
-                
+            <div class="accordion-body">
+                @* (Tus partials ya existentes) *@
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabesLoteJarabeSimpleContacto)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueAnalisisFisicoquimicoJarabeSimple)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAnalisisSensorialJarabeSimple)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueJarabeTerminado)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueAnalisisFisicoquimicoJarabeTerminado)
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAnalisisSensorialJarabeTerminado)
-
             </div>
         </div>
     </div>
 </div>
 
-
-
 <!-- Información de embotellado -->
 <div class="accordion" id="accordion-embotellado">
-
-    <!-- Acordeón: Información de Embotellado -->
     <div class="accordion-item">
         <h2 class="accordion-header">
-            <button class="accordion-button  py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmbotellado">
-                <h4 class="mb-0">Información de Embotellado</h4>
-                
+            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmbotellado">
+                <h4 class="mb-0">@Localizer["Bottling_Header"]</h4>
             </button>
         </h2>
         <div id="collapseEmbotellado" class="accordion-collapse collapse show">
             <div class="accordion-body">
+
                 @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_PruebasLiberacion.cshtml", Model.BloquePruebasLiberacion)
 
-
-                <!-- Subbloque: Área Sensoriales -->
+                <!-- Área Sensoriales -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header">
-                        <th colspan="6">Liberación de Producto Terminado - Área Sensoriales</th>
+                        <th colspan="6">@Localizer["Sensory_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>Panelista</th>
-                        <th>Fecha Liberación</th>
-                        <th>Producto</th>
-                        <th>Código MTRA</th>
-                        <th>Referencia</th>
-                        <th>Resultado del Panel</th>
+                        <th>@Localizer["Sensory_Analyst"]</th>
+                        <th>@Localizer["Sensory_ReleaseDate"]</th>
+                        <th>@Localizer["Sensory_Product"]</th>
+                        <th>@Localizer["Sensory_Code"]</th>
+                        <th>@Localizer["Sensory_Reference"]</th>
+                        <th>@Localizer["Sensory_Result"]</th>
                     </tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                 </table>
 
-                <!-- Subbloque: Arranque de Línea -->
+                <!-- Arranque de Línea -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header">
-                        <th colspan="5">Liberación de Producto Terminado al Arranque de Línea</th>
+                        <th colspan="5">@Localizer["LineStart_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>Panelista</th>
-                        <th>Fecha Liberación</th>
-                        <th>Producto</th>
-                        <th>Código Muestra</th>
-                        <th>Resultado del Panel</th>
+                        <th>@Localizer["LineStart_Analyst"]</th>
+                        <th>@Localizer["LineStart_ReleaseDate"]</th>
+                        <th>@Localizer["LineStart_Product"]</th>
+                        <th>@Localizer["LineStart_SampleCode"]</th>
+                        <th>@Localizer["LineStart_Result"]</th>
                     </tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                 </table>
 
-                <!-- Subbloque: Muestras de Retención -->
+                <!-- Muestras de Retención -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header">
-                        <th colspan="3">Muestras de Retención Producto Terminado / Materia Prima Involucrada</th>
+                        <th colspan="3">@Localizer["Retention_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>Anterior al SKU Reportado</th>
-                        <th>Posterior al SKU Reportado</th>
-                        <th>Hora</th>
+                        <th>@Localizer["Retention_PrevSKU"]</th>
+                        <th>@Localizer["Retention_NextSKU"]</th>
+                        <th>@Localizer["Retention_Time"]</th>
                     </tr>
                     <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
                 </table>
@@ -106,135 +96,113 @@
             </div>
         </div>
     </div>
-
-
-
 </div>
 
-
-
+<!-- Información de Lavado -->
 <div class="accordion" id="accordion-lavado">
-
-    <!-- Acordeón: Información de Lavado -->
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLavado">
-                
-                <h4 class="mb-0">Información de Proceso de Lavado</h4>
+                <h4 class="mb-0">@Localizer["Washing_Header"]</h4>
             </button>
         </h2>
         <div id="collapseLavado" class="accordion-collapse collapse show">
             <div class="accordion-body">
 
-                <!-- Subbloque: Tipo de Proceso de Enjuague Final -->
+                <!-- Proceso de Enjuague Final -->
                 <table class="tabla-trazabilidad">
                     <tr class="bg-header">
-                        <th colspan="4">Tipo de Proceso de Enjuague Final (LAVADORA, RINSER)</th>
+                        <th colspan="4">@Localizer["Washing_FinalRinse_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>Parámetro</th>
-                        <th>Tanque 1</th>
-                        <th>Tanque 2</th>
-                        <th>Tanque CTR</th>
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Washing_Tank1"]</th>
+                        <th>@Localizer["Washing_Tank2"]</th>
+                        <th>@Localizer["Washing_TankCTR"]</th>
                     </tr>
-                    <tr><td>Lote de Sosa</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Lote de Aditivo Divobrite</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Lote de Aditivo Brightwash</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Hora SKU Reportado</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Concentración de Sosa</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Temperatura</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Presión de Chorros</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Alineación de Chorros</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Aditivo Divobrite</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Aditivo Brightwash</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_SodaLot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_DivobriteLot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_BrightwashLot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_ReportedSKUTime"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_SodaConc"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_JetPressure"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_JetAlignment"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_AdditiveDivobrite"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_AdditiveBrightwash"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
-                <!-- Subbloque: Tanque CTR -->
+                <!-- Tanque CTR -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header">
-                        <th colspan="4">Tanque CTR</th>
-                    </tr>
-                    <tr><td>Aditivo ALF 380</td><td colspan="3">NA</td></tr>
-                    <tr><td>% de Sosa</td><td colspan="3">NA</td></tr>
-                    <tr><td>Temperatura</td><td colspan="3">NA</td></tr>
-                    <tr><td>Residual Aditivo</td><td colspan="3">NA</td></tr>
-                    <tr><td>Tiempo de Contacto de la Botella</td><td colspan="3">NA</td></tr>
-                    <tr><td>Golpes por Minuto</td><td colspan="3">NA</td></tr>
-                    <tr><td>Residual Caústico</td><td colspan="3">NA</td></tr>
-                    <tr><td>Prueba de Azul de Metileno</td><td colspan="3">NA</td></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Washing_CTRTank_Header"]</th></tr>
+                    <tr><td>@Localizer["Washing_AdditiveALF380"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Washing_SodaPercent"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Washing_ResidualAdditive"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Washing_BottleContactTime"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Washing_HitsPerMinute"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Washing_CausticResidual"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Washing_MethyleneBlueTest"]</td><td colspan="3">NA</td></tr>
                 </table>
 
-                <!-- Subbloque: Rinser -->
+                <!-- Rinser -->
                 <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="4">@Localizer["Washing_Rinser_Header"]</th></tr>
                     <tr class="bg-header">
-                        <th colspan="4">Rinser</th>
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Washing_ReportedSKUTime"]</th>
+                        <th>@Localizer["Washing_PrevMTRA"]</th>
+                        <th>@Localizer["Washing_OtherInvolved"]</th>
                     </tr>
-                    <tr class="bg-header">
-                        <th>Parámetro</th>
-                        <th>Hora SKU Reportado</th>
-                        <th>MTRA Anterior</th>
-                        <th>Otro Involucrado</th>
-                    </tr>
-                    <tr><td>Presión de Chorros</td><td>3.5</td><td>3.5</td><td>3.5</td></tr>
-                    <tr><td>PPM de Cloro</td><td>2</td><td>2</td><td>2</td></tr>
-                    <tr><td>Espreas Alineadas</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Washing_JetPressure"]</td><td>3.5</td><td>3.5</td><td>3.5</td></tr>
+                    <tr><td>@Localizer["Washing_ChlorinePPM"]</td><td>2</td><td>2</td><td>2</td></tr>
+                    <tr><td>@Localizer["Washing_SprayAligned"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
                 </table>
 
-                <!-- Subbloque: Condición de Alarmas -->
+                <!-- Condición de Alarmas -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header">
-                        <th colspan="3">Condición de Alarmas de Lavadora</th>
-                    </tr>
-                    <tr><td>Revisión Inicio Corrida</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Revisión Final Corrida</td><td>NA</td><td>NA</td></tr>
+                    <tr class="bg-header"><th colspan="3">@Localizer["Washing_WasherAlarms_Header"]</th></tr>
+                    <tr><td>@Localizer["Washing_RunStartCheck"]</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_RunEndCheck"]</td><td>NA</td><td>NA</td></tr>
                 </table>
 
-                <!-- Subbloque: Enjuague Final -->
+                <!-- Enjuague Final -->
                 <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="4">@Localizer["Washing_FinalBottleRinse_Header"]</th></tr>
                     <tr class="bg-header">
-                        <th colspan="4">Tipo de Enjuague Final de Botella (LAV, RINSER)</th>
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Washing_ReportedSKUTime"]</th>
+                        <th>@Localizer["Washing_PrevMTRA"]</th>
+                        <th>@Localizer["Washing_NextMTRA"]</th>
                     </tr>
-                    <tr class="bg-header">
-                        <th>Parámetro</th>
-                        <th>Hora SKU Reportado</th>
-                        <th>MTRA Anterior</th>
-                        <th>MTRA Posterior</th>
-                    </tr>
-                    <tr><td>Presión</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Olor de Agua</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Presión de Agua Recuperada</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Cloro de Agua Suave Enjuague Final</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Cloro de Agua Rec. Filtrada</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Pressure"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_WaterOdor"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_RecoveredWaterPressure"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_FinalSoftWaterChlorine"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_FilteredRecWaterChlorine"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
             </div>
         </div>
     </div>
-
 </div>
 
-
-
+<!-- Inspección de Envase -->
 <div class="accordion" id="accordion-Inspeccion">
-
-    <!-- Acordeón: Inspección de Envase -->
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInspeccion">
-                
-                <h4 class="mb-0">Datos de Inspección de Envase</h4>
+                <h4 class="mb-0">@Localizer["Inspection_Header"]</h4>
             </button>
         </h2>
         <div id="collapseInspeccion" class="accordion-collapse collapse show">
             <div class="accordion-body">
 
-                <!-- Subbloque: Alexus -->
+                <!-- Alexus -->
                 <table class="tabla-trazabilidad">
+                    <tr class="bg-header"><th colspan="7">@Localizer["Inspection_Alexus_Header"]</th></tr>
                     <tr class="bg-header">
-                        <th colspan="7">Alexus (arranque y cada 4 horas)</th>
-                    </tr>
-                    <tr class="bg-header">
-                        <th>Parámetro</th>
+                        <th>@Localizer["Common_Parameter"]</th>
                         <th>ALEXUS 220</th>
                         <th>ALEXUS 220</th>
                         <th>ALEXUS 220</th>
@@ -242,12 +210,13 @@
                         <th>ALEXUS 220</th>
                         <th>ALEXUS 220</th>
                     </tr>
-                    <tr><td>Hora de Prueba</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>% de Eficiencia</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Testigos SAM</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Testigos NOX</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_TestTime"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_SAMWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_NOXWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+
                     <tr class="bg-header">
-                        <th>Parámetro</th>
+                        <th>@Localizer["Common_Parameter"]</th>
                         <th>ALEXUS 240</th>
                         <th>ALEXUS 240</th>
                         <th>ALEXUS 240</th>
@@ -255,685 +224,448 @@
                         <th>ALEXUS 240</th>
                         <th>ALEXUS 240</th>
                     </tr>
-                    <tr><td>Hora de Prueba</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>% de Eficiencia</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Testigos SAM</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Testigos NOX</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_TestTime"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_SAMWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_NOXWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
-                <!-- Subbloque: Inspector de Rechazo de Botella Llena -->
+                <!-- Rechazo de Botella Llena -->
                 <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="4">@Localizer["Inspection_FullBottleReject_Header"]</th></tr>
                     <tr class="bg-header">
-                        <th colspan="4">Inspector de Rechazo de Botella Llena</th>
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Common_RunStart"]</th>
+                        <th>@Localizer["Common_RunMid"]</th>
+                        <th>@Localizer["Common_RunEnd"]</th>
                     </tr>
-                    <tr class="bg-header">
-                        <th>Parámetro</th>
-                        <th>Inicio Corrida</th>
-                        <th>Media Corrida</th>
-                        <th>Fin Corrida</th>
-                    </tr>
-                    <tr><td>Botella Cont. Neto Bajo</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>Botella Cont. Neto Alto</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>Botella Tapa Mal Aplicada</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>Botella Código Ilegible</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>Paro de Llenadora al Personal, Botón Stop</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>Prueba Metal (Caña)</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Inspection_LowNetContentBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Inspection_HighNetContentBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Inspection_BadCapBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Inspection_IllegibleCodeBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Inspection_FillerStopButton"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Inspection_MetalTestCane"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
                 </table>
 
-                <!-- Subbloque: ASEBI -->
+                <!-- ASEBI -->
                 <table class="tabla-trazabilidad mt-4">
+                    <tr class="bg-header"><th colspan="5">@Localizer["Inspection_ASEBI_Header"]</th></tr>
                     <tr class="bg-header">
-                        <th colspan="5">ASEBI</th>
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Inspection_RunStartTime"]</th>
+                        <th>@Localizer["Common_Result"]</th>
+                        <th>@Localizer["Inspection_RunEndTime"]</th>
+                        <th>@Localizer["Common_Result"]</th>
                     </tr>
-                    <tr class="bg-header">
-                        <th>Parámetro</th>
-                        <th>Hora Inicial Corrida</th>
-                        <th>Resultado</th>
-                        <th>Hora Final Corrida</th>
-                        <th>Resultado</th>
-                    </tr>
-                    <tr><td>% de Eficiencia</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>1A (Daño en Pico)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>2A (Opaco)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>4A (Ranura de Venteo)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>14A (Área Central Semi Transp)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>13A (Área Central Opaca)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>12C (Fractura por Esfuerzo)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>11A (Señal de Impacto)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>15C (Sup Apoyo Opaca)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>16A (Sup Apoyo SemiTransp)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>15A (Sup Apoyo Opaca)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>22C (Objeto Detrás de la Etiqueta)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>8A (SemiTransp Pared Lat)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>7A (Opaca Pared Baja)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>17A (Líquido Residual)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>6A (Alt Rasp y Anillo Desg)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>12A (Fractura por Esfuerzo)</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_1A_NeckDamage"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_2A_Opaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_4A_VentGroove"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_14A_CenterSemiTransp"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_13A_CenterOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_12C_StressFracture"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_11A_ImpactSignal"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_15C_SupportSurfaceOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_16A_SupportSurfaceSemiTransp"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_15A_SupportSurfaceOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_22C_ObjectBehindLabel"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_8A_SideWallSemiTransp"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_7A_LowerWallOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_17A_ResidualLiquid"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_6A_ScratchWear"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_12A_StressFracture"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
             </div>
         </div>
     </div>
-
-
-
-
 </div>
 
-
+<!-- Tratamiento de Agua -->
 <div class="accordion" id="accordion-Agua">
-
-    <!-- Acordeón: Datos de Tratamiento de Agua -->
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAgua">
-                <h4 class="mb-0">Datos de Tratamiento de Agua</h4>
+                <h4 class="mb-0">@Localizer["Water_Header"]</h4>
             </button>
         </h2>
         <div id="collapseAgua" class="accordion-collapse collapse show">
             <div class="accordion-body">
 
-                <!-- 1. Información General de Tratamiento de Agua -->
+                <!-- 1. General -->
                 <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="2">Información General de Tratamiento de Agua</th></tr>
-                    <tr><td>Lote de Cloro/Desinfectante Recirculado</td><td>HPHY0424-2</td></tr>
-                    <tr><td>Lote de Polielectrolito</td><td>NA</td></tr>
-                    <tr><td>Lote de Carbón Activado</td><td>CAR0323-2</td></tr>
-                    <tr><td>Lote de Cal</td><td>NA</td></tr>
-                    <tr><td>Lote de Ácido Clorhídrico</td><td>ACH0424-03 / ACH0424-02</td></tr>
-                    <tr><td>Lote de Ácido Sulfúrico</td><td>NA</td></tr>
-                    <tr><td>Lote de Arena Silica</td><td>ARS1122-2</td></tr>
-                    <tr><td>Lote de Resina Desmineralizadora</td><td>DES1123</td></tr>
-                    <tr><td>Lote de Resina Descloradora</td><td>LSZ1123-2</td></tr>
-                    <tr><td>Lote de Cartuchos Pulidores</td><td>CYM1123-04</td></tr>
-                    <tr><td>Información de Limpiezas/Backwash/Filtros/Sanitización</td><td>NA</td></tr>
-                    <tr><td>Información de Sanitización del Sistema</td><td>Limpieza SRO 23/06/24 / Llenado de Tanque de SRO 23/06/24 (cambio cartuchos polipropileno)</td></tr>
-                    <tr><td>Registro de Llenado de Tanques de Contacto del Agua Suave</td><td>NA</td></tr>
-                    <tr><td>Tiempo de Retención de Tanques</td><td>4</td></tr>
-                    <tr><td>Número de Cargas en el Turno</td><td>1</td></tr>
-                    <tr><td>Volumen Promedio por Carga</td><td>5</td></tr>
-                    <tr><td>Total de Litros en el Turno</td><td>5</td></tr>
+                    <tr class="bg-header"><th colspan="2">@Localizer["Water_GeneralInfo_Header"]</th></tr>
+                    <tr><td>@Localizer["Water_RecirculatedDisinfectantLot"]</td><td>HPHY0424-2</td></tr>
+                    <tr><td>@Localizer["Water_PolyelectrolyteLot"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Water_ActivatedCarbonLot"]</td><td>CAR0323-2</td></tr>
+                    <tr><td>@Localizer["Water_LimeLot"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Water_HCLLot"]</td><td>ACH0424-03 / ACH0424-02</td></tr>
+                    <tr><td>@Localizer["Water_H2SO4Lot"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Water_SilicaSandLot"]</td><td>ARS1122-2</td></tr>
+                    <tr><td>@Localizer["Water_DemineralResinLot"]</td><td>DES1123</td></tr>
+                    <tr><td>@Localizer["Water_DechlorResinLot"]</td><td>LSZ1123-2</td></tr>
+                    <tr><td>@Localizer["Water_PolishingCartridgeLot"]</td><td>CYM1123-04</td></tr>
+                    <tr><td>@Localizer["Water_CleaningsInfo"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Water_SystemSanitationInfo"]</td><td>Limpieza SRO 23/06/24 / Llenado de Tanque de SRO 23/06/24 (cambio cartuchos polipropileno)</td></tr>
+                    <tr><td>@Localizer["Water_SoftWaterContactTanksFillingLog"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Water_TankRetentionTime"]</td><td>4</td></tr>
+                    <tr><td>@Localizer["Water_LoadsInShift"]</td><td>1</td></tr>
+                    <tr><td>@Localizer["Water_AvgVolumePerLoad"]</td><td>5</td></tr>
+                    <tr><td>@Localizer["Water_TotalLitersInShift"]</td><td>5</td></tr>
                 </table>
 
-                <!-- 2. Análisis Fisicoquímicos del Agua Cruda, Tratada Clorada, Suavizada y Recuperada -->
+                <!-- 2. Fisicoquímicos -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Análisis Fisicoquímicos del Agua Cruda, Tratada Clorada, Suavizada y Recuperada</th></tr>
-                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Tipo de Agua</th></tr>
-                    <tr><td>pH</td><td>6.5</td><td>6.8</td><td>6.6</td><td>Tratada Clorada</td></tr>
-                    <tr><td>Conductividad</td><td>35</td><td>32</td><td>30</td><td>Suavizada</td></tr>
-                    <tr><td>Cloro</td><td>0.5</td><td>0.4</td><td>0.3</td><td>Recuperada</td></tr>
-                    <tr><td>Turbidez</td><td>1.1</td><td>1.0</td><td>1.1</td><td>Cruda</td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Water_PhysChem_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Common_RunStart"]</th>
+                        <th>@Localizer["Common_RunMid"]</th>
+                        <th>@Localizer["Common_RunEnd"]</th>
+                        <th>@Localizer["Water_WaterType"]</th>
+                    </tr>
+                    <tr><td>pH</td><td>6.5</td><td>6.8</td><td>6.6</td><td>@Localizer["Water_Type_TreatedChlorinated"]</td></tr>
+                    <tr><td>@Localizer["Common_Conductivity"]</td><td>35</td><td>32</td><td>30</td><td>@Localizer["Water_Type_Softened"]</td></tr>
+                    <tr><td>@Localizer["Common_Chlorine"]</td><td>0.5</td><td>0.4</td><td>0.3</td><td>@Localizer["Water_Type_Recovered"]</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.1</td><td>1.0</td><td>1.1</td><td>@Localizer["Water_Type_Raw"]</td></tr>
                 </table>
 
                 <!-- 3. Agua tratada usada en jarabe simple -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Análisis del Agua Tratada Utilizada en la Elab. del Jarabe Simple</th></tr>
-                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Lote Agua Tratada</th></tr>
-                    <tr><td>Aluminio</td><td>NA</td><td>NA</td><td>NA</td><td>83210234</td></tr>
-                    <tr><td>Cloruros</td><td>14</td><td>15</td><td>14</td><td>83210234</td></tr>
-                    <tr><td>Sulfatos</td><td>28</td><td>26</td><td>27</td><td>83210234</td></tr>
-                    <tr><td>Turbidez</td><td>1.3</td><td>1.2</td><td>1.3</td><td>83210234</td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Water_TreatedForSimpleSyrup_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Common_RunStart"]</th>
+                        <th>@Localizer["Common_RunMid"]</th>
+                        <th>@Localizer["Common_RunEnd"]</th>
+                        <th>@Localizer["Water_TreatedWaterLot"]</th>
+                    </tr>
+                    <tr><td>@Localizer["Common_Aluminum"]</td><td>NA</td><td>NA</td><td>NA</td><td>83210234</td></tr>
+                    <tr><td>@Localizer["Common_Chlorides"]</td><td>14</td><td>15</td><td>14</td><td>83210234</td></tr>
+                    <tr><td>@Localizer["Common_Sulfates"]</td><td>28</td><td>26</td><td>27</td><td>83210234</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.3</td><td>1.2</td><td>1.3</td><td>83210234</td></tr>
                 </table>
 
                 <!-- 4. Agua tratada usada en jarabe terminado -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Análisis del Agua Tratada Utilizada en la Elab. del Jarabe Terminado</th></tr>
-                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Lote Agua Tratada</th></tr>
-                    <tr><td>Aluminio</td><td>NA</td><td>NA</td><td>NA</td><td>83210235</td></tr>
-                    <tr><td>Cloruros</td><td>15</td><td>14</td><td>14</td><td>83210235</td></tr>
-                    <tr><td>Sulfatos</td><td>28</td><td>27</td><td>28</td><td>83210235</td></tr>
-                    <tr><td>Turbidez</td><td>1.4</td><td>1.3</td><td>1.4</td><td>83210235</td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Water_TreatedForFinishedSyrup_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Common_RunStart"]</th>
+                        <th>@Localizer["Common_RunMid"]</th>
+                        <th>@Localizer["Common_RunEnd"]</th>
+                        <th>@Localizer["Water_TreatedWaterLot"]</th>
+                    </tr>
+                    <tr><td>@Localizer["Common_Aluminum"]</td><td>NA</td><td>NA</td><td>NA</td><td>83210235</td></tr>
+                    <tr><td>@Localizer["Common_Chlorides"]</td><td>15</td><td>14</td><td>14</td><td>83210235</td></tr>
+                    <tr><td>@Localizer["Common_Sulfates"]</td><td>28</td><td>27</td><td>28</td><td>83210235</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.4</td><td>1.3</td><td>1.4</td><td>83210235</td></tr>
                 </table>
 
-                <!-- 5. Agua tratada en PT + sin recuperada -->
+                <!-- 5. PT + sin recuperada -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Análisis del Agua Tratada Utilizada en la Elab. del Jarabe PT + Sin Recuperada</th></tr>
-                    <tr class="bg-header"><th>Parámetro</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th><th>Lote Agua Tratada</th></tr>
-                    <tr><td>Aluminio</td><td>NA</td><td>NA</td><td>NA</td><td>83210236</td></tr>
-                    <tr><td>Cloruros</td><td>16</td><td>16</td><td>15</td><td>83210236</td></tr>
-                    <tr><td>Sulfatos</td><td>29</td><td>30</td><td>29</td><td>83210236</td></tr>
-                    <tr><td>Turbidez</td><td>1.5</td><td>1.6</td><td>1.5</td><td>83210236</td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Water_TreatedForPT_NoRecovered_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th>@Localizer["Common_Parameter"]</th>
+                        <th>@Localizer["Common_RunStart"]</th>
+                        <th>@Localizer["Common_RunMid"]</th>
+                        <th>@Localizer["Common_RunEnd"]</th>
+                        <th>@Localizer["Water_TreatedWaterLot"]</th>
+                    </tr>
+                    <tr><td>@Localizer["Common_Aluminum"]</td><td>NA</td><td>NA</td><td>NA</td><td>83210236</td></tr>
+                    <tr><td>@Localizer["Common_Chlorides"]</td><td>16</td><td>16</td><td>15</td><td>83210236</td></tr>
+                    <tr><td>@Localizer["Common_Sulfates"]</td><td>29</td><td>30</td><td>29</td><td>83210236</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.5</td><td>1.6</td><td>1.5</td><td>83210236</td></tr>
                 </table>
 
                 <!-- 6. Agua suave sin queja -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">Lote y Análisis Fisicoquímicos de Agua Suave Utilizada sin Queja</th></tr>
-                    <tr class="bg-header"><th>Lote</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Water_Soft_NoComplaint_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th>@Localizer["Common_Lot"]</th>
+                        <th>@Localizer["Common_RunStart"]</th>
+                        <th>@Localizer["Common_RunMid"]</th>
+                        <th>@Localizer["Common_RunEnd"]</th>
+                    </tr>
                     <tr><td>SUAVE-270624</td><td>2</td><td>2</td><td>2</td></tr>
                 </table>
 
-                <!-- 7. Resultados de Análisis Sensorial -->
+                <!-- 7. Sensorial tratada -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">Resultados de Análisis Sensorial del Agua Tratada</th></tr>
-                    <tr class="bg-header"><th>Evaluador</th><th>Inicio Corrida</th><th>Medio Corrida</th><th>Término Corrida</th></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Water_Treated_Sensory_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th>@Localizer["Common_Evaluator"]</th>
+                        <th>@Localizer["Common_RunStart"]</th>
+                        <th>@Localizer["Common_RunMid"]</th>
+                        <th>@Localizer["Common_RunEnd"]</th>
+                    </tr>
                     <tr><td>Liderador</td><td>Misael Santos</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Referencia</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
             </div>
         </div>
     </div>
-
 </div>
 
-
-
-
-
+<!-- Producción -->
 <div class="accordion" id="accordion-Produccion">
-
-    <!-- Acordeón: Información de Producción -->
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProduccion">
-                
-                <h4 class="mb-0">Información de Producción</h4>
+                <h4 class="mb-0">@Localizer["Production_Header"]</h4>
             </button>
         </h2>
         <div id="collapseProduccion" class="accordion-collapse collapse show">
             <div class="accordion-body">
 
-                <!-- 1. Información de Producción -->
                 <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="2">Información de Producción</th></tr>
+                    <tr class="bg-header"><th colspan="2">@Localizer["Production_Info_Header"]</th></tr>
                     <tr><td>SKU</td><td>JD 1.5L</td></tr>
-                    <tr><td>Nombre del Producto</td><td>Jugo de Durazno 1.5 Litros</td></tr>
-                    <tr><td>Fecha de Producción</td><td>2024-07-01</td></tr>
-                    <tr><td>Línea de Producción</td><td>Línea 3</td></tr>
-                    <tr><td>Lote de Producción</td><td>JD15070124</td></tr>
-                    <tr><td>Turno</td><td>Turno B</td></tr>
-                    <tr><td>Responsable de Producción</td><td>Carlos Gómez</td></tr>
-                    <tr><td>Supervisor de Calidad</td><td>Andrea López</td></tr>
+                    <tr><td>@Localizer["Production_ProductName"]</td><td>Jugo de Durazno 1.5 Litros</td></tr>
+                    <tr><td>@Localizer["Production_Date"]</td><td>2024-07-01</td></tr>
+                    <tr><td>@Localizer["Production_Line"]</td><td>Línea 3</td></tr>
+                    <tr><td>@Localizer["Production_Batch"]</td><td>JD15070124</td></tr>
+                    <tr><td>@Localizer["Production_Shift"]</td><td>Turno B</td></tr>
+                    <tr><td>@Localizer["Production_Responsible"]</td><td>Carlos Gómez</td></tr>
+                    <tr><td>@Localizer["Production_QualitySupervisor"]</td><td>Andrea López</td></tr>
                 </table>
 
-                <!-- 2. Registro de Producción -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">Registro de Producción</th></tr>
-                    <tr class="bg-header"><th>Hora de Inicio</th><th>Hora de Fin</th><th>Unidades Producidas</th><th>Unidades Rechazadas</th></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Production_Log_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th>@Localizer["Common_StartTime"]</th>
+                        <th>@Localizer["Common_EndTime"]</th>
+                        <th>@Localizer["Production_UnitsProduced"]</th>
+                        <th>@Localizer["Production_UnitsRejected"]</th>
+                    </tr>
                     <tr><td>06:00</td><td>14:00</td><td>24,000</td><td>150</td></tr>
                 </table>
 
             </div>
         </div>
     </div>
-
 </div>
 
+<!-- Materias Primas (sección adicional fija) -->
 <div class="accordion" id="accordion-MateriasPrimas">
-
-    <!-- Acordeón: Datos de Materias Primas -->
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMateriasPrimas">
-                
-                <h4 class="mb-0">Datos de Materias Primas</h4>
+                <h4 class="mb-0">@Localizer["RawMaterials_Data_Header"]</h4>
             </button>
         </h2>
         <div id="collapseMateriasPrimas" class="accordion-collapse collapse show">
             <div class="accordion-body">
 
-                <!-- 1. Azúcar -->
+                <!-- Azúcar -->
                 <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="4">Azúcar</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th></tr>
-                    <tr><td>Lote</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Fecha de Recepción</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Ingenio</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Sugar_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th></th>
+                        <th>@Localizer["Common_ComplaintSKU"]</th>
+                        <th>@Localizer["Common_Previous"]</th>
+                        <th>@Localizer["Common_OtherInvolved"]</th>
+                    </tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Sugar_Mill"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
                     <tr><td>Brix</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Humedad</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>% Cenizas</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Potencial Floc</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Color</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Sedimento</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Turbidez (ICU)</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Apariencia</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Conductividad</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Moisture"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>% @Localizer["Common_Ash"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Sugar_FlocPotential"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Color"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Sediment"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_TurbidityICU"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Conductivity"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
-                <!-- 2. Resultados Sensoriales de Azúcar -->
+                <!-- Sensorial Azúcar -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Resultados de Análisis Sensorial de Azúcar</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th><th>Resultado Panel</th></tr>
-                    <tr><td>Liberador 1</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Liberador 2</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Lote</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Fecha</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Referencia</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Sugar_Sensory_Header"]</th></tr>
+                    <tr class="bg-header">
+                        <th></th>
+                        <th>@Localizer["Common_ComplaintSKU"]</th>
+                        <th>@Localizer["Common_Previous"]</th>
+                        <th>@Localizer["Common_OtherInvolved"]</th>
+                        <th>@Localizer["Common_PanelResult"]</th>
+                    </tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
-                <!-- 3. Fructosa Silo 1 -->
+                <!-- Fructosa Silo 1 -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">Fructosa Silo 1</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th></tr>
-                    <tr><td>Lote</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Fecha de Recepción</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Silo de Descarga</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Sólidos Alta Fructosa</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Apariencia</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Olor</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Sabor</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Temperatura</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo1_Header"]</th></tr>
+                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Odor"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Taste"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
                     <tr><td>pH</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Turbidez</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
                 </table>
 
-                <!-- 4. CO2 -->
+                <!-- CO2 -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="4">CO2</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th></tr>
-                    <tr><td>Lote</td><td>CO141024-210</td><td>CO121024-209</td><td>CO111024-208</td></tr>
-                    <tr><td>Atributos Agua CO2</td><td>IN</td><td>IN</td><td>IN</td></tr>
-                    <tr><td>Atributos Agua</td><td>IN</td><td>IN</td><td>IN</td></tr>
-                    <tr><td>Acidulada CO2</td><td>IN</td><td>IN</td><td>IN</td></tr>
-                    <tr><td>Atributos Nieve</td><td>IN</td><td>IN</td><td>IN</td></tr>
+                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>CO141024-210</td><td>CO121024-209</td><td>CO111024-208</td></tr>
+                    <tr><td>@Localizer["CO2_WaterCO2Attributes"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
+                    <tr><td>@Localizer["CO2_WaterAttributes"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
+                    <tr><td>@Localizer["CO2_AcidulatedCO2"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
+                    <tr><td>@Localizer["CO2_SnowAttributes"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
                 </table>
 
-                <!-- 5. Resultados Sensoriales de CO2 -->
+                <!-- Sensorial CO2 -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Resultados de Análisis Sensorial de CO2</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th><th>Resultado Panel</th></tr>
-                    <tr><td>Liberador 1</td><td>Misael Martínez</td><td>Jonathan Mata</td><td>Antonia Jimenez</td><td>IN</td></tr>
-                    <tr><td>Liberador 2</td><td>Antonia Jimenez</td><td>Viridiana Lopez</td><td>Karen Chaul</td><td>IN</td></tr>
-                    <tr><td>Lote</td><td>CO141024-210</td><td>CO121024-209</td><td>CO111024-208</td><td></td></tr>
-                    <tr><td>Fecha</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td><td>IN</td></tr>
-                    <tr><td>Referencia</td><td>NA</td><td>NA</td><td>NA</td><td></td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["CO2_Sensory_Header"]</th></tr>
+                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td>Misael Martínez</td><td>Jonathan Mata</td><td>Antonia Jimenez</td><td>IN</td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td>Antonia Jimenez</td><td>Viridiana Lopez</td><td>Karen Chaul</td><td>IN</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>CO141024-210</td><td>CO121024-209</td><td>CO111024-208</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td><td>IN</td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td>NA</td><td>NA</td><td>NA</td><td></td></tr>
                 </table>
 
+                <!-- Fructosa Silo 2 -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">Fructosa Silo 2</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th></tr>
-                    <tr><td>Lote</td><td>FR2141024-901</td><td>FR2111024-895</td><td>FR2111024-892</td></tr>
-                    <tr><td>Fecha de Recepción</td><td>14/10/2024</td><td>11/10/2024</td><td>11/10/2024</td></tr>
-                    <tr><td>Silo de Descarga</td><td>2</td><td>2</td><td>2</td></tr>
-                    <tr><td>Sólidos Alta Fructosa</td><td>77.12%</td><td>77.46%</td><td>77.10%</td></tr>
-                    <tr><td>Apariencia</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>Olor</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>Sabor</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>Temperatura</td><td>28°C</td><td>30°C</td><td>30°C</td></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo2_Header"]</th></tr>
+                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>FR2141024-901</td><td>FR2111024-895</td><td>FR2111024-892</td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>14/10/2024</td><td>11/10/2024</td><td>11/10/2024</td></tr>
+                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td>2</td><td>2</td><td>2</td></tr>
+                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td>77.12%</td><td>77.46%</td><td>77.10%</td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
+                    <tr><td>@Localizer["Common_Odor"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
+                    <tr><td>@Localizer["Common_Taste"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td>28°C</td><td>30°C</td><td>30°C</td></tr>
                     <tr><td>pH</td><td>3.6</td><td>3.53</td><td>3.77</td></tr>
-                    <tr><td>Turbidez</td><td>16.27 ICU</td><td>14.31 ICU</td><td>12.69 ICU</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td>16.27 ICU</td><td>14.31 ICU</td><td>12.69 ICU</td></tr>
                 </table>
 
-                <!-- Resultados Sensoriales de Fructosa Silo 2 -->
+                <!-- Sensorial Fructosa Silo 2 -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Resultados de Análisis Sensorial de Fructosa Silo 2</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th><th>Resultado Panel</th></tr>
-                    <tr><td>Liberador 1</td><td>Diana Rodríguez</td><td>Margarita Antonio</td><td>Tomas Carranza</td><td>IN</td></tr>
-                    <tr><td>Liberador 2</td><td>Yahaira</td><td>Carlos Castillo</td><td>Marcos Robles</td><td>IN</td></tr>
-                    <tr><td>Lote</td><td>FR2141024-901</td><td>FR2111024-895</td><td>FR2111024-892</td><td></td></tr>
-                    <tr><td>Fecha</td><td>14/10/2024</td><td>11/10/2024</td><td>11/10/2024</td><td></td></tr>
-                    <tr><td>Referencia</td><td>FR3141024-900</td><td>FR3111024-894</td><td>FR3101024-891</td><td></td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Fructose_Silo2_Sensory_Header"]</th></tr>
+                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td>Diana Rodríguez</td><td>Margarita Antonio</td><td>Tomas Carranza</td><td>IN</td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td>Yahaira</td><td>Carlos Castillo</td><td>Marcos Robles</td><td>IN</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>FR2141024-901</td><td>FR2111024-895</td><td>FR2111024-892</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td>14/10/2024</td><td>11/10/2024</td><td>11/10/2024</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td>FR3141024-900</td><td>FR3111024-894</td><td>FR3101024-891</td><td></td></tr>
                 </table>
 
-                <!-- 7. Fructosa Silo 3 -->
+                <!-- Fructosa Silo 3 + sensorial (idéntico patrón de claves) -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">Fructosa Silo 3</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th></tr>
-                    <tr><td>Lote</td><td>FR3141024-900</td><td>FR3121024-897</td><td>FR3111024-894</td></tr>
-                    <tr><td>Fecha de Recepción</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td></tr>
-                    <tr><td>Silo de Descarga</td><td>3</td><td>3</td><td>3</td></tr>
-                    <tr><td>Sólidos Alta Fructosa</td><td>77.29%</td><td>77.25%</td><td>77.04%</td></tr>
-                    <tr><td>Apariencia</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>Olor</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>Sabor</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>Temperatura</td><td>28°C</td><td>29°C</td><td>29°C</td></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo3_Header"]</th></tr>
+                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>FR3141024-900</td><td>FR3121024-897</td><td>FR3111024-894</td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td></tr>
+                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td>3</td><td>3</td><td>3</td></tr>
+                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td>77.29%</td><td>77.25%</td><td>77.04%</td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
+                    <tr><td>@Localizer["Common_Odor"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
+                    <tr><td>@Localizer["Common_Taste"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td>28°C</td><td>29°C</td><td>29°C</td></tr>
                     <tr><td>pH</td><td>3.55</td><td>3.58</td><td>3.56</td></tr>
-                    <tr><td>Turbidez</td><td>11.71 ICU</td><td>13.01 ICU</td><td>11.39 ICU</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td>11.71 ICU</td><td>13.01 ICU</td><td>11.39 ICU</td></tr>
                 </table>
 
-                <!-- Resultados Sensoriales de Fructosa Silo 3 -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">Resultados de Análisis Sensorial de Fructosa Silo 3</th></tr>
-                    <tr class="bg-header"><th></th><th>SKU Queja</th><th>Anterior</th><th>Otro Involucrado</th><th>Resultado Panel</th></tr>
-                    <tr><td>Liberador 1</td><td>Tomas Carranza</td><td>Jonathan Salas</td><td>Yaquelin Castro</td><td>IN</td></tr>
-                    <tr><td>Liberador 2</td><td>Edith Castro</td><td>Yaquelin Castro</td><td>Juan Guevara</td><td>IN</td></tr>
-                    <tr><td>Lote</td><td>FR3141024-900</td><td>FR3121024-897</td><td>FR3111024-894</td><td></td></tr>
-                    <tr><td>Fecha</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td><td></td></tr>
-                    <tr><td>Referencia</td><td>FR1121024-899</td><td>FR1121024-896</td><td>FR1111024-893</td><td></td></tr>
-                </table>
-
-            </div>
-        </div>
-    </div>
-
-</div>
-
-
-
-<!--
-<div class="accordion" id="accordion-MateriasMicrobiologia">
-    
-    <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMicrobiologia">
-                Datos de Microbiología
-            </button>
-        </h2>
-        <div id="collapseMicrobiologia" class="accordion-collapse collapse show">
-            <div class="accordion-body">
-
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header">
-                        <th>REFERENCIA</th>
-                        <th>ANÁLISIS</th>
-                        <th>FECHA MUESTREO (SKU QUEJA)</th>
-                        <th>RESULTADO</th>
-                        <th>RESULTADO MUESTREO ANTERIOR</th>
-                        <th>OTRO INVOLUCRADO</th>
-                    </tr>
-
-                    
-                    <tr><td rowspan="5">AGUA CRUDA</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>N.A</td><td>N.A</td><td>N.A</td><td>&lt;1</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>&lt;1</td></tr>
-                    <tr><td>Pseudomonas aeruginosa</td><td>N.A</td><td>N.A</td><td>N.A</td><td>&lt;1</td></tr>
-                    <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-
-                    
-                    <tr><td rowspan="4">AGUA TRATADA</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Pseudomonas aeruginosa</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-
-                    
-                    <tr><td rowspan="4">AGUA SUAVE</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-
-                    
-                    <tr><td rowspan="5">SANEO EMBOTELLADO DE LÍNEA</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>2</td><td>1</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>1</td><td>1</td></tr>
-                    <tr><td>Coliformes totales,fecales y E.coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>NEGATIVO</td></tr>
-
-                    
-                    <tr><td rowspan="5">SANEO TANQUE JARABE</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>2</td><td>&lt;1</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>18</td></tr>
-                    <tr><td>Coliformes totales, fecales y E. coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>NEGATIVO</td></tr>
-                    <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>NEGATIVO</td></tr>
-
-                    
-                    <tr><td rowspan="5">EMPAQUE</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Coliformes totales, fecales y E. coli</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-
-                    
-                    <tr><td rowspan="3">AZÚCAR</td><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Levadura</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Hongos (Moho)</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-
-                    
-                    <tr><td rowspan="3">JARABE SIMPLE</td><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Levadura</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Hongos (Moho)</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-
-                    
-                    <tr><td rowspan="3">JARABE TERMINADO</td><td>Hongos y Levaduras</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Coliformes totales, fecales y E. coli</td><td>N.A</td><td>N.A</td><td>&lt;1</td><td>&lt;1</td></tr>
-
-                    
-                    <tr><td rowspan="5">PRODUCTO TERMINADO</td><td>Hongos,Levaduras y Bacterias Acidofilicas</td><td>15/10/2024</td><td>3</td><td>N.A</td><td>1</td></tr>
-                    <tr><td>Cuenta de Mesofilicos Totales</td><td>15/10/2024</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Coliformes totales, fecales y E. coli</td><td>15/10/2024</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Spoilage Y&M</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-                    <tr><td>Spoilage Bacterias</td><td>N.A</td><td>N.A</td><td>N.A</td><td>N.A</td></tr>
-
-                    
-                    <tr><td rowspan="3">FRUCTOSA</td><td>Recuento total de mesófilos</td><td>14/10/2024</td><td>&lt;1</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Levadura</td><td>14/10/2024</td><td>&lt;1</td><td>&lt;1</td><td>&lt;1</td></tr>
-                    <tr><td>Hongos (Moho)</td><td>14/10/2024</td><td>&lt;1</td><td>&lt;1</td><td>&lt;1</td></tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Fructose_Silo3_Sensory_Header"]</th></tr>
+                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td>Tomas Carranza</td><td>Jonathan Salas</td><td>Yaquelin Castro</td><td>IN</td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td>Edith Castro</td><td>Yaquelin Castro</td><td>Juan Guevara</td><td>IN</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td>FR3141024-900</td><td>FR3121024-897</td><td>FR3111024-894</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td>FR1121024-899</td><td>FR1121024-896</td><td>FR1111024-893</td><td></td></tr>
                 </table>
 
             </div>
         </div>
     </div>
 </div>
--->
 
+<!-- Limpieza y Saneamiento -->
 <div class="accordion" id="accordion-Limpieza">
-    <!-- Acordeón: Datos de Limpieza y Saneamiento -->
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLimpieza">
-                
-                <h4 class="mb-0">Datos de Limpieza y Saneamiento</h4>
+                <h4 class="mb-0">@Localizer["Cleaning_Header"]</h4>
             </button>
         </h2>
         <div id="collapseLimpieza" class="accordion-collapse collapse show">
             <div class="accordion-body">
+
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header">
-                        <th colspan="2">INFORMACIÓN GENERAL SANEO SKU QUEJA</th>
-                        <th colspan="2">RESULTADOS FISICOQUÍMICOS SANEO LÍNEA</th>
-                        <th colspan="2">RESULTADOS FISICOQUÍMICOS SANEO JARABE TERMINADO</th>
-                        <th colspan="2">RESULTADOS FISICOQUÍMICOS SANEO TQ JARABE SIMPLE</th>
+                        <th colspan="2">@Localizer["Cleaning_GeneralComplaintSKU"]</th>
+                        <th colspan="2">@Localizer["Cleaning_PhysChem_Line"]</th>
+                        <th colspan="2">@Localizer["Cleaning_PhysChem_FinishedSyrup"]</th>
+                        <th colspan="2">@Localizer["Cleaning_PhysChem_SimpleSyrupTank"]</th>
                     </tr>
-                    <tr>
-                        <td>DETERGENTE SANEO LÍNEA</td>
-                        <td>Bevro Sheen / BS141024-86</td>
-                        <td>FECHA</td>
-                        <td>15/10/2024</td>
-                        <td>FECHA</td>
-                        <td>14/10/2024 / 13/10/2024</td>
-                        <td>FECHA</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>DETERGENTE TQ JAR SIMPLE</td>
-                        <td>NA / NA</td>
-                        <td>LINEA</td>
-                        <td>3</td>
-                        <td>TANQUE</td>
-                        <td>513 / 517</td>
-                        <td>SILO</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>DETERGENTE TQ JAR TERMINADO</td>
-                        <td>Bevro Sheen / BS071024-84</td>
-                        <td>LOTE</td>
-                        <td>BS141024-86</td>
-                        <td>LOTE</td>
-                        <td>BS071024-84 / BS071024-84</td>
-                        <td>LOTE</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>SANITIZANTE SANEO LÍNEA</td>
-                        <td>NA / NA</td>
-                        <td>DETERGENTE</td>
-                        <td>Bevro Sheen</td>
-                        <td>DETERGENTE</td>
-                        <td>Bevro Sheen / Bevro Sheen</td>
-                        <td>DETERGENTE</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>SANITIZANTE TQ JAR SIMPLE</td>
-                        <td>NA / NA</td>
-                        <td>SANITIZANTE</td>
-                        <td>NA</td>
-                        <td>SANITIZANTE</td>
-                        <td>NA / Agua Caliente</td>
-                        <td>SANITIZANTE</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>SANITIZANTE TQ JAR TERMINADO</td>
-                        <td>Agua Caliente / NA</td>
-                        <td>TIPO DE SANEO</td>
-                        <td>3 PASOS</td>
-                        <td>TIPO DE SANEO</td>
-                        <td>3 PASOS / 5 PASOS</td>
-                        <td>TIPO DE SANEO</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>ESPUMA DE SUPERFICIES</td>
-                        <td>Enforce LP / EN141024-38</td>
-                        <td>TEMPERATURA</td>
-                        <td>65 °C</td>
-                        <td>TEMPERATURA</td>
-                        <td>65°C / 85°C</td>
-                        <td>TEMPERATURA</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>SANITIZANTE EXTERIORES</td>
-                        <td>Vortexx ES / VO220724-07</td>
-                        <td>CONCENTRACIÓN</td>
-                        <td>1.2</td>
-                        <td>CONCENTRACIÓN</td>
-                        <td>0.8 / 0.8</td>
-                        <td>CONCENTRACIÓN</td>
-                        <td>NA</td>
-                    </tr>
-                    <tr>
-                        <td>LOTE AGUA TRATADA</td>
-                        <td>Agua tratada / 10238376, 10239066, 10241843</td>
-                        <td>TIEMPO RECIRCULACIÓN</td>
-                        <td>15 MIN</td>
-                        <td>TIEMPO RECIRCULACIÓN</td>
-                        <td>15 MIN / 15 MIN</td>
-                        <td>TIEMPO RECIRCULACIÓN</td>
-                        <td>NA</td>
-                    </tr>
+                    <tr><td>@Localizer["Cleaning_LineDetergent"]</td><td>Bevro Sheen / BS141024-86</td><td>@Localizer["Common_Date"]</td><td>15/10/2024</td><td>@Localizer["Common_Date"]</td><td>14/10/2024 / 13/10/2024</td><td>@Localizer["Common_Date"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_SimpleTankDetergent"]</td><td>NA / NA</td><td>@Localizer["Common_Line"]</td><td>3</td><td>@Localizer["Common_Tank"]</td><td>513 / 517</td><td>@Localizer["Common_Silo"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_FinishedTankDetergent"]</td><td>Bevro Sheen / BS071024-84</td><td>@Localizer["Common_Lot"]</td><td>BS141024-86</td><td>@Localizer["Common_Lot"]</td><td>BS071024-84 / BS071024-84</td><td>@Localizer["Common_Lot"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_LineSanitizer"]</td><td>NA / NA</td><td>@Localizer["Common_Detergent"]</td><td>Bevro Sheen</td><td>@Localizer["Common_Detergent"]</td><td>Bevro Sheen / Bevro Sheen</td><td>@Localizer["Common_Detergent"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_SimpleTankSanitizer"]</td><td>NA / NA</td><td>@Localizer["Common_Sanitizer"]</td><td>NA</td><td>@Localizer["Common_Sanitizer"]</td><td>NA / @Localizer["Common_HotWater"]</td><td>@Localizer["Common_Sanitizer"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_FinishedTankSanitizer"]</td><td>@Localizer["Common_HotWater"] / NA</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"] / @Localizer["Cleaning_5Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_SurfaceFoam"]</td><td>Enforce LP / EN141024-38</td><td>@Localizer["Common_Temperature"]</td><td>65 °C</td><td>@Localizer["Common_Temperature"]</td><td>65°C / 85°C</td><td>@Localizer["Common_Temperature"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_ExteriorSanitizer"]</td><td>Vortexx ES / VO220724-07</td><td>@Localizer["Common_Concentration"]</td><td>1.2</td><td>@Localizer["Common_Concentration"]</td><td>0.8 / 0.8</td><td>@Localizer["Common_Concentration"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_TreatedWaterLot"]</td><td>Agua tratada / 10238376, 10239066, 10241843</td><td>@Localizer["Cleaning_RecirculationTime"]</td><td>15 MIN</td><td>@Localizer["Cleaning_RecirculationTime"]</td><td>15 MIN / 15 MIN</td><td>@Localizer["Cleaning_RecirculationTime"]</td><td>NA</td></tr>
                 </table>
+
                 <br />
                 <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="5">ANÁLISIS SENSORIAL DE SANEO TANQUE JAR. TERMINADO</th></tr>
-                    <tr class="bg-header">
-                        <th>LOTE / FECHA / NOMBRE</th>
-                        <th>RESULTADO PANEL</th>
-                    </tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Cleaning_Sensory_FinishedSyrupTank_Header"]</th></tr>
+                    <tr class="bg-header"><th>@Localizer["Cleaning_LotDateName"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
                     <tr><td>Lourdes Contreras</td><td>IN</td></tr>
                     <tr><td>Luia Amezquita</td><td>IN</td></tr>
-                    <tr><td>LOTE: 10239066</td><td>REFERENCIA: Agua tratada</td></tr>
-                    <tr><td>FECHA: 14/10/2024</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Lot"]: 10239066</td><td>@Localizer["Common_Reference"]: @Localizer["Common_TreatedWater"]</td></tr>
+                    <tr><td>@Localizer["Common_Date"]: 14/10/2024</td><td></td></tr>
                 </table>
+
                 <br />
-                
                 <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="5">ANÁLISIS SENSORIAL DE SANEO</th></tr>
-                    <tr class="bg-header">
-                        <th>FECHA / NOMBRE</th>
-                        <th>RESULTADO PANEL</th>
-                    </tr>
+                    <tr class="bg-header"><th colspan="5">@Localizer["Cleaning_Sensory_Header"]</th></tr>
+                    <tr class="bg-header"><th>@Localizer["Common_DateName"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
                     <tr><td>Jonathan Mata</td><td>IN</td></tr>
                     <tr><td>Luis Austria</td><td>IN</td></tr>
-                    <tr><td>LIBERADOR 3: NA</td><td>REFERENCIA: Agua tratada</td></tr>
-                    <tr><td>FECHA: 15/10/2024</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release3"]: NA</td><td>@Localizer["Common_Reference"]: @Localizer["Common_TreatedWater"]</td></tr>
+                    <tr><td>@Localizer["Common_Date"]: 15/10/2024</td><td></td></tr>
                 </table>
-
 
             </div>
         </div>
     </div>
 </div>
 
-<!--
-<div class="accordion" id="accordion-Mantenimiento">
-    <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMantenimiento">
-                Mantenimiento
-            </button>
-        </h2>
-        <div id="collapseMantenimiento" class="accordion-collapse collapse show">
-            <div class="accordion-body">
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header">
-                        <th>DETALLE</th>
-                        <th>LOTE INTERNO / EXTERNO</th>
-                    </tr>
-                    <tr><td>LUBRICANTE UTILIZADO</td><td>n/a / n/a</td></tr>
-                    <tr><td>TINTA DE CODIFICADOR</td><td>TC100924-03 / US24200150</td></tr>
-                    <tr><td>SOLVENTE DE CODIFICADOR</td><td>SC151024-03 / US24300102</td></tr>
-                    <tr><td>GRASA GRADO ALIMENTICIO UTILIZADA EN LA LÍNEA SKU MTTO</td><td>GR280524-01 / 20923059</td></tr>
-                    <tr><td>INFORMACIÓN DE LÁMPARAS UV (ÚLTIMO CAMBIO DE CUARZOS)</td><td>26/07/2023</td></tr>
-                    <tr><td>INFORMACIÓN DE LÁMPARAS UV (ÚLTIMO MTTO)</td><td>26/07/2023</td></tr>
-                    <tr><td>LOTE ADITIVOS CALDERAS PARA EL SANEO EN CALIENTE LÍNEA/TANQUE</td><td>NA1081024-05, NA2260224-02, NA260224-02 / Lote 780: 1264LM47000; Lote 22353: MX4B0296A0; Lote 52214: EL3M3366A4</td></tr>
-                    <tr><td>LOTE DE AGUA SUAVE CON QUE SE GENERÓ VAPOR DE LA CALDERA PARA LAVADORA</td><td>15/10/2024 / NA</td></tr>
-                    <tr><td>LOTE DE AGUA SUAVE CON QUE SE GENERÓ VAPOR DEL SANEO EN CALIENTE DE LÍNEA/TANQUE</td><td>15/10/2024 / NA</td></tr>
-                    <tr><td>LOTE DE AGUA SUAVE CON QUE SE GENERÓ VAPOR DEL WARMER</td><td>15/10/2024 / NA</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-
--->
-<!--
-
-<div class="accordion" id="accordion-Logistica">
-    <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLogistica">
-                ALMACÉN / LOGÍSTICA
-            </button>
-        </h2>
-        <div id="collapseLogistica" class="accordion-collapse collapse show">
-            <div class="accordion-body">
-                <table class="tabla-trazabilidad">
-                    <tr><td>CANTIDAD PRODUCTO TERMINADO ENTREGADO A ALMACÉN</td><td>11933</td></tr>
-                    <tr><td>CANTIDAD PRODUCTO TERMINADO A FLETE / DESTINO</td><td>11328</td></tr>
-                    <tr><td>CANTIDAD PRODUCTO TERMINADO A VENTAS (POR RUTA Y FECHA)</td><td>462</td></tr>
-                    <tr><td>CANTIDAD PRODUCTO TERMINADO RECUPERADO</td><td>29 cajas</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
--->
-
-<!-- 
-
-<div class="accordion" id="accordion-Ventas">
-    <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVentas">
-                ALMACÉN / LOGÍSTICA
-            </button>
-        </h2>
-        <div id="collapseVentas" class="accordion-collapse collapse show">
-            <div class="accordion-body">
-                <table class="tabla-trazabilidad">
-                    <tr><td>CAJAS RECUPERADAS (RECALL)</td><td>29 cajas</td></tr>
-                    <tr><td>CANTIDAD SURTIDA POR RUTA A CLIENTE</td><td>426 cajas</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
--->
-
+<!-- Resultados de la trazabilidad -->
 <div class="accordion" id="accordion-Resultados">
     <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResultados">
-                
-                <h4 class="mb-0">RESULTADOS DE LA TRAZABILIDAD</h4>
+                <h4 class="mb-0">@Localizer["TraceResults_Header"]</h4>
             </button>
         </h2>
         <div id="collapseResultados" class="accordion-collapse collapse show">
             <div class="accordion-body">
                 <table class="tabla-trazabilidad">
-                    <tr><td>INFORMACIÓN DEL CLIENTE CON EL PRODUCTO</td><td>Se detecta sabor y olor no característico en la Joya Durazno 1.5L</td></tr>
-                    <tr><td>CANTIDAD DE P.T. INVOLUCRADO RECUPERADO</td><td>29 Cajas</td></tr>
-                    <tr><td>CANTIDAD DE M.P. INVOLUCRADA</td><td>11933</td></tr>
-                    <tr><td>ELABORÓ</td><td>Margarita Antonio</td></tr>
-                    <tr><td>RESULTADO DE EFICIENCIA DE LA TRAZABILIDAD</td><td>3.59%</td></tr>
-                    <tr><td>PARTICIPANTES EN EL EJERCICIO</td><td>GARZA ESPARZA JULIO CESAR , RANGEL CASTILLO VASTI BERENICE , NOYOLA OVALLE JUAN FRANCISCO , TOVAR ALVARADO VICTOR ADRIAN, VALDEZ REYNA JORGE LUIS, PEREZ PORTADOR PEDRO ALBERTO, CASTILLO RODARTE VERONICA, GUEVARA BETAN, JIMENEZ GUERRERO MARIA ANTONIA COURT JUAN CRISTEL, ROBLES SORIA MARCOS CESAR, SANCHEZ PONCE ULISES</td></tr>
-                    <tr><td>OBSERVACIONES</td><td>Errores de dedo, información incompleta</td></tr>
+                    <tr><td>@Localizer["TraceResults_ClientInfo"]</td><td>Se detecta sabor y olor no característico en la Joya Durazno 1.5L</td></tr>
+                    <tr><td>@Localizer["TraceResults_RecoveredFGQty"]</td><td>29 Cajas</td></tr>
+                    <tr><td>@Localizer["TraceResults_InvolvedRMQty"]</td><td>11933</td></tr>
+                    <tr><td>@Localizer["TraceResults_PreparedBy"]</td><td>Margarita Antonio</td></tr>
+                    <tr><td>@Localizer["TraceResults_TraceEfficiency"]</td><td>3.59%</td></tr>
+                    <tr><td>@Localizer["TraceResults_Participants"]</td><td>GARZA ESPARZA JULIO CESAR , ...</td></tr>
+                    <tr><td>@Localizer["Common_Observations"]</td><td>Errores de dedo, información incompleta</td></tr>
                 </table>
             </div>
         </div>

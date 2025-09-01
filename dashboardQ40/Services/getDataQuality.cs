@@ -39,6 +39,21 @@ namespace dashboardQ40.Services
             );
         }
 
+        public static async Task<result_Q_Companies> getCompanies(string token, string url, string company, string trazalog)
+        {
+            HttpClient client = Method_Headers(token, url);
+
+            var jsonBody = "";
+
+            return await WebServiceHelper.SafePostAndDeserialize<result_Q_Companies>(
+                client,
+                client.BaseAddress.ToString(),
+                jsonBody,
+                "getCompanies",
+                trazalog
+            );
+        }
+
 
         public static async Task<result_Q_Productos> getProductsByLine(string token, string url, string company, string lineaId, DateTime fechaInicial, DateTime fechaFinal)
         {

@@ -1,4 +1,6 @@
-﻿namespace dashboardQ40.Models
+﻿using System.Globalization;
+
+namespace dashboardQ40.Models
 {
     public class Models
     {
@@ -54,6 +56,34 @@
             public string workMode { get; set; }
 
         }
+
+        public class result_Q_Companies
+        {
+            public string query { get; set; }
+            public List<result_companies> result { get; set; }
+
+        }
+
+        public class result_companies
+        {
+
+            public string company { get; set; }
+            public string companyName { get; set; }
+            public string culture { get; set; }
+            public string countryCode { get; set; }
+            public CultureInfo cultureinfo { get; set; }
+            public RegionInfo regioninfo { get; set; }
+
+        }
+
+        public class CompanyOption
+        {
+            public string Company { get; set; }       // "001"
+            public string CompanyName { get; set; }   // "Planta Insurgentes"
+            public string Culture { get; set; }       // "es-MX"
+            public string CountryCode { get; set; }   // "MX"
+        }
+
 
         public class VariablesYConfig
         {
@@ -177,7 +207,7 @@ CPrvs.resultValue, CPrvs.minTolerance, CPrvs.maxTolerance, CPrrc.executionDate
             public T result { get; set; }
         }
 
-        // Fila “cruda” (lo que devuelve TU query completo)
-      
+   
+
     }
 }

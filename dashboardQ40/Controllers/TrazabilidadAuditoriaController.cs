@@ -1,7 +1,10 @@
 ﻿using dashboardQ40.Models;
 using dashboardQ40.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System.Data;
+using System.Globalization;
 using static dashboardQ40.Models.Models;
 using static dashboardQ40.Services.AuditTrazabilityClass;
 
@@ -9,14 +12,92 @@ namespace dashboardQ40.Controllers
 {
     public class TrazabilidadAuditoriaController : Controller
     {
+        private readonly WebServiceSettings _settings;
+        private readonly AuthService _authService;
+        private readonly ILogger<DashboardController> _logger;
         private readonly IConfiguration _configuration;
-
-        public TrazabilidadAuditoriaController(IConfiguration configuration)
+        public TrazabilidadAuditoriaController(IOptions<WebServiceSettings> settings,
+            AuthService authService,
+            IConfiguration configuration,
+            ILogger<DashboardController> logger)
         {
+            _settings = settings.Value;
+            _authService = authService;
             _configuration = configuration;
+            _logger = logger;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+
+            var token = await _authService.ObtenerTokenCaptor();
+            if (token != null)
+            {
+                HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
+            }
+
+
+            var ListCompanies = new List<result_companies>();
+            var companies = new List<CompanyOption>();
+
+            if (token != null)
+            {
+
+                Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
+                        token.access_token.ToString(),
+                        _settings.QueryCompany,
+                        _settings.Company,
+                        _settings.trazalog);
+                await Task.WhenAll(dataResultComp);
+
+                if (dataResultComp.Result.result != null)
+                {
+                    foreach (var item in dataResultComp.Result.result)
+                    {
+                        CultureInfo ci;
+                        RegionInfo ri;
+                        try
+                        {
+                            ci = new CultureInfo(item.culture);   // p.ej. "es-MX"
+                            ri = new RegionInfo(ci.Name);         // p.ej. "MX"
+                        }
+                        catch
+                        {
+                            ci = CultureInfo.InvariantCulture;
+                            ri = new RegionInfo("US");            // fallback
+                        }
+
+                        companies.Add(new CompanyOption
+                        {
+                            Company = item.company,
+                            CompanyName = item.companyName,
+                            Culture = ci.Name,
+                            CountryCode = ri.TwoLetterISORegionName
+                        });
+                    }
+
+                }
+
+
+            }
+
+            var countries = companies
+                   .GroupBy(c => c.CountryCode)
+                   .Select(g =>
+                   {
+                       var r = new RegionInfo(g.Key); // admite "MX","US","ES"
+                       return new { Code = g.Key, Name = r.NativeName }; // "México", "Estados Unidos"
+                   })
+                   .OrderBy(x => x.Name)
+                   .ToList();
+
+            // Simulando datos para los selectores
+
+
+
+            ViewBag.Companies = companies;                 // lista completa
+            ViewBag.Countries = countries;                 // países únicos
+            ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
+
             return View();
         }
 
@@ -44,12 +125,12 @@ namespace dashboardQ40.Controllers
 
 
 
-        public async Task<IActionResult> AuditReport(string lote, TimeSpan horaQueja)
+        public async Task<IActionResult> AuditReport(string lote, TimeSpan horaQueja, string company)
         {
             if (string.IsNullOrWhiteSpace(lote)) return View();
 
             string connStr = _configuration.GetConnectionString("CaptorConnection");
-            string company = _configuration.GetConnectionString("company");
+            //string company = _configuration.GetConnectionString("company");
 
             var batchInfo = ObtenerBatchDesdeLote(lote, connStr, company);
             if (batchInfo == null || batchInfo.BatchId <= 0)

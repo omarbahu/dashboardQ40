@@ -1,231 +1,144 @@
-﻿@model dynamic
+﻿@model List<dashboardQ40.Models.CapabilityRow>
+@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Dashboard Arca Planta Insurgentes";
+    ViewData["Title"] = Localizer["CPKsSummary_Title"]; // "CPK Summary"
 }
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: #f4f4f4;
-    }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px auto;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+<h4>@Localizer["CPKsSummary_Header"]</h4>
 
-    th, td {
-        text-align: center;
-        padding: 10px;
-        border: 1px solid #ddd;
-    }
+<form id="selectionForm">
+    <div class="row row-cols-lg-auto g-2 align-items-end">
+        <div class="col">
+            <label for="startDate" class="form-label">@Localizer["From"]</label>
+        </div>
+        <div class="col">
+            <input type="datetime-local" id="startDate" name="startDate" class="form-control form-control-sm" />
+        </div>
+        <div class="col">
+            <label for="endDate" class="form-label">@Localizer["To"]</label>
+        </div>
+        <div class="col">
+            <input type="datetime-local" id="endDate" name="endDate" class="form-control form-control-sm" />
+        </div>
+        <div class="col">
+            <button id="btnReporte" type="button" class="btn btn-primary btn-sm" disabled
+                    onclick="submitForm('@Url.Action("ResumenCPKs","Dashboard")')">
+                📊 @Localizer["Report"]
+            </button>
+        </div>
+        <div id="loading" class="col text-muted small" style="display:none;">@Localizer["LoadingInline"]</div>
+    </div>
+</form>
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage as string))
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
 
-    th {
-        background-color: #007BFF;
-        color: #fff;
-    }
-
-    td {
-        background-color: #f9f9f9;
-        cursor: pointer;
-    }
-
-    .chart-container {
-        width: 100px;
-        height: 50px;
-        margin: 0 auto;
-    }
-
-    .status-ok {
-        color: green;
-        font-weight: bold;
-    }
-
-    .status-alert {
-        color: orange;
-        font-weight: bold;
-    }
-</style>
-
-<h1 style="text-align:center;">Dashboard Resumen de Líneas</h1>
-
-<table>
+<table class="table table-sm table-striped">
     <thead>
         <tr>
-            <th>Línea</th>
-            <th>Variable</th>
-            <th>Valor</th>
-            <th>Min</th>
-            <th>Max</th>
-            <th>OK</th>
-            <th>Alerta</th>
-            <th>Minigráfico</th>
+            <th>@Localizer["Table_Part"]</th>
+            <th>@Localizer["Table_Process"]</th>
+            <th>@Localizer["Table_Test"]</th>
+            <th class="text-end">@Localizer["Table_Subgroups"]</th>
+            <th class="text-end">@Localizer["Table_Mean"]</th>
+            <th class="text-end">@Localizer["Table_DeltaMean"]</th>
+            <th class="text-end">@Localizer["Table_Cp"]</th>
+            <th class="text-end">@Localizer["Table_Cpk"]</th>
+            <th>@Localizer["Table_Note"]</th>
         </tr>
     </thead>
-    <tbody id="table-body">
-        <!-- Las filas se generarán dinámicamente -->
+    <tbody>
+        @if (Model == null || !Model.Any())
+        {
+            <tr><td colspan="9" class="text-center text-muted">@Localizer["NoData_SelectDates"]</td></tr>
+        }
+        else
+        {
+            foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Part</td>
+                    <td>@r.Process</td>
+                    <td>@r.Test</td>
+                    <td class="text-end">@r.Subgroups</td>
+                    <td class="text-end">@r.Mean.ToString("0.###")</td>
+                    <td class="text-end">@((r.MeanDelta)?.ToString("0.###"))</td>
+                    <td class="text-end">@((r.Cp)?.ToString("0.##"))</td>
+                    <td class="text-end">@((r.Cpk)?.ToString("0.##"))</td>
+                    <td>@r.Nota</td>
+                </tr>
+            }
+        }
     </tbody>
 </table>
 
-
-
 @section Scripts {
-
     <script>
-        // Datos simulados para líneas y variables
-        const linesData = [
-            { line: "Línea 1", variables: ["Carbonatación", "Brix", "Torque"] },
-            { line: "Línea 2", variables: ["Carbonatación", "Brix", "Torque"] },
-            { line: "Línea 3", variables: ["Carbonatación", "Brix", "Torque"] },
-            { line: "Línea 4", variables: ["Carbonatación", "Brix", "Torque"] },
-        ];
-
-        const tableBody = document.getElementById("table-body");
-        window.onload = function () {
-            // Código para generar las filas y gráficos
-            linesData.forEach((lineData) => {
-                // Fila para la línea
-                const lineRow = document.createElement("tr");
-                const lineCell = document.createElement("td");
-                lineCell.textContent = lineData.line;
-                lineCell.colSpan = 8; // Colspan para abarcar todas las columnas
-                lineRow.appendChild(lineCell);
-                tableBody.appendChild(lineRow);
-
-                lineData.variables.forEach((variable) => {
-                    const row = document.createElement("tr");
-
-                    // Celda vacía para la línea
-                    const emptyLineCell = document.createElement("td");
-                    row.appendChild(emptyLineCell);
-
-                    // Celda de variable
-                    const variableCell = document.createElement("td");
-                    variableCell.textContent = variable;
-                    row.appendChild(variableCell);
-
-                    // Generar valores aleatorios para la variable
-                    const value = parseFloat((Math.random() * 4 + 6).toFixed(1)); // Valor entre 6 y 10
-                    const min = 6;
-                    const max = 8;
-
-                    // Celdas de valores
-                    const valueCell = document.createElement("td");
-                    valueCell.textContent = value;
-                    row.appendChild(valueCell);
-
-                    const minCell = document.createElement("td");
-                    minCell.textContent = min;
-                    row.appendChild(minCell);
-
-                    const maxCell = document.createElement("td");
-                    maxCell.textContent = max;
-                    row.appendChild(maxCell);
-
-                    // Estado OK/Alerta
-                    const okCell = document.createElement("td");
-                    const alertCell = document.createElement("td");
-
-                    if (value >= min && value <= max) {
-                        okCell.innerHTML = `<span class="status-ok">🟢</span>`;
-                        alertCell.innerHTML = "";
-                    } else {
-                        okCell.innerHTML = "";
-                        alertCell.innerHTML = `<span class="status-alert">🟠</span>`;
-                    }
-
-                    row.appendChild(okCell);
-                    row.appendChild(alertCell);
-
-                    // Minigráfico
-                    const chartCell = document.createElement("td");
-                    const chartContainer = document.createElement("div");
-                    chartContainer.className = "chart-container";
-                    chartContainer.id = `chart-${lineData.line.replace(/\s+/g, "-")}-${variable.replace(/\s+/g, "-")}`;
-
-                    chartCell.appendChild(chartContainer);
-                    row.appendChild(chartCell);
-
-                    // Renderizar el gráfico después de un pequeño retraso
-                    const data = generateRandomData(10); // Datos aleatorios para la gráfica
-                    setTimeout(() => {
-                        if (document.getElementById(chartContainer.id)) {
-                            try {
-                                renderChart(chartContainer.id, data);
-                            } catch (error) {
-                                console.error("Error al renderizar la gráfica:", error);
-                            }
-                        } else {
-                            console.error("El contenedor del gráfico no se encontró:", chartContainer.id);
-                        }
-                    }, 100);
-
-                    // Hacer clic para enviar datos al servidor
-                    row.addEventListener("click", () => {
-                        submitSelection(lineData.line, variable, value, min, max);
-                    });
-
-                    tableBody.appendChild(row);
-                });
-            });
-        };
-
-        // Generar datos aleatorios
-        function generateRandomData(count) {
-            const data = [];
-            for (let i = 0; i < count; i++) {
-                data.push([i, (Math.random() * 4 + 6).toFixed(1)]); // Valores entre 6 y 10
-            }
-            return data;
-        }
-
-        // Renderizar gráfica en miniatura
-        function renderChart(containerId, data) {
-            const chart = echarts.init(document.getElementById(containerId));
-            const option = {
-                grid: { left: 0, right: 0, top: 0, bottom: 0 },
-                xAxis: { type: "category", show: false, data: data.map((d) => d[0]) },
-                yAxis: { type: "value", show: false },
-                series: [
-                    {
-                        type: "line",
-                        data: data.map((d) => d[1]),
-                        smooth: true,
-                        lineStyle: { color: "#007BFF" },
-                    },
-                ],
-                tooltip: { trigger: "axis" },
-            };
-            chart.setOption(option);
-        }
-
-        // Enviar selección al servidor
-        function submitSelection(line, variable, value, min, max) {
-            const data = {
-                line,
-                variable,
-                value,
-                min,
-                max,
+        (() => {
+            const TXT = {
+                StartBeforeEnd: '@Localizer["Validate_StartBeforeEnd"]',   // "Start date must be earlier than end date."
+                SelectStartEnd: '@Localizer["Validate_SelectStartEnd"]'    // "Select start and end dates."
             };
 
-            fetch("/YourController/SubmitSelection", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            }).then((response) => {
-                if (response.ok) {
-                    window.location.href = "/YourController/Result";
+            const form = document.getElementById('selectionForm');
+            const startI = document.getElementById('startDate');
+            const endI = document.getElementById('endDate');
+            const btn = document.getElementById('btnReporte');
+            const loading = document.getElementById('loading');
+
+            const pad = n => String(n).padStart(2, '0');
+            const toLocalInput = d =>
+                `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+            // defaults: last 7 days
+            const now = new Date();
+            const start = new Date(now);
+            start.setDate(now.getDate() - 7);
+            start.setHours(0, 0, 0, 0);
+            startI.value = toLocalInput(start);
+            endI.value = toLocalInput(now);
+
+            function validate() {
+                const sv = startI.value, ev = endI.value;
+                let ok = false, msg = '';
+                if (sv && ev) {
+                    const sd = new Date(sv), ed = new Date(ev);
+                    ok = sd < ed;
+                    if (!ok) msg = TXT.StartBeforeEnd;
                 }
-            });
-        }
+                btn.disabled = !ok;
+                btn.title = ok ? '' : (sv && ev ? msg : TXT.SelectStartEnd);
+                return ok;
+            }
+            startI.addEventListener('input', validate);
+            endI.addEventListener('input', validate);
+            validate();
+
+            // submit on same page (GET)
+            window.submitForm = function (actionUrl) {
+                if (!validate()) return;
+
+                loading.style.display = 'inline';
+                btn.disabled = true;
+
+                form.action = actionUrl;
+                form.method = 'get';
+
+                // tzOffset
+                let tz = document.getElementById('tzOffset');
+                if (!tz) {
+                    tz = document.createElement('input');
+                    tz.type = 'hidden';
+                    tz.name = 'tzOffset';
+                    tz.id = 'tzOffset';
+                    form.appendChild(tz);
+                }
+                tz.value = new Date().getTimezoneOffset();
+
+                form.submit();
+            };
+        })();
     </script>
-
-
 }

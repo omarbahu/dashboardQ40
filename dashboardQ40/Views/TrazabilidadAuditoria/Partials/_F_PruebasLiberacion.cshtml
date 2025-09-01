@@ -1,28 +1,28 @@
 ﻿@model List<PruebaLiberacionRow>
+@inject IStringLocalizer Localizer
 
 <table class="tabla-trazabilidad">
     <thead>
         <tr class="bg-header">
-        
-            <td colspan="4" >PRUEBAS DE LIBERACIÓN</td>
+            <td colspan="4">@Localizer["ReleaseTests_Header"]</td>
         </tr>
         <tr class="bg-header">
-
-            <td >&nbsp;</td>
-            <td >INICIO CORRIDA</td>
-            <td >MEDIO CORRIDA</td>
-            <td >FIN CORRIDA</td>
+            <td>&nbsp;</td>
+            <td>@Localizer["ReleaseTests_StartRun"]</td>
+            <td>@Localizer["ReleaseTests_MidRun"]</td>
+            <td>@Localizer["ReleaseTests_EndRun"]</td>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.ControlOperationName<span title="Dato automático">🟢</span></td>
-                <td>@item.InicioCorrida<span title="Dato automático">🟢</span></td>
-                <td>@item.MedioCorrida<span title="Dato automático">🟢</span></td>
-                <td>@item.FinCorrida<span title="Dato automático">🟢</span></td>
+                <td>@item.ControlOperationName<span title="@Localizer["Common_AutoData"]">🟢</span></td>
+                <td>@item.InicioCorrida<span title="@Localizer["Common_AutoData"]">🟢</span></td>
+                <td>@item.MedioCorrida<span title="@Localizer["Common_AutoData"]">🟢</span></td>
+                <td>@item.FinCorrida<span title="@Localizer["Common_AutoData"]">🟢</span></td>
             </tr>
         }
     </tbody>
 </table>
+

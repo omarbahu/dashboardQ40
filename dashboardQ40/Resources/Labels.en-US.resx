@@ -1,162 +1,1935 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="AppTitle" xml:space="preserve">
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="AppTitle" xml:space="preserve">
     <value>Dashboard Q.40</value>
   </data>
-	<data name="Dashboard" xml:space="preserve">
+  <data name="AuditTraceability" xml:space="preserve">
+    <value>Audit Traceability</value>
+  </data>
+  <data name="AuditTraceability_ComplaintTime" xml:space="preserve">
+    <value>Complaint time</value>
+  </data>
+  <data name="AuditTraceability_CreateNewReport" xml:space="preserve">
+    <value>Create new report</value>
+  </data>
+  <data name="AuditTraceability_FG_EfficiencyPct" xml:space="preserve">
+    <value>Finished goods efficiency (%)</value>
+  </data>
+  <data name="AuditTraceability_NewReportTitle" xml:space="preserve">
+    <value>New traceability report</value>
+  </data>
+  <data name="AuditTraceability_PreviousReportsDesc" xml:space="preserve">
+    <value>Here you can consult previously registered reports.</value>
+  </data>
+  <data name="AuditTraceability_PreviousReportsTitle" xml:space="preserve">
+    <value>Previous reports</value>
+  </data>
+  <data name="AuditTraceability_Reason_Label" xml:space="preserve">
+    <value>Traceability reason</value>
+  </data>
+  <data name="AuditTraceability_Reason_Placeholder" xml:space="preserve">
+    <value>Briefly describe the reason…</value>
+  </data>
+  <data name="AuditTraceability_ReportDateTime_Label" xml:space="preserve">
+    <value>Report date &amp; time</value>
+  </data>
+  <data name="AuditTraceability_RequireRMTraceability_Question" xml:space="preserve">
+    <value>Require raw-material traceability?</value>
+  </data>
+  <data name="AuditTraceability_Title" xml:space="preserve">
+    <value>Audit Traceability</value>
+  </data>
+  <data name="AuditTraceability_ViewPreviousReports" xml:space="preserve">
+    <value>View previous reports</value>
+  </data>
+  <data name="BatchIdentifier" xml:space="preserve">
+    <value>Batch identifier</value>
+  </data>
+  <data name="BatchNotFound_DefaultMessage" xml:space="preserve">
+    <value>Batch not found.</value>
+  </data>
+  <data name="BatchNotFound_Hint" xml:space="preserve">
+    <value>Verify that the batch number is written correctly or try another one.</value>
+  </data>
+  <data name="BatchNotFound_Title" xml:space="preserve">
+    <value>Batch not found</value>
+  </data>
+  <data name="Bell_Distribution" xml:space="preserve">
+    <value>Distribution</value>
+  </data>
+  <data name="Bell_Histogram" xml:space="preserve">
+    <value>Histogram</value>
+  </data>
+  <data name="Bell_Loading" xml:space="preserve">
+    <value>Loading distribution...</value>
+  </data>
+  <data name="Bell_LSL" xml:space="preserve">
+    <value>LSL</value>
+  </data>
+  <data name="Bell_Title" xml:space="preserve">
+    <value>Normal Distribution - Variable</value>
+  </data>
+  <data name="Bell_USL" xml:space="preserve">
+    <value>USL</value>
+  </data>
+  <data name="Bell_XAxis" xml:space="preserve">
+    <value>Variable</value>
+  </data>
+  <data name="Bell_YAxis" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="Block_CleaningChecklist" xml:space="preserve">
+    <value>Cleaning checklist</value>
+  </data>
+  <data name="Block_FinishedProduct" xml:space="preserve">
+    <value>Finished product</value>
+  </data>
+  <data name="Block_ProcessData" xml:space="preserve">
+    <value>Process data</value>
+  </data>
+  <data name="Block_RawMaterials" xml:space="preserve">
+    <value>Raw materials</value>
+  </data>
+  <data name="Block_SensoryRelease" xml:space="preserve">
+    <value>Sensory release</value>
+  </data>
+  <data name="Block_SyrupsInfo" xml:space="preserve">
+    <value>Syrups information</value>
+  </data>
+  <data name="Block_TimeLog" xml:space="preserve">
+    <value>Time log</value>
+  </data>
+  <data name="Bottling_Header" xml:space="preserve">
+    <value>Bottling Information</value>
+  </data>
+  <data name="Bottling_Header1" xml:space="preserve">
+    <value>Bottling Information</value>
+  </data>
+  <data name="Button_ShowTable" xml:space="preserve">
+    <value>View data in table</value>
+  </data>
+  <data name="Checklists" xml:space="preserve">
+    <value>Checklists</value>
+  </data>
+  <data name="Child" xml:space="preserve">
+    <value>Child</value>
+  </data>
+  <data name="Cleaning_3Steps" xml:space="preserve">
+    <value>3 STEPS</value>
+  </data>
+  <data name="Cleaning_5Steps" xml:space="preserve">
+    <value>5 STEPS</value>
+  </data>
+  <data name="Cleaning_ExteriorSanitizer" xml:space="preserve">
+    <value>EXTERIOR SANITIZER</value>
+  </data>
+  <data name="Cleaning_FinishedTankDetergent" xml:space="preserve">
+    <value>FINISHED SYRUP TANK DETERGENT</value>
+  </data>
+  <data name="Cleaning_FinishedTankSanitizer" xml:space="preserve">
+    <value>FINISHED SYRUP TANK SANITIZER</value>
+  </data>
+  <data name="Cleaning_GeneralComplaintSKU" xml:space="preserve">
+    <value>GENERAL CLEANING INFORMATION - COMPLAINT SKU</value>
+  </data>
+  <data name="Cleaning_Header" xml:space="preserve">
+    <value>Cleaning and Sanitation Data</value>
+  </data>
+  <data name="Cleaning_LineDetergent" xml:space="preserve">
+    <value>LINE CLEANING DETERGENT</value>
+  </data>
+  <data name="Cleaning_LineSanitizer" xml:space="preserve">
+    <value>LINE CLEANING SANITIZER</value>
+  </data>
+  <data name="Cleaning_PhysChem_FinishedSyrup" xml:space="preserve">
+    <value>PHYSICOCHEMICAL RESULTS CLEANING FINISHED SYRUP</value>
+  </data>
+  <data name="Cleaning_PhysChem_Line" xml:space="preserve">
+    <value>PHYSICOCHEMICAL RESULTS CLEANING LINE</value>
+  </data>
+  <data name="Cleaning_PhysChem_SimpleSyrupTank" xml:space="preserve">
+    <value>PHYSICOCHEMICAL RESULTS CLEANING SIMPLE SYRUP TANK</value>
+  </data>
+  <data name="Cleaning_RecirculationTime" xml:space="preserve">
+    <value>RECIRCULATION TIME</value>
+  </data>
+  <data name="Cleaning_SanitationType" xml:space="preserve">
+    <value>SANITATION TYPE</value>
+  </data>
+  <data name="Cleaning_Sensory_FinishedSyrupTank_Header" xml:space="preserve">
+    <value>SENSORY ANALYSIS OF CLEANING FINISHED SYRUP TANK</value>
+  </data>
+  <data name="Cleaning_Sensory_Header" xml:space="preserve">
+    <value>SENSORY ANALYSIS OF CLEANING</value>
+  </data>
+  <data name="Cleaning_SimpleTankDetergent" xml:space="preserve">
+    <value>SIMPLE SYRUP TANK DETERGENT</value>
+  </data>
+  <data name="Cleaning_SimpleTankSanitizer" xml:space="preserve">
+    <value>SIMPLE SYRUP TANK SANITIZER</value>
+  </data>
+  <data name="Cleaning_SurfaceFoam" xml:space="preserve">
+    <value>SURFACE FOAM</value>
+  </data>
+  <data name="Cleaning_TreatedWaterLot" xml:space="preserve">
+    <value>TREATED WATER LOT</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CO2_AcidulatedCO2" xml:space="preserve">
+    <value>Acidulated CO2</value>
+  </data>
+  <data name="CO2_Sensory_Header" xml:space="preserve">
+    <value>Sensory Analysis Results of CO2</value>
+  </data>
+  <data name="CO2_SnowAttributes" xml:space="preserve">
+    <value>Snow Attributes</value>
+  </data>
+  <data name="CO2_WaterAttributes" xml:space="preserve">
+    <value>Water Attributes</value>
+  </data>
+  <data name="CO2_WaterCO2Attributes" xml:space="preserve">
+    <value>CO2 Water Attributes</value>
+  </data>
+  <data name="Common_Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Common_ApprovalUser" xml:space="preserve">
+    <value>Approval user</value>
+  </data>
+  <data name="Common_Ash" xml:space="preserve">
+    <value>Ash</value>
+  </data>
+  <data name="Common_AutoData" xml:space="preserve">
+    <value>Auto-generated data</value>
+  </data>
+  <data name="Common_AutoData1" xml:space="preserve">
+    <value>Auto-generated data</value>
+  </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Common_Batch" xml:space="preserve">
+    <value>Batch</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_Chlorine" xml:space="preserve">
+    <value>Chlorine</value>
+  </data>
+  <data name="Common_Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Common_Concentration" xml:space="preserve">
+    <value>Concentration</value>
+  </data>
+  <data name="Common_Conductivity" xml:space="preserve">
+    <value>Conductivity</value>
+  </data>
+  <data name="Common_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Common_DateName" xml:space="preserve">
+    <value>DATE / NAME</value>
+  </data>
+  <data name="Common_DateName1" xml:space="preserve">
+    <value>DATE / NAME</value>
+  </data>
+  <data name="Common_EndTime" xml:space="preserve">
+    <value>End time</value>
+  </data>
+  <data name="Common_EndTime1" xml:space="preserve">
+    <value>End Time</value>
+  </data>
+  <data name="Common_ErrorSaving" xml:space="preserve">
+    <value>Error while saving.</value>
+  </data>
+  <data name="Common_ErrorUnexpected" xml:space="preserve">
+    <value>Unexpected error.</value>
+  </data>
+  <data name="Common_Evaluator" xml:space="preserve">
+    <value>Evaluator</value>
+  </data>
+  <data name="Common_Line" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="Common_Loading" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="Common_LogoAlt" xml:space="preserve">
+    <value>Arca logo</value>
+  </data>
+  <data name="Common_Lot" xml:space="preserve">
+    <value>Lot</value>
+  </data>
+  <data name="Common_LotDateName" xml:space="preserve">
+    <value>LOT / DATE / NAME</value>
+  </data>
+  <data name="Common_Moisture" xml:space="preserve">
+    <value>Moisture</value>
+  </data>
+  <data name="Common_Observations" xml:space="preserve">
+    <value>Observations</value>
+  </data>
+  <data name="Common_Observations1" xml:space="preserve">
+    <value>OBSERVATIONS</value>
+  </data>
+  <data name="Common_PanelResult" xml:space="preserve">
+    <value>Panel Result</value>
+  </data>
+  <data name="Common_Parameter" xml:space="preserve">
+    <value>Parameter</value>
+  </data>
+  <data name="Common_Pressure" xml:space="preserve">
+    <value>Pressure</value>
+  </data>
+  <data name="Common_Reference" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="Common_Release1" xml:space="preserve">
+    <value>Releaser 1</value>
+  </data>
+  <data name="Common_Release2" xml:space="preserve">
+    <value>Releaser 2</value>
+  </data>
+  <data name="Common_Release3" xml:space="preserve">
+    <value>Releaser 3</value>
+  </data>
+  <data name="Common_Release31" xml:space="preserve">
+    <value>RELEASER 3</value>
+  </data>
+  <data name="Common_Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Common_Revision" xml:space="preserve">
+    <value>Revision</value>
+  </data>
+  <data name="Common_RunEnd" xml:space="preserve">
+    <value>Run End</value>
+  </data>
+  <data name="Common_RunMid" xml:space="preserve">
+    <value>Mid Run</value>
+  </data>
+  <data name="Common_RunStart" xml:space="preserve">
+    <value>Run Start</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Save report</value>
+  </data>
+  <data name="Common_Sediment" xml:space="preserve">
+    <value>Sediment</value>
+  </data>
+  <data name="Common_Silo" xml:space="preserve">
+    <value>Silo</value>
+  </data>
+  <data name="Common_StartTime" xml:space="preserve">
+    <value>Start time</value>
+  </data>
+  <data name="Common_StartTime1" xml:space="preserve">
+    <value>Start Time</value>
+  </data>
+  <data name="Common_Tank" xml:space="preserve">
+    <value>Tank</value>
+  </data>
+  <data name="Common_Temperature" xml:space="preserve">
+    <value>Temperature</value>
+  </data>
+  <data name="Common_TreatedWater" xml:space="preserve">
+    <value>Treated Water</value>
+  </data>
+  <data name="Common_TreatedWater1" xml:space="preserve">
+    <value>Treated Water</value>
+  </data>
+  <data name="Common_Turbidity" xml:space="preserve">
+    <value>Turbidity</value>
+  </data>
+  <data name="Common_TurbidityICU" xml:space="preserve">
+    <value>Turbidity (ICU)</value>
+  </data>
+  <data name="Common_WaterOdor" xml:space="preserve">
+    <value>Water Odor</value>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Common_Yes1" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Consult" xml:space="preserve">
+    <value>Consult</value>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="CoverageDays" xml:space="preserve">
+    <value>Coverage: —/— days</value>
+  </data>
+  <data name="CoverageDaysFmt" xml:space="preserve">
+    <value>{0}/{1} days</value>
+  </data>
+  <data name="Cp" xml:space="preserve">
+    <value>Cp</value>
+  </data>
+  <data name="Cpk" xml:space="preserve">
+    <value>Cpk</value>
+  </data>
+  <data name="CPKReport" xml:space="preserve">
+    <value>CPK Report</value>
+  </data>
+  <data name="CPKsSummary_Header" xml:space="preserve">
+    <value>CPK Summary</value>
+  </data>
+  <data name="CPKsSummary_Title" xml:space="preserve">
+    <value>CPK Summary</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
   </data>
-	<data name="FooterText" xml:space="preserve">
-    <value>Sisteplant 2025 - Quality Dashboard 4.0</value>
+  <data name="DashboardTitle" xml:space="preserve">
+    <value>Quality Dashboard - Insurgentes Plant</value>
   </data>
-	<data name="OperationalZones" xml:space="preserve">
-    <value>Operational Zones</value>
+  <data name="Date_End" xml:space="preserve">
+    <value>End date</value>
   </data>
-	<data name="Plant1" xml:space="preserve">
-    <value>Plant 1</value>
+  <data name="Date_Start" xml:space="preserve">
+    <value>Start date</value>
   </data>
-	<data name="Plant2" xml:space="preserve">
-    <value>Plant 2</value>
+  <data name="Defects" xml:space="preserve">
+    <value>Defects</value>
   </data>
-	<data name="Plant3" xml:space="preserve">
-    <value>Plant 3</value>
+  <data name="Description_SKU" xml:space="preserve">
+    <value>Description / SKU</value>
   </data>
-	<data name="RegionNoreste" xml:space="preserve">
-    <value>Northeast</value>
+  <data name="Detail" xml:space="preserve">
+    <value>Detail</value>
   </data>
-	<data name="RegionNorte" xml:space="preserve">
-    <value>North</value>
+  <data name="DetailReport_Header" xml:space="preserve">
+    <value>Detailed Report</value>
   </data>
-	<data name="RegionOccidente" xml:space="preserve">
-    <value>West</value>
+  <data name="DetailResult_Title" xml:space="preserve">
+    <value>Detailed Report</value>
   </data>
-	<data name="RegionPacifico" xml:space="preserve">
-    <value>Pacific</value>
+  <data name="Dist_Hist" xml:space="preserve">
+    <value>Histogram</value>
   </data>
-	<data name="Summary" xml:space="preserve">
-    <value>Summary</value>
+  <data name="Dist_Line" xml:space="preserve">
+    <value>Distribution</value>
   </data>
-	<data name="TraceabilityReport" xml:space="preserve">
+  <data name="Dist_LSL" xml:space="preserve">
+    <value>LSL</value>
+  </data>
+  <data name="Dist_TitleFmt" xml:space="preserve">
+    <value>Distribution - {0}</value>
+  </data>
+  <data name="Dist_USL" xml:space="preserve">
+    <value>USL</value>
+  </data>
+  <data name="Dist_YAxis" xml:space="preserve">
+    <value>Frequency</value>
+  </data>
+  <data name="End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="ErrorFetchingBatches" xml:space="preserve">
+    <value>Error fetching batches.</value>
+  </data>
+  <data name="ErrorLoadSkus" xml:space="preserve">
+    <value>Error loading SKUs.</value>
+  </data>
+  <data name="FG_EmptiesAtSyrupFinish" xml:space="preserve">
+    <value>EMPTIES AT FINISHED SYRUP COMPLETION:</value>
+  </data>
+  <data name="FG_EmptiesAtSyrupFinish1" xml:space="preserve">
+    <value>EMPTIES AT FINISHED SYRUP PRODUCTION:</value>
+  </data>
+  <data name="FG_Filler" xml:space="preserve">
+    <value>FILLER:</value>
+  </data>
+  <data name="FG_Filler1" xml:space="preserve">
+    <value>FILLER:</value>
+  </data>
+  <data name="FG_Header" xml:space="preserve">
+    <value>Finished Product / SKU Information</value>
+  </data>
+  <data name="FG_Header1" xml:space="preserve">
+    <value>Finished Product / SKU Information</value>
+  </data>
+  <data name="FG_LineNumber" xml:space="preserve">
+    <value>LINE No.</value>
+  </data>
+  <data name="FG_LineNumber1" xml:space="preserve">
+    <value>LINE NUMBER</value>
+  </data>
+  <data name="FG_ProdEnd" xml:space="preserve">
+    <value>PRODUCTION END:</value>
+  </data>
+  <data name="FG_ProdEnd1" xml:space="preserve">
+    <value>PRODUCTION END:</value>
+  </data>
+  <data name="FG_ProdStart" xml:space="preserve">
+    <value>PRODUCTION START:</value>
+  </data>
+  <data name="FG_ProdStart1" xml:space="preserve">
+    <value>PRODUCTION START:</value>
+  </data>
+  <data name="FG_ProductCode" xml:space="preserve">
+    <value>CODE:</value>
+  </data>
+  <data name="FG_ProductCode1" xml:space="preserve">
+    <value>CODE:</value>
+  </data>
+  <data name="FG_ProductDescription" xml:space="preserve">
+    <value>PRODUCT DESCRIPTION:</value>
+  </data>
+  <data name="FG_ProductDescription1" xml:space="preserve">
+    <value>PRODUCT DESCRIPTION:</value>
+  </data>
+  <data name="FG_ProductionDate" xml:space="preserve">
+    <value>PRODUCTION DATE:</value>
+  </data>
+  <data name="FG_ProductionDate1" xml:space="preserve">
+    <value>PRODUCTION DATE:</value>
+  </data>
+  <data name="FG_QuantityProduced" xml:space="preserve">
+    <value>QUANTITY OF FINISHED PRODUCT PRODUCED:</value>
+  </data>
+  <data name="FG_QuantityProduced1" xml:space="preserve">
+    <value>PRODUCED FINISHED PRODUCT QUANTITY:</value>
+  </data>
+  <data name="FG_SyrupsSupervisor" xml:space="preserve">
+    <value>SYRUPS SUPERVISOR:</value>
+  </data>
+  <data name="FG_SyrupsSupervisor1" xml:space="preserve">
+    <value>SYRUPS SUPERVISOR:</value>
+  </data>
+  <data name="FG_TableHeader" xml:space="preserve">
+    <value>FINISHED PRODUCT / SKU INFORMATION</value>
+  </data>
+  <data name="FG_TableHeader1" xml:space="preserve">
+    <value>FINISHED PRODUCT / SKU INFORMATION</value>
+  </data>
+  <data name="FG_TurnMaintenanceSupervisor" xml:space="preserve">
+    <value>SHIFT MAINTENANCE SUPERVISOR:</value>
+  </data>
+  <data name="FG_TurnMaintenanceSupervisor1" xml:space="preserve">
+    <value>SHIFT MAINTENANCE SUPERVISOR:</value>
+  </data>
+  <data name="FG_TurnProductionSupervisor" xml:space="preserve">
+    <value>SHIFT PRODUCTION SUPERVISOR:</value>
+  </data>
+  <data name="FG_TurnProductionSupervisor1" xml:space="preserve">
+    <value>SHIFT PRODUCTION SUPERVISOR:</value>
+  </data>
+  <data name="FG_TurnQualitySupervisor" xml:space="preserve">
+    <value>SHIFT QUALITY SUPERVISOR:</value>
+  </data>
+  <data name="FG_TurnQualitySupervisor1" xml:space="preserve">
+    <value>SHIFT QUALITY SUPERVISOR:</value>
+  </data>
+  <data name="FG_TurnTestLead" xml:space="preserve">
+    <value>SHIFT TEST LEAD:</value>
+  </data>
+  <data name="FG_TurnTestLead1" xml:space="preserve">
+    <value>SHIFT TEST LEAD:</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="FiltersHint" xml:space="preserve">
+    <value>Select From, To, Line and SKU to see the available variables.</value>
+  </data>
+  <data name="FooterText" xml:space="preserve">
+    <value>Quality Dashboard 4.0</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>From:</value>
+  </data>
+  <data name="From1" xml:space="preserve">
+    <value>From:</value>
+  </data>
+  <data name="Fructose_DischargeSilo" xml:space="preserve">
+    <value>Discharge Silo</value>
+  </data>
+  <data name="Fructose_HFSolids" xml:space="preserve">
+    <value>High Fructose Solids</value>
+  </data>
+  <data name="Fructose_Silo1_Header" xml:space="preserve">
+    <value>Fructose Silo 1</value>
+  </data>
+  <data name="Fructose_Silo2_Header" xml:space="preserve">
+    <value>Fructose Silo 2</value>
+  </data>
+  <data name="Fructose_Silo2_Sensory_Header" xml:space="preserve">
+    <value>Sensory Analysis Results of Fructose Silo 2</value>
+  </data>
+  <data name="Fructose_Silo3_Header" xml:space="preserve">
+    <value>Fructose Silo 3</value>
+  </data>
+  <data name="Fructose_Silo3_Sensory_Header" xml:space="preserve">
+    <value>Sensory Analysis Results of Fructose Silo 3</value>
+  </data>
+  <data name="Identifier" xml:space="preserve">
+    <value>Identifier</value>
+  </data>
+  <data name="InfoDelivery_Activity" xml:space="preserve">
+    <value>ACTIVITY</value>
+  </data>
+  <data name="InfoDelivery_Activity1" xml:space="preserve">
+    <value>ACTIVITY</value>
+  </data>
+  <data name="InfoDelivery_Area" xml:space="preserve">
+    <value>AREA</value>
+  </data>
+  <data name="InfoDelivery_Area1" xml:space="preserve">
+    <value>AREA</value>
+  </data>
+  <data name="InfoDelivery_DeliveryMode" xml:space="preserve">
+    <value>PAPER/ELECTRONIC</value>
+  </data>
+  <data name="InfoDelivery_DeliveryMode1" xml:space="preserve">
+    <value>PAPER/ELECTRONIC</value>
+  </data>
+  <data name="InfoDelivery_Header" xml:space="preserve">
+    <value>Information / Activity Delivery Time Records</value>
+  </data>
+  <data name="InfoDelivery_Header1" xml:space="preserve">
+    <value>Information / Activities Delivery Records</value>
+  </data>
+  <data name="InfoDelivery_Hour" xml:space="preserve">
+    <value>TIME</value>
+  </data>
+  <data name="InfoDelivery_Hour1" xml:space="preserve">
+    <value>HOUR</value>
+  </data>
+  <data name="InfoDelivery_Observations" xml:space="preserve">
+    <value>OBSERVATIONS</value>
+  </data>
+  <data name="InfoDelivery_Observations1" xml:space="preserve">
+    <value>OBSERVATIONS</value>
+  </data>
+  <data name="InfoDelivery_PersonName" xml:space="preserve">
+    <value>PERSON NAME</value>
+  </data>
+  <data name="InfoDelivery_PersonName1" xml:space="preserve">
+    <value>PERSON NAME</value>
+  </data>
+  <data name="InfoDelivery_Position" xml:space="preserve">
+    <value>POSITION</value>
+  </data>
+  <data name="InfoDelivery_Position1" xml:space="preserve">
+    <value>POSITION</value>
+  </data>
+  <data name="Inspection_11A_ImpactSignal" xml:space="preserve">
+    <value>11A (Impact Signal)</value>
+  </data>
+  <data name="Inspection_12A_StressFracture" xml:space="preserve">
+    <value>12A (Stress Fracture)</value>
+  </data>
+  <data name="Inspection_12C_StressFracture" xml:space="preserve">
+    <value>12C (Stress Fracture)</value>
+  </data>
+  <data name="Inspection_13A_CenterOpaque" xml:space="preserve">
+    <value>13A (Opaque Center Area)</value>
+  </data>
+  <data name="Inspection_14A_CenterSemiTransp" xml:space="preserve">
+    <value>14A (Semi-Transparent Center Area)</value>
+  </data>
+  <data name="Inspection_15C_SupportSurfaceOpaque" xml:space="preserve">
+    <value>15C (Opaque Support Surface)</value>
+  </data>
+  <data name="Inspection_16A_SupportSurfaceSemiTransp" xml:space="preserve">
+    <value>16A (Semi-Transparent Support Surface)</value>
+  </data>
+  <data name="Inspection_17A_ResidualLiquid" xml:space="preserve">
+    <value>17A (Residual Liquid)</value>
+  </data>
+  <data name="Inspection_1A_NeckDamage" xml:space="preserve">
+    <value>1A (Neck Damage)</value>
+  </data>
+  <data name="Inspection_22C_ObjectBehindLabel" xml:space="preserve">
+    <value>22C (Object Behind Label)</value>
+  </data>
+  <data name="Inspection_2A_Opaque" xml:space="preserve">
+    <value>2A (Opaque)</value>
+  </data>
+  <data name="Inspection_4A_VentGroove" xml:space="preserve">
+    <value>4A (Vent Groove)</value>
+  </data>
+  <data name="Inspection_6A_ScratchWear" xml:space="preserve">
+    <value>6A (Scratches and Wear)</value>
+  </data>
+  <data name="Inspection_7A_LowerWallOpaque" xml:space="preserve">
+    <value>7A (Opaque Lower Wall)</value>
+  </data>
+  <data name="Inspection_8A_SideWallSemiTransp" xml:space="preserve">
+    <value>8A (Semi-Transparent Side Wall)</value>
+  </data>
+  <data name="Inspection_Alexus_Header" xml:space="preserve">
+    <value>Alexus (start and every 4 hours)</value>
+  </data>
+  <data name="Inspection_ASEBI_Header" xml:space="preserve">
+    <value>ASEBI</value>
+  </data>
+  <data name="Inspection_BadCapBottle" xml:space="preserve">
+    <value>Bad Cap Bottle</value>
+  </data>
+  <data name="Inspection_EfficiencyPct" xml:space="preserve">
+    <value>% Efficiency</value>
+  </data>
+  <data name="Inspection_FillerStopButton" xml:space="preserve">
+    <value>Filler Stop Button</value>
+  </data>
+  <data name="Inspection_FullBottleReject_Header" xml:space="preserve">
+    <value>Full Bottle Reject Inspector</value>
+  </data>
+  <data name="Inspection_Header" xml:space="preserve">
+    <value>Container Inspection Data</value>
+  </data>
+  <data name="Inspection_HighNetContentBottle" xml:space="preserve">
+    <value>High Net Content Bottle</value>
+  </data>
+  <data name="Inspection_IllegibleCodeBottle" xml:space="preserve">
+    <value>Illegible Code Bottle</value>
+  </data>
+  <data name="Inspection_LowNetContentBottle" xml:space="preserve">
+    <value>Low Net Content Bottle</value>
+  </data>
+  <data name="Inspection_MetalTestCane" xml:space="preserve">
+    <value>Metal Test (Cane)</value>
+  </data>
+  <data name="Inspection_NOXWitness" xml:space="preserve">
+    <value>NOX Witness</value>
+  </data>
+  <data name="Inspection_RunEndTime" xml:space="preserve">
+    <value>Run End Time</value>
+  </data>
+  <data name="Inspection_RunStartTime" xml:space="preserve">
+    <value>Run Start Time</value>
+  </data>
+  <data name="Inspection_SAMWitness" xml:space="preserve">
+    <value>SAM Witness</value>
+  </data>
+  <data name="Inspection_TestTime" xml:space="preserve">
+    <value>Test Time</value>
+  </data>
+  <data name="Last" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="Legend_Max" xml:space="preserve">
+    <value>Upper Limit</value>
+  </data>
+  <data name="Legend_Min" xml:space="preserve">
+    <value>Lower Limit</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Line" xml:space="preserve">
+    <value>Line:</value>
+  </data>
+  <data name="Line1" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="LinearTraceability" xml:space="preserve">
     <value>Linear Traceability Report</value>
   </data>
-	<data name="Welcome" xml:space="preserve">
+  <data name="LinePlaceholder" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="LineStart_Analyst" xml:space="preserve">
+    <value>Panelist</value>
+  </data>
+  <data name="LineStart_Analyst1" xml:space="preserve">
+    <value>Panelist</value>
+  </data>
+  <data name="LineStart_Header" xml:space="preserve">
+    <value>Finished Product Release at Line Start</value>
+  </data>
+  <data name="LineStart_Header1" xml:space="preserve">
+    <value>Finished Product Release at Line Start</value>
+  </data>
+  <data name="LineStart_Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="LineStart_Product1" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="LineStart_ReleaseDate" xml:space="preserve">
+    <value>Release Date</value>
+  </data>
+  <data name="LineStart_ReleaseDate1" xml:space="preserve">
+    <value>Release Date</value>
+  </data>
+  <data name="LineStart_Result" xml:space="preserve">
+    <value>Panel Result</value>
+  </data>
+  <data name="LineStart_Result1" xml:space="preserve">
+    <value>Panel Result</value>
+  </data>
+  <data name="LineStart_SampleCode" xml:space="preserve">
+    <value>Sample Code</value>
+  </data>
+  <data name="LineStart_SampleCode1" xml:space="preserve">
+    <value>Sample Code</value>
+  </data>
+  <data name="Loader_Analyzing" xml:space="preserve">
+    <value>Loading quality analysis...</value>
+  </data>
+  <data name="Loader_Analyzing1" xml:space="preserve">
+    <value>Loading quality analysis...</value>
+  </data>
+  <data name="Loader_GeneratingReport" xml:space="preserve">
+    <value>Generating report...</value>
+  </data>
+  <data name="Loader_LoadingBlock" xml:space="preserve">
+    <value>Loading block:</value>
+  </data>
+  <data name="Loader_LoadingBlocks_PleaseWait" xml:space="preserve">
+    <value>Loading report blocks, please wait.</value>
+  </data>
+  <data name="Loader_ReportReadyRedirect" xml:space="preserve">
+    <value>Report generated, redirecting...</value>
+  </data>
+  <data name="LoadingInline" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="Lot" xml:space="preserve">
+    <value>Lot</value>
+  </data>
+  <data name="LotsFound_ClickToSelect" xml:space="preserve">
+    <value>lot(s) found. Click to select.</value>
+  </data>
+  <data name="LotsStructure_Header" xml:space="preserve">
+    <value>Lots Structure (Traceability Hierarchy)</value>
+  </data>
+  <data name="ManufacturedLot" xml:space="preserve">
+    <value>Manufactured lot</value>
+  </data>
+  <data name="Max" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="MaxLimit" xml:space="preserve">
+    <value>Upper Spec Limit</value>
+  </data>
+  <data name="Mean" xml:space="preserve">
+    <value>Mean</value>
+  </data>
+  <data name="Min" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="MinLimit" xml:space="preserve">
+    <value>Lower Spec Limit</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name1" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name2" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name3" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name4" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name5" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name6" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name7" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Name8" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="NoChecklistForSelection" xml:space="preserve">
+    <value>No checklist found for the selected batch or range.</value>
+  </data>
+  <data name="NoChecklistRecords" xml:space="preserve">
+    <value>No checklist records</value>
+  </data>
+  <data name="NoData_SelectDates" xml:space="preserve">
+    <value>No data. Select dates and click “Report”.</value>
+  </data>
+  <data name="NoInfo" xml:space="preserve">
+    <value>No information</value>
+  </data>
+  <data name="NoResults" xml:space="preserve">
+    <value>No results.</value>
+  </data>
+  <data name="NoXVariables" xml:space="preserve">
+    <value>No X variables with data found for this date range.</value>
+  </data>
+  <data name="NoYVariables" xml:space="preserve">
+    <value>No Y variables with data for the selected period.</value>
+  </data>
+  <data name="OOS" xml:space="preserve">
+    <value>OOS</value>
+  </data>
+  <data name="OperationalZones" xml:space="preserve">
+    <value>Operational Zones</value>
+  </data>
+  <data name="PageHeader" xml:space="preserve">
+    <value>Quality Y and X Report - Insurgentes Plant</value>
+  </data>
+  <data name="Parent" xml:space="preserve">
+    <value>Parent</value>
+  </data>
+  <data name="Plant1" xml:space="preserve">
+    <value>Plant 1</value>
+  </data>
+  <data name="Plant2" xml:space="preserve">
+    <value>Plant 2</value>
+  </data>
+  <data name="Plant3" xml:space="preserve">
+    <value>Plant 3</value>
+  </data>
+  <data name="PrintReport" xml:space="preserve">
+    <value>Print report</value>
+  </data>
+  <data name="Production_Batch" xml:space="preserve">
+    <value>Production Lot</value>
+  </data>
+  <data name="Production_Date" xml:space="preserve">
+    <value>Production Date</value>
+  </data>
+  <data name="Production_Header" xml:space="preserve">
+    <value>Production Information</value>
+  </data>
+  <data name="Production_Info_Header" xml:space="preserve">
+    <value>Production Information</value>
+  </data>
+  <data name="Production_Line" xml:space="preserve">
+    <value>Production Line</value>
+  </data>
+  <data name="Production_Log_Header" xml:space="preserve">
+    <value>Production Log</value>
+  </data>
+  <data name="Production_ProductName" xml:space="preserve">
+    <value>Product Name</value>
+  </data>
+  <data name="Production_QualitySupervisor" xml:space="preserve">
+    <value>Quality Supervisor</value>
+  </data>
+  <data name="Production_Responsible" xml:space="preserve">
+    <value>Production Responsible</value>
+  </data>
+  <data name="Production_Shift" xml:space="preserve">
+    <value>Shift</value>
+  </data>
+  <data name="Production_UnitsProduced" xml:space="preserve">
+    <value>Units Produced</value>
+  </data>
+  <data name="Production_UnitsRejected" xml:space="preserve">
+    <value>Units Rejected</value>
+  </data>
+  <data name="RawMaterials_Data_Header" xml:space="preserve">
+    <value>Raw Materials Data</value>
+  </data>
+  <data name="RawMat_AutoData" xml:space="preserve">
+    <value>Auto-generated data</value>
+  </data>
+  <data name="RawMat_DateFormat" xml:space="preserve">
+    <value>mm/dd/yyyy</value>
+  </data>
+  <data name="RawMat_DateFormat1" xml:space="preserve">
+    <value>dd/mm/yyyy</value>
+  </data>
+  <data name="RawMat_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="RawMat_Description1" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="RawMat_ExternalLot" xml:space="preserve">
+    <value>External RM Lot</value>
+  </data>
+  <data name="RawMat_ExternalLot1" xml:space="preserve">
+    <value>External RM Lot</value>
+  </data>
+  <data name="RawMat_Header" xml:space="preserve">
+    <value>Raw Material Information (Packaging, Ingredients, Process Aid)</value>
+  </data>
+  <data name="RawMat_Header1" xml:space="preserve">
+    <value>Raw Material Information (Packaging, Ingredients, Process Aid)</value>
+  </data>
+  <data name="RawMat_InternalCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="RawMat_InternalCode1" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="RawMat_InternalLot" xml:space="preserve">
+    <value>Internal RM Lot</value>
+  </data>
+  <data name="RawMat_InternalLot1" xml:space="preserve">
+    <value>Internal RM Lot</value>
+  </data>
+  <data name="RawMat_QC" xml:space="preserve">
+    <value>Quality Control</value>
+  </data>
+  <data name="RawMat_QC1" xml:space="preserve">
+    <value>Quality Control</value>
+  </data>
+  <data name="RawMat_Quantity" xml:space="preserve">
+    <value>Quantity Involved</value>
+  </data>
+  <data name="RawMat_Quantity1" xml:space="preserve">
+    <value>Involved Quantity</value>
+  </data>
+  <data name="RawMat_ReceptionDate" xml:space="preserve">
+    <value>Reception Date</value>
+  </data>
+  <data name="RawMat_ReceptionDate1" xml:space="preserve">
+    <value>Reception Date</value>
+  </data>
+  <data name="RawMat_Supervision" xml:space="preserve">
+    <value>Supervision</value>
+  </data>
+  <data name="RawMat_Supervision1" xml:space="preserve">
+    <value>Supervision</value>
+  </data>
+  <data name="RawMat_Supplier" xml:space="preserve">
+    <value>Supplier</value>
+  </data>
+  <data name="RawMat_Supplier1" xml:space="preserve">
+    <value>Supplier</value>
+  </data>
+  <data name="RawMat_SupplierCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="RawMat_SupplierCode1" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="RawMat_SupplierName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="RawMat_SupplierName1" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="RawMat_Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="RawMat_Unit1" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="RawMat_Warehouse" xml:space="preserve">
+    <value>Warehouse</value>
+  </data>
+  <data name="RawMat_Warehouse1" xml:space="preserve">
+    <value>Warehouse</value>
+  </data>
+  <data name="RegionNoreste" xml:space="preserve">
+    <value>Northeast</value>
+  </data>
+  <data name="RegionNorte" xml:space="preserve">
+    <value>North</value>
+  </data>
+  <data name="RegionOccidente" xml:space="preserve">
+    <value>West</value>
+  </data>
+  <data name="RegionPacifico" xml:space="preserve">
+    <value>Pacific</value>
+  </data>
+  <data name="ReleaseTests_EndRun" xml:space="preserve">
+    <value>END OF RUN</value>
+  </data>
+  <data name="ReleaseTests_EndRun1" xml:space="preserve">
+    <value>END OF RUN</value>
+  </data>
+  <data name="ReleaseTests_Header" xml:space="preserve">
+    <value>RELEASE TESTS</value>
+  </data>
+  <data name="ReleaseTests_Header1" xml:space="preserve">
+    <value>RELEASE TESTS</value>
+  </data>
+  <data name="ReleaseTests_MidRun" xml:space="preserve">
+    <value>MID RUN</value>
+  </data>
+  <data name="ReleaseTests_MidRun1" xml:space="preserve">
+    <value>MID RUN</value>
+  </data>
+  <data name="ReleaseTests_StartRun" xml:space="preserve">
+    <value>START OF RUN</value>
+  </data>
+  <data name="ReleaseTests_StartRun1" xml:space="preserve">
+    <value>START OF RUN</value>
+  </data>
+  <data name="Report" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Result_Title" xml:space="preserve">
+    <value>Quality Chart with Alerts</value>
+  </data>
+  <data name="Retention_Header" xml:space="preserve">
+    <value>Retention Samples – Finished Product / Involved Raw Material</value>
+  </data>
+  <data name="Retention_Header1" xml:space="preserve">
+    <value>Retention Samples Finished Product / Involved Raw Material</value>
+  </data>
+  <data name="Retention_NextSKU" xml:space="preserve">
+    <value>After Reported SKU</value>
+  </data>
+  <data name="Retention_NextSKU1" xml:space="preserve">
+    <value>Next to Reported SKU</value>
+  </data>
+  <data name="Retention_PrevSKU" xml:space="preserve">
+    <value>Prior to Reported SKU</value>
+  </data>
+  <data name="Retention_PrevSKU1" xml:space="preserve">
+    <value>Previous to Reported SKU</value>
+  </data>
+  <data name="Retention_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Retention_Time1" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchingBatches" xml:space="preserve">
+    <value>Searching batches...</value>
+  </data>
+  <data name="SelectBothDates" xml:space="preserve">
+    <value>Select both dates.</value>
+  </data>
+  <data name="Sensory_Analyst" xml:space="preserve">
+    <value>Panelist</value>
+  </data>
+  <data name="Sensory_Analyst1" xml:space="preserve">
+    <value>Panelist</value>
+  </data>
+  <data name="Sensory_Code" xml:space="preserve">
+    <value>MTRA Code</value>
+  </data>
+  <data name="Sensory_Code1" xml:space="preserve">
+    <value>MTRA Code</value>
+  </data>
+  <data name="Sensory_Header" xml:space="preserve">
+    <value>Finished Product Release – Sensory Area</value>
+  </data>
+  <data name="Sensory_Header1" xml:space="preserve">
+    <value>Finished Product Release - Sensory Area</value>
+  </data>
+  <data name="Sensory_Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="Sensory_Product1" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="Sensory_Reference" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="Sensory_Reference1" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="Sensory_ReleaseDate" xml:space="preserve">
+    <value>Release Date</value>
+  </data>
+  <data name="Sensory_ReleaseDate1" xml:space="preserve">
+    <value>Release Date</value>
+  </data>
+  <data name="Sensory_Result" xml:space="preserve">
+    <value>Panel Result</value>
+  </data>
+  <data name="Sensory_Result1" xml:space="preserve">
+    <value>Panel Result</value>
+  </data>
+  <data name="Sigma" xml:space="preserve">
+    <value>Sigma</value>
+  </data>
+  <data name="SKU" xml:space="preserve">
+    <value>SKU</value>
+  </data>
+  <data name="SkuPlaceholder" xml:space="preserve">
+    <value>SKU</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="StartNotAfterEnd" xml:space="preserve">
+    <value>Start date cannot be after end date.</value>
+  </data>
+  <data name="Stats_Cpk" xml:space="preserve">
+    <value>CPK</value>
+  </data>
+  <data name="Stats_Cpk1" xml:space="preserve">
+    <value>CPK</value>
+  </data>
+  <data name="Stats_Mean" xml:space="preserve">
+    <value>Mean</value>
+  </data>
+  <data name="Stats_Mean1" xml:space="preserve">
+    <value>Mean</value>
+  </data>
+  <data name="Stats_Ppk" xml:space="preserve">
+    <value>PPK</value>
+  </data>
+  <data name="Stats_Ppk1" xml:space="preserve">
+    <value>PPK</value>
+  </data>
+  <data name="Stats_Range" xml:space="preserve">
+    <value>Range</value>
+  </data>
+  <data name="Stats_Range1" xml:space="preserve">
+    <value>Range</value>
+  </data>
+  <data name="Stats_Title" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="Step1_SelectY" xml:space="preserve">
+    <value>1) Select a Y Variable</value>
+  </data>
+  <data name="Step2_YAndRelatedX" xml:space="preserve">
+    <value>2) Selected Y Variable and related X Variables</value>
+  </data>
+  <data name="Step3_SelectX" xml:space="preserve">
+    <value>3) Select X Variables to plot</value>
+  </data>
+  <data name="Sugar_FlocPotential" xml:space="preserve">
+    <value>Floc Potential</value>
+  </data>
+  <data name="Sugar_Header" xml:space="preserve">
+    <value>Sugar</value>
+  </data>
+  <data name="Sugar_Mill" xml:space="preserve">
+    <value>Mill</value>
+  </data>
+  <data name="Sugar_Sensory_Header" xml:space="preserve">
+    <value>Sensory Analysis Results of Sugar</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>CPKs</value>
+  </data>
+  <data name="Syrups_FinishedSyrupLot" xml:space="preserve">
+    <value>Finished Syrup Lot</value>
+  </data>
+  <data name="Syrups_FinishedSyrupPhysChem" xml:space="preserve">
+    <value>Physicochemical Analysis of Finished Syrup</value>
+  </data>
+  <data name="Syrups_FinishedSyrupSensory" xml:space="preserve">
+    <value>Sensory Analysis of Finished Syrup</value>
+  </data>
+  <data name="Syrups_Header" xml:space="preserve">
+    <value>Syrups Information</value>
+  </data>
+  <data name="Syrups_SimpleSyrupLotContact" xml:space="preserve">
+    <value>Simple Syrup Lot (Contact)</value>
+  </data>
+  <data name="Syrups_SimpleSyrupPhysChem" xml:space="preserve">
+    <value>Physicochemical Analysis of Simple Syrup</value>
+  </data>
+  <data name="Syrups_SimpleSyrupSensory" xml:space="preserve">
+    <value>Sensory Analysis of Simple Syrup</value>
+  </data>
+  <data name="Table_Cp" xml:space="preserve">
+    <value>Cp</value>
+  </data>
+  <data name="Table_Cpk" xml:space="preserve">
+    <value>Cpk</value>
+  </data>
+  <data name="Table_DateTime" xml:space="preserve">
+    <value>Date / Time</value>
+  </data>
+  <data name="Table_DeltaMean" xml:space="preserve">
+    <value>ΔMean</value>
+  </data>
+  <data name="Table_Mean" xml:space="preserve">
+    <value>Mean</value>
+  </data>
+  <data name="Table_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Table_Part" xml:space="preserve">
+    <value>Part</value>
+  </data>
+  <data name="Table_Process" xml:space="preserve">
+    <value>Process</value>
+  </data>
+  <data name="Table_Subgroups" xml:space="preserve">
+    <value>Subgroups</value>
+  </data>
+  <data name="Table_Test" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>To:</value>
+  </data>
+  <data name="To1" xml:space="preserve">
+    <value>To:</value>
+  </data>
+  <data name="Tooltip_LastN" xml:space="preserve">
+    <value>Last {0}</value>
+  </data>
+  <data name="Tooltip_Limits" xml:space="preserve">
+    <value>LSL/USL</value>
+  </data>
+  <data name="Tooltip_MaxLimit" xml:space="preserve">
+    <value>Upper Spec Limit</value>
+  </data>
+  <data name="Tooltip_Mean" xml:space="preserve">
+    <value>Mean</value>
+  </data>
+  <data name="Tooltip_MinLimit" xml:space="preserve">
+    <value>Lower Spec Limit</value>
+  </data>
+  <data name="Tooltip_Samples" xml:space="preserve">
+    <value>Samples ({0})</value>
+  </data>
+  <data name="Tooltip_Spec" xml:space="preserve">
+    <value>Spec</value>
+  </data>
+  <data name="Tooltip_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Tooltip_XVars" xml:space="preserve">
+    <value>X Variables</value>
+  </data>
+  <data name="Traceability" xml:space="preserve">
+    <value>Traceability</value>
+  </data>
+  <data name="TraceabilityReport" xml:space="preserve">
+    <value>Linear Traceability Report</value>
+  </data>
+  <data name="TraceDetail_Header_CodeAndTitle" xml:space="preserve">
+    <value>MX-INS-CDS-MFA-SG-F-036 Traceability Exercise Report</value>
+  </data>
+  <data name="TraceDetail_Header_Edition" xml:space="preserve">
+    <value>EDITION</value>
+  </data>
+  <data name="TraceDetail_Header_EditionDate" xml:space="preserve">
+    <value>Nov/15/2024</value>
+  </data>
+  <data name="TraceDetail_Header_PlantName" xml:space="preserve">
+    <value>Bebidas Mundiales – Insurgentes Plant</value>
+  </data>
+  <data name="TraceDetail_Sample_Date" xml:space="preserve">
+    <value>Nov/15/2024</value>
+  </data>
+  <data name="TraceDetail_Sample_Efficiency" xml:space="preserve">
+    <value>3.85%</value>
+  </data>
+  <data name="TraceDetail_Sample_End" xml:space="preserve">
+    <value>17:20</value>
+  </data>
+  <data name="TraceDetail_Sample_Reason" xml:space="preserve">
+    <value>Non-typical odor and taste detected in Joya Peach 1.5L</value>
+  </data>
+  <data name="TraceDetail_Sample_Start" xml:space="preserve">
+    <value>08:04</value>
+  </data>
+  <data name="TraceDetail_Sample_Total" xml:space="preserve">
+    <value>09:26</value>
+  </data>
+  <data name="TraceDetail_Table_AppliesWithdrawal" xml:space="preserve">
+    <value>DOES THE TRACEABILITY APPLY TO FINISHED PRODUCT / RAW MATERIAL WITHDRAWAL?</value>
+  </data>
+  <data name="TraceDetail_Table_Date" xml:space="preserve">
+    <value>DATE</value>
+  </data>
+  <data name="TraceDetail_Table_EndTime" xml:space="preserve">
+    <value>END TIME</value>
+  </data>
+  <data name="TraceDetail_Table_Reason" xml:space="preserve">
+    <value>TRACEABILITY REASON</value>
+  </data>
+  <data name="TraceDetail_Table_StartTime" xml:space="preserve">
+    <value>START TIME</value>
+  </data>
+  <data name="TraceDetail_Table_TotalTime" xml:space="preserve">
+    <value>TOTAL EXERCISE TIME</value>
+  </data>
+  <data name="TraceDetail_Table_WithdrawalEfficiency" xml:space="preserve">
+    <value>% WITHDRAWAL EFFICIENCY (IF APPLICABLE)</value>
+  </data>
+  <data name="TraceDetail_Title" xml:space="preserve">
+    <value>Traceability Report Detail</value>
+  </data>
+  <data name="TraceResults_ClientInfo" xml:space="preserve">
+    <value>CLIENT INFORMATION WITH THE PRODUCT</value>
+  </data>
+  <data name="TraceResults_ClientInfo1" xml:space="preserve">
+    <value>CLIENT INFORMATION WITH THE PRODUCT</value>
+  </data>
+  <data name="TraceResults_Header" xml:space="preserve">
+    <value>TRACEABILITY RESULTS</value>
+  </data>
+  <data name="TraceResults_InvolvedRMQty" xml:space="preserve">
+    <value>INVOLVED RAW MATERIAL QUANTITY</value>
+  </data>
+  <data name="TraceResults_InvolvedRMQty1" xml:space="preserve">
+    <value>INVOLVED RAW MATERIAL QUANTITY</value>
+  </data>
+  <data name="TraceResults_Participants" xml:space="preserve">
+    <value>EXERCISE PARTICIPANTS</value>
+  </data>
+  <data name="TraceResults_Participants1" xml:space="preserve">
+    <value>EXERCISE PARTICIPANTS</value>
+  </data>
+  <data name="TraceResults_PreparedBy" xml:space="preserve">
+    <value>PREPARED BY</value>
+  </data>
+  <data name="TraceResults_PreparedBy1" xml:space="preserve">
+    <value>PREPARED BY</value>
+  </data>
+  <data name="TraceResults_RecoveredFGQty" xml:space="preserve">
+    <value>RECOVERED FINISHED PRODUCT QUANTITY</value>
+  </data>
+  <data name="TraceResults_RecoveredFGQty1" xml:space="preserve">
+    <value>RECOVERED FINISHED PRODUCT QUANTITY</value>
+  </data>
+  <data name="TraceResults_TraceEfficiency" xml:space="preserve">
+    <value>TRACEABILITY EFFICIENCY RESULT</value>
+  </data>
+  <data name="TraceResults_TraceEfficiency1" xml:space="preserve">
+    <value>TRACEABILITY EFFICIENCY RESULT</value>
+  </data>
+  <data name="TraceTabs_Bottling" xml:space="preserve">
+    <value>Bottling</value>
+  </data>
+  <data name="TraceTabs_Bottling1" xml:space="preserve">
+    <value>Bottling</value>
+  </data>
+  <data name="TraceTabs_Cleaning" xml:space="preserve">
+    <value>Cleaning</value>
+  </data>
+  <data name="TraceTabs_Cleaning1" xml:space="preserve">
+    <value>Cleaning</value>
+  </data>
+  <data name="TraceTabs_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="TraceTabs_Format1" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="TraceTabs_Production" xml:space="preserve">
+    <value>Production</value>
+  </data>
+  <data name="TraceTabs_Production1" xml:space="preserve">
+    <value>Production</value>
+  </data>
+  <data name="TraceTabs_RawMaterials" xml:space="preserve">
+    <value>Raw materials</value>
+  </data>
+  <data name="TraceTabs_RawMaterials1" xml:space="preserve">
+    <value>Raw Materials</value>
+  </data>
+  <data name="TraceTabs_Syrups" xml:space="preserve">
+    <value>Syrups</value>
+  </data>
+  <data name="TraceTabs_Syrups1" xml:space="preserve">
+    <value>Syrups</value>
+  </data>
+  <data name="TraceTabs_WaterTreatment" xml:space="preserve">
+    <value>Water treatment</value>
+  </data>
+  <data name="TraceTabs_WaterTreatment1" xml:space="preserve">
+    <value>Water Treatment</value>
+  </data>
+  <data name="Trace_BackwardReport_Header" xml:space="preserve">
+    <value>Backward Traceability Report</value>
+  </data>
+  <data name="Trace_BackwardReport_Title" xml:space="preserve">
+    <value>Backward Traceability Report</value>
+  </data>
+  <data name="Trace_Modal_Title" xml:space="preserve">
+    <value>Search batches by date range</value>
+  </data>
+  <data name="Trace_SearchBatch_Placeholder" xml:space="preserve">
+    <value>Search batch…</value>
+  </data>
+  <data name="Trace_SearchByDates" xml:space="preserve">
+    <value>Search by dates…</value>
+  </data>
+  <data name="Validate_SelectStartEnd" xml:space="preserve">
+    <value>Select start and end dates.</value>
+  </data>
+  <data name="Validate_StartBeforeEnd" xml:space="preserve">
+    <value>Start date must be earlier than end date.</value>
+  </data>
+  <data name="Variable" xml:space="preserve">
+    <value>Variable</value>
+  </data>
+  <data name="ViewDetail" xml:space="preserve">
+    <value>View detail</value>
+  </data>
+  <data name="Washing_AdditiveALF380" xml:space="preserve">
+    <value>Additive ALF 380</value>
+  </data>
+  <data name="Washing_AdditiveBrightwash" xml:space="preserve">
+    <value>Additive Brightwash</value>
+  </data>
+  <data name="Washing_AdditiveDivobrite" xml:space="preserve">
+    <value>Additive Divobrite</value>
+  </data>
+  <data name="Washing_BottleContactTime" xml:space="preserve">
+    <value>Bottle Contact Time</value>
+  </data>
+  <data name="Washing_BrightwashLot" xml:space="preserve">
+    <value>Brightwash Additive Lot</value>
+  </data>
+  <data name="Washing_CausticResidual" xml:space="preserve">
+    <value>Caustic Residual</value>
+  </data>
+  <data name="Washing_CTRTank_Header" xml:space="preserve">
+    <value>CTR Tank</value>
+  </data>
+  <data name="Washing_DivobriteLot" xml:space="preserve">
+    <value>Divobrite Additive Lot</value>
+  </data>
+  <data name="Washing_FilteredRecWaterChlorine" xml:space="preserve">
+    <value>Filtered Recovered Water Chlorine</value>
+  </data>
+  <data name="Washing_FinalBottleRinse_Header" xml:space="preserve">
+    <value>Final Bottle Rinse Type (WASHER, RINSER)</value>
+  </data>
+  <data name="Washing_FinalRinse_Header" xml:space="preserve">
+    <value>Final Rinse Process Type (WASHER, RINSER)</value>
+  </data>
+  <data name="Washing_FinalSoftWaterChlorine" xml:space="preserve">
+    <value>Final Rinse Soft Water Chlorine</value>
+  </data>
+  <data name="Washing_Header" xml:space="preserve">
+    <value>Washing Process Information</value>
+  </data>
+  <data name="Washing_HitsPerMinute" xml:space="preserve">
+    <value>Hits per Minute</value>
+  </data>
+  <data name="Washing_JetAlignment" xml:space="preserve">
+    <value>Jet Alignment</value>
+  </data>
+  <data name="Washing_JetPressure" xml:space="preserve">
+    <value>Jet Pressure</value>
+  </data>
+  <data name="Washing_MethyleneBlueTest" xml:space="preserve">
+    <value>Methylene Blue Test</value>
+  </data>
+  <data name="Washing_OtherInvolved" xml:space="preserve">
+    <value>Other Involved</value>
+  </data>
+  <data name="Washing_PrevMTRA" xml:space="preserve">
+    <value>Previous MTRA</value>
+  </data>
+  <data name="Washing_RecoveredWaterPressure" xml:space="preserve">
+    <value>Recovered Water Pressure</value>
+  </data>
+  <data name="Washing_ReportedSKUTime" xml:space="preserve">
+    <value>Reported SKU Time</value>
+  </data>
+  <data name="Washing_ResidualAdditive" xml:space="preserve">
+    <value>Residual Additive</value>
+  </data>
+  <data name="Washing_Rinser_Header" xml:space="preserve">
+    <value>Rinser</value>
+  </data>
+  <data name="Washing_RunEndCheck" xml:space="preserve">
+    <value>End of Run Check</value>
+  </data>
+  <data name="Washing_RunStartCheck" xml:space="preserve">
+    <value>Start of Run Check</value>
+  </data>
+  <data name="Washing_SodaConc" xml:space="preserve">
+    <value>Soda Concentration</value>
+  </data>
+  <data name="Washing_SodaLot" xml:space="preserve">
+    <value>Soda Lot</value>
+  </data>
+  <data name="Washing_SodaPercent" xml:space="preserve">
+    <value>% of Soda</value>
+  </data>
+  <data name="Washing_Tank1" xml:space="preserve">
+    <value>Tank 1</value>
+  </data>
+  <data name="Washing_Tank2" xml:space="preserve">
+    <value>Tank 2</value>
+  </data>
+  <data name="Washing_TankCTR" xml:space="preserve">
+    <value>CTR Tank</value>
+  </data>
+  <data name="Washing_WasherAlarms_Header" xml:space="preserve">
+    <value>Washer Alarm Condition</value>
+  </data>
+  <data name="Water_ActivatedCarbonLot" xml:space="preserve">
+    <value>Activated Carbon Lot</value>
+  </data>
+  <data name="Water_AvgVolumePerLoad" xml:space="preserve">
+    <value>Average Volume per Load</value>
+  </data>
+  <data name="Water_CleaningsInfo" xml:space="preserve">
+    <value>Cleanings/Backwash/Filters/Sanitization Information</value>
+  </data>
+  <data name="Water_DechlorResinLot" xml:space="preserve">
+    <value>Dechlorinating Resin Lot</value>
+  </data>
+  <data name="Water_DemineralResinLot" xml:space="preserve">
+    <value>Demineralizing Resin Lot</value>
+  </data>
+  <data name="Water_GeneralInfo_Header" xml:space="preserve">
+    <value>General Water Treatment Information</value>
+  </data>
+  <data name="Water_H2SO4Lot" xml:space="preserve">
+    <value>Sulfuric Acid Lot</value>
+  </data>
+  <data name="Water_HCLLot" xml:space="preserve">
+    <value>Hydrochloric Acid Lot</value>
+  </data>
+  <data name="Water_Header" xml:space="preserve">
+    <value>Water Treatment Data</value>
+  </data>
+  <data name="Water_LimeLot" xml:space="preserve">
+    <value>Lime Lot</value>
+  </data>
+  <data name="Water_LoadsInShift" xml:space="preserve">
+    <value>Number of Loads in Shift</value>
+  </data>
+  <data name="Water_PhysChem_Header" xml:space="preserve">
+    <value>Physicochemical Analysis of Raw, Treated Chlorinated, Softened and Recovered Water</value>
+  </data>
+  <data name="Water_PolishingCartridgeLot" xml:space="preserve">
+    <value>Polishing Cartridge Lot</value>
+  </data>
+  <data name="Water_PolyelectrolyteLot" xml:space="preserve">
+    <value>Polyelectrolyte Lot</value>
+  </data>
+  <data name="Water_RecirculatedDisinfectantLot" xml:space="preserve">
+    <value>Recirculated Chlorine/Disinfectant Lot</value>
+  </data>
+  <data name="Water_SilicaSandLot" xml:space="preserve">
+    <value>Silica Sand Lot</value>
+  </data>
+  <data name="Water_SoftWaterContactTanksFillingLog" xml:space="preserve">
+    <value>Soft Water Contact Tanks Filling Log</value>
+  </data>
+  <data name="Water_Soft_NoComplaint_Header" xml:space="preserve">
+    <value>Lot and Physicochemical Analysis of Soft Water Used without Complaint</value>
+  </data>
+  <data name="Water_SystemSanitationInfo" xml:space="preserve">
+    <value>System Sanitization Information</value>
+  </data>
+  <data name="Water_TankRetentionTime" xml:space="preserve">
+    <value>Tank Retention Time</value>
+  </data>
+  <data name="Water_TotalLitersInShift" xml:space="preserve">
+    <value>Total Liters in Shift</value>
+  </data>
+  <data name="Water_TreatedForFinishedSyrup_Header" xml:space="preserve">
+    <value>Analysis of Treated Water Used in Finished Syrup Production</value>
+  </data>
+  <data name="Water_TreatedForPT_NoRecovered_Header" xml:space="preserve">
+    <value>Analysis of Treated Water Used in PT Syrup + Without Recovered Water</value>
+  </data>
+  <data name="Water_TreatedForSimpleSyrup_Header" xml:space="preserve">
+    <value>Analysis of Treated Water Used in Simple Syrup Production</value>
+  </data>
+  <data name="Water_TreatedWaterLot" xml:space="preserve">
+    <value>Treated Water Lot</value>
+  </data>
+  <data name="Water_Treated_Sensory_Header" xml:space="preserve">
+    <value>Sensory Analysis Results of Treated Water</value>
+  </data>
+  <data name="Water_Type_Raw" xml:space="preserve">
+    <value>Raw</value>
+  </data>
+  <data name="Water_Type_Recovered" xml:space="preserve">
+    <value>Recovered</value>
+  </data>
+  <data name="Water_Type_Softened" xml:space="preserve">
+    <value>Softened</value>
+  </data>
+  <data name="Water_Type_TreatedChlorinated" xml:space="preserve">
+    <value>Treated Chlorinated</value>
+  </data>
+  <data name="Water_WaterType" xml:space="preserve">
+    <value>Water Type</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
     <value>Welcome:</value>
+  </data>
+  <data name="XRCharts" xml:space="preserve">
+    <value>X-R Charts</value>
+  </data>
+  <data name="XR_Capability" xml:space="preserve">
+    <value>Capability</value>
+  </data>
+  <data name="XR_CapPlotTitle" xml:space="preserve">
+    <value>Capability Plot (Within vs Overall vs Specs)</value>
+  </data>
+  <data name="XR_Country" xml:space="preserve">
+    <value>Country:</value>
+  </data>
+  <data name="XR_Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="XR_Fit" xml:space="preserve">
+    <value>Fit</value>
+  </data>
+  <data name="XR_From" xml:space="preserve">
+    <value>From:</value>
+  </data>
+  <data name="XR_Hist" xml:space="preserve">
+    <value>Histogram (with LSL/USL)</value>
+  </data>
+  <data name="XR_Line" xml:space="preserve">
+    <value>Line:</value>
+  </data>
+  <data name="XR_LoadSkuErr" xml:space="preserve">
+    <value>Error while loading SKUs.</value>
+  </data>
+  <data name="XR_LSL" xml:space="preserve">
+    <value>LSL</value>
+  </data>
+  <data name="XR_NoCapData" xml:space="preserve">
+    <value>No capability data.</value>
+  </data>
+  <data name="XR_NoData" xml:space="preserve">
+    <value>No data for that combination.</value>
+  </data>
+  <data name="XR_NormProbTitle" xml:space="preserve">
+    <value>Normal Probability Plot</value>
+  </data>
+  <data name="XR_OverallBand" xml:space="preserve">
+    <value>Overall (±3σo)</value>
+  </data>
+  <data name="XR_Plant" xml:space="preserve">
+    <value>Plant:</value>
+  </data>
+  <data name="XR_ReportBtn" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="XR_Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="XR_RTitle" xml:space="preserve">
+    <value>R chart — subgroup range</value>
+  </data>
+  <data name="XR_RunTitle" xml:space="preserve">
+    <value>Run chart — individuals</value>
+  </data>
+  <data name="XR_SelectFilters" xml:space="preserve">
+    <value>Please select dates, line, and a variable.</value>
+  </data>
+  <data name="XR_SelectVarX" xml:space="preserve">
+    <value>Select X Variable</value>
+  </data>
+  <data name="XR_SelectVarY" xml:space="preserve">
+    <value>Select Y Variable</value>
+  </data>
+  <data name="XR_SKU" xml:space="preserve">
+    <value>SKU:</value>
+  </data>
+  <data name="XR_Subgroup" xml:space="preserve">
+    <value>Subgroup</value>
+  </data>
+  <data name="XR_tbl_Cp" xml:space="preserve">
+    <value>Cp</value>
+  </data>
+  <data name="XR_tbl_Cpk" xml:space="preserve">
+    <value>Cpk</value>
+  </data>
+  <data name="XR_tbl_LSL" xml:space="preserve">
+    <value>LSL</value>
+  </data>
+  <data name="XR_tbl_Mean" xml:space="preserve">
+    <value>Mean</value>
+  </data>
+  <data name="XR_tbl_n" xml:space="preserve">
+    <value>n</value>
+  </data>
+  <data name="XR_tbl_Pp" xml:space="preserve">
+    <value>Pp</value>
+  </data>
+  <data name="XR_tbl_Ppk" xml:space="preserve">
+    <value>Ppk</value>
+  </data>
+  <data name="XR_tbl_SigmaOverall" xml:space="preserve">
+    <value>σ Overall</value>
+  </data>
+  <data name="XR_tbl_SigmaWithin" xml:space="preserve">
+    <value>σ Within</value>
+  </data>
+  <data name="XR_tbl_Subgroups" xml:space="preserve">
+    <value>Subgroups</value>
+  </data>
+  <data name="XR_tbl_USL" xml:space="preserve">
+    <value>USL</value>
+  </data>
+  <data name="XR_tbl_Variable" xml:space="preserve">
+    <value>Variable</value>
+  </data>
+  <data name="XR_TimeSeries" xml:space="preserve">
+    <value>Time series (Result vs Time)</value>
+  </data>
+  <data name="XR_Title" xml:space="preserve">
+    <value>Y–X Quality Report</value>
+  </data>
+  <data name="XR_To" xml:space="preserve">
+    <value>To:</value>
+  </data>
+  <data name="XR_USL" xml:space="preserve">
+    <value>USL</value>
+  </data>
+  <data name="XR_VarX" xml:space="preserve">
+    <value>Variable X:</value>
+  </data>
+  <data name="XR_VarY" xml:space="preserve">
+    <value>Variable Y:</value>
+  </data>
+  <data name="XR_WithinBand" xml:space="preserve">
+    <value>Within (±3σw)</value>
+  </data>
+  <data name="XR_XbarTitle" xml:space="preserve">
+    <value>X̄ (Xbar) chart — subgroup means</value>
+  </data>
+  <data name="XVariablesComparison" xml:space="preserve">
+    <value>Y-X Variables Comparison</value>
+  </data>
+  <data name="XVariablesHidden" xml:space="preserve">
+    <value>X Variables (hidden):</value>
+  </data>
+  <data name="YVariableHidden" xml:space="preserve">
+    <value>Y Variable (hidden):</value>
+  </data>
+  <data name="YVariablePlaceholder" xml:space="preserve">
+    <value>Y Variable</value>
+  </data>
+  <data name="Zoom_In_Title" xml:space="preserve">
+    <value>Zoom in</value>
+  </data>
+  <data name="Zoom_Out_Title" xml:space="preserve">
+    <value>Zoom out</value>
+  </data>
+  <data name="Zoom_Reset_Title" xml:space="preserve">
+    <value>Reset zoom</value>
   </data>
 </root>

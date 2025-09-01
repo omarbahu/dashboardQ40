@@ -3,6 +3,8 @@
         var usuario = Context.Session.GetString("usuarioNombre") ?? "";
     }
     @inject IStringLocalizer Localizer
+    @using dashboardQ40.Resources
+    @inject IStringLocalizer<SharedResource> T
 
 <!DOCTYPE html>
 <html lang="en">
@@ -114,57 +116,45 @@
 
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Index">@Localizer["Dashboard"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Resumen">@Localizer["Summary"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Trazability" asp-action="ReportTrazability">@Localizer["TraceabilityReport"]</a>
-                            </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="TrazabilidadAuditoria" asp-action="Index">🧾 Trazabilidad para auditoría</a>
-                        </li>
-
-
+                            <!-- CALIDAD -->
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    @Localizer["OperationalZones"]
+                                <a class="nav-link dropdown-toggle" href="#" id="menuCalidad" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @Localizer["Quality"]
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li class="dropdown-submenu">
-                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionNoreste"]</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
-                                        </ul>
+                                <ul class="dropdown-menu" aria-labelledby="menuCalidad">
+                                    <li>
+                                        <a class="dropdown-item"asp-area="" asp-controller="Dashboard" asp-action="Index">
+                                            @Localizer["XVariablesComparison"]
+                                        </a>
                                     </li>
-                                    <li class="dropdown-submenu">
-                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionNorte"]</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
-                                        </ul>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Dashboard" asp-action="Resumen">
+                                            @Localizer["CPKReport"]
+                                        </a>
                                     </li>
-                                    <li class="dropdown-submenu">
-                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionPacifico"]</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
-                                        </ul>
+                                    <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="XRcharts" asp-action="Index">
+                                            @Localizer["XRCharts"]
+                                        </a>
                                     </li>
-                                    <li class="dropdown-submenu">
-                                        <a class="dropdown-item dropdown-toggle" href="#">@Localizer["RegionOccidente"]</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant1"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant2"]</a></li>
-                                            <li><a class="dropdown-item" href="#">@Localizer["Plant3"]</a></li>
-                                        </ul>
+                                </ul>
+                            </li>
+
+                            <!-- TRAZABILIDAD -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="menuTrazabilidad" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @Localizer["Traceability"]
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="menuTrazabilidad">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Trazability" asp-action="ReportTrazability">
+                                            @Localizer["LinearTraceability"]
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="TrazabilidadAuditoria" asp-action="Index">
+                                            @Localizer["AuditTraceability"]
+                                        </a>
                                     </li>
                                 </ul>
                             </li>

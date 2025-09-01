@@ -61,11 +61,1163 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actions.
+        /// </summary>
+        public static string Actions {
+            get {
+                return ResourceManager.GetString("Actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dashboard Q.40.
         /// </summary>
         public static string AppTitle {
             get {
                 return ResourceManager.GetString("AppTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audit Traceability.
+        /// </summary>
+        public static string AuditTraceability {
+            get {
+                return ResourceManager.GetString("AuditTraceability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complaint time.
+        /// </summary>
+        public static string AuditTraceability_ComplaintTime {
+            get {
+                return ResourceManager.GetString("AuditTraceability_ComplaintTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new report.
+        /// </summary>
+        public static string AuditTraceability_CreateNewReport {
+            get {
+                return ResourceManager.GetString("AuditTraceability_CreateNewReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished goods efficiency (%).
+        /// </summary>
+        public static string AuditTraceability_FG_EfficiencyPct {
+            get {
+                return ResourceManager.GetString("AuditTraceability_FG_EfficiencyPct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New traceability report.
+        /// </summary>
+        public static string AuditTraceability_NewReportTitle {
+            get {
+                return ResourceManager.GetString("AuditTraceability_NewReportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Here you can consult previously registered reports..
+        /// </summary>
+        public static string AuditTraceability_PreviousReportsDesc {
+            get {
+                return ResourceManager.GetString("AuditTraceability_PreviousReportsDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous reports.
+        /// </summary>
+        public static string AuditTraceability_PreviousReportsTitle {
+            get {
+                return ResourceManager.GetString("AuditTraceability_PreviousReportsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Traceability reason.
+        /// </summary>
+        public static string AuditTraceability_Reason_Label {
+            get {
+                return ResourceManager.GetString("AuditTraceability_Reason_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Briefly describe the reason….
+        /// </summary>
+        public static string AuditTraceability_Reason_Placeholder {
+            get {
+                return ResourceManager.GetString("AuditTraceability_Reason_Placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report date &amp; time.
+        /// </summary>
+        public static string AuditTraceability_ReportDateTime_Label {
+            get {
+                return ResourceManager.GetString("AuditTraceability_ReportDateTime_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Require raw-material traceability?.
+        /// </summary>
+        public static string AuditTraceability_RequireRMTraceability_Question {
+            get {
+                return ResourceManager.GetString("AuditTraceability_RequireRMTraceability_Question", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audit Traceability.
+        /// </summary>
+        public static string AuditTraceability_Title {
+            get {
+                return ResourceManager.GetString("AuditTraceability_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View previous reports.
+        /// </summary>
+        public static string AuditTraceability_ViewPreviousReports {
+            get {
+                return ResourceManager.GetString("AuditTraceability_ViewPreviousReports", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Batch identifier.
+        /// </summary>
+        public static string BatchIdentifier {
+            get {
+                return ResourceManager.GetString("BatchIdentifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Batch not found..
+        /// </summary>
+        public static string BatchNotFound_DefaultMessage {
+            get {
+                return ResourceManager.GetString("BatchNotFound_DefaultMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify that the batch number is written correctly or try another one..
+        /// </summary>
+        public static string BatchNotFound_Hint {
+            get {
+                return ResourceManager.GetString("BatchNotFound_Hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Batch not found.
+        /// </summary>
+        public static string BatchNotFound_Title {
+            get {
+                return ResourceManager.GetString("BatchNotFound_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distribution.
+        /// </summary>
+        public static string Bell_Distribution {
+            get {
+                return ResourceManager.GetString("Bell_Distribution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Histogram.
+        /// </summary>
+        public static string Bell_Histogram {
+            get {
+                return ResourceManager.GetString("Bell_Histogram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading distribution....
+        /// </summary>
+        public static string Bell_Loading {
+            get {
+                return ResourceManager.GetString("Bell_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LSL.
+        /// </summary>
+        public static string Bell_LSL {
+            get {
+                return ResourceManager.GetString("Bell_LSL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal Distribution - Variable.
+        /// </summary>
+        public static string Bell_Title {
+            get {
+                return ResourceManager.GetString("Bell_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USL.
+        /// </summary>
+        public static string Bell_USL {
+            get {
+                return ResourceManager.GetString("Bell_USL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable.
+        /// </summary>
+        public static string Bell_XAxis {
+            get {
+                return ResourceManager.GetString("Bell_XAxis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frequency.
+        /// </summary>
+        public static string Bell_YAxis {
+            get {
+                return ResourceManager.GetString("Bell_YAxis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleaning checklist.
+        /// </summary>
+        public static string Block_CleaningChecklist {
+            get {
+                return ResourceManager.GetString("Block_CleaningChecklist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished product.
+        /// </summary>
+        public static string Block_FinishedProduct {
+            get {
+                return ResourceManager.GetString("Block_FinishedProduct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process data.
+        /// </summary>
+        public static string Block_ProcessData {
+            get {
+                return ResourceManager.GetString("Block_ProcessData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw materials.
+        /// </summary>
+        public static string Block_RawMaterials {
+            get {
+                return ResourceManager.GetString("Block_RawMaterials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory release.
+        /// </summary>
+        public static string Block_SensoryRelease {
+            get {
+                return ResourceManager.GetString("Block_SensoryRelease", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syrups information.
+        /// </summary>
+        public static string Block_SyrupsInfo {
+            get {
+                return ResourceManager.GetString("Block_SyrupsInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time log.
+        /// </summary>
+        public static string Block_TimeLog {
+            get {
+                return ResourceManager.GetString("Block_TimeLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bottling Information.
+        /// </summary>
+        public static string Bottling_Header {
+            get {
+                return ResourceManager.GetString("Bottling_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bottling Information.
+        /// </summary>
+        public static string Bottling_Header1 {
+            get {
+                return ResourceManager.GetString("Bottling_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View data in table.
+        /// </summary>
+        public static string Button_ShowTable {
+            get {
+                return ResourceManager.GetString("Button_ShowTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checklists.
+        /// </summary>
+        public static string Checklists {
+            get {
+                return ResourceManager.GetString("Checklists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Child.
+        /// </summary>
+        public static string Child {
+            get {
+                return ResourceManager.GetString("Child", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3 STEPS.
+        /// </summary>
+        public static string Cleaning_3Steps {
+            get {
+                return ResourceManager.GetString("Cleaning_3Steps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5 STEPS.
+        /// </summary>
+        public static string Cleaning_5Steps {
+            get {
+                return ResourceManager.GetString("Cleaning_5Steps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EXTERIOR SANITIZER.
+        /// </summary>
+        public static string Cleaning_ExteriorSanitizer {
+            get {
+                return ResourceManager.GetString("Cleaning_ExteriorSanitizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FINISHED SYRUP TANK DETERGENT.
+        /// </summary>
+        public static string Cleaning_FinishedTankDetergent {
+            get {
+                return ResourceManager.GetString("Cleaning_FinishedTankDetergent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FINISHED SYRUP TANK SANITIZER.
+        /// </summary>
+        public static string Cleaning_FinishedTankSanitizer {
+            get {
+                return ResourceManager.GetString("Cleaning_FinishedTankSanitizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GENERAL CLEANING INFORMATION - COMPLAINT SKU.
+        /// </summary>
+        public static string Cleaning_GeneralComplaintSKU {
+            get {
+                return ResourceManager.GetString("Cleaning_GeneralComplaintSKU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleaning and Sanitation Data.
+        /// </summary>
+        public static string Cleaning_Header {
+            get {
+                return ResourceManager.GetString("Cleaning_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LINE CLEANING DETERGENT.
+        /// </summary>
+        public static string Cleaning_LineDetergent {
+            get {
+                return ResourceManager.GetString("Cleaning_LineDetergent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LINE CLEANING SANITIZER.
+        /// </summary>
+        public static string Cleaning_LineSanitizer {
+            get {
+                return ResourceManager.GetString("Cleaning_LineSanitizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PHYSICOCHEMICAL RESULTS CLEANING FINISHED SYRUP.
+        /// </summary>
+        public static string Cleaning_PhysChem_FinishedSyrup {
+            get {
+                return ResourceManager.GetString("Cleaning_PhysChem_FinishedSyrup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PHYSICOCHEMICAL RESULTS CLEANING LINE.
+        /// </summary>
+        public static string Cleaning_PhysChem_Line {
+            get {
+                return ResourceManager.GetString("Cleaning_PhysChem_Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PHYSICOCHEMICAL RESULTS CLEANING SIMPLE SYRUP TANK.
+        /// </summary>
+        public static string Cleaning_PhysChem_SimpleSyrupTank {
+            get {
+                return ResourceManager.GetString("Cleaning_PhysChem_SimpleSyrupTank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECIRCULATION TIME.
+        /// </summary>
+        public static string Cleaning_RecirculationTime {
+            get {
+                return ResourceManager.GetString("Cleaning_RecirculationTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SANITATION TYPE.
+        /// </summary>
+        public static string Cleaning_SanitationType {
+            get {
+                return ResourceManager.GetString("Cleaning_SanitationType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENSORY ANALYSIS OF CLEANING FINISHED SYRUP TANK.
+        /// </summary>
+        public static string Cleaning_Sensory_FinishedSyrupTank_Header {
+            get {
+                return ResourceManager.GetString("Cleaning_Sensory_FinishedSyrupTank_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SENSORY ANALYSIS OF CLEANING.
+        /// </summary>
+        public static string Cleaning_Sensory_Header {
+            get {
+                return ResourceManager.GetString("Cleaning_Sensory_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SIMPLE SYRUP TANK DETERGENT.
+        /// </summary>
+        public static string Cleaning_SimpleTankDetergent {
+            get {
+                return ResourceManager.GetString("Cleaning_SimpleTankDetergent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SIMPLE SYRUP TANK SANITIZER.
+        /// </summary>
+        public static string Cleaning_SimpleTankSanitizer {
+            get {
+                return ResourceManager.GetString("Cleaning_SimpleTankSanitizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SURFACE FOAM.
+        /// </summary>
+        public static string Cleaning_SurfaceFoam {
+            get {
+                return ResourceManager.GetString("Cleaning_SurfaceFoam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TREATED WATER LOT.
+        /// </summary>
+        public static string Cleaning_TreatedWaterLot {
+            get {
+                return ResourceManager.GetString("Cleaning_TreatedWaterLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Acidulated CO2.
+        /// </summary>
+        public static string CO2_AcidulatedCO2 {
+            get {
+                return ResourceManager.GetString("CO2_AcidulatedCO2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory Analysis Results of CO2.
+        /// </summary>
+        public static string CO2_Sensory_Header {
+            get {
+                return ResourceManager.GetString("CO2_Sensory_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Snow Attributes.
+        /// </summary>
+        public static string CO2_SnowAttributes {
+            get {
+                return ResourceManager.GetString("CO2_SnowAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water Attributes.
+        /// </summary>
+        public static string CO2_WaterAttributes {
+            get {
+                return ResourceManager.GetString("CO2_WaterAttributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CO2 Water Attributes.
+        /// </summary>
+        public static string CO2_WaterCO2Attributes {
+            get {
+                return ResourceManager.GetString("CO2_WaterCO2Attributes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appearance.
+        /// </summary>
+        public static string Common_Appearance {
+            get {
+                return ResourceManager.GetString("Common_Appearance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Approval user.
+        /// </summary>
+        public static string Common_ApprovalUser {
+            get {
+                return ResourceManager.GetString("Common_ApprovalUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ash.
+        /// </summary>
+        public static string Common_Ash {
+            get {
+                return ResourceManager.GetString("Common_Ash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-generated data.
+        /// </summary>
+        public static string Common_AutoData {
+            get {
+                return ResourceManager.GetString("Common_AutoData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-generated data.
+        /// </summary>
+        public static string Common_AutoData1 {
+            get {
+                return ResourceManager.GetString("Common_AutoData1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string Common_Back {
+            get {
+                return ResourceManager.GetString("Common_Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Batch.
+        /// </summary>
+        public static string Common_Batch {
+            get {
+                return ResourceManager.GetString("Common_Batch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Common_Cancel {
+            get {
+                return ResourceManager.GetString("Common_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chlorine.
+        /// </summary>
+        public static string Common_Chlorine {
+            get {
+                return ResourceManager.GetString("Common_Chlorine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color.
+        /// </summary>
+        public static string Common_Color {
+            get {
+                return ResourceManager.GetString("Common_Color", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Concentration.
+        /// </summary>
+        public static string Common_Concentration {
+            get {
+                return ResourceManager.GetString("Common_Concentration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conductivity.
+        /// </summary>
+        public static string Common_Conductivity {
+            get {
+                return ResourceManager.GetString("Common_Conductivity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        public static string Common_Date {
+            get {
+                return ResourceManager.GetString("Common_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DATE / NAME.
+        /// </summary>
+        public static string Common_DateName {
+            get {
+                return ResourceManager.GetString("Common_DateName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DATE / NAME.
+        /// </summary>
+        public static string Common_DateName1 {
+            get {
+                return ResourceManager.GetString("Common_DateName1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End time.
+        /// </summary>
+        public static string Common_EndTime {
+            get {
+                return ResourceManager.GetString("Common_EndTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End Time.
+        /// </summary>
+        public static string Common_EndTime1 {
+            get {
+                return ResourceManager.GetString("Common_EndTime1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error while saving..
+        /// </summary>
+        public static string Common_ErrorSaving {
+            get {
+                return ResourceManager.GetString("Common_ErrorSaving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unexpected error..
+        /// </summary>
+        public static string Common_ErrorUnexpected {
+            get {
+                return ResourceManager.GetString("Common_ErrorUnexpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evaluator.
+        /// </summary>
+        public static string Common_Evaluator {
+            get {
+                return ResourceManager.GetString("Common_Evaluator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line.
+        /// </summary>
+        public static string Common_Line {
+            get {
+                return ResourceManager.GetString("Common_Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading….
+        /// </summary>
+        public static string Common_Loading {
+            get {
+                return ResourceManager.GetString("Common_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arca logo.
+        /// </summary>
+        public static string Common_LogoAlt {
+            get {
+                return ResourceManager.GetString("Common_LogoAlt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lot.
+        /// </summary>
+        public static string Common_Lot {
+            get {
+                return ResourceManager.GetString("Common_Lot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LOT / DATE / NAME.
+        /// </summary>
+        public static string Common_LotDateName {
+            get {
+                return ResourceManager.GetString("Common_LotDateName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moisture.
+        /// </summary>
+        public static string Common_Moisture {
+            get {
+                return ResourceManager.GetString("Common_Moisture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Observations.
+        /// </summary>
+        public static string Common_Observations {
+            get {
+                return ResourceManager.GetString("Common_Observations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OBSERVATIONS.
+        /// </summary>
+        public static string Common_Observations1 {
+            get {
+                return ResourceManager.GetString("Common_Observations1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panel Result.
+        /// </summary>
+        public static string Common_PanelResult {
+            get {
+                return ResourceManager.GetString("Common_PanelResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter.
+        /// </summary>
+        public static string Common_Parameter {
+            get {
+                return ResourceManager.GetString("Common_Parameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pressure.
+        /// </summary>
+        public static string Common_Pressure {
+            get {
+                return ResourceManager.GetString("Common_Pressure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference.
+        /// </summary>
+        public static string Common_Reference {
+            get {
+                return ResourceManager.GetString("Common_Reference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Releaser 1.
+        /// </summary>
+        public static string Common_Release1 {
+            get {
+                return ResourceManager.GetString("Common_Release1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Releaser 2.
+        /// </summary>
+        public static string Common_Release2 {
+            get {
+                return ResourceManager.GetString("Common_Release2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Releaser 3.
+        /// </summary>
+        public static string Common_Release3 {
+            get {
+                return ResourceManager.GetString("Common_Release3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RELEASER 3.
+        /// </summary>
+        public static string Common_Release31 {
+            get {
+                return ResourceManager.GetString("Common_Release31", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result.
+        /// </summary>
+        public static string Common_Result {
+            get {
+                return ResourceManager.GetString("Common_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Revision.
+        /// </summary>
+        public static string Common_Revision {
+            get {
+                return ResourceManager.GetString("Common_Revision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run End.
+        /// </summary>
+        public static string Common_RunEnd {
+            get {
+                return ResourceManager.GetString("Common_RunEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mid Run.
+        /// </summary>
+        public static string Common_RunMid {
+            get {
+                return ResourceManager.GetString("Common_RunMid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run Start.
+        /// </summary>
+        public static string Common_RunStart {
+            get {
+                return ResourceManager.GetString("Common_RunStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save report.
+        /// </summary>
+        public static string Common_Save {
+            get {
+                return ResourceManager.GetString("Common_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sediment.
+        /// </summary>
+        public static string Common_Sediment {
+            get {
+                return ResourceManager.GetString("Common_Sediment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Silo.
+        /// </summary>
+        public static string Common_Silo {
+            get {
+                return ResourceManager.GetString("Common_Silo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start time.
+        /// </summary>
+        public static string Common_StartTime {
+            get {
+                return ResourceManager.GetString("Common_StartTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Time.
+        /// </summary>
+        public static string Common_StartTime1 {
+            get {
+                return ResourceManager.GetString("Common_StartTime1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tank.
+        /// </summary>
+        public static string Common_Tank {
+            get {
+                return ResourceManager.GetString("Common_Tank", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Temperature.
+        /// </summary>
+        public static string Common_Temperature {
+            get {
+                return ResourceManager.GetString("Common_Temperature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Treated Water.
+        /// </summary>
+        public static string Common_TreatedWater {
+            get {
+                return ResourceManager.GetString("Common_TreatedWater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Treated Water.
+        /// </summary>
+        public static string Common_TreatedWater1 {
+            get {
+                return ResourceManager.GetString("Common_TreatedWater1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Turbidity.
+        /// </summary>
+        public static string Common_Turbidity {
+            get {
+                return ResourceManager.GetString("Common_Turbidity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Turbidity (ICU).
+        /// </summary>
+        public static string Common_TurbidityICU {
+            get {
+                return ResourceManager.GetString("Common_TurbidityICU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water Odor.
+        /// </summary>
+        public static string Common_WaterOdor {
+            get {
+                return ResourceManager.GetString("Common_WaterOdor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Common_Yes {
+            get {
+                return ResourceManager.GetString("Common_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Common_Yes1 {
+            get {
+                return ResourceManager.GetString("Common_Yes1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consult.
+        /// </summary>
+        public static string Consult {
+            get {
+                return ResourceManager.GetString("Consult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Count.
+        /// </summary>
+        public static string Count {
+            get {
+                return ResourceManager.GetString("Count", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Coverage: —/— days.
+        /// </summary>
+        public static string CoverageDays {
+            get {
+                return ResourceManager.GetString("CoverageDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}/{1} days.
+        /// </summary>
+        public static string CoverageDaysFmt {
+            get {
+                return ResourceManager.GetString("CoverageDaysFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cp.
+        /// </summary>
+        public static string Cp {
+            get {
+                return ResourceManager.GetString("Cp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cpk.
+        /// </summary>
+        public static string Cpk {
+            get {
+                return ResourceManager.GetString("Cpk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CPK Report.
+        /// </summary>
+        public static string CPKReport {
+            get {
+                return ResourceManager.GetString("CPKReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CPK Summary.
+        /// </summary>
+        public static string CPKsSummary_Header {
+            get {
+                return ResourceManager.GetString("CPKsSummary_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CPK Summary.
+        /// </summary>
+        public static string CPKsSummary_Title {
+            get {
+                return ResourceManager.GetString("CPKsSummary_Title", resourceCulture);
             }
         }
         
@@ -79,11 +1231,1460 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sisteplant 2025 - Quality Dashboard 4.0.
+        ///   Looks up a localized string similar to Quality Dashboard - Insurgentes Plant.
+        /// </summary>
+        public static string DashboardTitle {
+            get {
+                return ResourceManager.GetString("DashboardTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End date.
+        /// </summary>
+        public static string Date_End {
+            get {
+                return ResourceManager.GetString("Date_End", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start date.
+        /// </summary>
+        public static string Date_Start {
+            get {
+                return ResourceManager.GetString("Date_Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defects.
+        /// </summary>
+        public static string Defects {
+            get {
+                return ResourceManager.GetString("Defects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description / SKU.
+        /// </summary>
+        public static string Description_SKU {
+            get {
+                return ResourceManager.GetString("Description_SKU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detail.
+        /// </summary>
+        public static string Detail {
+            get {
+                return ResourceManager.GetString("Detail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detailed Report.
+        /// </summary>
+        public static string DetailReport_Header {
+            get {
+                return ResourceManager.GetString("DetailReport_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detailed Report.
+        /// </summary>
+        public static string DetailResult_Title {
+            get {
+                return ResourceManager.GetString("DetailResult_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Histogram.
+        /// </summary>
+        public static string Dist_Hist {
+            get {
+                return ResourceManager.GetString("Dist_Hist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distribution.
+        /// </summary>
+        public static string Dist_Line {
+            get {
+                return ResourceManager.GetString("Dist_Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LSL.
+        /// </summary>
+        public static string Dist_LSL {
+            get {
+                return ResourceManager.GetString("Dist_LSL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distribution - {0}.
+        /// </summary>
+        public static string Dist_TitleFmt {
+            get {
+                return ResourceManager.GetString("Dist_TitleFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USL.
+        /// </summary>
+        public static string Dist_USL {
+            get {
+                return ResourceManager.GetString("Dist_USL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frequency.
+        /// </summary>
+        public static string Dist_YAxis {
+            get {
+                return ResourceManager.GetString("Dist_YAxis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End.
+        /// </summary>
+        public static string End {
+            get {
+                return ResourceManager.GetString("End", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error fetching batches..
+        /// </summary>
+        public static string ErrorFetchingBatches {
+            get {
+                return ResourceManager.GetString("ErrorFetchingBatches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading SKUs..
+        /// </summary>
+        public static string ErrorLoadSkus {
+            get {
+                return ResourceManager.GetString("ErrorLoadSkus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EMPTIES AT FINISHED SYRUP COMPLETION:.
+        /// </summary>
+        public static string FG_EmptiesAtSyrupFinish {
+            get {
+                return ResourceManager.GetString("FG_EmptiesAtSyrupFinish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EMPTIES AT FINISHED SYRUP PRODUCTION:.
+        /// </summary>
+        public static string FG_EmptiesAtSyrupFinish1 {
+            get {
+                return ResourceManager.GetString("FG_EmptiesAtSyrupFinish1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FILLER:.
+        /// </summary>
+        public static string FG_Filler {
+            get {
+                return ResourceManager.GetString("FG_Filler", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FILLER:.
+        /// </summary>
+        public static string FG_Filler1 {
+            get {
+                return ResourceManager.GetString("FG_Filler1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished Product / SKU Information.
+        /// </summary>
+        public static string FG_Header {
+            get {
+                return ResourceManager.GetString("FG_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished Product / SKU Information.
+        /// </summary>
+        public static string FG_Header1 {
+            get {
+                return ResourceManager.GetString("FG_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LINE No..
+        /// </summary>
+        public static string FG_LineNumber {
+            get {
+                return ResourceManager.GetString("FG_LineNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LINE NUMBER.
+        /// </summary>
+        public static string FG_LineNumber1 {
+            get {
+                return ResourceManager.GetString("FG_LineNumber1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCTION END:.
+        /// </summary>
+        public static string FG_ProdEnd {
+            get {
+                return ResourceManager.GetString("FG_ProdEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCTION END:.
+        /// </summary>
+        public static string FG_ProdEnd1 {
+            get {
+                return ResourceManager.GetString("FG_ProdEnd1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCTION START:.
+        /// </summary>
+        public static string FG_ProdStart {
+            get {
+                return ResourceManager.GetString("FG_ProdStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCTION START:.
+        /// </summary>
+        public static string FG_ProdStart1 {
+            get {
+                return ResourceManager.GetString("FG_ProdStart1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CODE:.
+        /// </summary>
+        public static string FG_ProductCode {
+            get {
+                return ResourceManager.GetString("FG_ProductCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CODE:.
+        /// </summary>
+        public static string FG_ProductCode1 {
+            get {
+                return ResourceManager.GetString("FG_ProductCode1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCT DESCRIPTION:.
+        /// </summary>
+        public static string FG_ProductDescription {
+            get {
+                return ResourceManager.GetString("FG_ProductDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCT DESCRIPTION:.
+        /// </summary>
+        public static string FG_ProductDescription1 {
+            get {
+                return ResourceManager.GetString("FG_ProductDescription1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCTION DATE:.
+        /// </summary>
+        public static string FG_ProductionDate {
+            get {
+                return ResourceManager.GetString("FG_ProductionDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCTION DATE:.
+        /// </summary>
+        public static string FG_ProductionDate1 {
+            get {
+                return ResourceManager.GetString("FG_ProductionDate1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to QUANTITY OF FINISHED PRODUCT PRODUCED:.
+        /// </summary>
+        public static string FG_QuantityProduced {
+            get {
+                return ResourceManager.GetString("FG_QuantityProduced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PRODUCED FINISHED PRODUCT QUANTITY:.
+        /// </summary>
+        public static string FG_QuantityProduced1 {
+            get {
+                return ResourceManager.GetString("FG_QuantityProduced1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SYRUPS SUPERVISOR:.
+        /// </summary>
+        public static string FG_SyrupsSupervisor {
+            get {
+                return ResourceManager.GetString("FG_SyrupsSupervisor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SYRUPS SUPERVISOR:.
+        /// </summary>
+        public static string FG_SyrupsSupervisor1 {
+            get {
+                return ResourceManager.GetString("FG_SyrupsSupervisor1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FINISHED PRODUCT / SKU INFORMATION.
+        /// </summary>
+        public static string FG_TableHeader {
+            get {
+                return ResourceManager.GetString("FG_TableHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FINISHED PRODUCT / SKU INFORMATION.
+        /// </summary>
+        public static string FG_TableHeader1 {
+            get {
+                return ResourceManager.GetString("FG_TableHeader1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT MAINTENANCE SUPERVISOR:.
+        /// </summary>
+        public static string FG_TurnMaintenanceSupervisor {
+            get {
+                return ResourceManager.GetString("FG_TurnMaintenanceSupervisor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT MAINTENANCE SUPERVISOR:.
+        /// </summary>
+        public static string FG_TurnMaintenanceSupervisor1 {
+            get {
+                return ResourceManager.GetString("FG_TurnMaintenanceSupervisor1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT PRODUCTION SUPERVISOR:.
+        /// </summary>
+        public static string FG_TurnProductionSupervisor {
+            get {
+                return ResourceManager.GetString("FG_TurnProductionSupervisor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT PRODUCTION SUPERVISOR:.
+        /// </summary>
+        public static string FG_TurnProductionSupervisor1 {
+            get {
+                return ResourceManager.GetString("FG_TurnProductionSupervisor1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT QUALITY SUPERVISOR:.
+        /// </summary>
+        public static string FG_TurnQualitySupervisor {
+            get {
+                return ResourceManager.GetString("FG_TurnQualitySupervisor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT QUALITY SUPERVISOR:.
+        /// </summary>
+        public static string FG_TurnQualitySupervisor1 {
+            get {
+                return ResourceManager.GetString("FG_TurnQualitySupervisor1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT TEST LEAD:.
+        /// </summary>
+        public static string FG_TurnTestLead {
+            get {
+                return ResourceManager.GetString("FG_TurnTestLead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SHIFT TEST LEAD:.
+        /// </summary>
+        public static string FG_TurnTestLead1 {
+            get {
+                return ResourceManager.GetString("FG_TurnTestLead1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter.
+        /// </summary>
+        public static string Filter {
+            get {
+                return ResourceManager.GetString("Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select From, To, Line and SKU to see the available variables..
+        /// </summary>
+        public static string FiltersHint {
+            get {
+                return ResourceManager.GetString("FiltersHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality Dashboard 4.0.
         /// </summary>
         public static string FooterText {
             get {
                 return ResourceManager.GetString("FooterText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From:.
+        /// </summary>
+        public static string From {
+            get {
+                return ResourceManager.GetString("From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From:.
+        /// </summary>
+        public static string From1 {
+            get {
+                return ResourceManager.GetString("From1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discharge Silo.
+        /// </summary>
+        public static string Fructose_DischargeSilo {
+            get {
+                return ResourceManager.GetString("Fructose_DischargeSilo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High Fructose Solids.
+        /// </summary>
+        public static string Fructose_HFSolids {
+            get {
+                return ResourceManager.GetString("Fructose_HFSolids", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fructose Silo 1.
+        /// </summary>
+        public static string Fructose_Silo1_Header {
+            get {
+                return ResourceManager.GetString("Fructose_Silo1_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fructose Silo 2.
+        /// </summary>
+        public static string Fructose_Silo2_Header {
+            get {
+                return ResourceManager.GetString("Fructose_Silo2_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory Analysis Results of Fructose Silo 2.
+        /// </summary>
+        public static string Fructose_Silo2_Sensory_Header {
+            get {
+                return ResourceManager.GetString("Fructose_Silo2_Sensory_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fructose Silo 3.
+        /// </summary>
+        public static string Fructose_Silo3_Header {
+            get {
+                return ResourceManager.GetString("Fructose_Silo3_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory Analysis Results of Fructose Silo 3.
+        /// </summary>
+        public static string Fructose_Silo3_Sensory_Header {
+            get {
+                return ResourceManager.GetString("Fructose_Silo3_Sensory_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identifier.
+        /// </summary>
+        public static string Identifier {
+            get {
+                return ResourceManager.GetString("Identifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ACTIVITY.
+        /// </summary>
+        public static string InfoDelivery_Activity {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Activity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ACTIVITY.
+        /// </summary>
+        public static string InfoDelivery_Activity1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Activity1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AREA.
+        /// </summary>
+        public static string InfoDelivery_Area {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Area", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AREA.
+        /// </summary>
+        public static string InfoDelivery_Area1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Area1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PAPER/ELECTRONIC.
+        /// </summary>
+        public static string InfoDelivery_DeliveryMode {
+            get {
+                return ResourceManager.GetString("InfoDelivery_DeliveryMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PAPER/ELECTRONIC.
+        /// </summary>
+        public static string InfoDelivery_DeliveryMode1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_DeliveryMode1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Information / Activity Delivery Time Records.
+        /// </summary>
+        public static string InfoDelivery_Header {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Information / Activities Delivery Records.
+        /// </summary>
+        public static string InfoDelivery_Header1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TIME.
+        /// </summary>
+        public static string InfoDelivery_Hour {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Hour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HOUR.
+        /// </summary>
+        public static string InfoDelivery_Hour1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Hour1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OBSERVATIONS.
+        /// </summary>
+        public static string InfoDelivery_Observations {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Observations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OBSERVATIONS.
+        /// </summary>
+        public static string InfoDelivery_Observations1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Observations1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PERSON NAME.
+        /// </summary>
+        public static string InfoDelivery_PersonName {
+            get {
+                return ResourceManager.GetString("InfoDelivery_PersonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PERSON NAME.
+        /// </summary>
+        public static string InfoDelivery_PersonName1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_PersonName1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to POSITION.
+        /// </summary>
+        public static string InfoDelivery_Position {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Position", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to POSITION.
+        /// </summary>
+        public static string InfoDelivery_Position1 {
+            get {
+                return ResourceManager.GetString("InfoDelivery_Position1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 11A (Impact Signal).
+        /// </summary>
+        public static string Inspection_11A_ImpactSignal {
+            get {
+                return ResourceManager.GetString("Inspection_11A_ImpactSignal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 12A (Stress Fracture).
+        /// </summary>
+        public static string Inspection_12A_StressFracture {
+            get {
+                return ResourceManager.GetString("Inspection_12A_StressFracture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 12C (Stress Fracture).
+        /// </summary>
+        public static string Inspection_12C_StressFracture {
+            get {
+                return ResourceManager.GetString("Inspection_12C_StressFracture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 13A (Opaque Center Area).
+        /// </summary>
+        public static string Inspection_13A_CenterOpaque {
+            get {
+                return ResourceManager.GetString("Inspection_13A_CenterOpaque", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 14A (Semi-Transparent Center Area).
+        /// </summary>
+        public static string Inspection_14A_CenterSemiTransp {
+            get {
+                return ResourceManager.GetString("Inspection_14A_CenterSemiTransp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 15C (Opaque Support Surface).
+        /// </summary>
+        public static string Inspection_15C_SupportSurfaceOpaque {
+            get {
+                return ResourceManager.GetString("Inspection_15C_SupportSurfaceOpaque", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 16A (Semi-Transparent Support Surface).
+        /// </summary>
+        public static string Inspection_16A_SupportSurfaceSemiTransp {
+            get {
+                return ResourceManager.GetString("Inspection_16A_SupportSurfaceSemiTransp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 17A (Residual Liquid).
+        /// </summary>
+        public static string Inspection_17A_ResidualLiquid {
+            get {
+                return ResourceManager.GetString("Inspection_17A_ResidualLiquid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1A (Neck Damage).
+        /// </summary>
+        public static string Inspection_1A_NeckDamage {
+            get {
+                return ResourceManager.GetString("Inspection_1A_NeckDamage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 22C (Object Behind Label).
+        /// </summary>
+        public static string Inspection_22C_ObjectBehindLabel {
+            get {
+                return ResourceManager.GetString("Inspection_22C_ObjectBehindLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2A (Opaque).
+        /// </summary>
+        public static string Inspection_2A_Opaque {
+            get {
+                return ResourceManager.GetString("Inspection_2A_Opaque", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4A (Vent Groove).
+        /// </summary>
+        public static string Inspection_4A_VentGroove {
+            get {
+                return ResourceManager.GetString("Inspection_4A_VentGroove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 6A (Scratches and Wear).
+        /// </summary>
+        public static string Inspection_6A_ScratchWear {
+            get {
+                return ResourceManager.GetString("Inspection_6A_ScratchWear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 7A (Opaque Lower Wall).
+        /// </summary>
+        public static string Inspection_7A_LowerWallOpaque {
+            get {
+                return ResourceManager.GetString("Inspection_7A_LowerWallOpaque", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 8A (Semi-Transparent Side Wall).
+        /// </summary>
+        public static string Inspection_8A_SideWallSemiTransp {
+            get {
+                return ResourceManager.GetString("Inspection_8A_SideWallSemiTransp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alexus (start and every 4 hours).
+        /// </summary>
+        public static string Inspection_Alexus_Header {
+            get {
+                return ResourceManager.GetString("Inspection_Alexus_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ASEBI.
+        /// </summary>
+        public static string Inspection_ASEBI_Header {
+            get {
+                return ResourceManager.GetString("Inspection_ASEBI_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bad Cap Bottle.
+        /// </summary>
+        public static string Inspection_BadCapBottle {
+            get {
+                return ResourceManager.GetString("Inspection_BadCapBottle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to % Efficiency.
+        /// </summary>
+        public static string Inspection_EfficiencyPct {
+            get {
+                return ResourceManager.GetString("Inspection_EfficiencyPct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filler Stop Button.
+        /// </summary>
+        public static string Inspection_FillerStopButton {
+            get {
+                return ResourceManager.GetString("Inspection_FillerStopButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Bottle Reject Inspector.
+        /// </summary>
+        public static string Inspection_FullBottleReject_Header {
+            get {
+                return ResourceManager.GetString("Inspection_FullBottleReject_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Container Inspection Data.
+        /// </summary>
+        public static string Inspection_Header {
+            get {
+                return ResourceManager.GetString("Inspection_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High Net Content Bottle.
+        /// </summary>
+        public static string Inspection_HighNetContentBottle {
+            get {
+                return ResourceManager.GetString("Inspection_HighNetContentBottle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illegible Code Bottle.
+        /// </summary>
+        public static string Inspection_IllegibleCodeBottle {
+            get {
+                return ResourceManager.GetString("Inspection_IllegibleCodeBottle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low Net Content Bottle.
+        /// </summary>
+        public static string Inspection_LowNetContentBottle {
+            get {
+                return ResourceManager.GetString("Inspection_LowNetContentBottle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metal Test (Cane).
+        /// </summary>
+        public static string Inspection_MetalTestCane {
+            get {
+                return ResourceManager.GetString("Inspection_MetalTestCane", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NOX Witness.
+        /// </summary>
+        public static string Inspection_NOXWitness {
+            get {
+                return ResourceManager.GetString("Inspection_NOXWitness", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run End Time.
+        /// </summary>
+        public static string Inspection_RunEndTime {
+            get {
+                return ResourceManager.GetString("Inspection_RunEndTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run Start Time.
+        /// </summary>
+        public static string Inspection_RunStartTime {
+            get {
+                return ResourceManager.GetString("Inspection_RunStartTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SAM Witness.
+        /// </summary>
+        public static string Inspection_SAMWitness {
+            get {
+                return ResourceManager.GetString("Inspection_SAMWitness", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test Time.
+        /// </summary>
+        public static string Inspection_TestTime {
+            get {
+                return ResourceManager.GetString("Inspection_TestTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last.
+        /// </summary>
+        public static string Last {
+            get {
+                return ResourceManager.GetString("Last", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upper Limit.
+        /// </summary>
+        public static string Legend_Max {
+            get {
+                return ResourceManager.GetString("Legend_Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lower Limit.
+        /// </summary>
+        public static string Legend_Min {
+            get {
+                return ResourceManager.GetString("Legend_Min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string Level {
+            get {
+                return ResourceManager.GetString("Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line:.
+        /// </summary>
+        public static string Line {
+            get {
+                return ResourceManager.GetString("Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line.
+        /// </summary>
+        public static string Line1 {
+            get {
+                return ResourceManager.GetString("Line1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linear Traceability Report.
+        /// </summary>
+        public static string LinearTraceability {
+            get {
+                return ResourceManager.GetString("LinearTraceability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line.
+        /// </summary>
+        public static string LinePlaceholder {
+            get {
+                return ResourceManager.GetString("LinePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panelist.
+        /// </summary>
+        public static string LineStart_Analyst {
+            get {
+                return ResourceManager.GetString("LineStart_Analyst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panelist.
+        /// </summary>
+        public static string LineStart_Analyst1 {
+            get {
+                return ResourceManager.GetString("LineStart_Analyst1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished Product Release at Line Start.
+        /// </summary>
+        public static string LineStart_Header {
+            get {
+                return ResourceManager.GetString("LineStart_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished Product Release at Line Start.
+        /// </summary>
+        public static string LineStart_Header1 {
+            get {
+                return ResourceManager.GetString("LineStart_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product.
+        /// </summary>
+        public static string LineStart_Product {
+            get {
+                return ResourceManager.GetString("LineStart_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product.
+        /// </summary>
+        public static string LineStart_Product1 {
+            get {
+                return ResourceManager.GetString("LineStart_Product1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Release Date.
+        /// </summary>
+        public static string LineStart_ReleaseDate {
+            get {
+                return ResourceManager.GetString("LineStart_ReleaseDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Release Date.
+        /// </summary>
+        public static string LineStart_ReleaseDate1 {
+            get {
+                return ResourceManager.GetString("LineStart_ReleaseDate1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panel Result.
+        /// </summary>
+        public static string LineStart_Result {
+            get {
+                return ResourceManager.GetString("LineStart_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panel Result.
+        /// </summary>
+        public static string LineStart_Result1 {
+            get {
+                return ResourceManager.GetString("LineStart_Result1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sample Code.
+        /// </summary>
+        public static string LineStart_SampleCode {
+            get {
+                return ResourceManager.GetString("LineStart_SampleCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sample Code.
+        /// </summary>
+        public static string LineStart_SampleCode1 {
+            get {
+                return ResourceManager.GetString("LineStart_SampleCode1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading quality analysis....
+        /// </summary>
+        public static string Loader_Analyzing {
+            get {
+                return ResourceManager.GetString("Loader_Analyzing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading quality analysis....
+        /// </summary>
+        public static string Loader_Analyzing1 {
+            get {
+                return ResourceManager.GetString("Loader_Analyzing1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generating report....
+        /// </summary>
+        public static string Loader_GeneratingReport {
+            get {
+                return ResourceManager.GetString("Loader_GeneratingReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading block:.
+        /// </summary>
+        public static string Loader_LoadingBlock {
+            get {
+                return ResourceManager.GetString("Loader_LoadingBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading report blocks, please wait..
+        /// </summary>
+        public static string Loader_LoadingBlocks_PleaseWait {
+            get {
+                return ResourceManager.GetString("Loader_LoadingBlocks_PleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report generated, redirecting....
+        /// </summary>
+        public static string Loader_ReportReadyRedirect {
+            get {
+                return ResourceManager.GetString("Loader_ReportReadyRedirect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading….
+        /// </summary>
+        public static string LoadingInline {
+            get {
+                return ResourceManager.GetString("LoadingInline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lot.
+        /// </summary>
+        public static string Lot {
+            get {
+                return ResourceManager.GetString("Lot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to lot(s) found. Click to select..
+        /// </summary>
+        public static string LotsFound_ClickToSelect {
+            get {
+                return ResourceManager.GetString("LotsFound_ClickToSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lots Structure (Traceability Hierarchy).
+        /// </summary>
+        public static string LotsStructure_Header {
+            get {
+                return ResourceManager.GetString("LotsStructure_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manufactured lot.
+        /// </summary>
+        public static string ManufacturedLot {
+            get {
+                return ResourceManager.GetString("ManufacturedLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max.
+        /// </summary>
+        public static string Max {
+            get {
+                return ResourceManager.GetString("Max", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upper Spec Limit.
+        /// </summary>
+        public static string MaxLimit {
+            get {
+                return ResourceManager.GetString("MaxLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mean.
+        /// </summary>
+        public static string Mean {
+            get {
+                return ResourceManager.GetString("Mean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Min.
+        /// </summary>
+        public static string Min {
+            get {
+                return ResourceManager.GetString("Min", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lower Spec Limit.
+        /// </summary>
+        public static string MinLimit {
+            get {
+                return ResourceManager.GetString("MinLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name1 {
+            get {
+                return ResourceManager.GetString("Name1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name2 {
+            get {
+                return ResourceManager.GetString("Name2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name3 {
+            get {
+                return ResourceManager.GetString("Name3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name4 {
+            get {
+                return ResourceManager.GetString("Name4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name5 {
+            get {
+                return ResourceManager.GetString("Name5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name6 {
+            get {
+                return ResourceManager.GetString("Name6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name7 {
+            get {
+                return ResourceManager.GetString("Name7", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Name8 {
+            get {
+                return ResourceManager.GetString("Name8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No checklist found for the selected batch or range..
+        /// </summary>
+        public static string NoChecklistForSelection {
+            get {
+                return ResourceManager.GetString("NoChecklistForSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No checklist records.
+        /// </summary>
+        public static string NoChecklistRecords {
+            get {
+                return ResourceManager.GetString("NoChecklistRecords", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No data. Select dates and click “Report”..
+        /// </summary>
+        public static string NoData_SelectDates {
+            get {
+                return ResourceManager.GetString("NoData_SelectDates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No information.
+        /// </summary>
+        public static string NoInfo {
+            get {
+                return ResourceManager.GetString("NoInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No results..
+        /// </summary>
+        public static string NoResults {
+            get {
+                return ResourceManager.GetString("NoResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No X variables with data found for this date range..
+        /// </summary>
+        public static string NoXVariables {
+            get {
+                return ResourceManager.GetString("NoXVariables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Y variables with data for the selected period..
+        /// </summary>
+        public static string NoYVariables {
+            get {
+                return ResourceManager.GetString("NoYVariables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OOS.
+        /// </summary>
+        public static string OOS {
+            get {
+                return ResourceManager.GetString("OOS", resourceCulture);
             }
         }
         
@@ -93,6 +2694,24 @@ namespace dashboardQ40.Resources {
         public static string OperationalZones {
             get {
                 return ResourceManager.GetString("OperationalZones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality Y and X Report - Insurgentes Plant.
+        /// </summary>
+        public static string PageHeader {
+            get {
+                return ResourceManager.GetString("PageHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parent.
+        /// </summary>
+        public static string Parent {
+            get {
+                return ResourceManager.GetString("Parent", resourceCulture);
             }
         }
         
@@ -120,6 +2739,411 @@ namespace dashboardQ40.Resources {
         public static string Plant3 {
             get {
                 return ResourceManager.GetString("Plant3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Print report.
+        /// </summary>
+        public static string PrintReport {
+            get {
+                return ResourceManager.GetString("PrintReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Lot.
+        /// </summary>
+        public static string Production_Batch {
+            get {
+                return ResourceManager.GetString("Production_Batch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Date.
+        /// </summary>
+        public static string Production_Date {
+            get {
+                return ResourceManager.GetString("Production_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Information.
+        /// </summary>
+        public static string Production_Header {
+            get {
+                return ResourceManager.GetString("Production_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Information.
+        /// </summary>
+        public static string Production_Info_Header {
+            get {
+                return ResourceManager.GetString("Production_Info_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Line.
+        /// </summary>
+        public static string Production_Line {
+            get {
+                return ResourceManager.GetString("Production_Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Log.
+        /// </summary>
+        public static string Production_Log_Header {
+            get {
+                return ResourceManager.GetString("Production_Log_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product Name.
+        /// </summary>
+        public static string Production_ProductName {
+            get {
+                return ResourceManager.GetString("Production_ProductName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality Supervisor.
+        /// </summary>
+        public static string Production_QualitySupervisor {
+            get {
+                return ResourceManager.GetString("Production_QualitySupervisor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Responsible.
+        /// </summary>
+        public static string Production_Responsible {
+            get {
+                return ResourceManager.GetString("Production_Responsible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shift.
+        /// </summary>
+        public static string Production_Shift {
+            get {
+                return ResourceManager.GetString("Production_Shift", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units Produced.
+        /// </summary>
+        public static string Production_UnitsProduced {
+            get {
+                return ResourceManager.GetString("Production_UnitsProduced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Units Rejected.
+        /// </summary>
+        public static string Production_UnitsRejected {
+            get {
+                return ResourceManager.GetString("Production_UnitsRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-generated data.
+        /// </summary>
+        public static string RawMat_AutoData {
+            get {
+                return ResourceManager.GetString("RawMat_AutoData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mm/dd/yyyy.
+        /// </summary>
+        public static string RawMat_DateFormat {
+            get {
+                return ResourceManager.GetString("RawMat_DateFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to dd/mm/yyyy.
+        /// </summary>
+        public static string RawMat_DateFormat1 {
+            get {
+                return ResourceManager.GetString("RawMat_DateFormat1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string RawMat_Description {
+            get {
+                return ResourceManager.GetString("RawMat_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string RawMat_Description1 {
+            get {
+                return ResourceManager.GetString("RawMat_Description1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External RM Lot.
+        /// </summary>
+        public static string RawMat_ExternalLot {
+            get {
+                return ResourceManager.GetString("RawMat_ExternalLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External RM Lot.
+        /// </summary>
+        public static string RawMat_ExternalLot1 {
+            get {
+                return ResourceManager.GetString("RawMat_ExternalLot1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw Material Information (Packaging, Ingredients, Process Aid).
+        /// </summary>
+        public static string RawMat_Header {
+            get {
+                return ResourceManager.GetString("RawMat_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw Material Information (Packaging, Ingredients, Process Aid).
+        /// </summary>
+        public static string RawMat_Header1 {
+            get {
+                return ResourceManager.GetString("RawMat_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string RawMat_InternalCode {
+            get {
+                return ResourceManager.GetString("RawMat_InternalCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string RawMat_InternalCode1 {
+            get {
+                return ResourceManager.GetString("RawMat_InternalCode1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal RM Lot.
+        /// </summary>
+        public static string RawMat_InternalLot {
+            get {
+                return ResourceManager.GetString("RawMat_InternalLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal RM Lot.
+        /// </summary>
+        public static string RawMat_InternalLot1 {
+            get {
+                return ResourceManager.GetString("RawMat_InternalLot1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality Control.
+        /// </summary>
+        public static string RawMat_QC {
+            get {
+                return ResourceManager.GetString("RawMat_QC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality Control.
+        /// </summary>
+        public static string RawMat_QC1 {
+            get {
+                return ResourceManager.GetString("RawMat_QC1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quantity Involved.
+        /// </summary>
+        public static string RawMat_Quantity {
+            get {
+                return ResourceManager.GetString("RawMat_Quantity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Involved Quantity.
+        /// </summary>
+        public static string RawMat_Quantity1 {
+            get {
+                return ResourceManager.GetString("RawMat_Quantity1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reception Date.
+        /// </summary>
+        public static string RawMat_ReceptionDate {
+            get {
+                return ResourceManager.GetString("RawMat_ReceptionDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reception Date.
+        /// </summary>
+        public static string RawMat_ReceptionDate1 {
+            get {
+                return ResourceManager.GetString("RawMat_ReceptionDate1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supervision.
+        /// </summary>
+        public static string RawMat_Supervision {
+            get {
+                return ResourceManager.GetString("RawMat_Supervision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supervision.
+        /// </summary>
+        public static string RawMat_Supervision1 {
+            get {
+                return ResourceManager.GetString("RawMat_Supervision1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier.
+        /// </summary>
+        public static string RawMat_Supplier {
+            get {
+                return ResourceManager.GetString("RawMat_Supplier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supplier.
+        /// </summary>
+        public static string RawMat_Supplier1 {
+            get {
+                return ResourceManager.GetString("RawMat_Supplier1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string RawMat_SupplierCode {
+            get {
+                return ResourceManager.GetString("RawMat_SupplierCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string RawMat_SupplierCode1 {
+            get {
+                return ResourceManager.GetString("RawMat_SupplierCode1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string RawMat_SupplierName {
+            get {
+                return ResourceManager.GetString("RawMat_SupplierName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string RawMat_SupplierName1 {
+            get {
+                return ResourceManager.GetString("RawMat_SupplierName1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit.
+        /// </summary>
+        public static string RawMat_Unit {
+            get {
+                return ResourceManager.GetString("RawMat_Unit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit.
+        /// </summary>
+        public static string RawMat_Unit1 {
+            get {
+                return ResourceManager.GetString("RawMat_Unit1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warehouse.
+        /// </summary>
+        public static string RawMat_Warehouse {
+            get {
+                return ResourceManager.GetString("RawMat_Warehouse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warehouse.
+        /// </summary>
+        public static string RawMat_Warehouse1 {
+            get {
+                return ResourceManager.GetString("RawMat_Warehouse1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw Materials Data.
+        /// </summary>
+        public static string RawMaterials_Data_Header {
+            get {
+                return ResourceManager.GetString("RawMaterials_Data_Header", resourceCulture);
             }
         }
         
@@ -160,11 +3184,830 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to END OF RUN.
+        /// </summary>
+        public static string ReleaseTests_EndRun {
+            get {
+                return ResourceManager.GetString("ReleaseTests_EndRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to END OF RUN.
+        /// </summary>
+        public static string ReleaseTests_EndRun1 {
+            get {
+                return ResourceManager.GetString("ReleaseTests_EndRun1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RELEASE TESTS.
+        /// </summary>
+        public static string ReleaseTests_Header {
+            get {
+                return ResourceManager.GetString("ReleaseTests_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RELEASE TESTS.
+        /// </summary>
+        public static string ReleaseTests_Header1 {
+            get {
+                return ResourceManager.GetString("ReleaseTests_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MID RUN.
+        /// </summary>
+        public static string ReleaseTests_MidRun {
+            get {
+                return ResourceManager.GetString("ReleaseTests_MidRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MID RUN.
+        /// </summary>
+        public static string ReleaseTests_MidRun1 {
+            get {
+                return ResourceManager.GetString("ReleaseTests_MidRun1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to START OF RUN.
+        /// </summary>
+        public static string ReleaseTests_StartRun {
+            get {
+                return ResourceManager.GetString("ReleaseTests_StartRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to START OF RUN.
+        /// </summary>
+        public static string ReleaseTests_StartRun1 {
+            get {
+                return ResourceManager.GetString("ReleaseTests_StartRun1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report.
+        /// </summary>
+        public static string Report {
+            get {
+                return ResourceManager.GetString("Report", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result.
+        /// </summary>
+        public static string Result {
+            get {
+                return ResourceManager.GetString("Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality Chart with Alerts.
+        /// </summary>
+        public static string Result_Title {
+            get {
+                return ResourceManager.GetString("Result_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retention Samples – Finished Product / Involved Raw Material.
+        /// </summary>
+        public static string Retention_Header {
+            get {
+                return ResourceManager.GetString("Retention_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retention Samples Finished Product / Involved Raw Material.
+        /// </summary>
+        public static string Retention_Header1 {
+            get {
+                return ResourceManager.GetString("Retention_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After Reported SKU.
+        /// </summary>
+        public static string Retention_NextSKU {
+            get {
+                return ResourceManager.GetString("Retention_NextSKU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next to Reported SKU.
+        /// </summary>
+        public static string Retention_NextSKU1 {
+            get {
+                return ResourceManager.GetString("Retention_NextSKU1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prior to Reported SKU.
+        /// </summary>
+        public static string Retention_PrevSKU {
+            get {
+                return ResourceManager.GetString("Retention_PrevSKU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous to Reported SKU.
+        /// </summary>
+        public static string Retention_PrevSKU1 {
+            get {
+                return ResourceManager.GetString("Retention_PrevSKU1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string Retention_Time {
+            get {
+                return ResourceManager.GetString("Retention_Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string Retention_Time1 {
+            get {
+                return ResourceManager.GetString("Retention_Time1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Searching batches....
+        /// </summary>
+        public static string SearchingBatches {
+            get {
+                return ResourceManager.GetString("SearchingBatches", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select both dates..
+        /// </summary>
+        public static string SelectBothDates {
+            get {
+                return ResourceManager.GetString("SelectBothDates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panelist.
+        /// </summary>
+        public static string Sensory_Analyst {
+            get {
+                return ResourceManager.GetString("Sensory_Analyst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panelist.
+        /// </summary>
+        public static string Sensory_Analyst1 {
+            get {
+                return ResourceManager.GetString("Sensory_Analyst1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MTRA Code.
+        /// </summary>
+        public static string Sensory_Code {
+            get {
+                return ResourceManager.GetString("Sensory_Code", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MTRA Code.
+        /// </summary>
+        public static string Sensory_Code1 {
+            get {
+                return ResourceManager.GetString("Sensory_Code1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished Product Release – Sensory Area.
+        /// </summary>
+        public static string Sensory_Header {
+            get {
+                return ResourceManager.GetString("Sensory_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished Product Release - Sensory Area.
+        /// </summary>
+        public static string Sensory_Header1 {
+            get {
+                return ResourceManager.GetString("Sensory_Header1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product.
+        /// </summary>
+        public static string Sensory_Product {
+            get {
+                return ResourceManager.GetString("Sensory_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product.
+        /// </summary>
+        public static string Sensory_Product1 {
+            get {
+                return ResourceManager.GetString("Sensory_Product1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference.
+        /// </summary>
+        public static string Sensory_Reference {
+            get {
+                return ResourceManager.GetString("Sensory_Reference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference.
+        /// </summary>
+        public static string Sensory_Reference1 {
+            get {
+                return ResourceManager.GetString("Sensory_Reference1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Release Date.
+        /// </summary>
+        public static string Sensory_ReleaseDate {
+            get {
+                return ResourceManager.GetString("Sensory_ReleaseDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Release Date.
+        /// </summary>
+        public static string Sensory_ReleaseDate1 {
+            get {
+                return ResourceManager.GetString("Sensory_ReleaseDate1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panel Result.
+        /// </summary>
+        public static string Sensory_Result {
+            get {
+                return ResourceManager.GetString("Sensory_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Panel Result.
+        /// </summary>
+        public static string Sensory_Result1 {
+            get {
+                return ResourceManager.GetString("Sensory_Result1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sigma.
+        /// </summary>
+        public static string Sigma {
+            get {
+                return ResourceManager.GetString("Sigma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SKU.
+        /// </summary>
+        public static string SKU {
+            get {
+                return ResourceManager.GetString("SKU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SKU.
+        /// </summary>
+        public static string SkuPlaceholder {
+            get {
+                return ResourceManager.GetString("SkuPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start.
+        /// </summary>
+        public static string Start {
+            get {
+                return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start date cannot be after end date..
+        /// </summary>
+        public static string StartNotAfterEnd {
+            get {
+                return ResourceManager.GetString("StartNotAfterEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CPK.
+        /// </summary>
+        public static string Stats_Cpk {
+            get {
+                return ResourceManager.GetString("Stats_Cpk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CPK.
+        /// </summary>
+        public static string Stats_Cpk1 {
+            get {
+                return ResourceManager.GetString("Stats_Cpk1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mean.
+        /// </summary>
+        public static string Stats_Mean {
+            get {
+                return ResourceManager.GetString("Stats_Mean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mean.
+        /// </summary>
+        public static string Stats_Mean1 {
+            get {
+                return ResourceManager.GetString("Stats_Mean1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPK.
+        /// </summary>
+        public static string Stats_Ppk {
+            get {
+                return ResourceManager.GetString("Stats_Ppk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPK.
+        /// </summary>
+        public static string Stats_Ppk1 {
+            get {
+                return ResourceManager.GetString("Stats_Ppk1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Range.
+        /// </summary>
+        public static string Stats_Range {
+            get {
+                return ResourceManager.GetString("Stats_Range", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Range.
+        /// </summary>
+        public static string Stats_Range1 {
+            get {
+                return ResourceManager.GetString("Stats_Range1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statistics.
+        /// </summary>
+        public static string Stats_Title {
+            get {
+                return ResourceManager.GetString("Stats_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1) Select a Y Variable.
+        /// </summary>
+        public static string Step1_SelectY {
+            get {
+                return ResourceManager.GetString("Step1_SelectY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2) Selected Y Variable and related X Variables.
+        /// </summary>
+        public static string Step2_YAndRelatedX {
+            get {
+                return ResourceManager.GetString("Step2_YAndRelatedX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3) Select X Variables to plot.
+        /// </summary>
+        public static string Step3_SelectX {
+            get {
+                return ResourceManager.GetString("Step3_SelectX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Floc Potential.
+        /// </summary>
+        public static string Sugar_FlocPotential {
+            get {
+                return ResourceManager.GetString("Sugar_FlocPotential", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sugar.
+        /// </summary>
+        public static string Sugar_Header {
+            get {
+                return ResourceManager.GetString("Sugar_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mill.
+        /// </summary>
+        public static string Sugar_Mill {
+            get {
+                return ResourceManager.GetString("Sugar_Mill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory Analysis Results of Sugar.
+        /// </summary>
+        public static string Sugar_Sensory_Header {
+            get {
+                return ResourceManager.GetString("Sugar_Sensory_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Summary.
         /// </summary>
         public static string Summary {
             get {
                 return ResourceManager.GetString("Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finished Syrup Lot.
+        /// </summary>
+        public static string Syrups_FinishedSyrupLot {
+            get {
+                return ResourceManager.GetString("Syrups_FinishedSyrupLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Physicochemical Analysis of Finished Syrup.
+        /// </summary>
+        public static string Syrups_FinishedSyrupPhysChem {
+            get {
+                return ResourceManager.GetString("Syrups_FinishedSyrupPhysChem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory Analysis of Finished Syrup.
+        /// </summary>
+        public static string Syrups_FinishedSyrupSensory {
+            get {
+                return ResourceManager.GetString("Syrups_FinishedSyrupSensory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syrups Information.
+        /// </summary>
+        public static string Syrups_Header {
+            get {
+                return ResourceManager.GetString("Syrups_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Simple Syrup Lot (Contact).
+        /// </summary>
+        public static string Syrups_SimpleSyrupLotContact {
+            get {
+                return ResourceManager.GetString("Syrups_SimpleSyrupLotContact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Physicochemical Analysis of Simple Syrup.
+        /// </summary>
+        public static string Syrups_SimpleSyrupPhysChem {
+            get {
+                return ResourceManager.GetString("Syrups_SimpleSyrupPhysChem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory Analysis of Simple Syrup.
+        /// </summary>
+        public static string Syrups_SimpleSyrupSensory {
+            get {
+                return ResourceManager.GetString("Syrups_SimpleSyrupSensory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cp.
+        /// </summary>
+        public static string Table_Cp {
+            get {
+                return ResourceManager.GetString("Table_Cp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cpk.
+        /// </summary>
+        public static string Table_Cpk {
+            get {
+                return ResourceManager.GetString("Table_Cpk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date / Time.
+        /// </summary>
+        public static string Table_DateTime {
+            get {
+                return ResourceManager.GetString("Table_DateTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ΔMean.
+        /// </summary>
+        public static string Table_DeltaMean {
+            get {
+                return ResourceManager.GetString("Table_DeltaMean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mean.
+        /// </summary>
+        public static string Table_Mean {
+            get {
+                return ResourceManager.GetString("Table_Mean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Note.
+        /// </summary>
+        public static string Table_Note {
+            get {
+                return ResourceManager.GetString("Table_Note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Part.
+        /// </summary>
+        public static string Table_Part {
+            get {
+                return ResourceManager.GetString("Table_Part", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process.
+        /// </summary>
+        public static string Table_Process {
+            get {
+                return ResourceManager.GetString("Table_Process", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subgroups.
+        /// </summary>
+        public static string Table_Subgroups {
+            get {
+                return ResourceManager.GetString("Table_Subgroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test.
+        /// </summary>
+        public static string Table_Test {
+            get {
+                return ResourceManager.GetString("Table_Test", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To:.
+        /// </summary>
+        public static string To {
+            get {
+                return ResourceManager.GetString("To", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To:.
+        /// </summary>
+        public static string To1 {
+            get {
+                return ResourceManager.GetString("To1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last {0}.
+        /// </summary>
+        public static string Tooltip_LastN {
+            get {
+                return ResourceManager.GetString("Tooltip_LastN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LSL/USL.
+        /// </summary>
+        public static string Tooltip_Limits {
+            get {
+                return ResourceManager.GetString("Tooltip_Limits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upper Spec Limit.
+        /// </summary>
+        public static string Tooltip_MaxLimit {
+            get {
+                return ResourceManager.GetString("Tooltip_MaxLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mean.
+        /// </summary>
+        public static string Tooltip_Mean {
+            get {
+                return ResourceManager.GetString("Tooltip_Mean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lower Spec Limit.
+        /// </summary>
+        public static string Tooltip_MinLimit {
+            get {
+                return ResourceManager.GetString("Tooltip_MinLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Samples ({0}).
+        /// </summary>
+        public static string Tooltip_Samples {
+            get {
+                return ResourceManager.GetString("Tooltip_Samples", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spec.
+        /// </summary>
+        public static string Tooltip_Spec {
+            get {
+                return ResourceManager.GetString("Tooltip_Spec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        public static string Tooltip_Value {
+            get {
+                return ResourceManager.GetString("Tooltip_Value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X Variables.
+        /// </summary>
+        public static string Tooltip_XVars {
+            get {
+                return ResourceManager.GetString("Tooltip_XVars", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backward Traceability Report.
+        /// </summary>
+        public static string Trace_BackwardReport_Header {
+            get {
+                return ResourceManager.GetString("Trace_BackwardReport_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backward Traceability Report.
+        /// </summary>
+        public static string Trace_BackwardReport_Title {
+            get {
+                return ResourceManager.GetString("Trace_BackwardReport_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search batches by date range.
+        /// </summary>
+        public static string Trace_Modal_Title {
+            get {
+                return ResourceManager.GetString("Trace_Modal_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search batch….
+        /// </summary>
+        public static string Trace_SearchBatch_Placeholder {
+            get {
+                return ResourceManager.GetString("Trace_SearchBatch_Placeholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search by dates….
+        /// </summary>
+        public static string Trace_SearchByDates {
+            get {
+                return ResourceManager.GetString("Trace_SearchByDates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Traceability.
+        /// </summary>
+        public static string Traceability {
+            get {
+                return ResourceManager.GetString("Traceability", resourceCulture);
             }
         }
         
@@ -178,11 +4021,1487 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MX-INS-CDS-MFA-SG-F-036 Traceability Exercise Report.
+        /// </summary>
+        public static string TraceDetail_Header_CodeAndTitle {
+            get {
+                return ResourceManager.GetString("TraceDetail_Header_CodeAndTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EDITION.
+        /// </summary>
+        public static string TraceDetail_Header_Edition {
+            get {
+                return ResourceManager.GetString("TraceDetail_Header_Edition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nov/15/2024.
+        /// </summary>
+        public static string TraceDetail_Header_EditionDate {
+            get {
+                return ResourceManager.GetString("TraceDetail_Header_EditionDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bebidas Mundiales – Insurgentes Plant.
+        /// </summary>
+        public static string TraceDetail_Header_PlantName {
+            get {
+                return ResourceManager.GetString("TraceDetail_Header_PlantName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nov/15/2024.
+        /// </summary>
+        public static string TraceDetail_Sample_Date {
+            get {
+                return ResourceManager.GetString("TraceDetail_Sample_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 3.85%.
+        /// </summary>
+        public static string TraceDetail_Sample_Efficiency {
+            get {
+                return ResourceManager.GetString("TraceDetail_Sample_Efficiency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 17:20.
+        /// </summary>
+        public static string TraceDetail_Sample_End {
+            get {
+                return ResourceManager.GetString("TraceDetail_Sample_End", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-typical odor and taste detected in Joya Peach 1.5L.
+        /// </summary>
+        public static string TraceDetail_Sample_Reason {
+            get {
+                return ResourceManager.GetString("TraceDetail_Sample_Reason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 08:04.
+        /// </summary>
+        public static string TraceDetail_Sample_Start {
+            get {
+                return ResourceManager.GetString("TraceDetail_Sample_Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 09:26.
+        /// </summary>
+        public static string TraceDetail_Sample_Total {
+            get {
+                return ResourceManager.GetString("TraceDetail_Sample_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DOES THE TRACEABILITY APPLY TO FINISHED PRODUCT / RAW MATERIAL WITHDRAWAL?.
+        /// </summary>
+        public static string TraceDetail_Table_AppliesWithdrawal {
+            get {
+                return ResourceManager.GetString("TraceDetail_Table_AppliesWithdrawal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DATE.
+        /// </summary>
+        public static string TraceDetail_Table_Date {
+            get {
+                return ResourceManager.GetString("TraceDetail_Table_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to END TIME.
+        /// </summary>
+        public static string TraceDetail_Table_EndTime {
+            get {
+                return ResourceManager.GetString("TraceDetail_Table_EndTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TRACEABILITY REASON.
+        /// </summary>
+        public static string TraceDetail_Table_Reason {
+            get {
+                return ResourceManager.GetString("TraceDetail_Table_Reason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to START TIME.
+        /// </summary>
+        public static string TraceDetail_Table_StartTime {
+            get {
+                return ResourceManager.GetString("TraceDetail_Table_StartTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TOTAL EXERCISE TIME.
+        /// </summary>
+        public static string TraceDetail_Table_TotalTime {
+            get {
+                return ResourceManager.GetString("TraceDetail_Table_TotalTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to % WITHDRAWAL EFFICIENCY (IF APPLICABLE).
+        /// </summary>
+        public static string TraceDetail_Table_WithdrawalEfficiency {
+            get {
+                return ResourceManager.GetString("TraceDetail_Table_WithdrawalEfficiency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Traceability Report Detail.
+        /// </summary>
+        public static string TraceDetail_Title {
+            get {
+                return ResourceManager.GetString("TraceDetail_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CLIENT INFORMATION WITH THE PRODUCT.
+        /// </summary>
+        public static string TraceResults_ClientInfo {
+            get {
+                return ResourceManager.GetString("TraceResults_ClientInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CLIENT INFORMATION WITH THE PRODUCT.
+        /// </summary>
+        public static string TraceResults_ClientInfo1 {
+            get {
+                return ResourceManager.GetString("TraceResults_ClientInfo1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TRACEABILITY RESULTS.
+        /// </summary>
+        public static string TraceResults_Header {
+            get {
+                return ResourceManager.GetString("TraceResults_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INVOLVED RAW MATERIAL QUANTITY.
+        /// </summary>
+        public static string TraceResults_InvolvedRMQty {
+            get {
+                return ResourceManager.GetString("TraceResults_InvolvedRMQty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INVOLVED RAW MATERIAL QUANTITY.
+        /// </summary>
+        public static string TraceResults_InvolvedRMQty1 {
+            get {
+                return ResourceManager.GetString("TraceResults_InvolvedRMQty1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EXERCISE PARTICIPANTS.
+        /// </summary>
+        public static string TraceResults_Participants {
+            get {
+                return ResourceManager.GetString("TraceResults_Participants", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EXERCISE PARTICIPANTS.
+        /// </summary>
+        public static string TraceResults_Participants1 {
+            get {
+                return ResourceManager.GetString("TraceResults_Participants1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PREPARED BY.
+        /// </summary>
+        public static string TraceResults_PreparedBy {
+            get {
+                return ResourceManager.GetString("TraceResults_PreparedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PREPARED BY.
+        /// </summary>
+        public static string TraceResults_PreparedBy1 {
+            get {
+                return ResourceManager.GetString("TraceResults_PreparedBy1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECOVERED FINISHED PRODUCT QUANTITY.
+        /// </summary>
+        public static string TraceResults_RecoveredFGQty {
+            get {
+                return ResourceManager.GetString("TraceResults_RecoveredFGQty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RECOVERED FINISHED PRODUCT QUANTITY.
+        /// </summary>
+        public static string TraceResults_RecoveredFGQty1 {
+            get {
+                return ResourceManager.GetString("TraceResults_RecoveredFGQty1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TRACEABILITY EFFICIENCY RESULT.
+        /// </summary>
+        public static string TraceResults_TraceEfficiency {
+            get {
+                return ResourceManager.GetString("TraceResults_TraceEfficiency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TRACEABILITY EFFICIENCY RESULT.
+        /// </summary>
+        public static string TraceResults_TraceEfficiency1 {
+            get {
+                return ResourceManager.GetString("TraceResults_TraceEfficiency1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bottling.
+        /// </summary>
+        public static string TraceTabs_Bottling {
+            get {
+                return ResourceManager.GetString("TraceTabs_Bottling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bottling.
+        /// </summary>
+        public static string TraceTabs_Bottling1 {
+            get {
+                return ResourceManager.GetString("TraceTabs_Bottling1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleaning.
+        /// </summary>
+        public static string TraceTabs_Cleaning {
+            get {
+                return ResourceManager.GetString("TraceTabs_Cleaning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleaning.
+        /// </summary>
+        public static string TraceTabs_Cleaning1 {
+            get {
+                return ResourceManager.GetString("TraceTabs_Cleaning1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format.
+        /// </summary>
+        public static string TraceTabs_Format {
+            get {
+                return ResourceManager.GetString("TraceTabs_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format.
+        /// </summary>
+        public static string TraceTabs_Format1 {
+            get {
+                return ResourceManager.GetString("TraceTabs_Format1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production.
+        /// </summary>
+        public static string TraceTabs_Production {
+            get {
+                return ResourceManager.GetString("TraceTabs_Production", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production.
+        /// </summary>
+        public static string TraceTabs_Production1 {
+            get {
+                return ResourceManager.GetString("TraceTabs_Production1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw materials.
+        /// </summary>
+        public static string TraceTabs_RawMaterials {
+            get {
+                return ResourceManager.GetString("TraceTabs_RawMaterials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw Materials.
+        /// </summary>
+        public static string TraceTabs_RawMaterials1 {
+            get {
+                return ResourceManager.GetString("TraceTabs_RawMaterials1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syrups.
+        /// </summary>
+        public static string TraceTabs_Syrups {
+            get {
+                return ResourceManager.GetString("TraceTabs_Syrups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syrups.
+        /// </summary>
+        public static string TraceTabs_Syrups1 {
+            get {
+                return ResourceManager.GetString("TraceTabs_Syrups1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water treatment.
+        /// </summary>
+        public static string TraceTabs_WaterTreatment {
+            get {
+                return ResourceManager.GetString("TraceTabs_WaterTreatment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water Treatment.
+        /// </summary>
+        public static string TraceTabs_WaterTreatment1 {
+            get {
+                return ResourceManager.GetString("TraceTabs_WaterTreatment1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select start and end dates..
+        /// </summary>
+        public static string Validate_SelectStartEnd {
+            get {
+                return ResourceManager.GetString("Validate_SelectStartEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start date must be earlier than end date..
+        /// </summary>
+        public static string Validate_StartBeforeEnd {
+            get {
+                return ResourceManager.GetString("Validate_StartBeforeEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable.
+        /// </summary>
+        public static string Variable {
+            get {
+                return ResourceManager.GetString("Variable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View detail.
+        /// </summary>
+        public static string ViewDetail {
+            get {
+                return ResourceManager.GetString("ViewDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additive ALF 380.
+        /// </summary>
+        public static string Washing_AdditiveALF380 {
+            get {
+                return ResourceManager.GetString("Washing_AdditiveALF380", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additive Brightwash.
+        /// </summary>
+        public static string Washing_AdditiveBrightwash {
+            get {
+                return ResourceManager.GetString("Washing_AdditiveBrightwash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additive Divobrite.
+        /// </summary>
+        public static string Washing_AdditiveDivobrite {
+            get {
+                return ResourceManager.GetString("Washing_AdditiveDivobrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bottle Contact Time.
+        /// </summary>
+        public static string Washing_BottleContactTime {
+            get {
+                return ResourceManager.GetString("Washing_BottleContactTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brightwash Additive Lot.
+        /// </summary>
+        public static string Washing_BrightwashLot {
+            get {
+                return ResourceManager.GetString("Washing_BrightwashLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Caustic Residual.
+        /// </summary>
+        public static string Washing_CausticResidual {
+            get {
+                return ResourceManager.GetString("Washing_CausticResidual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CTR Tank.
+        /// </summary>
+        public static string Washing_CTRTank_Header {
+            get {
+                return ResourceManager.GetString("Washing_CTRTank_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Divobrite Additive Lot.
+        /// </summary>
+        public static string Washing_DivobriteLot {
+            get {
+                return ResourceManager.GetString("Washing_DivobriteLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filtered Recovered Water Chlorine.
+        /// </summary>
+        public static string Washing_FilteredRecWaterChlorine {
+            get {
+                return ResourceManager.GetString("Washing_FilteredRecWaterChlorine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Final Bottle Rinse Type (WASHER, RINSER).
+        /// </summary>
+        public static string Washing_FinalBottleRinse_Header {
+            get {
+                return ResourceManager.GetString("Washing_FinalBottleRinse_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Final Rinse Process Type (WASHER, RINSER).
+        /// </summary>
+        public static string Washing_FinalRinse_Header {
+            get {
+                return ResourceManager.GetString("Washing_FinalRinse_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Final Rinse Soft Water Chlorine.
+        /// </summary>
+        public static string Washing_FinalSoftWaterChlorine {
+            get {
+                return ResourceManager.GetString("Washing_FinalSoftWaterChlorine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Washing Process Information.
+        /// </summary>
+        public static string Washing_Header {
+            get {
+                return ResourceManager.GetString("Washing_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hits per Minute.
+        /// </summary>
+        public static string Washing_HitsPerMinute {
+            get {
+                return ResourceManager.GetString("Washing_HitsPerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jet Alignment.
+        /// </summary>
+        public static string Washing_JetAlignment {
+            get {
+                return ResourceManager.GetString("Washing_JetAlignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jet Pressure.
+        /// </summary>
+        public static string Washing_JetPressure {
+            get {
+                return ResourceManager.GetString("Washing_JetPressure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Methylene Blue Test.
+        /// </summary>
+        public static string Washing_MethyleneBlueTest {
+            get {
+                return ResourceManager.GetString("Washing_MethyleneBlueTest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other Involved.
+        /// </summary>
+        public static string Washing_OtherInvolved {
+            get {
+                return ResourceManager.GetString("Washing_OtherInvolved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous MTRA.
+        /// </summary>
+        public static string Washing_PrevMTRA {
+            get {
+                return ResourceManager.GetString("Washing_PrevMTRA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recovered Water Pressure.
+        /// </summary>
+        public static string Washing_RecoveredWaterPressure {
+            get {
+                return ResourceManager.GetString("Washing_RecoveredWaterPressure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reported SKU Time.
+        /// </summary>
+        public static string Washing_ReportedSKUTime {
+            get {
+                return ResourceManager.GetString("Washing_ReportedSKUTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Residual Additive.
+        /// </summary>
+        public static string Washing_ResidualAdditive {
+            get {
+                return ResourceManager.GetString("Washing_ResidualAdditive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rinser.
+        /// </summary>
+        public static string Washing_Rinser_Header {
+            get {
+                return ResourceManager.GetString("Washing_Rinser_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End of Run Check.
+        /// </summary>
+        public static string Washing_RunEndCheck {
+            get {
+                return ResourceManager.GetString("Washing_RunEndCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start of Run Check.
+        /// </summary>
+        public static string Washing_RunStartCheck {
+            get {
+                return ResourceManager.GetString("Washing_RunStartCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Soda Concentration.
+        /// </summary>
+        public static string Washing_SodaConc {
+            get {
+                return ResourceManager.GetString("Washing_SodaConc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Soda Lot.
+        /// </summary>
+        public static string Washing_SodaLot {
+            get {
+                return ResourceManager.GetString("Washing_SodaLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to % of Soda.
+        /// </summary>
+        public static string Washing_SodaPercent {
+            get {
+                return ResourceManager.GetString("Washing_SodaPercent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tank 1.
+        /// </summary>
+        public static string Washing_Tank1 {
+            get {
+                return ResourceManager.GetString("Washing_Tank1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tank 2.
+        /// </summary>
+        public static string Washing_Tank2 {
+            get {
+                return ResourceManager.GetString("Washing_Tank2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CTR Tank.
+        /// </summary>
+        public static string Washing_TankCTR {
+            get {
+                return ResourceManager.GetString("Washing_TankCTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Washer Alarm Condition.
+        /// </summary>
+        public static string Washing_WasherAlarms_Header {
+            get {
+                return ResourceManager.GetString("Washing_WasherAlarms_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activated Carbon Lot.
+        /// </summary>
+        public static string Water_ActivatedCarbonLot {
+            get {
+                return ResourceManager.GetString("Water_ActivatedCarbonLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average Volume per Load.
+        /// </summary>
+        public static string Water_AvgVolumePerLoad {
+            get {
+                return ResourceManager.GetString("Water_AvgVolumePerLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleanings/Backwash/Filters/Sanitization Information.
+        /// </summary>
+        public static string Water_CleaningsInfo {
+            get {
+                return ResourceManager.GetString("Water_CleaningsInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dechlorinating Resin Lot.
+        /// </summary>
+        public static string Water_DechlorResinLot {
+            get {
+                return ResourceManager.GetString("Water_DechlorResinLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Demineralizing Resin Lot.
+        /// </summary>
+        public static string Water_DemineralResinLot {
+            get {
+                return ResourceManager.GetString("Water_DemineralResinLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Water Treatment Information.
+        /// </summary>
+        public static string Water_GeneralInfo_Header {
+            get {
+                return ResourceManager.GetString("Water_GeneralInfo_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sulfuric Acid Lot.
+        /// </summary>
+        public static string Water_H2SO4Lot {
+            get {
+                return ResourceManager.GetString("Water_H2SO4Lot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hydrochloric Acid Lot.
+        /// </summary>
+        public static string Water_HCLLot {
+            get {
+                return ResourceManager.GetString("Water_HCLLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water Treatment Data.
+        /// </summary>
+        public static string Water_Header {
+            get {
+                return ResourceManager.GetString("Water_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lime Lot.
+        /// </summary>
+        public static string Water_LimeLot {
+            get {
+                return ResourceManager.GetString("Water_LimeLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Loads in Shift.
+        /// </summary>
+        public static string Water_LoadsInShift {
+            get {
+                return ResourceManager.GetString("Water_LoadsInShift", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Physicochemical Analysis of Raw, Treated Chlorinated, Softened and Recovered Water.
+        /// </summary>
+        public static string Water_PhysChem_Header {
+            get {
+                return ResourceManager.GetString("Water_PhysChem_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Polishing Cartridge Lot.
+        /// </summary>
+        public static string Water_PolishingCartridgeLot {
+            get {
+                return ResourceManager.GetString("Water_PolishingCartridgeLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Polyelectrolyte Lot.
+        /// </summary>
+        public static string Water_PolyelectrolyteLot {
+            get {
+                return ResourceManager.GetString("Water_PolyelectrolyteLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recirculated Chlorine/Disinfectant Lot.
+        /// </summary>
+        public static string Water_RecirculatedDisinfectantLot {
+            get {
+                return ResourceManager.GetString("Water_RecirculatedDisinfectantLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Silica Sand Lot.
+        /// </summary>
+        public static string Water_SilicaSandLot {
+            get {
+                return ResourceManager.GetString("Water_SilicaSandLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lot and Physicochemical Analysis of Soft Water Used without Complaint.
+        /// </summary>
+        public static string Water_Soft_NoComplaint_Header {
+            get {
+                return ResourceManager.GetString("Water_Soft_NoComplaint_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Soft Water Contact Tanks Filling Log.
+        /// </summary>
+        public static string Water_SoftWaterContactTanksFillingLog {
+            get {
+                return ResourceManager.GetString("Water_SoftWaterContactTanksFillingLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to System Sanitization Information.
+        /// </summary>
+        public static string Water_SystemSanitationInfo {
+            get {
+                return ResourceManager.GetString("Water_SystemSanitationInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tank Retention Time.
+        /// </summary>
+        public static string Water_TankRetentionTime {
+            get {
+                return ResourceManager.GetString("Water_TankRetentionTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Liters in Shift.
+        /// </summary>
+        public static string Water_TotalLitersInShift {
+            get {
+                return ResourceManager.GetString("Water_TotalLitersInShift", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sensory Analysis Results of Treated Water.
+        /// </summary>
+        public static string Water_Treated_Sensory_Header {
+            get {
+                return ResourceManager.GetString("Water_Treated_Sensory_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Analysis of Treated Water Used in Finished Syrup Production.
+        /// </summary>
+        public static string Water_TreatedForFinishedSyrup_Header {
+            get {
+                return ResourceManager.GetString("Water_TreatedForFinishedSyrup_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Analysis of Treated Water Used in PT Syrup + Without Recovered Water.
+        /// </summary>
+        public static string Water_TreatedForPT_NoRecovered_Header {
+            get {
+                return ResourceManager.GetString("Water_TreatedForPT_NoRecovered_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Analysis of Treated Water Used in Simple Syrup Production.
+        /// </summary>
+        public static string Water_TreatedForSimpleSyrup_Header {
+            get {
+                return ResourceManager.GetString("Water_TreatedForSimpleSyrup_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Treated Water Lot.
+        /// </summary>
+        public static string Water_TreatedWaterLot {
+            get {
+                return ResourceManager.GetString("Water_TreatedWaterLot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raw.
+        /// </summary>
+        public static string Water_Type_Raw {
+            get {
+                return ResourceManager.GetString("Water_Type_Raw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recovered.
+        /// </summary>
+        public static string Water_Type_Recovered {
+            get {
+                return ResourceManager.GetString("Water_Type_Recovered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Softened.
+        /// </summary>
+        public static string Water_Type_Softened {
+            get {
+                return ResourceManager.GetString("Water_Type_Softened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Treated Chlorinated.
+        /// </summary>
+        public static string Water_Type_TreatedChlorinated {
+            get {
+                return ResourceManager.GetString("Water_Type_TreatedChlorinated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water Type.
+        /// </summary>
+        public static string Water_WaterType {
+            get {
+                return ResourceManager.GetString("Water_WaterType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Welcome:.
         /// </summary>
         public static string Welcome {
             get {
                 return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capability.
+        /// </summary>
+        public static string XR_Capability {
+            get {
+                return ResourceManager.GetString("XR_Capability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capability Plot (Within vs Overall vs Specs).
+        /// </summary>
+        public static string XR_CapPlotTitle {
+            get {
+                return ResourceManager.GetString("XR_CapPlotTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Country:.
+        /// </summary>
+        public static string XR_Country {
+            get {
+                return ResourceManager.GetString("XR_Country", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data.
+        /// </summary>
+        public static string XR_Data {
+            get {
+                return ResourceManager.GetString("XR_Data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fit.
+        /// </summary>
+        public static string XR_Fit {
+            get {
+                return ResourceManager.GetString("XR_Fit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From:.
+        /// </summary>
+        public static string XR_From {
+            get {
+                return ResourceManager.GetString("XR_From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Histogram (with LSL/USL).
+        /// </summary>
+        public static string XR_Hist {
+            get {
+                return ResourceManager.GetString("XR_Hist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Line:.
+        /// </summary>
+        public static string XR_Line {
+            get {
+                return ResourceManager.GetString("XR_Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error while loading SKUs..
+        /// </summary>
+        public static string XR_LoadSkuErr {
+            get {
+                return ResourceManager.GetString("XR_LoadSkuErr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LSL.
+        /// </summary>
+        public static string XR_LSL {
+            get {
+                return ResourceManager.GetString("XR_LSL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No capability data..
+        /// </summary>
+        public static string XR_NoCapData {
+            get {
+                return ResourceManager.GetString("XR_NoCapData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No data for that combination..
+        /// </summary>
+        public static string XR_NoData {
+            get {
+                return ResourceManager.GetString("XR_NoData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal Probability Plot.
+        /// </summary>
+        public static string XR_NormProbTitle {
+            get {
+                return ResourceManager.GetString("XR_NormProbTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overall (±3σo).
+        /// </summary>
+        public static string XR_OverallBand {
+            get {
+                return ResourceManager.GetString("XR_OverallBand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plant:.
+        /// </summary>
+        public static string XR_Plant {
+            get {
+                return ResourceManager.GetString("XR_Plant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report.
+        /// </summary>
+        public static string XR_ReportBtn {
+            get {
+                return ResourceManager.GetString("XR_ReportBtn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result.
+        /// </summary>
+        public static string XR_Result {
+            get {
+                return ResourceManager.GetString("XR_Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R chart — subgroup range.
+        /// </summary>
+        public static string XR_RTitle {
+            get {
+                return ResourceManager.GetString("XR_RTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run chart — individuals.
+        /// </summary>
+        public static string XR_RunTitle {
+            get {
+                return ResourceManager.GetString("XR_RunTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select dates, line, and a variable..
+        /// </summary>
+        public static string XR_SelectFilters {
+            get {
+                return ResourceManager.GetString("XR_SelectFilters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select X Variable.
+        /// </summary>
+        public static string XR_SelectVarX {
+            get {
+                return ResourceManager.GetString("XR_SelectVarX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Y Variable.
+        /// </summary>
+        public static string XR_SelectVarY {
+            get {
+                return ResourceManager.GetString("XR_SelectVarY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SKU:.
+        /// </summary>
+        public static string XR_SKU {
+            get {
+                return ResourceManager.GetString("XR_SKU", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subgroup.
+        /// </summary>
+        public static string XR_Subgroup {
+            get {
+                return ResourceManager.GetString("XR_Subgroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cp.
+        /// </summary>
+        public static string XR_tbl_Cp {
+            get {
+                return ResourceManager.GetString("XR_tbl_Cp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cpk.
+        /// </summary>
+        public static string XR_tbl_Cpk {
+            get {
+                return ResourceManager.GetString("XR_tbl_Cpk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LSL.
+        /// </summary>
+        public static string XR_tbl_LSL {
+            get {
+                return ResourceManager.GetString("XR_tbl_LSL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mean.
+        /// </summary>
+        public static string XR_tbl_Mean {
+            get {
+                return ResourceManager.GetString("XR_tbl_Mean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to n.
+        /// </summary>
+        public static string XR_tbl_n {
+            get {
+                return ResourceManager.GetString("XR_tbl_n", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pp.
+        /// </summary>
+        public static string XR_tbl_Pp {
+            get {
+                return ResourceManager.GetString("XR_tbl_Pp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ppk.
+        /// </summary>
+        public static string XR_tbl_Ppk {
+            get {
+                return ResourceManager.GetString("XR_tbl_Ppk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to σ Overall.
+        /// </summary>
+        public static string XR_tbl_SigmaOverall {
+            get {
+                return ResourceManager.GetString("XR_tbl_SigmaOverall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to σ Within.
+        /// </summary>
+        public static string XR_tbl_SigmaWithin {
+            get {
+                return ResourceManager.GetString("XR_tbl_SigmaWithin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subgroups.
+        /// </summary>
+        public static string XR_tbl_Subgroups {
+            get {
+                return ResourceManager.GetString("XR_tbl_Subgroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USL.
+        /// </summary>
+        public static string XR_tbl_USL {
+            get {
+                return ResourceManager.GetString("XR_tbl_USL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable.
+        /// </summary>
+        public static string XR_tbl_Variable {
+            get {
+                return ResourceManager.GetString("XR_tbl_Variable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time series (Result vs Time).
+        /// </summary>
+        public static string XR_TimeSeries {
+            get {
+                return ResourceManager.GetString("XR_TimeSeries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y–X Quality Report.
+        /// </summary>
+        public static string XR_Title {
+            get {
+                return ResourceManager.GetString("XR_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To:.
+        /// </summary>
+        public static string XR_To {
+            get {
+                return ResourceManager.GetString("XR_To", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USL.
+        /// </summary>
+        public static string XR_USL {
+            get {
+                return ResourceManager.GetString("XR_USL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable X:.
+        /// </summary>
+        public static string XR_VarX {
+            get {
+                return ResourceManager.GetString("XR_VarX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable Y:.
+        /// </summary>
+        public static string XR_VarY {
+            get {
+                return ResourceManager.GetString("XR_VarY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Within (±3σw).
+        /// </summary>
+        public static string XR_WithinBand {
+            get {
+                return ResourceManager.GetString("XR_WithinBand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X̄ (Xbar) chart — subgroup means.
+        /// </summary>
+        public static string XR_XbarTitle {
+            get {
+                return ResourceManager.GetString("XR_XbarTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X-R Charts.
+        /// </summary>
+        public static string XRCharts {
+            get {
+                return ResourceManager.GetString("XRCharts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y-X Variables Comparison.
+        /// </summary>
+        public static string XVariablesComparison {
+            get {
+                return ResourceManager.GetString("XVariablesComparison", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X Variables (hidden):.
+        /// </summary>
+        public static string XVariablesHidden {
+            get {
+                return ResourceManager.GetString("XVariablesHidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y Variable (hidden):.
+        /// </summary>
+        public static string YVariableHidden {
+            get {
+                return ResourceManager.GetString("YVariableHidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y Variable.
+        /// </summary>
+        public static string YVariablePlaceholder {
+            get {
+                return ResourceManager.GetString("YVariablePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom in.
+        /// </summary>
+        public static string Zoom_In_Title {
+            get {
+                return ResourceManager.GetString("Zoom_In_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom out.
+        /// </summary>
+        public static string Zoom_Out_Title {
+            get {
+                return ResourceManager.GetString("Zoom_Out_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset zoom.
+        /// </summary>
+        public static string Zoom_Reset_Title {
+            get {
+                return ResourceManager.GetString("Zoom_Reset_Title", resourceCulture);
             }
         }
     }

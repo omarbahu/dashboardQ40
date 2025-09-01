@@ -1,16 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Lote no encontrado";
-    var mensaje = ViewBag.Mensaje as string ?? "Lote no encontrado.";
+    ViewData["Title"] = Localizer["BatchNotFound_Title"];
+    var mensaje = ViewBag.Mensaje as string ?? Localizer["BatchNotFound_DefaultMessage"];
 }
+@inject IStringLocalizer Localizer
 
 <div class="container mt-5">
     <div class="alert alert-warning" role="alert">
-        <h4 class="alert-heading">⚠ Lote no encontrado</h4>
+        <h4 class="alert-heading">⚠ @Localizer["BatchNotFound_Title"]</h4>
         <p>@mensaje</p>
         <hr>
         <p class="mb-0">
-            Verifica que el número de lote esté bien escrito o intenta con otro.
+            @Localizer["BatchNotFound_Hint"]
         </p>
     </div>
-    <a href="javascript:history.back()" class="btn btn-primary">← Volver</a>
+    <a href="javascript:history.back()" class="btn btn-primary">← @Localizer["Common_Back"]</a>
 </div>

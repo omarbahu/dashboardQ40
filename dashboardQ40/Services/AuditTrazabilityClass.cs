@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
 using System.Data.SqlClient;
+using System.Globalization;
+using System.Text;
 using static dashboardQ40.Models.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -769,20 +771,33 @@ namespace dashboardQ40.Services
 
                 // 3. Obtener lista única de parámetros (campos verticales)
                 var nombresParametros = resultados
-                    .Select(r => r.OperacionNombre?.Trim())
-                    .Where(n => !string.IsNullOrWhiteSpace(n))
-                    .Distinct()
-                    .OrderBy(n => n)
-                    .ToList();
+                .Select(r => r.OperacionNombre)
+                .Where(n => !string.IsNullOrWhiteSpace(n))
+                .Select(Norm)                 // <- normalizamos
+                .Distinct()
+                .OrderBy(n => n)
+                .ToList();
 
                 var registros = nombresParametros
                     .Select(nombre => new RegistroAnalisisFisicoquimico
                     {
-                        DescripcionParametro = nombre,
+                        DescripcionParametro = nombre,  // ya normalizado
                         ValoresPorLote = new List<string>()
                     })
                     .ToList();
 
+                // 3.1 Índice por (Lote, Operación normalizada) -> último resultado
+                //    Si tienes un campo de fecha en ResultadoAnalisisFisicoquimico (usa el correcto abajo)
+                var index = resultados
+                  .Where(r => ToLong(r.Lote).HasValue)
+                  .GroupBy(r => (Lote: ToLong(r.Lote).Value, Op: Norm(r.OperacionNombre)))
+                  .ToDictionary(
+                      g => g.Key,
+                      g => g.First()   // simplemente el primero
+                  );
+
+
+                // 4. Llenar columnas
                 // 4. Llenar columnas
                 foreach (var lote in lotesSeleccionados)
                 {
@@ -794,24 +809,25 @@ namespace dashboardQ40.Services
                             continue;
                         }
 
-                        var resultado = resultados.FirstOrDefault(r =>
-                            r.Lote == lote.Batch &&
-                            r.OperacionNombre?.Trim().Equals(registro.DescripcionParametro, StringComparison.OrdinalIgnoreCase) == true);
+                        var key = (Lote: lote.Batch, Op: registro.DescripcionParametro); // ambos ya homogeneizados
+                        index.TryGetValue(key, out var resultado);
+
+                        if (resultado == null)
+                        {
+                            registro.ValoresPorLote.Add("N/A");
+                            continue;
+                        }
 
                         string valorFinal;
-
                         if (resultado.TipoOperacion == 1)
                         {
                             valorFinal = string.IsNullOrWhiteSpace(resultado.Valor) ? "N/A" : resultado.Valor;
                         }
                         else if (resultado.TipoOperacion == 2)
                         {
-                            if (resultado.Atributo == "1")
-                                valorFinal = "✔";
-                            else if (resultado.Atributo == "0")
-                                valorFinal = "✘";
-                            else
-                                valorFinal = "N/A";
+                            valorFinal = resultado.Atributo == "1" ? "✔"
+                                       : resultado.Atributo == "0" ? "✘"
+                                       : "N/A";
                         }
                         else
                         {
@@ -819,7 +835,6 @@ namespace dashboardQ40.Services
                         }
 
                         registro.ValoresPorLote.Add(valorFinal);
-
                     }
                 }
 
@@ -969,6 +984,30 @@ namespace dashboardQ40.Services
         }
 
 
+
+        // --- helpers ---
+        static string Norm(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return string.Empty;
+            s = s.Trim();
+            // quitar acentos
+            var nf = s.Normalize(NormalizationForm.FormD);
+            var sb = new StringBuilder(nf.Length);
+            foreach (var ch in nf)
+            {
+                var cat = CharUnicodeInfo.GetUnicodeCategory(ch);
+                if (cat != UnicodeCategory.NonSpacingMark) sb.Append(ch);
+            }
+            return sb.ToString().Normalize(NormalizationForm.FormC).ToUpperInvariant();
+        }
+        static long? ToLong(object v)
+        {
+            if (v == null) return null;
+            if (v is long l) return l;
+            if (v is int i) return i;
+            if (long.TryParse(v.ToString(), out var p)) return p;
+            return null;
+        }
 
     }
 }

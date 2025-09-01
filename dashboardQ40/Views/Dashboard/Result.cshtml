@@ -1,8 +1,9 @@
 ﻿@using Newtonsoft.Json
 @using System.Collections.Generic
+@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Gráfico de Calidad con Alertas";
+    ViewData["Title"] = Localizer["Result_Title"]; // "Quality Chart with Alerts"
     var data = ViewBag.Data;
     var allCandlestickData = ViewBag.AllCandlestickData as Dictionary<string, List<double[]>>;
     var variableYName = ViewBag.VariableYName as string;
@@ -11,8 +12,8 @@
 }
 
 @{
-    double minThreshold = ViewBag.MinThreshold ?? 0;  // Si es null, usa 0 por defecto
-    double maxThreshold = ViewBag.MaxThreshold ?? 100; // Si es null, usa 100 por defecto
+    double minThreshold = ViewBag.MinThreshold ?? 0;
+    double maxThreshold = ViewBag.MaxThreshold ?? 100;
 }
 
 <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
@@ -145,91 +146,55 @@
         font-weight: 500;
     }
 </style>
-
-
 <div class="container-flex">
     <div id="loaderOverlay">
         <div class="loaderContent">
             <div class="bubbles"></div>
-            <p class="loaderText">Cargando análisis de calidad...</p>
+            <p class="loaderText">@Localizer["Loader_Analyzing"]</p>
         </div>
     </div>
 
     <div id="chart-container"></div>
 </div>
 
+<div class="container-campana" style="display:flex; align-items:center; gap:10px;">
+    <div id="bell-curve-container" style="width:75%; height:350px;"></div>
 
-<!-- 📌 Contenedor de la gráfica y la leyenda -->
-<div class="container-campana" style="display: flex; align-items: center; gap: 10px;">
-    <div id="bell-curve-container" style="width: 75%; height: 350px;"></div>
+    <div class="leyenda-campana" style="width:15%; padding:8px; border:1px solid #ccc; border-radius:5px; font-size:12px; text-align:left;">
+        <h4 style="margin:0 0 5px 0; font-size:14px;">@Localizer["Stats_Title"]</h4>
+        <p><b>@Localizer["Stats_Cpk"]:</b> <span id="cpkValue">-</span></p>
+        <p><b>@Localizer["Stats_Ppk"]:</b> <span id="ppkValue">-</span></p>
+        <p><b>@Localizer["Stats_Mean"]:</b> <span id="meanValue">-</span></p>
+        <p><b>@Localizer["Stats_Range"]:</b> <span id="rangeValue">-</span></p>
 
-    <!-- 📌 Leyenda de estadísticas 📊 (más compacta) -->
-    <div class="leyenda-campana" style="width: 15%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 12px; text-align: left;">
-        <h4 style="margin: 0 0 5px 0; font-size: 14px;">📊 Estadísticas</h4>
-        <p><b>CPK:</b> <span id="cpkValue">-</span></p>
-        <p><b>PPK:</b> <span id="ppkValue">-</span></p>
-        <p><b>Promedio:</b> <span id="meanValue">-</span></p>
-        <p><b>Rango:</b> <span id="rangeValue">-</span></p>
-
-        <!-- 📌 Botones de zoom con iconos pequeños  -->
-        <div style="margin-top: 5px; display: flex; justify-content: center; gap: 5px;">
-            <button onclick="zoomOut()" style="border: none; background: none; cursor: pointer; font-size: 14px;" title="Alejar">
-                🔍➖
-            </button>
-            <button onclick="zoomIn()" style="border: none; background: none; cursor: pointer; font-size: 14px;" title="Acercar">
-                🔍➕
-            </button>
-            <button onclick="resetZoom()" style="border: none; background: none; cursor: pointer; font-size: 14px;" title="Resetear Zoom">
-                🔄
-            </button>
+        <div style="margin-top:5px; display:flex; justify-content:center; gap:5px;">
+            <button onclick="zoomOut()" style="border:none; background:none; cursor:pointer; font-size:14px;" title="@Localizer["Zoom_Out_Title"]">🔍➖</button>
+            <button onclick="zoomIn()" style="border:none; background:none; cursor:pointer; font-size:14px;" title="@Localizer["Zoom_In_Title"]">🔍➕</button>
+            <button onclick="resetZoom()" style="border:none; background:none; cursor:pointer; font-size:14px;" title="@Localizer["Zoom_Reset_Title"]">🔄</button>
         </div>
-       
     </div>
 
-    <!-- 🔄 Loader al centro (inicialmente oculto) -->
-    <div id="bell-curve-loader" style="
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 0px 12px rgba(0,0,0,0.15);
-    text-align: center;
-">
-
-        <!-- SVG loader animado -->
+    <div id="bell-curve-loader" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:10; background:rgba(255,255,255,.9); padding:20px; border-radius:12px; box-shadow:0 0 12px rgba(0,0,0,.15); text-align:center;">
         <svg width="50" height="50" viewBox="0 0 50 50">
-            <circle cx="25" cy="25" r="20" fill="none" stroke="#3498db" stroke-width="5" stroke-linecap="round"
-                    stroke-dasharray="90" stroke-dashoffset="0">
-                <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite"
-                                  dur="1s" from="0 25 25" to="360 25 25" />
+            <circle cx="25" cy="25" r="20" fill="none" stroke="#3498db" stroke-width="5" stroke-linecap="round" stroke-dasharray="90" stroke-dashoffset="0">
+                <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" from="0 25 25" to="360 25 25" />
             </circle>
         </svg>
-
-        <div style="margin-top: 10px; font-size: 14px; color: #333;">Cargando distribución...</div>
+        <div style="margin-top:10px; font-size:14px; color:#333;">@Localizer["Bell_Loading"]</div>
     </div>
 </div>
 
 <script>
-    function toggleTable() {
-        let tableContainer = document.getElementById('dataTableContainer');
-        tableContainer.style.display = tableContainer.style.display === "none" ? "block" : "none";
-    }
+    function toggleTable() { const c = document.getElementById('dataTableContainer'); c.style.display = c.style.display === "none" ? "block" : "none"; }
 </script>
 
-<!-- 📌 Botón para mostrar/ocultar la tabla -->
-<button onclick="toggleTable()" style="margin-top: 10px; padding: 5px 10px;">📊 Ver datos en tabla</button>
+<button onclick="toggleTable()" style="margin-top:10px; padding:5px 10px;">📊 @Localizer["Button_ShowTable"]</button>
 
-<!-- 📌 Contenedor de la tabla (inicialmente oculto) -->
-<div id="dataTableContainer" style="display: none; margin-top: 15px;">
-    <table id="dataTable" border="1" style="width: 100%; text-align: center; border-collapse: collapse;">
+<div id="dataTableContainer" style="display:none; margin-top:15px;">
+    <table id="dataTable" border="1" style="width:100%; text-align:center; border-collapse:collapse;">
         <thead>
             <tr>
-                <th>Fecha / Hora</th>
+                <th>@Localizer["Table_DateTime"]</th>
                 <th>@ViewBag.VariableYName</th>
                 @foreach (var xVar in ViewBag.VariablesXData.Keys)
                 {
@@ -252,351 +217,218 @@
         </tbody>
     </table>
 </div>
+
 @{
-    // Fallbacks seguros para evitar problemas con generics en Razor
     var datesJson = JsonConvert.SerializeObject(ViewBag.Dates ?? new List<string>());
     var scatterDataYJson = JsonConvert.SerializeObject(ViewBag.ScatterDataY ?? new List<object>());
-
-    var variablesX = ViewBag.VariablesXData as Dictionary<string, List<double>>
-                            ?? new Dictionary<string, List<double>>();
+    var variablesX = ViewBag.VariablesXData as Dictionary<string, List<double>> ?? new Dictionary<string, List<double>>();
     var scatterDataXJson = JsonConvert.SerializeObject(variablesX);
-
-    // Usa los valores con default que ya definiste arriba
     var minTol = minThreshold;
     var maxTol = maxThreshold;
 }
 
-<script>
-    var chart = echarts.init(document.getElementById('chart-container'));
-    var bellCurveChart = echarts.init(document.getElementById('bell-curve-container'));
+@section Scripts {
+    <script>
+        // Diccionario de textos para JS
+        window.T = {
+            Spec: '@Localizer["Tooltip_Spec"]',                    // "Spec"
+            Mean: '@Localizer["Tooltip_Mean"]',                    // "Mean"
+            MinLimit: '@Localizer["Tooltip_MinLimit"]',            // "Lower Spec Limit"
+            MaxLimit: '@Localizer["Tooltip_MaxLimit"]',            // "Upper Spec Limit"
+            Samples: '@Localizer["Tooltip_Samples"]',              // "Samples ({0})"
+            XVARS: '@Localizer["Tooltip_XVars"]',                  // "X Variables"
+            Bell_Title: '@Localizer["Bell_Title"]',                // "Normal Distribution - Variable"
+            Bell_XAxis: '@Localizer["Bell_XAxis"]',                // "Variable"
+            Bell_YAxis: '@Localizer["Bell_YAxis"]',                // "Frequency"
+            Bell_Distribution: '@Localizer["Bell_Distribution"]',  // "Distribution"
+            Bell_Histogram: '@Localizer["Bell_Histogram"]',        // "Histogram"
+            Bell_LSL: '@Localizer["Bell_LSL"]',                    // "LSL"
+            Bell_USL: '@Localizer["Bell_USL"]'                     // "USL"
+        };
 
-    window.addEventListener("load", function () {
-        const loader = document.getElementById("loaderOverlay");
-        if (loader) loader.style.display = "none";
-    });
+        var chart = echarts.init(document.getElementById('chart-container'));
+        var bellCurveChart = echarts.init(document.getElementById('bell-curve-container'));
 
-    // ✅ Datos que llegan del backend (ya serializados en Razor)
-    const dates = @Html.Raw(datesJson);
-    const scatterDataY = @Html.Raw(scatterDataYJson);
-    const scatterDataX = @Html.Raw(scatterDataXJson);
+        window.addEventListener("load", function () { const loader = document.getElementById("loaderOverlay"); if (loader) loader.style.display = "none"; });
 
-    // ✅ Norma / nombres de series (una sola vez)
-    const VAR_Y_NAME = @Html.Raw(JsonConvert.SerializeObject(ViewBag.VariableYName ?? ""));
-    const nombrePromedio = `Promedio (${VAR_Y_NAME})`;
-    const nombreMuestras = `Muestras (${VAR_Y_NAME})`;
+        const dates = @Html.Raw(datesJson);
+        const scatterDataY = @Html.Raw(scatterDataYJson);
+        const scatterDataX = @Html.Raw(scatterDataXJson);
 
-    // ✅ Tolerancias consolidadas (no nulas)
-    const MIN_TOL = @minTol;
-    const MAX_TOL = @maxTol;
+        const VAR_Y_NAME = @Html.Raw(JsonConvert.SerializeObject(ViewBag.VariableYName ?? ""));
+        const nombrePromedio = `${T.Mean} (${VAR_Y_NAME})`;
+        const nombreMuestras = `Samples (${VAR_Y_NAME})`;
 
-    console.log("Fechas:", dates);
-    console.log("Datos de la Variable Y:", scatterDataY);
-    console.log("Datos de Variables X:", scatterDataX);
+        const MIN_TOL = @minTol;
+        const MAX_TOL = @maxTol;
 
-    // ===========================
-    //  AGRUPACIÓN Y (Versión 2)
-    // ===========================
-    const samplesByTime = {};
-    (scatterDataY || []).forEach(entry => {
-        const t = entry?.Time;
-        const v = Number(entry?.Value);
-        if (!t || isNaN(v)) return;
-        if (!samplesByTime[t]) samplesByTime[t] = [];
-        samplesByTime[t].push(v);
-    });
-
-    // Conjunto de categorías del eje X = unión de timestamps de Y + de X
-    const xSet = new Set(Object.keys(samplesByTime));
-    Object.keys(scatterDataX || {}).forEach(key => {
-        const arr = scatterDataX[key] || [];
-        arr.forEach((_, i) => {
-            const d = dates[i];
-            if (d != null) xSet.add(d);
+        const samplesByTime = {};
+        (scatterDataY || []).forEach(entry => {
+            const t = entry?.Time;
+            const v = Number(entry?.Value);
+            if (!t || isNaN(v)) return;
+            if (!samplesByTime[t]) samplesByTime[t] = [];
+            samplesByTime[t].push(v);
         });
-    });
-    const xCategories = Array.from(xSet).sort((a, b) => new Date(a) - new Date(b));
 
-    // Promedio Y por timestamp
-    const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
-    const meanSeriesData = Object.keys(samplesByTime)
-        .sort((a, b) => new Date(a) - new Date(b))
-        .map(t => [t, mean(samplesByTime[t])]);
-
-    // Rango Y (considera muestras + tolerancias)
-    const allSamples = Object.values(samplesByTime).flat();
-    const minY = (allSamples.length ? Math.min(...allSamples, MIN_TOL) : MIN_TOL) - 1;
-    const maxY = (allSamples.length ? Math.max(...allSamples, MAX_TOL) : MAX_TOL) + 1;
-
-    // ===========================
-    //  SERIES & EJES
-    // ===========================
-    let series = [];
-    let yAxis = [];
-
-    // Eje Y principal
-    yAxis.push({
-        type: 'value',
-        name: VAR_Y_NAME,
-        position: 'left',
-        min: minY,
-        max: maxY,
-        axisLine: { lineStyle: { color: '#00AA00' } },
-        nameLocation: 'middle',
-        nameRotate: 90,
-        nameGap: 45,
-        axisPointer: { label: { show: true } } // solo en el eje principal
-    });
-
-    // 🔵 Línea de promedio (Y) con límites integrados
-    series.push({
-        name: nombrePromedio,
-        type: 'line',
-        data: meanSeriesData,
-        showSymbol: true,
-        symbolSize: 6,
-        smooth: false,
-        markLine: {
-            silent: true,
-            symbol: 'none',
-            lineStyle: { type: 'dashed' },
-            data: [
-                { yAxis: MIN_TOL, name: 'LEI' },
-                { yAxis: MAX_TOL, name: 'LES' }
-            ]
-        },
-        markArea: {
-            silent: true,
-            itemStyle: { color: 'rgba(220,20,60,0.06)' },
-            data: [
-                [{ yAxis: -Infinity }, { yAxis: MIN_TOL }],
-                [{ yAxis: MAX_TOL }, { yAxis: Infinity }]
-            ]
-        }
-    });
-
-    // 🔹 Serie de muestras (Variable Y)
-    const muestrasSeriesData = [];
-    Object.keys(samplesByTime).forEach(t => {
-        (samplesByTime[t] || []).forEach(v => {
-            muestrasSeriesData.push([t, v]);
+        const xSet = new Set(Object.keys(samplesByTime));
+        Object.keys(scatterDataX || {}).forEach(key => {
+            const arr = scatterDataX[key] || [];
+            arr.forEach((_, i) => { const d = dates[i]; if (d != null) xSet.add(d); });
         });
-    });
-    series.push({
-        name: nombreMuestras,
-        type: 'scatter',
-        data: muestrasSeriesData,
-        yAxisIndex: 0,
-        symbolSize: 7,
-        itemStyle: {
-            color: function (p) {
-                const v = Array.isArray(p.value) ? p.value[1] : p.value;
-                return (v < MIN_TOL || v > MAX_TOL) ? '#d62728' : undefined; // rojo si fuera
-            }
-        }
-    });
+        const xCategories = Array.from(xSet).sort((a, b) => new Date(a) - new Date(b));
 
-    // ====== Variables X (filtrando para no duplicar Y) ======
-    const xKeys = Object.keys(scatterDataX || {}).filter(k => k !== VAR_Y_NAME);
+        const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+        const meanSeriesData = Object.keys(samplesByTime).sort((a, b) => new Date(a) - new Date(b)).map(t => [t, mean(samplesByTime[t])]);
 
-    // Precalcular medias de X para tooltip
-    const xMeans = Object.fromEntries(
-        xKeys.map(k => [k, mean((scatterDataX[k] || []).filter(v => v != null))])
-    );
+        const allSamples = Object.values(samplesByTime).flat();
+        const minY = (allSamples.length ? Math.min(...allSamples, MIN_TOL) : MIN_TOL) - 1;
+        const maxY = (allSamples.length ? Math.max(...allSamples, MAX_TOL) : MAX_TOL) + 1;
 
-    xKeys.forEach((key, index) => {
-        if (scatterDataX[key] && scatterDataX[key].length > 0) {
-            const filtered = scatterDataX[key].filter(v => v != null);
-            let minX = filtered.length ? Math.min(...filtered) - 1 : 0;
-            let maxX = filtered.length ? Math.max(...filtered) + 1 : 1;
+        let series = [], yAxis = [];
+        yAxis.push({
+            type: 'value', name: VAR_Y_NAME, position: 'left', min: minY, max: maxY,
+            axisLine: { lineStyle: { color: '#00AA00' } }, nameLocation: 'middle', nameRotate: 90, nameGap: 45,
+            axisPointer: { label: { show: true } }
+        });
 
-            series.push({
-                name: key,
-                type: 'scatter',
-                data: scatterDataX[key].map((val, i) => [dates[i], val != null ? val : 0]),
-                yAxisIndex: index + 1,
-                symbolSize: 8
-            });
+        series.push({
+            name: nombrePromedio, type: 'line', data: meanSeriesData, showSymbol: true, symbolSize: 6, smooth: false,
+            markLine: { silent: true, symbol: 'none', lineStyle: { type: 'dashed' }, data: [{ yAxis: MIN_TOL, name: T.Bell_LSL }, { yAxis: MAX_TOL, name: T.Bell_USL }] },
+            markArea: { silent: true, itemStyle: { color: 'rgba(220,20,60,.06)' }, data: [[{ yAxis: -Infinity }, { yAxis: MIN_TOL }], [{ yAxis: MAX_TOL }, { yAxis: Infinity }]] }
+        });
 
-            yAxis.push({
-                type: 'value',
-                name: key,
-                position: index % 2 === 0 ? 'right' : 'left',
-                offset: index * 50,
-                min: minX,
-                max: maxX,
-                axisLine: { lineStyle: { color: ['#FFA500', '#4169E1', '#8A2BE2'][index % 3] } },
-                nameLocation: 'middle',
-                nameRotate: 90,
-                nameGap: 45,
-                axisPointer: { label: { show: false } } // oculta labels en ejes secundarios
-            });
-        }
-    });
+        const muestrasSeriesData = [];
+        Object.keys(samplesByTime).forEach(t => { (samplesByTime[t] || []).forEach(v => { muestrasSeriesData.push([t, v]); }); });
+        series.push({
+            name: nombreMuestras, type: 'scatter', data: muestrasSeriesData, yAxisIndex: 0, symbolSize: 7,
+            itemStyle: { color: p => { const v = Array.isArray(p.value) ? p.value[1] : p.value; return (v < MIN_TOL || v > MAX_TOL) ? '#d62728' : undefined; } }
+        });
 
-    // ===========================
-    //  ZOOM
-    // ===========================
-    let dataZoom = [
-        { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
-        { type: 'inside', xAxisIndex: 0 }
-    ];
+        const xKeys = Object.keys(scatterDataX || {}).filter(k => k !== VAR_Y_NAME);
+        const xMeans = Object.fromEntries(xKeys.map(k => [k, mean((scatterDataX[k] || []).filter(v => v != null))]));
 
-    // ===========================
-    //  TOOLTIP (Versión 2)
-    // ===========================
-    function tooltipFormatter(params) {
-        const xLabel = params[0]?.axisValue || params[0]?.axisValueLabel || '';
-        const promItem = params.find(p => p.seriesName === nombrePromedio);
-        const muestras = samplesByTime[xLabel] || [];
+        xKeys.forEach((key, index) => {
+            if (scatterDataX[key] && scatterDataX[key].length > 0) {
+                const filtered = scatterDataX[key].filter(v => v != null);
+                let minX = filtered.length ? Math.min(...filtered) - 1 : 0;
+                let maxX = filtered.length ? Math.max(...filtered) + 1 : 1;
 
-        let html = `<b>${xLabel}</b><br/>`;
-        html += `Norma: <b>${VAR_Y_NAME}</b><br/>`;
-        if (promItem) html += `Promedio: <b>${Number(promItem.value[1]).toFixed(2)}</b><br/>`;
-        html += `Límite Mínimo: ${MIN_TOL}<br/>Límite Máximo: ${MAX_TOL}`;
-
-        if (muestras.length) {
-            html += `<hr style="margin:4px 0"/>`;
-            html += `<b>Muestras (${muestras.length})</b><br/>`;
-            html += muestras.slice().sort((a, b) => a - b).join('<br/>');
-        }
-
-        // ➕ Variables X en este timestamp con desviación vs media
-        const idx = dates.indexOf(xLabel);
-        if (idx >= 0 && xKeys.length) {
-            html += `<hr style="margin:4px 0"/><b>Variables X</b><br/>`;
-            xKeys.forEach(k => {
-                const val = (scatterDataX[k] && scatterDataX[k][idx] != null) ? scatterDataX[k][idx] : null;
-                if (val == null) return;
-                const dv = val - xMeans[k];
-                const arrow = dv > 0 ? '↑' : (dv < 0 ? '↓' : '→');
-                html += `${k}: <b>${val}</b> (${arrow} ${dv.toFixed(2)})<br/>`;
-            });
-        }
-
-        return html;
-    }
-
-    // ===========================
-    //  OPCIÓN FINAL
-    // ===========================
-    chart.setOption({
-        title: { text: '', left: 'center' },
-        grid: { left: 60, right: 120, top: 40, bottom: 60 },
-        tooltip: { trigger: 'axis', formatter: tooltipFormatter, axisPointer: { type: 'cross' } },
-        // 👇 Leyenda limpia: sin series de límites
-        legend: { data: [nombrePromedio, nombreMuestras, ...xKeys] },
-        xAxis: { type: 'category', data: xCategories },
-        yAxis: yAxis,
-        dataZoom: dataZoom,
-        series: series
-    });
-
-    // ===========================
-    //  CAMPANA / ESTADÍSTICAS
-    // ===========================
-    function updateBellCurveChart(variableName, dataValues) {
-        document.getElementById("bell-curve-loader").style.display = "block";
-        setTimeout(() => {
-            if (dataValues.length > 0) {
-                const meanVal = mean(dataValues);
-                const stdDev = Math.sqrt(dataValues.map(x => Math.pow(x - meanVal, 2)).reduce((a, b) => a + b) / dataValues.length);
-                const cpk = Math.min((MAX_TOL - meanVal) / (3 * stdDev), (meanVal - MIN_TOL) / (3 * stdDev));
-                const ppk = cpk * 1.2; // simulación
-                const range = Math.max(...dataValues) - Math.min(...dataValues);
-
-                let bellCurveData = [];
-                for (let i = meanVal - 3 * stdDev; i <= meanVal + 3 * stdDev; i += stdDev / 2) {
-                    let yValue = Math.exp(-Math.pow(i - meanVal, 2) / (2 * Math.pow(stdDev, 2)));
-                    bellCurveData.push([i, yValue]);
-                }
-
-                let histogramData = {};
-                dataValues.forEach(val => {
-                    let bucket = Math.round(val * 10) / 10;
-                    histogramData[bucket] = (histogramData[bucket] || 0) + 1;
-                });
-                let histogramSeries = Object.keys(histogramData).map(bucket => [parseFloat(bucket), histogramData[bucket]]);
-                let minX = Math.min(...bellCurveData.map(d => d[0]), MIN_TOL) - 0.1;
-                let maxX = Math.max(...bellCurveData.map(d => d[0]), MAX_TOL) + 0.1;
-
-                document.getElementById("cpkValue").innerText = (Math.random() * 10).toFixed(3);
-                document.getElementById("ppkValue").innerText = (Math.random() * 5).toFixed(3);
-                document.getElementById("meanValue").innerText = meanVal.toFixed(2);
-                document.getElementById("rangeValue").innerText = range.toFixed(2);
-
-                bellCurveChart.setOption({
-                    title: { text: 'Distribución Normal - Variable' },
-                    tooltip: { trigger: 'axis' },
-                    xAxis: { type: 'value', name: 'Variable', min: minX, max: maxX },
-                    yAxis: { type: 'value', name: 'Frecuencia' },
-                    dataZoom: [
-                        { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
-                        { type: 'inside', xAxisIndex: 0 }
-                    ],
-                    series: [
-                        { name: 'Distribución', type: 'line', data: bellCurveData },
-                        { name: 'Histograma', type: 'bar', data: histogramSeries },
-                        {
-                            name: 'LEI', type: 'line',
-                            data: [[MIN_TOL, 0], [MIN_TOL, Math.max(...histogramSeries.map(h => h[1]))]]
-                        },
-                        {
-                            name: 'LES', type: 'line',
-                            data: [[MAX_TOL, 0], [MAX_TOL, Math.max(...histogramSeries.map(h => h[1]))]]
-                        }
-                    ]
+                series.push({ name: key, type: 'scatter', data: scatterDataX[key].map((val, i) => [dates[i], val ?? 0]), yAxisIndex: index + 1, symbolSize: 8 });
+                yAxis.push({
+                    type: 'value', name: key, position: index % 2 === 0 ? 'right' : 'left', offset: index * 50, min: minX, max: maxX,
+                    axisLine: { lineStyle: { color: ['#FFA500', '#4169E1', '#8A2BE2'][index % 3] } }, nameLocation: 'middle', nameRotate: 90, nameGap: 45,
+                    axisPointer: { label: { show: false } }
                 });
             }
-            document.getElementById("bell-curve-loader").style.display = "none";
-        }, 50);
-    }
+        });
 
-    // ===========================
-    //  CLICK → CAMPANA (Versión 2)
-    // ===========================
-    chart.on('click', function (params) {
-        // Click sobre la línea de promedio de Y
-        if (params.seriesName === nombrePromedio) {
-            const ts = params.name || (Array.isArray(params.value) ? params.value[0] : null);
-            const muestras = ts ? (samplesByTime[ts] || []) : [];
-            if (muestras.length) updateBellCurveChart(VAR_Y_NAME, muestras.slice(0, 1000));
-            return;
+        let dataZoom = [{ type: 'slider', xAxisIndex: 0, start: 0, end: 100 }, { type: 'inside', xAxisIndex: 0 }];
+
+        function tooltipFormatter(params) {
+            const xLabel = params[0]?.axisValue || params[0]?.axisValueLabel || '';
+            const promItem = params.find(p => p.seriesName === nombrePromedio);
+            const muestras = samplesByTime[xLabel] || [];
+
+            let html = `<b>${xLabel}</b><br/>`;
+            html += `${T.Spec}: <b>${VAR_Y_NAME}</b><br/>`;
+            if (promItem) html += `${T.Mean}: <b>${Number(promItem.value[1]).toFixed(2)}</b><br/>`;
+            html += `${T.MinLimit}: ${MIN_TOL}<br/>${T.MaxLimit}: ${MAX_TOL}`;
+
+            if (muestras.length) {
+                html += `<hr style="margin:4px 0"/>`;
+                html += `<b>${T.Samples.replace('{0}', muestras.length)}</b><br/>`;
+                html += muestras.slice().sort((a, b) => a - b).join('<br/>');
+            }
+
+            const idx = dates.indexOf(xLabel);
+            if (idx >= 0 && xKeys.length) {
+                html += `<hr style="margin:4px 0"/><b>${T.XVARS}</b><br/>`;
+                xKeys.forEach(k => {
+                    const val = (scatterDataX[k] && scatterDataX[k][idx] != null) ? scatterDataX[k][idx] : null;
+                    if (val == null) return;
+                    const dv = val - xMeans[k];
+                    const arrow = dv > 0 ? '↑' : (dv < 0 ? '↓' : '→');
+                    html += `${k}: <b>${val}</b> (${arrow} ${dv.toFixed(2)})<br/>`;
+                });
+            }
+            return html;
         }
 
-        // Click sobre las muestras (Y)
-        if (params.seriesName === nombreMuestras) {
-            const ts = Array.isArray(params.value) ? params.value[0] : params.name;
-            const muestras = ts ? (samplesByTime[ts] || []) : [];
-            if (muestras.length) updateBellCurveChart(VAR_Y_NAME, muestras.slice(0, 1000));
-            return;
-        }
+        chart.setOption({
+            title: { text: '', left: 'center' },
+            grid: { left: 60, right: 120, top: 40, bottom: 60 },
+            tooltip: { trigger: 'axis', formatter: tooltipFormatter, axisPointer: { type: 'cross' } },
+            legend: { data: [nombrePromedio, nombreMuestras, ...xKeys] },
+            xAxis: { type: 'category', data: xCategories },
+            yAxis: yAxis,
+            dataZoom: dataZoom,
+            series: series
+        });
 
-        // Click sobre una variable X
-        if (params.seriesType === 'scatter') {
+        function updateBellCurveChart(variableName, dataValues) {
+            document.getElementById("bell-curve-loader").style.display = "block";
             setTimeout(() => {
-                const selectedVariable = params.seriesName;
-                if (scatterDataX[selectedVariable]) {
-                    const data = scatterDataX[selectedVariable].slice(0, 1000);
-                    updateBellCurveChart(selectedVariable, data);
-                }
-            }, 30);
-        }
-    });
+                if (dataValues.length > 0) {
+                    const meanVal = mean(dataValues);
+                    const stdDev = Math.sqrt(dataValues.map(x => Math.pow(x - meanVal, 2)).reduce((a, b) => a + b) / dataValues.length);
+                    const cpk = Math.min((MAX_TOL - meanVal) / (3 * stdDev), (meanVal - MIN_TOL) / (3 * stdDev));
+                    const ppk = cpk * 1.2; // simulación
+                    const range = Math.max(...dataValues) - Math.min(...dataValues);
 
-    // Helpers para zoom de la campana
-    function zoomOut() {
-        let zoom = bellCurveChart.getOption().dataZoom[0];
-        let start = Math.max(zoom.start - 10, 0);
-        let end = Math.min(zoom.end + 10, 100);
-        bellCurveChart.setOption({ dataZoom: [{ start, end }] });
-    }
-    function zoomIn() {
-        let zoom = bellCurveChart.getOption().dataZoom[0];
-        let start = Math.min(zoom.start + 10, 100);
-        let end = Math.max(zoom.end - 10, 0);
-        bellCurveChart.setOption({ dataZoom: [{ start, end }] });
-    }
-    function resetZoom() {
-        bellCurveChart.setOption({ dataZoom: [{ start: 0, end: 100 }] });
-    }
-</script>
+                    let bellCurveData = [], histogramData = {};
+                    for (let i = meanVal - 3 * stdDev; i <= meanVal + 3 * stdDev; i += stdDev / 2) {
+                        let yValue = Math.exp(-Math.pow(i - meanVal, 2) / (2 * Math.pow(stdDev, 2)));
+                        bellCurveData.push([i, yValue]);
+                    }
+                    dataValues.forEach(val => { let bucket = Math.round(val * 10) / 10; histogramData[bucket] = (histogramData[bucket] || 0) + 1; });
+                    let histogramSeries = Object.keys(histogramData).map(b => [parseFloat(b), histogramData[b]]);
+                    let minX = Math.min(...bellCurveData.map(d => d[0]), MIN_TOL) - 0.1;
+                    let maxX = Math.max(...bellCurveData.map(d => d[0]), MAX_TOL) + 0.1;
+
+                    document.getElementById("cpkValue").innerText = (Math.random() * 10).toFixed(3);
+                    document.getElementById("ppkValue").innerText = (Math.random() * 5).toFixed(3);
+                    document.getElementById("meanValue").innerText = meanVal.toFixed(2);
+                    document.getElementById("rangeValue").innerText = range.toFixed(2);
+
+                    bellCurveChart.setOption({
+                        title: { text: T.Bell_Title },
+                        tooltip: { trigger: 'axis' },
+                        xAxis: { type: 'value', name: T.Bell_XAxis, min: minX, max: maxX },
+                        yAxis: { type: 'value', name: T.Bell_YAxis },
+                        dataZoom: [{ type: 'slider', xAxisIndex: 0, start: 0, end: 100 }, { type: 'inside', xAxisIndex: 0 }],
+                        series: [
+                            { name: T.Bell_Distribution, type: 'line', data: bellCurveData },
+                            { name: T.Bell_Histogram, type: 'bar', data: histogramSeries },
+                            { name: T.Bell_LSL, type: 'line', data: [[MIN_TOL, 0], [MIN_TOL, Math.max(...histogramSeries.map(h => h[1]))]] },
+                            { name: T.Bell_USL, type: 'line', data: [[MAX_TOL, 0], [MAX_TOL, Math.max(...histogramSeries.map(h => h[1]))]] }
+                        ]
+                    });
+                }
+                document.getElementById("bell-curve-loader").style.display = "none";
+            }, 50);
+        }
+
+        chart.on('click', function (params) {
+            if (params.seriesName === nombrePromedio || params.seriesName === nombreMuestras) {
+                const ts = params.name || (Array.isArray(params.value) ? params.value[0] : null);
+                const muestras = ts ? (samplesByTime[ts] || []) : [];
+                if (muestras.length) updateBellCurveChart(VAR_Y_NAME, muestras.slice(0, 1000));
+                return;
+            }
+            if (params.seriesType === 'scatter') {
+                setTimeout(() => {
+                    const selectedVariable = params.seriesName;
+                    if (scatterDataX[selectedVariable]) {
+                        const data = scatterDataX[selectedVariable].slice(0, 1000);
+                        updateBellCurveChart(selectedVariable, data);
+                    }
+                }, 30);
+            }
+        });
+
+        function zoomOut() { let z = bellCurveChart.getOption().dataZoom[0]; bellCurveChart.setOption({ dataZoom: [{ start: Math.max(z.start - 10, 0), end: Math.min(z.end + 10, 100) }] }); }
+        function zoomIn() { let z = bellCurveChart.getOption().dataZoom[0]; bellCurveChart.setOption({ dataZoom: [{ start: Math.min(z.start + 10, 100), end: Math.max(z.end - 10, 0) }] }); }
+        function resetZoom() { bellCurveChart.setOption({ dataZoom: [{ start: 0, end: 100 }] }); }
+    </script>
+}

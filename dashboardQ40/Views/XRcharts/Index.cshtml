@@ -1,0 +1,804 @@
+﻿@model dynamic
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Dashboard Arca Planta Insurgentes";
+}
+@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
+
+<h4>@Localizer["XR_Title"]</h4>
+
+
+
+
+<form id="selectionForm" target="_blank">
+    <div class="row row-cols-lg-auto g-2 align-items-end">
+        <!-- Fechas -->
+        <div class="col">
+            <label for="startDate" class="form-label">@Localizer["XR_From"]</label>
+        </div>
+        <div class="col">
+            <input type="datetime-local" id="startDate" name="startDate" class="form-control form-control-sm" />
+        </div>
+        <div class="col">
+            <label for="endDate" class="form-label">@Localizer["XR_To"]</label>
+        </div>
+        <div class="col">
+            <input type="datetime-local" id="endDate" name="endDate" class="form-control form-control-sm" />
+        </div>
+
+        <!-- País / Planta -->
+        <div class="col">
+            <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
+        </div>
+        <div class="col">
+            <select id="pais" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
+                {
+                    <option value="@p.Code">@p.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
+        </div>
+        <div class="col">
+            <select id="planta" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
+
+        <!-- Línea -->
+        <div class="col">
+            <label for="line" class="form-label">@Localizer["XR_Line"]</label>
+        </div>
+        <div class="col">
+            <select id="line" name="line" class="form-select form-select-sm"></select>
+        </div>
+
+        <!-- SKU -->
+        <div class="col">
+            
+            <label for="sku" class="form-label">@Localizer["XR_SKU"]</label>
+        </div>
+        <div class="col">
+            <select id="sku" name="sku" class="form-select form-select-sm">
+                <option value="">SKU</option>
+            </select>
+        </div>
+
+        <!-- Variables -->
+        <div class="col">
+            
+            <label for="variableYSelect" class="form-label">@Localizer["XR_VarY"]</label>
+        </div>
+        <div class="col">
+            <select id="variableYSelect" name="variableYSelect" class="form-select form-select-sm">
+                <option value="">Selecciona Variable Y</option>
+            </select>
+        </div>
+        <div class="col">
+            <label for="variablesX" class="form-label">@Localizer["XR_VarX"]</label>
+        </div>
+        <div class="col">
+            <select id="variablesX" name="variablesX" class="form-select form-select-sm">
+                <option value="">Selecciona Variable X</option>
+            </select>
+        </div>
+        <div class="col">
+            <button id="btnReporte" type="button" class="btn btn-primary btn-sm" onclick="runReportXR()">
+                📊 @Localizer["XR_ReportBtn"]
+            </button>
+        </div>
+    </div>
+
+    <input type="hidden" id="variableY" name="variableY" />
+</form>
+
+<div class="mt-3">
+    <div class="card mb-3">
+        <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_TimeSeries"]</h6>
+            <div id="chartXR" style="height:340px;"></div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_Hist"]</h6>
+            <div id="histXR" style="height:300px;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_Capability"]</h6>
+            <div id="capTableXR"></div>
+        </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_XbarTitle"]</h6>
+        <div id="xbarXR" style="height:240px;"></div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_RTitle"]</h6>
+        <div id="rchartXR" style="height:240px;"></div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_RunTitle"]</h6>
+        <div id="runXR" style="height:240px;"></div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_NormProbTitle"]</h6>
+        <div id="normprobXR" style="height:280px;"></div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+            <h6 class="text-muted">@Localizer["XR_CapPlotTitle"]</h6>
+        <div id="capPlotXR" style="height:260px;"></div>
+      </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+    <!-- Exponer textos localizados para usarlos en JS -->
+    <script>
+        const L = {
+            Title: "@Localizer["XR_Title"]",
+            From: "@Localizer["XR_From"]",
+            To: "@Localizer["XR_To"]",
+            Country: "@Localizer["XR_Country"]",
+            Plant: "@Localizer["XR_Plant"]",
+            Line: "@Localizer["XR_Line"]",
+            SKU: "@Localizer["XR_SKU"]",
+            VarY: "@Localizer["XR_VarY"]",
+            VarX: "@Localizer["XR_VarX"]",
+            SelectVarY: "@Localizer["XR_SelectVarY"]",
+            SelectVarX: "@Localizer["XR_SelectVarX"]",
+            ReportBtn: "@Localizer["XR_ReportBtn"]",
+            TimeSeries: "@Localizer["XR_TimeSeries"]",
+            Hist: "@Localizer["XR_Hist"]",
+            Capability: "@Localizer["XR_Capability"]",
+            XbarTitle: "@Localizer["XR_XbarTitle"]",
+            RTitle: "@Localizer["XR_RTitle"]",
+            RunTitle: "@Localizer["XR_RunTitle"]",
+            NormProbTitle: "@Localizer["XR_NormProbTitle"]",
+            CapPlotTitle: "@Localizer["XR_CapPlotTitle"]",
+            SelectFilters: "@Localizer["XR_SelectFilters"]",
+            NoData: "@Localizer["XR_NoData"]",
+            LoadSkuErr: "@Localizer["XR_LoadSkuErr"]",
+            NoCapData: "@Localizer["XR_NoCapData"]",
+            tbl_Variable: "@Localizer["XR_tbl_Variable"]",
+            tbl_n: "@Localizer["XR_tbl_n"]",
+            tbl_Subgroups: "@Localizer["XR_tbl_Subgroups"]",
+            tbl_Mean: "@Localizer["XR_tbl_Mean"]",
+            tbl_SigmaOverall: "@Localizer["XR_tbl_SigmaOverall"]",
+            tbl_SigmaWithin: "@Localizer["XR_tbl_SigmaWithin"]",
+            tbl_LSL: "@Localizer["XR_tbl_LSL"]",
+            tbl_USL: "@Localizer["XR_tbl_USL"]",
+            tbl_Cp: "@Localizer["XR_tbl_Cp"]",
+            tbl_Cpk: "@Localizer["XR_tbl_Cpk"]",
+            tbl_Pp: "@Localizer["XR_tbl_Pp"]",
+            tbl_Ppk: "@Localizer["XR_tbl_Ppk"]",
+            Result: "@Localizer["XR_Result"]",
+            LSL: "@Localizer["XR_LSL"]",
+            USL: "@Localizer["XR_USL"]",
+            Subgroup: "@Localizer["XR_Subgroup"]",
+            Data: "@Localizer["XR_Data"]",
+            Fit: "@Localizer["XR_Fit"]",
+            WithinBand: "@Localizer["XR_WithinBand"]",
+            OverallBand: "@Localizer["XR_OverallBand"]"
+        };
+    </script>
+
+    <script>
+        // =======================
+        // Catálogo País / Planta (puedes internacionalizarlo si quieres)
+        // =======================
+        const catalogo = {
+            "México": ["Favorita", "Guadalupe", "Chihuahua", "Mexicali", "Insurgentes", "San Agustín",
+                "Ciudad Juárez", "Culiacán", "Piedras Negras", "Hermosillo", "Aguascalientes",
+                "Topo Chico", "San Luis Potosí", "Durango", "La Paz", "Zapopan", "Matamoros",
+                "Trojes", "Nogales", "Saltillo"],
+            "Perú": ["Zárate", "Pucusana", "Trujillo", "Arequipa", "Iquitos", "Cusco"],
+            "USA": ["Fossil Creek", "North Point", "Oklahoma", "San Antonio", "Abilene", "El Paso", "McAllen"],
+            "Ecuador": ["Guayaquil", "Quito", "Santo Domingo", "Tony - Lacteos", "Lacteos - solo dat"],
+            "Argentina": ["Salta", "Tucumán", "Formosa"]
+        };
+
+        const DEFAULT_PAIS = "México";
+        const DEFAULT_PLANTA = "Insurgentes";
+
+        // Todas las companies (company, companyName, countryCode, ...)
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+
+        // Rellena combo de plantas según país
+        function fillPlants(countryCode) {
+            const $planta = document.getElementById('planta');
+            $planta.innerHTML = '<option value="">-- Selecciona --</option>';
+
+            if (!countryCode) return;
+
+            const plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            for (const p of plants) {
+                const opt = document.createElement('option');
+                opt.value = p.Company;          // valor = código de company
+                opt.textContent = p.CompanyName; // texto = nombre de planta
+                $planta.appendChild(opt);
+            }
+        }
+
+        // Evento: cambio de país
+        document.getElementById('pais').addEventListener('change', function () {
+            fillPlants(this.value);
+        });
+
+        // Opcional: inicializar con el primer país seleccionado
+        (function init() {
+            const pais = document.getElementById('pais');
+            if (pais.options.length > 1) {
+                pais.selectedIndex = 1;       // selecciona primer país real
+                pais.dispatchEvent(new Event('change'));
+            }
+        })();
+        // Forzar habilitado inicial (si no usas gating por selects)
+        $(document).ready(function () {
+            $('#btnReporte').prop('disabled', false);
+        });
+
+        // Habilitar/deshabilitar botón según selecciones (opcional)
+        function updateReportButtons() {
+            const hasY = !!$("#variableYSelect").val();
+            const hasX = !!$("#variablesX").val();
+            $("#btnReporte").prop("disabled", !(hasY && hasX));
+        }
+        $('#variableYSelect, #variablesX, #line, #sku, #startDate, #endDate')
+            .on('change input', updateReportButtons);
+/*
+        // País / Planta
+        function llenarPaises() {
+            const $p = $("#pais");
+            $p.empty();
+            Object.keys(catalogo).forEach(pais => $p.append(new Option(pais, pais)));
+            $p.val(DEFAULT_PAIS);
+        }
+        function llenarPlantas(pais) {
+            const $pl = $("#planta");
+            const plantas = catalogo[pais] || [];
+            $pl.empty();
+            plantas.forEach(pl => $pl.append(new Option(pl, pl)));
+            if (pais === DEFAULT_PAIS && plantas.includes(DEFAULT_PLANTA)) $pl.val(DEFAULT_PLANTA);
+            else if (plantas.length) $pl.val(plantas[0]);
+        }
+        $("#pais").on("change", function () {
+            llenarPlantas(this.value);
+            $("#sku").empty().append(`<option value="">${L.SKU}</option>`);
+            resetYAndX();
+        }); */
+         
+        $("#planta").on("change", function () {
+            $("#sku").empty().append(`<option value="">${L.SKU}</option>`);
+            resetYAndX();
+        });
+
+
+        // =======================
+        // Helper: normalizar arrays (para $values)
+        // =======================
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            return [];
+        }
+
+        // =======================
+        // Estado
+        // =======================
+        function resetYAndX() {
+            $("#variableYSelect").empty().append(`<option value="">${L.SelectVarY}</option>`);
+            $("#variablesX").empty().append(`<option value="">${L.SelectVarX}</option>`);
+            updateReportButtons();
+        }
+
+        // =======================
+        // AJAX: SKU
+        // =======================
+        function cargarProductos() {
+            var lineaId = $("#line").val();
+            var fechaInicial = $("#startDate").val();
+            var fechaFinal = $("#endDate").val();
+            if (lineaId && fechaInicial && fechaFinal) {
+                $.ajax({
+                    url: '@Url.Action("ObtenerProductos_XR", "XRcharts")',
+                    type: 'GET',
+                    data: { lineaId, fechaInicial, fechaFinal },
+                    success: function (data) {
+                        const productos = toArray(data);
+                        const $dd = $("#sku");
+                        $dd.empty().append(`<option value="">${L.SKU}</option>`);
+                        productos.forEach(p => {
+                            $dd.append(`<option value="${p.manufacturingOrder}">${p.manufacturingReferenceName}</option>`);
+                        });
+                    },
+                    error: function () { alert(L.LoadSkuErr); }
+                });
+            } else {
+                $("#sku").empty().append(`<option value="">${L.SKU}</option>`);
+            }
+        }
+        $("#line, #startDate, #endDate").on("change", cargarProductos);
+
+        // =======================
+        // AJAX: Variables Y
+        // =======================
+        $("#sku").on("change", function () { cargarVarY(); });
+
+        function cargarVarY() {
+            const sku = $("#sku").val();
+            const fechaInicial = $("#startDate").val();
+            const fechaFinal = $("#endDate").val();
+            const lineaId = $("#line").val();
+            if (!sku) { resetYAndX(); return; }
+
+            $.ajax({
+                url: '@Url.Action("ObtenerVarY_XR", "XRcharts")',
+                type: 'GET',
+                data: { sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId },
+                success: function (data) {
+                    const itemsRaw = toArray(data);
+                    const $y = $("#variableYSelect");
+                    $y.empty().append(`<option value="">${L.SelectVarY}</option>`);
+                    itemsRaw.forEach(it => $y.append(new Option(it.name, it.value)));
+                    $y.off("change").on("change", function () {
+                        $("#variableY").val(this.value);
+                        cargarVarX();
+                    });
+                }
+            });
+        }
+
+        // =======================
+        // AJAX: Variables X
+        // =======================
+        function cargarVarX() {
+            const sku = $("#sku").val();
+            const varYCode = $("#variableYSelect").val();
+            const fechaInicial = $("#startDate").val();
+            const fechaFinal = $("#endDate").val();
+            const lineaId = $("#line").val();
+            if (!(sku && varYCode)) return;
+
+            $.ajax({
+                url: '@Url.Action("ObtenerVarX_XR", "XRcharts")',
+                type: 'GET',
+                data: { sku, varY: varYCode, fechaInicial, fechaFinal, lineaId },
+                success: function (data) {
+                    const list = toArray(data);
+                    const $x = $("#variablesX");
+                    $x.empty().append(`<option value="">${L.SelectVarX}</option>`);
+                    list.forEach(v => $x.append(new Option(v.name, v.value)));
+                    if (list.length) { $x.val(list[0].value); }
+                    updateReportButtons();
+                },
+                error: function (xhr) { console.error("ObtenerVarX_XR error", xhr); }
+            });
+        }
+
+        // =======================
+        // RUN REPORT (fetch + draw)
+        // =======================
+        async function runReportXR() {
+            const from = $("#startDate").val();
+            const to = $("#endDate").val();
+            const workplace = $("#line").val();
+            const controlOp = $("#variablesX").val() || $("#variableYSelect").val();
+            if (!(from && to && workplace && controlOp)) { alert(L.SelectFilters); return; }
+
+            try {
+                // 1) Base rows
+                const baseUrl = '@Url.Action("GetBaseRows", "XRcharts")';
+                const baseResp = await $.getJSON(baseUrl, { from, to, workplace, reference: null, controlOperation: controlOp });
+                const rows = Array.isArray(baseResp) ? baseResp :
+                    Array.isArray(baseResp?.$values) ? baseResp.$values : baseResp;
+
+                const items = rows.map(r => ({
+                    ts: new Date(r.executionDate),
+                    y: Number(r.resultValue),
+                    lsl: r.LSL != null ? Number(r.LSL) : null,
+                    usl: r.USL != null ? Number(r.USL) : null,
+                    sg: r.subgroupId,
+                    name: r.controlOperationName
+                })).filter(p => Number.isFinite(p.y) && p.ts);
+
+                if (!items.length) { alert(L.NoData); return; }
+
+                // 2) Capability
+                const capUrl = '@Url.Action("GetCapability", "XRcharts")';
+                const capResp = await $.getJSON(capUrl, { from, to, workplace, reference: null, controlOperation: controlOp });
+                const capRows = Array.isArray(capResp) ? capResp :
+                    Array.isArray(capResp?.$values) ? capResp.$values : capResp;
+                const cap = capRows && capRows.length ? capRows[0] : null;
+
+                // Subgrupos (Xbar y R)
+                const bySg = {};
+                for (const it of items) {
+                    if (!bySg[it.sg]) bySg[it.sg] = [];
+                    bySg[it.sg].push(it);
+                }
+                const sgKeys = Object.keys(bySg).sort((a, b) => bySg[a][0].ts - bySg[b][0].ts);
+                const xbarData = [];
+                const rData = [];
+                sgKeys.forEach((k, i) => {
+                    const vals = bySg[k].map(o => o.y);
+                    const t0 = bySg[k][0].ts;
+                    xbarData.push({ idx: i + 1, ts: t0, mean: mean(vals) });
+                    rData.push({ idx: i + 1, ts: t0, r: range(vals) });
+                });
+
+                const lsl = items.find(p => p.lsl != null)?.lsl ?? null;
+                const usl = items.find(p => p.usl != null)?.usl ?? null;
+
+                // Draw
+                renderXRTime(items);
+                renderXRHistogram(items);
+                renderXRCapTable(cap);
+                renderXbarChart(xbarData, lsl, usl);
+                renderRChart(rData);
+                renderRunChart(items, lsl, usl);
+                renderNormalProb(items, lsl, usl);
+                renderCapabilityPlot(cap, lsl, usl);
+
+            } catch (err) {
+                console.error(err);
+                alert("Error"); // texto técnico; si quieres lo etiquetamos también
+            }
+        }
+        window.runReportXR = runReportXR;
+
+        // =======================
+        // Renderers (con etiquetas)
+        // =======================
+        function renderXRTime(points) {
+            const dom = document.getElementById('chartXR');
+            const chart = echarts.init(dom);
+            const lsl = points.find(p => p.lsl != null)?.lsl ?? null;
+            const usl = points.find(p => p.usl != null)?.usl ?? null;
+
+            chart.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                grid: { left: 48, right: 16, top: 24, bottom: 40 },
+                xAxis: { type: 'time' },
+                yAxis: { type: 'value', scale: true },
+                legend: { top: 0 },
+                series: [
+                    { type: 'line', name: L.Result, showSymbol: false, data: points.map(p => [p.ts, p.y]), areaStyle: { opacity: 0.08 } },
+                    ...(lsl != null ? [{ type: 'line', name: L.LSL, symbol: 'none', lineStyle: { type: 'dashed' }, data: points.map(p => [p.ts, lsl]) }] : []),
+                    ...(usl != null ? [{ type: 'line', name: L.USL, symbol: 'none', lineStyle: { type: 'dashed' }, data: points.map(p => [p.ts, usl]) }] : [])
+                ]
+            });
+        }
+
+        function renderXRHistogram(points) {
+            const dom = document.getElementById('histXR');
+            const chart = echarts.init(dom);
+
+            const vals = points.map(p => p.y).filter(Number.isFinite);
+            if (!vals.length) { chart.clear(); return; }
+
+            const sorted = vals.slice().sort((a, b) => a - b);
+            const q1 = sorted[Math.floor(sorted.length * 0.25)];
+            const q3 = sorted[Math.floor(sorted.length * 0.75)];
+            const iqr = (q3 - q1) || (sorted[sorted.length - 1] - sorted[0]) || 1;
+            const binWidth = Math.max(iqr * Math.pow(vals.length, -1 / 3), 1e-9);
+            const min = sorted[0], max = sorted[sorted.length - 1];
+            const bins = Math.max(5, Math.min(40, Math.ceil((max - min) / binWidth)));
+
+            const edges = Array.from({ length: bins + 1 }, (_, i) => min + i * (max - min) / bins);
+            const counts = new Array(bins).fill(0);
+            vals.forEach(v => {
+                let idx = Math.min(bins - 1, Math.max(0, Math.floor((v - min) / (max - min) * bins)));
+                counts[idx]++;
+            });
+            const centers = edges.slice(0, -1).map((e, i) => (e + edges[i + 1]) / 2);
+
+            const lsl = points.find(p => p.lsl != null)?.lsl ?? null;
+            const usl = points.find(p => p.usl != null)?.usl ?? null;
+
+            chart.setOption({
+                grid: { left: 48, right: 16, top: 24, bottom: 40 },
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                xAxis: { type: 'value', min, max },
+                yAxis: { type: 'value' },
+                series: [{ type: 'bar', data: centers.map((c, i) => [c, counts[i]]), barWidth: '90%' }],
+                markLine: {
+                    symbol: 'none', lineStyle: { type: 'dashed' }, label: { formatter: '{b}' },
+                    data: [
+                        ...(lsl != null ? [{ xAxis: lsl, name: L.LSL }] : []),
+                        ...(usl != null ? [{ xAxis: usl, name: L.USL }] : [])
+                    ]
+                }
+            });
+        }
+
+        function renderXRCapTable(cap) {
+            const el = document.getElementById('capTableXR');
+            if (!cap) { el.innerHTML = `<em>${L.NoCapData}</em>`; return; }
+
+            const safe = v => (v == null || isNaN(v)) ? '—' : Number(v).toFixed(3);
+            el.innerHTML = `
+              <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>${L.tbl_Variable}</th><th>${L.tbl_n}</th><th>${L.tbl_Subgroups}</th>
+                      <th>${L.tbl_Mean}</th><th>${L.tbl_SigmaOverall}</th><th>${L.tbl_SigmaWithin}</th>
+                      <th>${L.tbl_LSL}</th><th>${L.tbl_USL}</th><th>${L.tbl_Cp}</th><th>${L.tbl_Cpk}</th><th>${L.tbl_Pp}</th><th>${L.tbl_Ppk}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>${cap.controlOperationName ?? cap.controlOperation ?? ''}</td>
+                      <td>${cap.nPoints ?? '—'}</td>
+                      <td>${cap.nSubgroups ?? '—'}</td>
+                      <td>${safe(cap.meanAll)}</td>
+                      <td>${safe(cap.sigmaOverall)}</td>
+                      <td>${safe(cap.sigmaWithin)}</td>
+                      <td>${cap.LSL ?? '—'}</td>
+                      <td>${cap.USL ?? '—'}</td>
+                      <td>${safe(cap.Cp)}</td>
+                      <td>${safe(cap.Cpk)}</td>
+                      <td>${safe(cap.Pp)}</td>
+                      <td>${safe(cap.Ppk)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>`;
+        }
+
+        function renderXbarChart(xbarData, lsl, usl) {
+            const dom = document.getElementById('xbarXR');
+            const chart = echarts.init(dom);
+            const x = xbarData.map(d => d.idx);
+            const y = xbarData.map(d => d.mean);
+            chart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: 48, right: 16, top: 24, bottom: 40 },
+                xAxis: { type: 'category', data: x, name: L.Subgroup },
+                yAxis: { type: 'value', scale: true },
+                legend: { top: 0 },
+                series: [
+                    { type: 'line', data: y, showSymbol: true, name: 'X̄', areaStyle: { opacity: .06 } },
+                    ...(lsl != null ? [{ type: 'line', name: L.LSL, data: y.map(() => lsl), lineStyle: { type: 'dashed' }, symbol: 'none' }] : []),
+                    ...(usl != null ? [{ type: 'line', name: L.USL, data: y.map(() => usl), lineStyle: { type: 'dashed' }, symbol: 'none' }] : []),
+                ]
+            });
+        }
+
+        function renderRChart(rData) {
+            const dom = document.getElementById('rchartXR');
+            const chart = echarts.init(dom);
+            const x = rData.map(d => d.idx);
+            const y = rData.map(d => d.r);
+            chart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: 48, right: 16, top: 24, bottom: 40 },
+                xAxis: { type: 'category', data: x, name: L.Subgroup },
+                yAxis: { type: 'value', min: 0, scale: true },
+                legend: { top: 0 },
+                series: [{ type: 'line', data: y, showSymbol: true, name: 'R', areaStyle: { opacity: .06 } }]
+            });
+        }
+
+        function renderRunChart(items, lsl, usl) {
+            const dom = document.getElementById('runXR');
+            const chart = echarts.init(dom);
+            chart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: 48, right: 16, top: 24, bottom: 40 },
+                xAxis: { type: 'time' },
+                yAxis: { type: 'value', scale: true },
+                legend: { top: 0 },
+                series: [
+                    { type: 'scatter', name: L.Result, data: items.map(p => [p.ts, p.y]) },
+                    ...(lsl != null ? [{ type: 'line', name: L.LSL, data: items.map(p => [p.ts, lsl]), lineStyle: { type: 'dashed' }, symbol: 'none' }] : []),
+                    ...(usl != null ? [{ type: 'line', name: L.USL, data: items.map(p => [p.ts, usl]), lineStyle: { type: 'dashed' }, symbol: 'none' }] : [])
+                ]
+            });
+        }
+
+        function renderNormalProb(items, lsl, usl) {
+            const dom = document.getElementById('normprobXR');
+            const chart = echarts.init(dom);
+            const vals = items.map(p => p.y).filter(Number.isFinite).sort((a, b) => a - b);
+            if (vals.length < 3) { chart.clear(); return; }
+
+            const pts = vals.map((v, i) => {
+                const p = (i + 0.375) / (vals.length + 0.25);
+                return [normInv(p), v]; // (z, y)
+            });
+
+            // regresión lineal y = a + b z
+            const n = pts.length;
+            const mx = mean(pts.map(p => p[0]));
+            const my = mean(pts.map(p => p[1]));
+            const cov = pts.reduce((s, p) => s + (p[0] - mx) * (p[1] - my), 0) / n;
+            const vx = pts.reduce((s, p) => s + (p[0] - mx) * (p[0] - mx), 0) / n;
+            const b = cov / vx;
+            const a = my - b * mx;
+
+            const xs = [pts[0][0], pts[pts.length - 1][0]];
+            const line = xs.map(x => [x, a + b * x]);
+
+            chart.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                grid: { left: 48, right: 16, top: 24, bottom: 40 },
+                xAxis: { type: 'value', name: 'z' },
+                yAxis: { type: 'value', name: L.Result, scale: true },
+                legend: { top: 0 },
+                series: [
+                    { type: 'scatter', data: pts, name: L.Data },
+                    { type: 'line', data: line, name: L.Fit, symbol: 'none' },
+                    ...(lsl != null ? [{ type: 'line', data: xs.map(x => [x, lsl]), name: L.LSL, lineStyle: { type: 'dashed' }, symbol: 'none' }] : []),
+                    ...(usl != null ? [{ type: 'line', data: xs.map(x => [x, usl]), name: L.USL, lineStyle: { type: 'dashed' }, symbol: 'none' }] : [])
+                ]
+            });
+        }
+
+        function renderCapabilityPlot(cap, lsl, usl) {
+            const dom = document.getElementById('capPlotXR');
+            const chart = echarts.init(dom);
+            if (!cap) { chart.clear(); return; }
+
+            const mu = Number(cap.meanAll ?? NaN);
+            const sW = Number(cap.sigmaWithin ?? NaN);
+            const sO = Number(cap.sigmaOverall ?? NaN);
+
+            function band(mu, s) { return [mu - 3 * s, mu, mu + 3 * s]; }
+
+            const cat = [L.WithinBand, L.OverallBand];
+            const within = (isNaN(sW) ? [null, null, null] : band(mu, sW));
+            const overall = (isNaN(sO) ? [null, null, null] : band(mu, sO));
+
+            const minX = Math.min((lsl != null ? lsl : mu - 4 * (sO || sW || 1)), within[0] ?? Infinity, overall[0] ?? Infinity);
+            const maxX = Math.max((usl != null ? usl : mu + 4 * (sO || sW || 1)), within[2] ?? -Infinity, overall[2] ?? -Infinity);
+
+            chart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: 64, right: 16, top: 24, bottom: 40 },
+                xAxis: { type: 'value', min: minX, max: maxX },
+                yAxis: { type: 'category', data: cat },
+                legend: { top: 0 },
+                series: [
+                    {
+                        type: 'custom', name: '±3σ',
+                        renderItem: (params, api) => {
+                            const y = api.value(0);
+                            const yCoord = api.coord([minX, y])[1];
+                            const x1 = api.coord([api.value(1), y])[0];
+                            const x2 = api.coord([api.value(3), y])[0];
+                            const xc = api.coord([api.value(2), y])[0];
+                            return {
+                                type: 'group',
+                                children: [
+                                    { type: 'rect', shape: { x: Math.min(x1, x2), y: yCoord - 8, width: Math.abs(x2 - x1), height: 16 }, style: { opacity: .15 } },
+                                    { type: 'line', shape: { x1: xc, y1: yCoord - 10, x2: xc, y2: yCoord + 10 }, style: { width: 2 } }
+                                ]
+                            };
+                        },
+                        data: [
+                            [0, within[0], within[1], within[2]],
+                            [1, overall[0], overall[1], overall[2]]
+                        ]
+                    },
+                    ...(lsl != null ? [{ type: 'line', name: L.LSL, data: [[minX, -0.5], [minX, 1.5]].map(p => [lsl, p[1]]), symbol: 'none', lineStyle: { type: 'dashed' } }] : []),
+                    ...(usl != null ? [{ type: 'line', name: L.USL, data: [[maxX, -0.5], [maxX, 1.5]].map(p => [usl, p[1]]), symbol: 'none', lineStyle: { type: 'dashed' } }] : []),
+                ]
+            });
+        }
+
+        // Limpia combos dependientes
+        function resetAfterCountry() {
+            $("#line").empty().append(`<option value="">${L.Line}</option>`);
+            $("#sku").empty().append(`<option value="">${L.SKU}</option>`);
+            resetYAndX();
+        }
+        function resetAfterPlant() {
+            $("#sku").empty().append(`<option value="">${L.SKU}</option>`);
+            resetYAndX();
+        }
+
+        // País → llena plantas y limpia lo demás
+        document.getElementById('pais').addEventListener('change', function () {
+            fillPlants(this.value);        // ya la tienes hecha
+            resetAfterCountry();           // limpia línea, sku, Y/X
+        });
+
+        // Planta → cargar líneas de esa planta (company)
+        $("#planta").on("change", function () {
+            const companyId = this.value;  // valor = Company (ej. "001")
+            resetAfterPlant();
+
+            if (!companyId) {
+                $("#line").empty().append(`<option value="">${L.Line}</option>`);
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("ObtenerLineas_XR", "XRcharts")', // ajusta si tu acción se llama distinto
+                type: 'GET',
+                data: { company: companyId },
+                success: function (data) {
+                    const lines = toArray(data); // tu helper ya maneja $values
+                    const $line = $("#line");
+                    $line.empty().append(`<option value="">${L.Line}</option>`);
+                    lines
+                        .sort((a, b) => (a.workplaceName || a.name).localeCompare((b.workplaceName || b.name), 'es'))
+                        .forEach(l => {
+                            const id = l.workplace ?? l.id;            // adapta a tu payload
+                            const name = l.workplaceName ?? l.name;    // adapta a tu payload
+                            $line.append(new Option(name, id));
+                        });
+                    // Si quieres, selecciona la primera y dispara carga de productos
+                    if (lines.length) {
+                        $line.val(lines[0].workplace ?? lines[0].id).trigger('change');
+                    }
+                },
+                error: function (xhr) {
+                    console.error("ObtenerLineas_XR error", xhr);
+                    $("#line").empty().append(`<option value="">${L.Line}</option>`);
+                }
+            });
+        });
+
+        // Cuando cambie la línea, ya tienes esto para cargar SKUs:
+        $("#line, #startDate, #endDate").on("change", cargarProductos);
+
+
+        // ---------- helpers estadísticos ----------
+        function mean(a) { return a.reduce((s, v) => s + v, 0) / a.length; }
+        function range(a) { return Math.max(...a) - Math.min(...a); }
+        function normInv(p) {
+            p = Math.min(Math.max(p, 1e-12), 1 - 1e-12);
+            const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.3577518672690, -30.66479806614716, 2.506628277459239];
+            const b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572];
+            const c = [-0.007784894002430293, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783];
+            const d = [0.007784695709041462, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+            let q, r;
+            if (p < 0.02425) {
+                q = Math.sqrt(-2 * Math.log(p));
+                return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+                    ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+            } else if (p > 1 - 0.02425) {
+                q = Math.sqrt(-2 * Math.log(1 - p));
+                return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+                    ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+            } else {
+                q = p - 0.5; r = q * q;
+                return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
+                    (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+            }
+        }
+    </script>
+}

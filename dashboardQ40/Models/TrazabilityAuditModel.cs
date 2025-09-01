@@ -15,6 +15,7 @@
         public string Revision { get; set; }
         public string UsuarioVobo { get; set; }
         public TimeSpan horaQueja { get; set; }
+        public string company { get; set; }
     }
 
     // Models/PersonaReporte.cs
