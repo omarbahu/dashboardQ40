@@ -11,6 +11,7 @@ using System.Globalization;
 using static dashboardQ40.Models.Models;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using System.Numerics;
 
 namespace dashboardQ40.Controllers
 {
@@ -50,7 +51,7 @@ namespace dashboardQ40.Controllers
         public async Task<IActionResult> IndexAsync()
         {
 
-            var token = await _authService.ObtenerTokenCaptor();
+            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
             if (token != null)
             {
                 HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
@@ -136,7 +137,7 @@ namespace dashboardQ40.Controllers
             // Llama a tu servicio; ajusta nombres de método y settings
             var resp = await getDataQuality.getLinesByCompany(
                 token,
-                _settings.QueryLineas, // tu query
+                _settings.QueryLineas + company, // tu query
                 company,                  // si lo pides, o quítalo
                 _settings.trazalog                             // filtro de company
             );
@@ -150,7 +151,7 @@ namespace dashboardQ40.Controllers
         }
 
         [HttpGet("ObtenerVarY_XR")]
-        public async Task<JsonResult> ObtenerVarY_XR(string sku, DateTime startDate, DateTime endDate, string line)
+        public async Task<JsonResult> ObtenerVarY_XR(string sku, DateTime startDate, DateTime endDate, string line, string planta)
         {
             var token = HttpContext.Session.GetString("AuthToken");
             if (string.IsNullOrEmpty(token))
@@ -159,8 +160,8 @@ namespace dashboardQ40.Controllers
             // Trae filas crudas de controles Y
             var dataTask = getDataQuality.getVarYRows(
                 token,
-                _settings.QueryVarY,
-                _settings.Company,
+                _settings.QueryVarY + planta,
+                planta,
                 sku,
                 startDate,
                 endDate,
@@ -193,7 +194,7 @@ namespace dashboardQ40.Controllers
 
         [HttpGet("ObtenerVarX_XR")]
         public async Task<JsonResult> ObtenerVarX_XR(
-            string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
+            string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId, string planta)
         {
             var token = HttpContext.Session.GetString("AuthToken");
             if (string.IsNullOrEmpty(token))
@@ -204,7 +205,7 @@ namespace dashboardQ40.Controllers
 
             // Trae posibles X ligadas a esa Y
             var opsTask = getDataQuality.getVarXByvarY(
-                token, _settings.QueryVarX, _settings.Company,
+                token, _settings.QueryVarX + planta, planta,
                 sku, prefix, fechaInicial, fechaFinal, lineaId);
 
             await Task.WhenAll(opsTask);
@@ -249,7 +250,7 @@ namespace dashboardQ40.Controllers
         }
 
         [HttpGet("ObtenerProductos_XR")]
-        public async Task<JsonResult> ObtenerProductos_XR(string lineaId, DateTime fechaInicial, DateTime fechaFinal)
+        public async Task<JsonResult> ObtenerProductos_XR(string lineaId, DateTime fechaInicial, DateTime fechaFinal, string planta)
         {
             string token = HttpContext.Session.GetString("AuthToken"); // Obtener el token de la sesión
 
@@ -263,8 +264,8 @@ namespace dashboardQ40.Controllers
 
                 var dataResultP = getDataQuality.getProductsByLine(
                         token.ToString(),
-                        _settings.QuerySKUs,
-                        _settings.Company,
+                        _settings.QuerySKUs + planta,
+                        planta,
                         lineaId,
                         fechaInicial,
                         fechaFinal);
@@ -297,7 +298,7 @@ namespace dashboardQ40.Controllers
                 var f2 = to ?? DateTime.UtcNow.Date;
 
                 var dt = XRchartsService.GetVariables(
-                    Company, f1, f2, ConnStr, workplace, reference);
+                    "", f1, f2, ConnStr, workplace, reference);
 
                 return Json(ToRows(dt));
             }
@@ -318,7 +319,7 @@ namespace dashboardQ40.Controllers
             DateTime? to,
             string? workplace,
             string? reference,
-            string? controlOperation)
+            string? controlOperation, string planta)
         {
             try
             {
@@ -326,7 +327,7 @@ namespace dashboardQ40.Controllers
                 var f2 = to ?? DateTime.UtcNow.Date;
 
                 var dt = XRchartsService.GetXRBaseRows(
-                    Company, f1, f2, ConnStr, workplace, reference, controlOperation);
+                    planta, f1, f2, ConnStr, workplace, reference, controlOperation);
 
                 return Json(ToRows(dt));
             }
@@ -355,7 +356,7 @@ namespace dashboardQ40.Controllers
                 var f2 = to ?? DateTime.UtcNow.Date;
 
                 var baseDt = XRchartsService.GetXRBaseRows(
-                    Company, f1, f2, ConnStr, workplace, reference, controlOperation);
+                    "", f1, f2, ConnStr, workplace, reference, controlOperation);
 
                 var stats = XRchartsService.BuildSubgroupStats(baseDt);
                 return Json(ToRows(stats));
@@ -378,7 +379,7 @@ namespace dashboardQ40.Controllers
             DateTime? to,
             string? workplace,
             string? reference,
-            string? controlOperation)
+            string? controlOperation, string planta)
         {
             try
             {
@@ -386,7 +387,7 @@ namespace dashboardQ40.Controllers
                 var f2 = to ?? DateTime.UtcNow.Date;
 
                 var baseDt = XRchartsService.GetXRBaseRows(
-                    Company, f1, f2, ConnStr, workplace, reference, controlOperation);
+                    planta, f1, f2, ConnStr, workplace, reference, controlOperation);
 
                 var cap = XRchartsService.BuildCapability(baseDt);
                 return Json(ToRows(cap));

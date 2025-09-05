@@ -40,52 +40,55 @@ namespace dashboardQ40.Services
 
             string sql = @"
 ;WITH raw AS (
-    SELECT
-        C.companyName                     AS Plant,
-        W.workplaceName                   AS Process,
-        MR.manufacturingReferenceName     AS Part,
-        CPrvs.controlOperation            AS TestCode,
-        CPrvs.controlOperationName        AS Test,
-        TRY_CONVERT(float, CPrvs.resultValue) AS Value,
-        CPrrc.executionDate               AS Ts
-    FROM CProcResultWithValuesStatus CPrvs
-    JOIN CPResultWithRefAndContext CPrrc
-      ON CPrvs.company = CPrrc.company
-     AND CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
-    JOIN Company    C  ON C.company  = CPrrc.company
-    JOIN Workplace  W  ON W.company  = CPrvs.company AND W.workplace = CPrvs.workplace
-    JOIN ManufacturingReference MR
-      ON MR.company = CPrvs.company AND MR.manufacturingReference = CPrvs.manufacturingReference
-    WHERE CPrvs.company = @company
-      AND CPrvs.controlOperationType = 1
-      AND CPrrc.executionDate >= @from
-      AND CPrrc.executionDate <  @to
-      AND TRY_CONVERT(float, CPrvs.resultValue) IS NOT NULL
+  SELECT
+ -- Línea
+    (UPPER(LTRIM(RTRIM(W.workplaceName))) COLLATE Latin1_General_CI_AI)      AS Process,
+    -- SKU
+    (UPPER(LTRIM(RTRIM(MR.manufacturingReferenceName))) COLLATE Latin1_General_CI_AI) AS Part,
+    -- Variable
+    (UPPER(LTRIM(RTRIM(CPrvs.controlOperationName))) COLLATE Latin1_General_CI_AI)    AS Test,
+
+    TRY_CONVERT(float, CPrvs.resultValue) AS Value,
+    CPrrc.executionDate                   AS Ts,
+    CPrrc.idControlProcedureResult        AS GroupId
+  FROM CProcResultWithValuesStatus CPrvs
+  JOIN CPResultWithRefAndContext CPrrc
+    ON CPrvs.company = CPrrc.company
+   AND CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
+  JOIN Workplace  W  ON W.company = CPrvs.company AND W.workplace = CPrvs.workplace
+  JOIN ManufacturingReference MR
+    ON MR.company = CPrvs.company AND MR.manufacturingReference = CPrvs.manufacturingReference
+  WHERE CPrvs.company = @company
+    AND CPrvs.controlOperationType = 1
+    AND CPrrc.executionDate >= @from
+    AND CPrrc.executionDate <  @to
+    AND TRY_CONVERT(float, CPrvs.resultValue) IS NOT NULL
 ),
 sg AS (
-    SELECT
-        r.Plant, r.Process, r.Part, r.TestCode, r.Test,
-        r.Ts                               AS SubgroupTs,
-        COUNT(*)                           AS n,
-        AVG(r.Value)                       AS xbar,
-        MAX(r.Value) - MIN(r.Value)        AS R,
-        SUM(r.Value)                       AS sum_x
-    FROM raw r
-    GROUP BY r.Plant, r.Process, r.Part, r.TestCode, r.Test, r.Ts
+  SELECT
+      r.Process, r.Part, r.Test,
+      r.GroupId                                   AS SubgroupId,
+      COUNT(*)                                    AS n,
+      AVG(r.Value)                                AS xbar,
+      MAX(r.Value) - MIN(r.Value)                 AS R,
+      SUM(r.Value)                                AS sum_x,
+      MIN(r.Ts)                                   AS SubgroupTs
+  FROM raw r
+  GROUP BY r.Process, r.Part, r.Test, r.GroupId
 ),
 agg AS (
-    SELECT
-        s.Plant, s.Process, s.Part, s.TestCode, s.Test,
-        COUNT(*)                                         AS Subgroups,
-        CAST(SUM(s.sum_x) AS float) / NULLIF(SUM(s.n),0) AS Mean,
-        AVG(s.R)                                         AS Rbar,
-        SUM(s.n)                                         AS Nobs,
-        MIN(s.n)                                         AS n_min,
-        MAX(s.n)                                         AS n_max,
-        MIN(s.SubgroupTs)                                AS FirstTs,
-        MAX(s.SubgroupTs)                                AS LastTs
-    FROM sg s
-    GROUP BY s.Plant, s.Process, s.Part, s.TestCode, s.Test
+  SELECT
+      s.Process, s.Part, s.Test,
+      COUNT(*)                                         AS Subgroups,
+      CAST(SUM(s.sum_x) AS float) / NULLIF(SUM(s.n),0) AS Mean,
+      AVG(s.R)                                         AS Rbar,
+      SUM(s.n)                                         AS Nobs,
+      MIN(s.n)                                         AS n_min,
+      MAX(s.n)                                         AS n_max,
+      MIN(s.SubgroupTs)                                AS FirstTs,
+      MAX(s.SubgroupTs)                                AS LastTs
+  FROM sg s
+  GROUP BY s.Process, s.Part, s.Test
 )
 SELECT
     a.Part,
@@ -98,7 +101,7 @@ SELECT
     a.n_min, a.n_max,
     a.FirstTs, a.LastTs
 FROM agg a
-ORDER BY a.Part, a.Process, a.Test;";
+ORDER BY a.Process, a.Part, a.Test;";
 
             using var conn = new SqlConnection(cs);
             conn.Open();

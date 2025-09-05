@@ -478,7 +478,7 @@
     <value>Yes</value>
   </data>
   <data name="Consult" xml:space="preserve">
-    <value>Consult</value>
+    <value>Search</value>
   </data>
   <data name="Count" xml:space="preserve">
     <value>Count</value>
@@ -916,10 +916,10 @@
     <value>Loading…</value>
   </data>
   <data name="Lot" xml:space="preserve">
-    <value>Lot</value>
+    <value>Batch</value>
   </data>
   <data name="LotsFound_ClickToSelect" xml:space="preserve">
-    <value>lot(s) found. Click to select.</value>
+    <value>Batchs found. Click to select.</value>
   </data>
   <data name="LotsStructure_Header" xml:space="preserve">
     <value>Lots Structure (Traceability Hierarchy)</value>
@@ -1891,7 +1891,7 @@
     <value>Time series (Result vs Time)</value>
   </data>
   <data name="XR_Title" xml:space="preserve">
-    <value>Y–X Quality Report</value>
+    <value>X-R Report</value>
   </data>
   <data name="XR_To" xml:space="preserve">
     <value>To:</value>

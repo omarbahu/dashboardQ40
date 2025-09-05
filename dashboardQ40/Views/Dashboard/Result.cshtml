@@ -228,6 +228,9 @@
 }
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
     <script>
         // Diccionario de textos para JS
         window.T = {
@@ -246,10 +249,13 @@
             Bell_USL: '@Localizer["Bell_USL"]'                     // "USL"
         };
 
-        var chart = echarts.init(document.getElementById('chart-container'));
-        var bellCurveChart = echarts.init(document.getElementById('bell-curve-container'));
+        const chart = echarts.init(document.getElementById('chart-container'));
+        const bellCurveChart = echarts.init(document.getElementById('bell-curve-container'));
 
-        window.addEventListener("load", function () { const loader = document.getElementById("loaderOverlay"); if (loader) loader.style.display = "none"; });
+        window.addEventListener("load", function () {
+            const loader = document.getElementById("loaderOverlay");
+            if (loader) loader.style.display = "none";
+        });
 
         const dates = @Html.Raw(datesJson);
         const scatterDataY = @Html.Raw(scatterDataYJson);
@@ -262,6 +268,7 @@
         const MIN_TOL = @minTol;
         const MAX_TOL = @maxTol;
 
+        // ------- Preparación de datos -------
         const samplesByTime = {};
         (scatterDataY || []).forEach(entry => {
             const t = entry?.Time;
@@ -279,52 +286,203 @@
         const xCategories = Array.from(xSet).sort((a, b) => new Date(a) - new Date(b));
 
         const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
-        const meanSeriesData = Object.keys(samplesByTime).sort((a, b) => new Date(a) - new Date(b)).map(t => [t, mean(samplesByTime[t])]);
+
+        const meanSeriesData = Object.keys(samplesByTime)
+            .sort((a, b) => new Date(a) - new Date(b))
+            .map(t => [t, mean(samplesByTime[t])]);
 
         const allSamples = Object.values(samplesByTime).flat();
         const minY = (allSamples.length ? Math.min(...allSamples, MIN_TOL) : MIN_TOL) - 1;
         const maxY = (allSamples.length ? Math.max(...allSamples, MAX_TOL) : MAX_TOL) + 1;
 
-        let series = [], yAxis = [];
+        // ====== Control: toggles y helpers ======
+        // 'data' => UCL/LCL = X̄ ± 3*σwithin ; 'cp' => alrededor de Target en base a Cp objetivo
+        const CTRL_MODE = 'data';   // 'data' | 'cp'
+        const CP_TARGET = 1.33;
+
+        // d2 para sigmaWithin ≈ Rbar / d2 (por tamaño de subgrupo)
+        const D2 = { 2: 1.128, 3: 1.693, 4: 2.059, 5: 2.326, 6: 2.534, 7: 2.704, 8: 2.847, 9: 2.970, 10: 3.078 };
+
+        const stdPop = arr => {
+            const m = mean(arr);
+            return Math.sqrt(arr.reduce((s, v) => s + (v - m) * (v - m), 0) / arr.length);
+        };
+
+        function sigmaWithinFromSamples(samplesByTime) {
+            const groups = Object.values(samplesByTime).filter(g => g && g.length);
+            if (!groups.length) return null;
+            const nList = groups.map(g => g.length);
+            const nCount = nList.reduce((m, n) => ((m[n] = (m[n] || 0) + 1), m), {});
+            const nModal = Number(Object.keys(nCount).sort((a, b) => nCount[b] - nCount[a])[0]) || 5;
+            const d2 = D2[nModal] || D2[5];
+            const Rbar = mean(groups.map(g => Math.max(...g) - Math.min(...g)));
+            return d2 ? (Rbar / d2) : null;
+        }
+
+        // Target (nominal): si no viene, usar punto medio de especificación
+        const TARGET = (MIN_TOL != null && MAX_TOL != null)
+            ? (MIN_TOL + MAX_TOL) / 2
+            : (allSamples.length ? mean(allSamples) : null);
+
+        // sigmaWithin por subgrupos; si no se puede, cae a std poblacional
+        let sigmaW = sigmaWithinFromSamples(samplesByTime);
+        if (!sigmaW) sigmaW = allSamples.length ? stdPop(allSamples) : null;
+
+        // Límites de control Y (ctrlY)
+        let ctrlY = null;
+        if (CTRL_MODE === 'data' && sigmaW && allSamples.length) {
+            const mu = mean(allSamples);
+            ctrlY = { LCL: mu - 3 * sigmaW, CL: mu, UCL: mu + 3 * sigmaW };
+        } else if (CTRL_MODE === 'cp' && TARGET != null && isFinite(MIN_TOL) && isFinite(MAX_TOL) && CP_TARGET > 0) {
+            const sigmaStar = (MAX_TOL - MIN_TOL) / (6 * CP_TARGET);
+            ctrlY = { LCL: TARGET - 3 * sigmaStar, CL: TARGET, UCL: TARGET + 3 * sigmaStar };
+        }
+
+        // ------- Series y ejes -------
+        const series = [];
+        const yAxis = [];
+
+        // Eje de Y (izquierda)
         yAxis.push({
-            type: 'value', name: VAR_Y_NAME, position: 'left', min: minY, max: maxY,
-            axisLine: { lineStyle: { color: '#00AA00' } }, nameLocation: 'middle', nameRotate: 90, nameGap: 45,
+            type: 'value',
+            name: VAR_Y_NAME,
+            position: 'left',
+            min: minY,
+            max: maxY,
+            axisLine: { lineStyle: { color: '#00AA00' } },
+            nameLocation: 'middle',
+            nameRotate: 90,
+            nameGap: 45,
             axisPointer: { label: { show: true } }
         });
 
+        // Serie Y (promedio) con LSL/Target/UCL/LCL y áreas
         series.push({
-            name: nombrePromedio, type: 'line', data: meanSeriesData, showSymbol: true, symbolSize: 6, smooth: false,
-            markLine: { silent: true, symbol: 'none', lineStyle: { type: 'dashed' }, data: [{ yAxis: MIN_TOL, name: T.Bell_LSL }, { yAxis: MAX_TOL, name: T.Bell_USL }] },
-            markArea: { silent: true, itemStyle: { color: 'rgba(220,20,60,.06)' }, data: [[{ yAxis: -Infinity }, { yAxis: MIN_TOL }], [{ yAxis: MAX_TOL }, { yAxis: Infinity }]] }
+            name: nombrePromedio,
+            type: 'line',
+            data: meanSeriesData,
+            showSymbol: true,
+            symbolSize: 6,
+            smooth: false,
+            markLine: {
+                silent: true,
+                symbol: 'none',
+                lineStyle: { type: 'dashed' },
+                label: { formatter: p => `${p.name} = ${(+p.value).toFixed(2)}` },
+                data: [
+                    { yAxis: MIN_TOL, name: T.Bell_LSL },
+                    { yAxis: MAX_TOL, name: T.Bell_USL },
+                    ...(TARGET != null ? [{ yAxis: TARGET, name: 'Target' }] : []),
+                    ...(ctrlY ? [{ yAxis: ctrlY.LCL, name: 'LCL' }, { yAxis: ctrlY.UCL, name: 'UCL' }] : [])
+                ]
+            },
+            markArea: {
+                silent: true,
+                data: [
+                    [{ yAxis: minY }, { yAxis: MIN_TOL }],
+                    [{ yAxis: MAX_TOL }, { yAxis: maxY }],
+                    ...(ctrlY ? [[{ yAxis: ctrlY.LCL }, { yAxis: ctrlY.UCL }]] : [])
+                ],
+                itemStyle: {
+                    color: params => (params.dataIndexInside <= 1)
+                        ? 'rgba(220,20,60,.06)'   // OOS
+                        : 'rgba(56,189,248,.10)'  // banda de control
+                }
+            }
         });
 
+        // Serie Y (muestras) — scatter
         const muestrasSeriesData = [];
-        Object.keys(samplesByTime).forEach(t => { (samplesByTime[t] || []).forEach(v => { muestrasSeriesData.push([t, v]); }); });
+        Object.keys(samplesByTime).forEach(t => {
+            (samplesByTime[t] || []).forEach(v => { muestrasSeriesData.push([t, v]); });
+        });
         series.push({
-            name: nombreMuestras, type: 'scatter', data: muestrasSeriesData, yAxisIndex: 0, symbolSize: 7,
-            itemStyle: { color: p => { const v = Array.isArray(p.value) ? p.value[1] : p.value; return (v < MIN_TOL || v > MAX_TOL) ? '#d62728' : undefined; } }
+            name: nombreMuestras,
+            type: 'scatter',
+            data: muestrasSeriesData,
+            yAxisIndex: 0,
+            symbolSize: 7,
+            itemStyle: {
+                color: p => {
+                    const v = Array.isArray(p.value) ? p.value[1] : p.value;
+                    return (v < MIN_TOL || v > MAX_TOL) ? '#d62728' : undefined;
+                }
+            }
         });
 
+        // Variables X
         const xKeys = Object.keys(scatterDataX || {}).filter(k => k !== VAR_Y_NAME);
         const xMeans = Object.fromEntries(xKeys.map(k => [k, mean((scatterDataX[k] || []).filter(v => v != null))]));
 
         xKeys.forEach((key, index) => {
-            if (scatterDataX[key] && scatterDataX[key].length > 0) {
-                const filtered = scatterDataX[key].filter(v => v != null);
-                let minX = filtered.length ? Math.min(...filtered) - 1 : 0;
-                let maxX = filtered.length ? Math.max(...filtered) + 1 : 1;
+            if (!scatterDataX[key] || !scatterDataX[key].length) return;
 
-                series.push({ name: key, type: 'scatter', data: scatterDataX[key].map((val, i) => [dates[i], val ?? 0]), yAxisIndex: index + 1, symbolSize: 8 });
-                yAxis.push({
-                    type: 'value', name: key, position: index % 2 === 0 ? 'right' : 'left', offset: index * 50, min: minX, max: maxX,
-                    axisLine: { lineStyle: { color: ['#FFA500', '#4169E1', '#8A2BE2'][index % 3] } }, nameLocation: 'middle', nameRotate: 90, nameGap: 45,
-                    axisPointer: { label: { show: false } }
+            const filtered = scatterDataX[key].filter(v => v != null);
+            const minX = filtered.length ? Math.min(...filtered) - 1 : 0;
+            const maxX = filtered.length ? Math.max(...filtered) + 1 : 1;
+
+            // Serie scatter de X (en su propio eje)
+            series.push({
+                name: key,
+                type: 'scatter',
+                data: scatterDataX[key].map((val, i) => [dates[i], val ?? null]),
+                yAxisIndex: index + 1,
+                symbolSize: 8
+            });
+
+            // UCL/LCL por X (opcional, con std poblacional)
+            const xVals = filtered;
+            if (xVals.length >= 3) {
+                const muX = mean(xVals);
+                const sdX = stdPop(xVals);
+                const ctrlX = (CTRL_MODE === 'data' && sdX > 0)
+                    ? { LCL: muX - 3 * sdX, CL: muX, UCL: muX + 3 * sdX }
+                    : null;
+
+                series.push({
+                    name: `${key} UCL/LCL`,
+                    type: 'line',
+                    yAxisIndex: index + 1,
+                    symbol: 'none',
+                    data: dates.map(d => [d, null]), // serie "soporte" para markLine/markArea
+                    markLine: ctrlX ? {
+                        symbol: 'none',
+                        lineStyle: { type: 'dotted' },
+                        label: { formatter: p => `${p.name} = ${(+p.value).toFixed(2)}` },
+                        data: [{ yAxis: ctrlX.LCL, name: 'LCL' }, { yAxis: ctrlX.UCL, name: 'UCL' }]
+                    } : undefined,
+                    markArea: ctrlX ? {
+                        itemStyle: { color: 'rgba(56,189,248,.10)' },
+                        data: [[{ yAxis: ctrlX.LCL }, { yAxis: ctrlX.UCL }]]
+                    } : undefined
                 });
             }
+
+            // Eje para X
+            yAxis.push({
+                type: 'value',
+                name: key,
+                position: index % 2 === 0 ? 'right' : 'left',
+                offset: index * 50,
+                min: minX,
+                max: maxX,
+                axisLine: { lineStyle: { color: ['#FFA500', '#4169E1', '#8A2BE2'][index % 3] } },
+                nameLocation: 'middle',
+                nameRotate: 90,
+                nameGap: 45,
+                axisPointer: { label: { show: false } }
+            });
         });
 
-        let dataZoom = [{ type: 'slider', xAxisIndex: 0, start: 0, end: 100 }, { type: 'inside', xAxisIndex: 0 }];
+        // Leyenda: promedio Y, muestras Y, cada X y (opcional) bandas de X
+        const legendItems = [
+            nombrePromedio,
+            nombreMuestras,
+            ...xKeys,
+            ...xKeys.map(k => `${k} UCL/LCL`)
+        ];
 
+        // Tooltip
         function tooltipFormatter(params) {
             const xLabel = params[0]?.axisValue || params[0]?.axisValueLabel || '';
             const promItem = params.find(p => p.seriesName === nombrePromedio);
@@ -332,8 +490,12 @@
 
             let html = `<b>${xLabel}</b><br/>`;
             html += `${T.Spec}: <b>${VAR_Y_NAME}</b><br/>`;
-            if (promItem) html += `${T.Mean}: <b>${Number(promItem.value[1]).toFixed(2)}</b><br/>`;
+            if (promItem && Array.isArray(promItem.value)) {
+                html += `${T.Mean}: <b>${Number(promItem.value[1]).toFixed(2)}</b><br/>`;
+            }
             html += `${T.MinLimit}: ${MIN_TOL}<br/>${T.MaxLimit}: ${MAX_TOL}`;
+            if (TARGET != null) html += `<br/>Target: ${TARGET.toFixed(2)}`;
+            if (ctrlY) html += `<br/>LCL: ${ctrlY.LCL.toFixed(2)} &nbsp; CL: ${ctrlY.CL.toFixed(2)} &nbsp; UCL: ${ctrlY.UCL.toFixed(2)}`;
 
             if (muestras.length) {
                 html += `<hr style="margin:4px 0"/>`;
@@ -355,17 +517,22 @@
             return html;
         }
 
+        // Render
         chart.setOption({
             title: { text: '', left: 'center' },
             grid: { left: 60, right: 120, top: 40, bottom: 60 },
             tooltip: { trigger: 'axis', formatter: tooltipFormatter, axisPointer: { type: 'cross' } },
-            legend: { data: [nombrePromedio, nombreMuestras, ...xKeys] },
+            legend: { data: legendItems },
             xAxis: { type: 'category', data: xCategories },
             yAxis: yAxis,
-            dataZoom: dataZoom,
+            dataZoom: [
+                { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
+                { type: 'inside', xAxisIndex: 0 }
+            ],
             series: series
         });
 
+        // -------- Bell curve (tu lógica actual) --------
         function updateBellCurveChart(variableName, dataValues) {
             document.getElementById("bell-curve-loader").style.display = "block";
             setTimeout(() => {

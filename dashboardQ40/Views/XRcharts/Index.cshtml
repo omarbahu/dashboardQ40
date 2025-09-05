@@ -43,7 +43,7 @@
             <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
         </div>
         <div class="col">
-            <select id="planta" class="form-select form-select-sm">
+            <select id="planta" name="planta" class="form-select form-select-sm">
                 <option value="">-- Selecciona --</option>
             </select>
         </div>
@@ -96,62 +96,83 @@
 </form>
 
 <div class="mt-3">
-    <div class="card mb-3">
-        <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_TimeSeries"]</h6>
-            <div id="chartXR" style="height:340px;"></div>
+    <div class="row g-3">
+
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_TimeSeries"]</h6>
+                    <div id="chartXR" style="height:340px;"></div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_Hist"]</h6>
-            <div id="histXR" style="height:300px;"></div>
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_Hist"]</h6>
+                    <div id="histXR" style="height:300px;"></div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_Capability"]</h6>
-            <div id="capTableXR"></div>
+        <div class="col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_Capability"]</h6>
+                    <div id="capTableXR"></div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="card mb-3">
-      <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_XbarTitle"]</h6>
-        <div id="xbarXR" style="height:240px;"></div>
-      </div>
-    </div>
 
-    <div class="card mb-3">
-      <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_RTitle"]</h6>
-        <div id="rchartXR" style="height:240px;"></div>
-      </div>
-    </div>
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_XbarTitle"]</h6>
+                    <div id="xbarXR" style="height:260px;"></div>
+                </div>
+            </div>
+        </div>
 
-    <div class="card mb-3">
-      <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_RunTitle"]</h6>
-        <div id="runXR" style="height:240px;"></div>
-      </div>
-    </div>
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_RTitle"]</h6>
+                    <div id="rchartXR" style="height:260px;"></div>
+                </div>
+            </div>
+        </div>
 
-    <div class="card mb-3">
-      <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_NormProbTitle"]</h6>
-        <div id="normprobXR" style="height:280px;"></div>
-      </div>
-    </div>
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_RunTitle"]</h6>
+                    <div id="runXR" style="height:260px;"></div>
+                </div>
+            </div>
+        </div>
 
-    <div class="card mb-3">
-      <div class="card-body">
-            <h6 class="text-muted">@Localizer["XR_CapPlotTitle"]</h6>
-        <div id="capPlotXR" style="height:260px;"></div>
-      </div>
-    </div>
+        <div class="col-12 col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_NormProbTitle"]</h6>
+                    <div id="normprobXR" style="height:280px;"></div>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="text-muted">@Localizer["XR_CapPlotTitle"]</h6>
+                    <div id="capPlotXR" style="height:260px;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
+
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -329,11 +350,12 @@
             var lineaId = $("#line").val();
             var fechaInicial = $("#startDate").val();
             var fechaFinal = $("#endDate").val();
+            var planta = $("#planta").val();
             if (lineaId && fechaInicial && fechaFinal) {
                 $.ajax({
                     url: '@Url.Action("ObtenerProductos_XR", "XRcharts")',
                     type: 'GET',
-                    data: { lineaId, fechaInicial, fechaFinal },
+                    data: { lineaId, fechaInicial, fechaFinal, planta },
                     success: function (data) {
                         const productos = toArray(data);
                         const $dd = $("#sku");
@@ -360,12 +382,13 @@
             const fechaInicial = $("#startDate").val();
             const fechaFinal = $("#endDate").val();
             const lineaId = $("#line").val();
+            const planta = $("#planta").val();
             if (!sku) { resetYAndX(); return; }
 
             $.ajax({
                 url: '@Url.Action("ObtenerVarY_XR", "XRcharts")',
                 type: 'GET',
-                data: { sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId },
+                data: { sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId, planta: planta },
                 success: function (data) {
                     const itemsRaw = toArray(data);
                     const $y = $("#variableYSelect");
@@ -388,12 +411,13 @@
             const fechaInicial = $("#startDate").val();
             const fechaFinal = $("#endDate").val();
             const lineaId = $("#line").val();
+            const planta = $("#planta").val();
             if (!(sku && varYCode)) return;
 
             $.ajax({
                 url: '@Url.Action("ObtenerVarX_XR", "XRcharts")',
                 type: 'GET',
-                data: { sku, varY: varYCode, fechaInicial, fechaFinal, lineaId },
+                data: { sku, varY: varYCode, fechaInicial, fechaFinal, lineaId, planta },
                 success: function (data) {
                     const list = toArray(data);
                     const $x = $("#variablesX");
@@ -413,13 +437,14 @@
             const from = $("#startDate").val();
             const to = $("#endDate").val();
             const workplace = $("#line").val();
+            const planta = $("#planta").val();
             const controlOp = $("#variablesX").val() || $("#variableYSelect").val();
             if (!(from && to && workplace && controlOp)) { alert(L.SelectFilters); return; }
 
             try {
                 // 1) Base rows
                 const baseUrl = '@Url.Action("GetBaseRows", "XRcharts")';
-                const baseResp = await $.getJSON(baseUrl, { from, to, workplace, reference: null, controlOperation: controlOp });
+                const baseResp = await $.getJSON(baseUrl, { from, to, workplace, reference: null, controlOperation: controlOp, planta });
                 const rows = Array.isArray(baseResp) ? baseResp :
                     Array.isArray(baseResp?.$values) ? baseResp.$values : baseResp;
 
@@ -428,7 +453,10 @@
                     y: Number(r.resultValue),
                     lsl: r.LSL != null ? Number(r.LSL) : null,
                     usl: r.USL != null ? Number(r.USL) : null,
+                    target: r.Target != null ? Number(r.Target) : null,
+                    specType: r.specType || 'No-spec',     // 'Two-sided' | 'LSL-only' | 'USL-only' | 'No-spec'
                     sg: r.subgroupId,
+                    n: Number(r.subgroupN) || null,        // tamaño de subgrupo
                     name: r.controlOperationName
                 })).filter(p => Number.isFinite(p.y) && p.ts);
 
@@ -436,7 +464,7 @@
 
                 // 2) Capability
                 const capUrl = '@Url.Action("GetCapability", "XRcharts")';
-                const capResp = await $.getJSON(capUrl, { from, to, workplace, reference: null, controlOperation: controlOp });
+                const capResp = await $.getJSON(capUrl, { from, to, workplace, reference: null, controlOperation: controlOp, planta });
                 const capRows = Array.isArray(capResp) ? capResp :
                     Array.isArray(capResp?.$values) ? capResp.$values : capResp;
                 const cap = capRows && capRows.length ? capRows[0] : null;
@@ -448,27 +476,50 @@
                     bySg[it.sg].push(it);
                 }
                 const sgKeys = Object.keys(bySg).sort((a, b) => bySg[a][0].ts - bySg[b][0].ts);
+
+                // construir arrays de medias y rangos
                 const xbarData = [];
                 const rData = [];
+                const nList = [];
                 sgKeys.forEach((k, i) => {
                     const vals = bySg[k].map(o => o.y);
                     const t0 = bySg[k][0].ts;
-                    xbarData.push({ idx: i + 1, ts: t0, mean: mean(vals) });
-                    rData.push({ idx: i + 1, ts: t0, r: range(vals) });
+                    xbarData.push({ idx: i + 1, ts: t0, mean: avg(vals) });
+                    rData.push({ idx: i + 1, ts: t0, r: Math.max(...vals) - Math.min(...vals) });
+                    nList.push(bySg[k][0].n || vals.length);
                 });
 
-                const lsl = items.find(p => p.lsl != null)?.lsl ?? null;
-                const usl = items.find(p => p.usl != null)?.usl ?? null;
+                const LSL = items.find(p => p.lsl != null)?.lsl ?? null;
+                const USL = items.find(p => p.usl != null)?.usl ?? null;
+                const Target = items.find(p => p.target != null)?.target
+                    ?? ((LSL != null && USL != null) ? (LSL + USL) / 2 : null);
+                const specType = items.find(p => !!p.specType)?.specType || 'No-spec';
+                const spec = { LSL, USL, Target, specType };
 
-                // Draw
-                renderXRTime(items);
-                renderXRHistogram(items);
+                // ===== Límites de control Xbar–R (con tu lógica actual) =====
+                const nSub = bySg[sgKeys[0]]?.length ?? 0;
+                const C = XR_CONST[nSub] || XR_CONST[5]; // fallback n=5 si no hay
+                const groups = sgKeys.map(k => bySg[k].map(o => o.y));
+
+                const XBARBAR = xbarbar(groups);
+                const RBAR = rbar(groups);
+
+                const ctrlX = { UCL: XBARBAR + C.A2 * RBAR, CL: XBARBAR, LCL: XBARBAR - C.A2 * RBAR };
+                const ctrlR = { UCL: C.D4 * RBAR, CL: RBAR, LCL: C.D3 * RBAR };
+
+                // ===== Dibujar (ahora pasamos spec) =====
+                renderXRTime(items, spec);
+                renderXRHistogram(items, spec);
                 renderXRCapTable(cap);
-                renderXbarChart(xbarData, lsl, usl);
-                renderRChart(rData);
-                renderRunChart(items, lsl, usl);
-                renderNormalProb(items, lsl, usl);
-                renderCapabilityPlot(cap, lsl, usl);
+
+                // Xbar y R con límites de control + líneas de especificación
+                renderXbarChart(xbarData, ctrlX, spec);
+                renderRChart(rData, ctrlR);
+
+                // (estos pueden quedarse igual, o pasar spec si luego quieres Target también)
+                renderRunChart(items, LSL, USL);
+                renderNormalProb(items, LSL, USL);
+                renderCapabilityPlot(cap, LSL, USL);
 
             } catch (err) {
                 console.error(err);
@@ -480,11 +531,13 @@
         // =======================
         // Renderers (con etiquetas)
         // =======================
-        function renderXRTime(points) {
+        function renderXRTime(points, spec) {
             const dom = document.getElementById('chartXR');
             const chart = echarts.init(dom);
-            const lsl = points.find(p => p.lsl != null)?.lsl ?? null;
-            const usl = points.find(p => p.usl != null)?.usl ?? null;
+
+            const lsl = spec?.LSL ?? points.find(p => p.lsl != null)?.lsl ?? null;
+            const usl = spec?.USL ?? points.find(p => p.usl != null)?.usl ?? null;
+            const tgt = spec?.Target ?? points.find(p => p.target != null)?.target ?? null;
 
             chart.setOption({
                 tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
@@ -494,13 +547,14 @@
                 legend: { top: 0 },
                 series: [
                     { type: 'line', name: L.Result, showSymbol: false, data: points.map(p => [p.ts, p.y]), areaStyle: { opacity: 0.08 } },
-                    ...(lsl != null ? [{ type: 'line', name: L.LSL, symbol: 'none', lineStyle: { type: 'dashed' }, data: points.map(p => [p.ts, lsl]) }] : []),
-                    ...(usl != null ? [{ type: 'line', name: L.USL, symbol: 'none', lineStyle: { type: 'dashed' }, data: points.map(p => [p.ts, usl]) }] : [])
+                    ...(lsl != null ? [{ type: 'line', name: `${L.LSL}`, symbol: 'none', lineStyle: { type: 'dashed' }, data: points.map(p => [p.ts, lsl]) }] : []),
+                    ...(tgt != null ? [{ type: 'line', name: '@Localizer["XR_Target"]', symbol: 'none', lineStyle: { type: 'dotted' }, data: points.map(p => [p.ts, tgt]) }] : []),
+                    ...(usl != null ? [{ type: 'line', name: `${L.USL}`, symbol: 'none', lineStyle: { type: 'dashed' }, data: points.map(p => [p.ts, usl]) }] : [])
                 ]
             });
         }
 
-        function renderXRHistogram(points) {
+        function renderXRHistogram(points, spec) {
             const dom = document.getElementById('histXR');
             const chart = echarts.init(dom);
 
@@ -508,13 +562,12 @@
             if (!vals.length) { chart.clear(); return; }
 
             const sorted = vals.slice().sort((a, b) => a - b);
+            const min = sorted[0], max = sorted[sorted.length - 1];
             const q1 = sorted[Math.floor(sorted.length * 0.25)];
             const q3 = sorted[Math.floor(sorted.length * 0.75)];
-            const iqr = (q3 - q1) || (sorted[sorted.length - 1] - sorted[0]) || 1;
-            const binWidth = Math.max(iqr * Math.pow(vals.length, -1 / 3), 1e-9);
-            const min = sorted[0], max = sorted[sorted.length - 1];
-            const bins = Math.max(5, Math.min(40, Math.ceil((max - min) / binWidth)));
-
+            const iqr = (q3 - q1) || (max - min) || 1;
+            const binW = Math.max(iqr * Math.pow(vals.length, -1 / 3), 1e-9);
+            const bins = Math.max(5, Math.min(40, Math.ceil((max - min) / binW)));
             const edges = Array.from({ length: bins + 1 }, (_, i) => min + i * (max - min) / bins);
             const counts = new Array(bins).fill(0);
             vals.forEach(v => {
@@ -523,24 +576,41 @@
             });
             const centers = edges.slice(0, -1).map((e, i) => (e + edges[i + 1]) / 2);
 
-            const lsl = points.find(p => p.lsl != null)?.lsl ?? null;
-            const usl = points.find(p => p.usl != null)?.usl ?? null;
+            const mu = avg(vals);
+            const sd = Math.sqrt(avg(vals.map(v => (v - mu) * (v - mu))));
+            const densityX = Array.from({ length: 120 }, (_, i) => min + (i / 119) * (max - min));
+            const norm = x => (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(-(x - mu) * (x - mu) / (2 * sd * sd));
+            const maxCnt = Math.max(...counts);
+            const scale = maxCnt / Math.max(...densityX.map(norm)); // escala densidad al histo
+            const densityY = densityX.map(x => norm(x) * scale);
+
+            const lsl = spec?.LSL ?? points.find(p => p.lsl != null)?.lsl ?? null;
+            const usl = spec?.USL ?? points.find(p => p.usl != null)?.usl ?? null;
+            const tgt = spec?.Target ?? points.find(p => p.target != null)?.target ?? null;
 
             chart.setOption({
                 grid: { left: 48, right: 16, top: 24, bottom: 40 },
                 tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
                 xAxis: { type: 'value', min, max },
                 yAxis: { type: 'value' },
-                series: [{ type: 'bar', data: centers.map((c, i) => [c, counts[i]]), barWidth: '90%' }],
+                legend: { top: 0 },
+                series: [
+                    { type: 'bar', name: L.Hist, data: centers.map((c, i) => [c, counts[i]]), barWidth: '90%' },
+                    { type: 'line', name: L.Fit, data: densityX.map((x, i) => [x, densityY[i]]), symbol: 'none' }
+                ],
                 markLine: {
-                    symbol: 'none', lineStyle: { type: 'dashed' }, label: { formatter: '{b}' },
+                    symbol: 'none',
+                    lineStyle: { type: 'dashed' },
+                    label: { formatter: (p) => `${p.name} = ${(+p.value).toFixed(3)}` },
                     data: [
                         ...(lsl != null ? [{ xAxis: lsl, name: L.LSL }] : []),
+                        ...(tgt != null ? [{ xAxis: tgt, name: '@Localizer["XR_Target"]' }] : []),
                         ...(usl != null ? [{ xAxis: usl, name: L.USL }] : [])
                     ]
                 }
             });
         }
+
 
         function renderXRCapTable(cap) {
             const el = document.getElementById('capTableXR');
@@ -577,11 +647,23 @@
               </div>`;
         }
 
-        function renderXbarChart(xbarData, lsl, usl) {
-            const dom = document.getElementById('xbarXR');
-            const chart = echarts.init(dom);
+        function renderXbarChart(xbarData, ctrl, specOrLsl, maybeUsl) {
+            const chart = echarts.init(document.getElementById('xbarXR'));
             const x = xbarData.map(d => d.idx);
             const y = xbarData.map(d => d.mean);
+
+            // compatibilidad hacia atrás
+            let spec = null, lsl = null, usl = null;
+            if (specOrLsl && typeof specOrLsl === 'object' && !Array.isArray(specOrLsl)) {
+                spec = specOrLsl;
+                lsl = spec?.LSL ?? null;
+                usl = spec?.USL ?? null;
+            } else {
+                lsl = specOrLsl ?? null;
+                usl = maybeUsl ?? null;
+            }
+            const tgt = spec?.Target ?? null;
+
             chart.setOption({
                 tooltip: { trigger: 'axis' },
                 grid: { left: 48, right: 16, top: 24, bottom: 40 },
@@ -589,16 +671,31 @@
                 yAxis: { type: 'value', scale: true },
                 legend: { top: 0 },
                 series: [
-                    { type: 'line', data: y, showSymbol: true, name: 'X̄', areaStyle: { opacity: .06 } },
-                    ...(lsl != null ? [{ type: 'line', name: L.LSL, data: y.map(() => lsl), lineStyle: { type: 'dashed' }, symbol: 'none' }] : []),
-                    ...(usl != null ? [{ type: 'line', name: L.USL, data: y.map(() => usl), lineStyle: { type: 'dashed' }, symbol: 'none' }] : []),
-                ]
+                    { type: 'line', name: 'X̄', data: y, showSymbol: true, areaStyle: { opacity: .06 } },
+                    { type: 'line', name: 'CL', data: y.map(() => ctrl.CL), symbol: 'none' },
+                    { type: 'line', name: 'UCL', data: y.map(() => ctrl.UCL), symbol: 'none', lineStyle: { type: 'dashed' } },
+                    { type: 'line', name: 'LCL', data: y.map(() => ctrl.LCL), symbol: 'none', lineStyle: { type: 'dashed' } },
+                    ...(lsl != null ? [{ type: 'line', name: L.LSL, data: y.map(() => lsl), symbol: 'none', lineStyle: { type: 'dotted' } }] : []),
+                    ...(tgt != null ? [{ type: 'line', name: '@Localizer["XR_Target"]', data: y.map(() => tgt), symbol: 'none', lineStyle: { type: 'dotted' } }] : []),
+                    ...(usl != null ? [{ type: 'line', name: L.USL, data: y.map(() => usl), symbol: 'none', lineStyle: { type: 'dotted' } }] : [])
+                ],
+                // Etiquetas numéricas de LSL/Target/USL (al estilo del ejemplo)
+                markLine: {
+                    symbol: 'none',
+                    lineStyle: { type: 'dotted' },
+                    label: { formatter: (p) => `${p.name} = ${(+p.value).toFixed(3)}` },
+                    data: [
+                        ...(lsl != null ? [{ yAxis: lsl, name: L.LSL }] : []),
+                        ...(tgt != null ? [{ yAxis: tgt, name: '@Localizer["XR_Target"]' }] : []),
+                        ...(usl != null ? [{ yAxis: usl, name: L.USL }] : [])
+                    ]
+                }
             });
         }
 
-        function renderRChart(rData) {
-            const dom = document.getElementById('rchartXR');
-            const chart = echarts.init(dom);
+
+        function renderRChart(rData, ctrl) {
+            const chart = echarts.init(document.getElementById('rchartXR'));
             const x = rData.map(d => d.idx);
             const y = rData.map(d => d.r);
             chart.setOption({
@@ -607,7 +704,12 @@
                 xAxis: { type: 'category', data: x, name: L.Subgroup },
                 yAxis: { type: 'value', min: 0, scale: true },
                 legend: { top: 0 },
-                series: [{ type: 'line', data: y, showSymbol: true, name: 'R', areaStyle: { opacity: .06 } }]
+                series: [
+                    { type: 'line', name: 'R', data: y, showSymbol: true, areaStyle: { opacity: .06 } },
+                    { type: 'line', name: 'CL', data: y.map(() => ctrl.CL), symbol: 'none' },
+                    { type: 'line', name: 'UCL', data: y.map(() => ctrl.UCL), symbol: 'none', lineStyle: { type: 'dashed' } },
+                    { type: 'line', name: 'LCL', data: y.map(() => ctrl.LCL), symbol: 'none', lineStyle: { type: 'dashed' } }
+                ]
             });
         }
 
@@ -746,21 +848,26 @@
             }
 
             $.ajax({
-                url: '@Url.Action("ObtenerLineas_XR", "XRcharts")', // ajusta si tu acción se llama distinto
+                url: '@Url.Action("ObtenerLineas_XR", "XRcharts")',
                 type: 'GET',
                 data: { company: companyId },
                 success: function (data) {
-                    const lines = toArray(data); // tu helper ya maneja $values
+                    console.log('Lineas payload:', data);
+                    // 👇 Acepta tanto {result:[...]} como [...] o { $values:[...]}
+                    const payload = (data && data.result) ? data.result : data;
+                    const lines = toArray(payload);
+
                     const $line = $("#line");
                     $line.empty().append(`<option value="">${L.Line}</option>`);
+
                     lines
-                        .sort((a, b) => (a.workplaceName || a.name).localeCompare((b.workplaceName || b.name), 'es'))
+                        .sort((a, b) => (a.workplaceName || a.name || '').localeCompare((b.workplaceName || b.name || ''), 'es'))
                         .forEach(l => {
-                            const id = l.workplace ?? l.id;            // adapta a tu payload
-                            const name = l.workplaceName ?? l.name;    // adapta a tu payload
-                            $line.append(new Option(name, id));
+                            const id = l.workplace ?? l.id;
+                            const name = l.workplaceName ?? l.name ?? id;
+                            if (id) $line.append(new Option(name, id));
                         });
-                    // Si quieres, selecciona la primera y dispara carga de productos
+
                     if (lines.length) {
                         $line.val(lines[0].workplace ?? lines[0].id).trigger('change');
                     }
@@ -770,6 +877,7 @@
                     $("#line").empty().append(`<option value="">${L.Line}</option>`);
                 }
             });
+
         });
 
         // Cuando cambie la línea, ya tienes esto para cargar SKUs:
@@ -800,5 +908,23 @@
                     (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
             }
         }
+
+        // ====== Constantes de control para Xbar-R ======
+        const XR_CONST = {
+            2: { A2: 1.880, D3: 0.000, D4: 3.267 },
+            3: { A2: 1.023, D3: 0.000, D4: 2.574 },
+            4: { A2: 0.729, D3: 0.000, D4: 2.282 },
+            5: { A2: 0.577, D3: 0.000, D4: 2.114 },
+            6: { A2: 0.483, D3: 0.000, D4: 2.004 },
+            7: { A2: 0.419, D3: 0.076, D4: 1.924 },
+            8: { A2: 0.373, D3: 0.136, D4: 1.864 },
+            9: { A2: 0.337, D3: 0.184, D4: 1.816 },
+            10: { A2: 0.308, D3: 0.223, D4: 1.777 }
+        };
+
+        function avg(a) { return a.reduce((s, v) => s + v, 0) / a.length; }
+        function rbar(groups) { return avg(groups.map(g => Math.max(...g) - Math.min(...g))); }
+        function xbarbar(groups) { return avg(groups.map(g => avg(g))); }
+
     </script>
 }

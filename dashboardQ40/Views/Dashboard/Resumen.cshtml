@@ -4,7 +4,21 @@
 @{
     ViewData["Title"] = Localizer["CPKsSummary_Title"]; // "CPK Summary"
 }
+<style>
+    .grp-process {
+        background: #f3f6fb;
+        font-weight: 700;
+    }
 
+    .grp-part {
+        background: #fafafa;
+        font-weight: 600;
+    }
+
+    .tbl-cpk th, .tbl-cpk td {
+        padding: 4px 8px;
+    }
+</style>
 <h4>@Localizer["CPKsSummary_Header"]</h4>
 
 <form id="selectionForm">
@@ -21,6 +35,28 @@
         <div class="col">
             <input type="datetime-local" id="endDate" name="endDate" class="form-control form-control-sm" />
         </div>
+        <!-- País / Planta -->
+        <div class="col">
+            <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
+        </div>
+        <div class="col">
+            <select id="pais" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
+                {
+                    <option value="@p.Code">@p.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
+        </div>
+        <div class="col">
+            <select id="planta" name="planta" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
+
         <div class="col">
             <button id="btnReporte" type="button" class="btn btn-primary btn-sm" disabled
                     onclick="submitForm('@Url.Action("ResumenCPKs","Dashboard")')">
@@ -35,7 +71,8 @@
     <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
 }
 
-<table class="table table-sm table-striped">
+<table class="table table-sm table-striped tbl-cpk">
+
     <thead>
         <tr>
             <th>@Localizer["Table_Part"]</th>
@@ -50,28 +87,64 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model == null || !Model.Any())
-        {
-            <tr><td colspan="9" class="text-center text-muted">@Localizer["NoData_SelectDates"]</td></tr>
-        }
-        else
-        {
-            foreach (var r in Model)
+        @{
+            if (Model == null || !Model.Any())
             {
-                <tr>
-                    <td>@r.Part</td>
-                    <td>@r.Process</td>
-                    <td>@r.Test</td>
-                    <td class="text-end">@r.Subgroups</td>
-                    <td class="text-end">@r.Mean.ToString("0.###")</td>
-                    <td class="text-end">@((r.MeanDelta)?.ToString("0.###"))</td>
-                    <td class="text-end">@((r.Cp)?.ToString("0.##"))</td>
-                    <td class="text-end">@((r.Cpk)?.ToString("0.##"))</td>
-                    <td>@r.Nota</td>
-                </tr>
+                <tr><td colspan="9" class="text-center text-muted">@Localizer["NoData_SelectDates"]</td></tr>
+            }
+            else
+            {
+                // 1) Ordenar por Línea → SKU → Variable con claves normalizadas
+                Func<string, string> norm = s => (s ?? "").Trim().ToUpperInvariant();
+                var rows = Model
+                .OrderBy(r => norm(r.Process))
+                .ThenBy(r => norm(r.Part))
+                .ThenBy(r => norm(r.Test))
+                .ToList();
+
+                string lastProcess = null;
+                string lastPart = null;
+
+                // 2) Pintar encabezados de grupo usando la MISMA normalización para comparar
+                foreach (var r in rows)
+                {
+                    var pKey = norm(r.Process);
+                    var sKey = norm(r.Part);
+
+                    if (lastProcess != pKey)
+                    {
+                        lastProcess = pKey;
+                        lastPart = null;
+                        <tr class="grp-process">
+                            <td colspan="9">📍 @Localizer["Group_Line", r.Process]</td>
+                        </tr>
+                    }
+
+                    if (lastPart != sKey)
+                    {
+                        lastPart = sKey;
+                        <tr class="grp-part">
+                            <td colspan="9">🔹 @Localizer["Group_SKU", r.Part]</td>
+                        </tr>
+                    }
+
+                    <tr>
+                        <td>@r.Part</td>
+                        <td>@r.Process</td>
+                        <td>@r.Test</td>
+                        <td class="text-end">@r.Subgroups</td>
+                        <td class="text-end">@r.Mean.ToString("0.###")</td>
+                        <td class="text-end">@((r.MeanDelta)?.ToString("0.###"))</td>
+                        <td class="text-end">@((r.Cp)?.ToString("0.##"))</td>
+                        <td class="text-end">@((r.Cpk)?.ToString("0.##"))</td>
+                        <td>@r.Nota</td>
+                    </tr>
+                }
             }
         }
+
     </tbody>
+
 </table>
 
 @section Scripts {
@@ -140,5 +213,64 @@
                 form.submit();
             };
         })();
+
+
+        // Etiquetas (puedes cambiarlas o usar Localizer)
+        const LABELS = {
+            Select: "-- Selecciona --",
+            Line: "@Localizer["XR_Line"]",
+            Plant: "@Localizer["XR_Plant"]"
+        };
+
+        // Todas las companies (Company, CompanyName, CountryCode) desde backend
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+
+        // Helpers
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            return [];
+        }
+        function resetSelect($el, placeholder) {
+            $el.empty().append(new Option(placeholder, ""));
+        }
+
+        // 1) País → cargar Plantas
+        function fillPlants(countryCode) {
+            const $planta = $("#planta");
+            resetSelect($planta, LABELS.Plant);
+            resetSelect($("#line"), LABELS.Line); // limpiar línea
+
+            if (!countryCode) return;
+
+            const plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+        }
+        $(function () {
+            const selected = '@(ViewBag.PlantaSelected ?? "")';
+            if (selected) {
+                $("#planta").val(selected).trigger("change");
+            }
+            // También puedes restaurar fechas si quieres:
+            $("#startDate").val('@(ViewBag.StartDate?.ToString("yyyy-MM-ddTHH:mm"))');
+            $("#endDate").val('@(ViewBag.EndDate?.ToString("yyyy-MM-ddTHH:mm"))');
+        });
+        // Eventos
+        $("#pais").on("change", function () { fillPlants(this.value); });
+
+        $(function () {
+            const $pais = $("#pais");
+            if ($pais[0] && $pais[0].options.length > 1) {
+                $pais[0].selectedIndex = 1;
+                $pais.trigger("change");
+            }
+        });
+
     </script>
 }

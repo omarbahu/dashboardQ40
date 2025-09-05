@@ -7,6 +7,7 @@ using System.Data;
 using System.Globalization;
 using static dashboardQ40.Models.Models;
 using static dashboardQ40.Services.AuditTrazabilityClass;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace dashboardQ40.Controllers
 {
@@ -29,7 +30,7 @@ namespace dashboardQ40.Controllers
         public async Task<IActionResult> IndexAsync()
         {
 
-            var token = await _authService.ObtenerTokenCaptor();
+            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
             if (token != null)
             {
                 HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión

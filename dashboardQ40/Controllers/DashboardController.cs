@@ -36,7 +36,7 @@ namespace dashboardQ40.Controllers
         public async Task<IActionResult> IndexAsync()
         {
 
-            var token = await _authService.ObtenerTokenCaptor();
+            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
             if (token != null)
             {
                 HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
@@ -112,14 +112,28 @@ namespace dashboardQ40.Controllers
         [HttpGet("ObtenerLineas")]
         public async Task<IActionResult> ObtenerLineas(string company)
         {
-            var token = HttpContext.Session.GetString("AuthToken");
+            string token;
+            if (company != _settings.Company) // significa que es una compañia diferente a la base y bamos por el token de la compañia
+            {                
+                var result = await _authService.ObtenerTokenCaptor(company);
+                if (result != null)
+                {
+                    HttpContext.Session.SetString("AuthToken", result.access_token); // Guardar en sesión
+                }
+                token = result.access_token;  // Usamos el string del token
+            }
+            else
+            {
+                token = HttpContext.Session.GetString("AuthToken");
+            }    
+            
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(company))
                 return Json(Array.Empty<object>());
 
             // Llama a tu servicio; ajusta nombres de método y settings
             var resp = await getDataQuality.getLinesByCompany(
                 token,
-                _settings.QueryLineas, // tu query
+                _settings.QueryLineas + company, // tu query
                 company,                  // si lo pides, o quítalo
                 _settings.trazalog                             // filtro de company
             );
@@ -132,19 +146,52 @@ namespace dashboardQ40.Controllers
             return Json(list);
         }
 
-        public IActionResult Resumen()
+        private async Task CargarCombosAsync()
         {
-            // Simulando datos para los selectores
-            ViewBag.Lines = new List<string> { "Línea 7", "Línea 2", "Línea 3" };
-            ViewBag.Products = new List<string> { "600 ml CC REGULAR", "600 ml CC LIGHT", "600 ml CC SIN AZUCAR", "500 ml CC REGULAR" };
+            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
+            if (token != null)
+                HttpContext.Session.SetString("AuthToken", token.access_token);
 
-            // Variables Y y sus respectivas Variables X asociadas
-            ViewBag.Variables = new Dictionary<string, List<string>>
+            var companies = new List<CompanyOption>();
+            if (token != null)
             {
-                { "BRIX BEBIDA", new List<string> { "BRIX BEBIDA", "FRECUENCIA BOMBA DE AGUA", "FRECUENCIA BOMBA DE JARABE", "FRECUENCIA DE BOMBA DE MEZCLA" } },
-                { "CARBONATACIÓN", new List<string> { "TEMPERATURA", "PRESIÓN CO2", "POSICION DE MICRO", "SUMINISTRO DE PRESIÓN", "MAZELI", "PRESIÓN ENTRADA DEL SUBACARD", "PRESIÓN SALIDA DEL SUBACARD", "PRESIÓN DE CO2 EN SUBCARB" } }
-            };
+                var dataResultComp = await getDataQuality.getCompanies(
+                    token.access_token.ToString(),
+                    _settings.QueryCompany,
+                    _settings.Company,
+                    _settings.trazalog);
 
+                foreach (var item in dataResultComp.result ?? Enumerable.Empty<result_companies>())
+                {
+                    CultureInfo ci; RegionInfo ri;
+                    try { ci = new CultureInfo(item.culture); ri = new RegionInfo(ci.Name); }
+                    catch { ci = CultureInfo.InvariantCulture; ri = new RegionInfo("US"); }
+
+                    companies.Add(new CompanyOption
+                    {
+                        Company = item.company,
+                        CompanyName = item.companyName,
+                        Culture = ci.Name,
+                        CountryCode = ri.TwoLetterISORegionName
+                    });
+                }
+            }
+
+            var countries = companies.GroupBy(c => c.CountryCode)
+                .Select(g => new { Code = g.Key, Name = new RegionInfo(g.Key).NativeName })
+                .OrderBy(x => x.Name).ToList();
+
+            ViewBag.Companies = companies;
+            ViewBag.Countries = countries;
+            ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
+            ViewBag.produccion = _settings.Produccion;
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Resumen()
+        {
+            await CargarCombosAsync();
             return View();
         }
 
@@ -155,6 +202,7 @@ namespace dashboardQ40.Controllers
      DateTime endDate,
      string product,
      string variableY,
+     string planta,
      List<string> variablesX)
         {
             string token = HttpContext.Session.GetString("AuthToken"); // Obtener el token de la sesión
@@ -172,8 +220,8 @@ namespace dashboardQ40.Controllers
                 {
                     var dataResultP = getDataQuality.getResultsByVarX(
                         token.ToString(),
-                        _settings.QueryResultVarY_X,
-                        _settings.Company,
+                        _settings.QueryResultVarY_X + planta,
+                        planta,
                         line, startDate, endDate, variableX);
                     await Task.WhenAll(dataResultP);
 
@@ -230,8 +278,8 @@ namespace dashboardQ40.Controllers
             // 📌 Obtener los datos de la Variable Y
             var dataResultY = getDataQuality.getResultsByVarX(
                 token.ToString(),
-                _settings.QueryResultVarY_X,
-                _settings.Company,
+                _settings.QueryResultVarY_X + planta,
+                planta,
                 line, startDate, endDate, VariableYEnv);
             await Task.WhenAll(dataResultY);
 
@@ -290,6 +338,7 @@ namespace dashboardQ40.Controllers
     DateTime endDate,
     string product,
     string variableY,
+    string planta,
     List<string> variablesX)
         {
             string token = HttpContext.Session.GetString("AuthToken");
@@ -302,7 +351,7 @@ namespace dashboardQ40.Controllers
                 foreach (var variableX in variablesX)
                 {
                     var dataResultP = getDataQuality.getResultsByVarX(
-                        token, _settings.QueryResultVarY_X, _settings.Company,
+                        token, _settings.QueryResultVarY_X + planta, planta,
                         line, startDate, endDate, variableX);
                     await Task.WhenAll(dataResultP);
 
@@ -346,7 +395,7 @@ namespace dashboardQ40.Controllers
             }
 
             var dataResultY = getDataQuality.getResultsByVarX(
-                token, _settings.QueryResultVarY_X, _settings.Company,
+                token, _settings.QueryResultVarY_X + planta, planta,
                 line, startDate, endDate, VariableYEnv);
             await Task.WhenAll(dataResultY);
 
@@ -376,7 +425,7 @@ namespace dashboardQ40.Controllers
 
 
 
-        public async Task<JsonResult> ObtenerProductos(string lineaId, DateTime fechaInicial, DateTime fechaFinal)
+        public async Task<JsonResult> ObtenerProductos(string lineaId, DateTime fechaInicial, DateTime fechaFinal, string planta)
         {
             string token = HttpContext.Session.GetString("AuthToken"); // Obtener el token de la sesión
 
@@ -390,8 +439,8 @@ namespace dashboardQ40.Controllers
            
                 var dataResultP = getDataQuality.getProductsByLine(
                         token.ToString(),
-                        _settings.QuerySKUs,
-                        _settings.Company,
+                        _settings.QuerySKUs + planta,
+                        planta,
                         lineaId,
                         fechaInicial,
                         fechaFinal);
@@ -407,7 +456,7 @@ namespace dashboardQ40.Controllers
 
 
         [HttpGet]
-        public async Task<JsonResult> ObtenerVarY(string sku, DateTime startDate, DateTime endDate, string line)
+        public async Task<JsonResult> ObtenerVarY(string sku, DateTime startDate, DateTime endDate, string line, string planta)
         {
             var token = HttpContext.Session.GetString("AuthToken");
             if (string.IsNullOrEmpty(token))
@@ -417,8 +466,8 @@ namespace dashboardQ40.Controllers
             //    ⚠️ Esta llamada usa getVarYRows (ver la clase en el punto 2).
             var dataTask = getDataQuality.getVarYRows(
                 token,
-                _settings.QueryVarY,   // tu endpoint/URL configurada para este query
-                _settings.Company,
+                _settings.QueryVarY + planta,   // tu endpoint/URL configurada para este query
+                planta,
                 sku,
                 startDate,
                 endDate,
@@ -511,7 +560,7 @@ namespace dashboardQ40.Controllers
 
         [HttpGet]
         public async Task<JsonResult> ObtenerVarX(
-    string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
+    string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId, string planta)
         {
             string token = HttpContext.Session.GetString("AuthToken");
             if (string.IsNullOrEmpty(token))
@@ -520,7 +569,7 @@ namespace dashboardQ40.Controllers
             // 1) Traer lista de X ligadas a la Y y QUITAR DUPLICADOS por código
             var prefix = (varY?.Length >= 3 ? varY.Substring(0, 3) : varY ?? "") + "%";
             var opsTask = getDataQuality.getVarXByvarY(
-                token, _settings.QueryVarX, _settings.Company,
+                token, _settings.QueryVarX + planta, planta,
                 sku, prefix, fechaInicial, fechaFinal, lineaId);
 
             await Task.WhenAll(opsTask);
@@ -540,7 +589,7 @@ namespace dashboardQ40.Controllers
             foreach (var op in ops)
             {
                 tasks.Add(getDataQuality.getResultsByVarX(
-                    token, _settings.QueryResultVarY_X, _settings.Company,
+                    token, _settings.QueryResultVarY_X + planta, planta,
                     lineaId, fechaInicial, fechaFinal, op.controlOperation));
             }
 
@@ -641,24 +690,30 @@ namespace dashboardQ40.Controllers
         }
 
         [HttpGet]
-        public IActionResult ResumenCPKs(DateTime startDate, DateTime endDate, int tzOffset = 0)
+        public async Task<IActionResult> ResumenCPKs(
+     DateTime startDate, DateTime endDate, string planta, int tzOffset = 0)
         {
             if (startDate >= endDate)
             {
                 ViewBag.ErrorMessage = "La fecha de fin debe ser mayor a la fecha de inicio.";
-                return View(new List<CapabilityRow>());
+                await CargarCombosAsync();
+                return View("Resumen", new List<CapabilityRow>());
             }
 
-
-            string connStr = _configuration.GetConnectionString("CaptorConnection");
-            string company = _configuration.GetConnectionString("company");
-
-            // Si las fechas vienen en hora local del navegador, ajusta a UTC:
+            // Ajuste a UTC
             var fromUtc = startDate.AddMinutes(-tzOffset);
             var toUtc = endDate.AddMinutes(-tzOffset);
 
-            var rows = CpkService.GetResumenCpk(company, fromUtc, toUtc, connStr);
-            return View("Resumen", rows);   // <- fuerza usar Resumen.cshtml
+            // <<< Reponer selección >>>
+            await CargarCombosAsync();
+            ViewBag.PlantaSelected = planta;
+            ViewBag.StartDate = startDate;
+            ViewBag.EndDate = endDate;
+
+            var connStr = _configuration.GetConnectionString("CaptorConnection");
+            var rows = CpkService.GetResumenCpk(planta, fromUtc, toUtc, connStr);
+
+            return View("Resumen", rows);
         }
 
 

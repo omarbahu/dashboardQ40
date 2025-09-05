@@ -1141,7 +1141,7 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Consult.
+        ///   Looks up a localized string similar to Search.
         /// </summary>
         public static string Consult {
             get {
@@ -2455,7 +2455,7 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lot.
+        ///   Looks up a localized string similar to Batch.
         /// </summary>
         public static string Lot {
             get {
@@ -2464,7 +2464,7 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to lot(s) found. Click to select..
+        ///   Looks up a localized string similar to Batchs found. Click to select..
         /// </summary>
         public static string LotsFound_ClickToSelect {
             get {
@@ -5371,7 +5371,7 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Y–X Quality Report.
+        ///   Looks up a localized string similar to X-R Report.
         /// </summary>
         public static string XR_Title {
             get {

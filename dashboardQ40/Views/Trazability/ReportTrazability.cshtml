@@ -3,28 +3,62 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
 
 @{
-    ViewBag.Title = Localizer["Trace_BackwardReport_Title"]; // "Backward Traceability Report"
+    ViewBag.Title = Localizer["Trace_BackwardReport_Title"];
 
-    string jsonData = "{}"; // default
-
+    // JSON de tabla para depurar
+    string traceJson = "{}";
     if (Model?.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
     {
-        var tabla = Model.Trazabilidad;
-        var columnas = tabla.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList();
+        var t = Model.Trazabilidad;
+        var cols = t.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList();
+        var rows = t.Rows.Cast<DataRow>().Select(r => cols.ToDictionary(c => c, c => r[c]?.ToString() ?? "")).ToList();
+        traceJson = System.Text.Json.JsonSerializer.Serialize(new { columnas = cols, filas = rows });
+    }
 
-        var filas = tabla.Rows.Cast<DataRow>().Select(r =>
-            columnas.ToDictionary(c => c, c => r[c]?.ToString() ?? "")
-        ).ToList();
-
-        var dataCompleta = new { columnas, filas };
-        jsonData = System.Text.Json.JsonSerializer.Serialize(dataCompleta);
+    // JSON de filas para construir el grafo (si no hay datos, que sea [] y listo)
+    string rowsJson = "[]";
+    if (Model?.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
+    {
+        rowsJson = System.Text.Json.JsonSerializer.Serialize(
+            Model.Trazabilidad.Rows.Cast<DataRow>().Select(r => new
+            {
+                padre = r["batchIdentifier"]?.ToString(),
+                hijo = r["batchname"]?.ToString(),
+                nombre = r["manufacturingReferenceName"]?.ToString(),
+                id = r["manufacturingReference"]?.ToString(),
+                inicio = r["startDate"]?.ToString(),
+                fin = r["endDate"]?.ToString()
+            })
+        );
     }
 }
+
 
 <div class="container mt-5">
     <h2>@Localizer["Trace_BackwardReport_Header"]</h2>
 
     <form method="get" action="@Url.Action("ReportTrazability", "Trazability")" class="d-flex align-items-center gap-2 mb-2">
+        <!-- País / Planta -->
+        <div class="col">
+            <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
+        </div>
+        <div class="col">
+            <select id="pais" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
+                {
+                    <option value="@p.Code">@p.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
+        </div>
+        <div class="col">
+            <select id="planta" name="planta" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
         <input id="txtSearchBatch" type="text" name="searchBatch" class="form-control form-control-sm w-auto"
                placeholder="@Localizer["Trace_SearchBatch_Placeholder"]" value="@Model?.SearchBatch" style="max-width: 200px;" />
         <button id="btnBuscar" type="submit" class="btn btn-sm btn-primary">@Localizer["Search"]</button>
@@ -84,256 +118,12 @@
     {
         <div id="visorTrazabilidad" style="height: 400px; width: 100%; margin-bottom: 30px;"></div>
 
-        <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-        <script>
-            // ===== Textos para JS =====
-            window.TRZ = {
-                NoInfo: '@Localizer["NoInfo"]',                       // "No information"
-                ManufacturedLot: '@Localizer["ManufacturedLot"]',     // "Manufactured lot"
-                SKU: '@Localizer["SKU"]',                              // "SKU"
-                Identifier: '@Localizer["Identifier"]',                // "Identifier"
-                Start: '@Localizer["Start"]',                          // "Start"
-                End: '@Localizer["End"]',                              // "End"
-                ViewDetail: '@Localizer["ViewDetail"]'                 // "View detail"
-            };
-
-            const chart = echarts.init(document.getElementById('visorTrazabilidad'));
-
-            const trazabilidadDebug = @Html.Raw(jsonData);
-
-            const rows = @Html.Raw(Json.Serialize(
-            Model.Trazabilidad.Rows.Cast<System.Data.DataRow>().Select(r => new
-            {
-                padre = r["batchIdentifier"].ToString(),
-                hijo = r["batchname"].ToString(),
-                nombre = r["manufacturingReferenceName"].ToString(),
-                id = r["manufacturingReference"].ToString(),
-                inicio = r["startDate"].ToString(),
-                fin = r["endDate"].ToString()
-            })
-            ));
-
-            const data = [];
-            const links = [];
-            const added = new Map();
-
-            (rows.$values || []).forEach(r => {
-                if (!added.has(r.padre)) {
-                    added.set(r.padre, true);
-                    data.push({
-                        id: r.padre,
-                        name: r.padre,
-                        symbolSize: [140, 40],
-                        info: { sku: r.nombre, id: r.padre, inicio: r.inicio, fin: r.fin }
-                    });
-                }
-                if (r.hijo && !added.has(r.hijo)) {
-                    added.set(r.hijo, true);
-                    data.push({
-                        id: r.hijo,
-                        name: r.hijo,
-                        symbolSize: [140, 40],
-                        info: { sku: r.nombre, id: r.hijo, inicio: r.inicio, fin: r.fin }
-                    });
-                }
-                if (r.padre && r.hijo) {
-                    links.push({ source: r.padre, target: r.hijo });
-                }
-            });
-
-            const hijos = new Set((rows.$values || []).map(r => r.hijo));
-            const padres = [...new Set((rows.$values || []).map(r => r.padre))];
-            let rootId = padres.find(p => !hijos.has(p)) || padres[0];
-
-            const uniqueLinks = [];
-            const seenLinks = new Set();
-            links.forEach(link => {
-                const key = `${link.source}→${link.target}`;
-                if (!seenLinks.has(key)) { seenLinks.add(key); uniqueLinks.push(link); }
-            });
-
-            function buildTreeSafe(rootId, visited = new Set()) {
-                if (visited.has(rootId)) return null;
-                visited.add(rootId);
-                const rootNode = data.find(n => n.id === rootId);
-                if (!rootNode) return null;
-                const children = uniqueLinks
-                    .filter(link => link.source === rootId)
-                    .map(link => buildTreeSafe(link.target, new Set(visited)))
-                    .filter(child => child !== null);
-                return { ...rootNode, children };
-            }
-
-            chart.setOption({
-                tooltip: {
-                    trigger: 'item',
-                    enterable: true,
-                    confine: true,
-                    backgroundColor: '#fff',
-                    borderColor: '#ccc',
-                    borderWidth: 1,
-                    textStyle: { color: '#000' },
-                    formatter: function (params) {
-                        const info = params.data.info;
-                        if (!info) return TRZ.NoInfo;
-                        return `
-                                        <div style="max-width: 240px; font-size: 12px;">
-                                            <b>${TRZ.ManufacturedLot}</b><br/>
-                                            <b>${TRZ.SKU}:</b> ${info.sku}<br/>
-                                            <b>${TRZ.Identifier}:</b> ${info.id}<br/>
-                                            <b>${TRZ.Start}:</b> ${info.inicio}<br/>
-                                            <b>${TRZ.End}:</b> ${info.fin}<br/>
-                                            <a href="javascript:void(0)" onclick="filtrarLote('${info.id}')">🔍 ${TRZ.ViewDetail}</a>
-                                        </div>`;
-                    }
-                },
-                series: [{
-                    type: 'tree',
-                    layout: 'orthogonal',
-                    orient: 'LR',
-                    data: [buildTreeSafe(rootId)],
-                    symbol: 'rect',
-                    symbolSize: [160, 70],
-                    edgeShape: 'polyline',
-                    edgeForkPosition: '50%',
-                    top: '10%',
-                    left: '5%',
-                    bottom: '10%',
-                    right: '20%',
-                    nodePadding: 30,
-                    label: {
-                        show: true,
-                        formatter: function (params) {
-                            const info = params.data.info;
-                            if (!info) return params.data.name || '';
-                            const skuShort = (info.sku || '').substring(0, 20);
-                            return [`{b|${params.data.name}}`, `{s|${skuShort}}`].join('\n');
-                        },
-                        position: 'inside',
-                        verticalAlign: 'middle',
-                        align: 'center',
-                        fontSize: 11,
-                        rich: { b: { fontWeight: 'bold', fontSize: 12 }, s: { fontSize: 10 } }
-                    },
-                    leaves: { label: { show: true, position: 'inside', verticalAlign: 'middle', align: 'center', fontSize: 11 } },
-                    itemStyle: { borderColor: '#666', borderWidth: 1, color: '#eef9ff' },
-                    expandAndCollapse: true,
-                    initialTreeDepth: -1,
-                    lineStyle: { color: '#aaa', width: 2 }
-                }]
-            });
-
-            window.filtrarLote = function (id) {
-                const form = document.createElement('form');
-                form.method = 'get';
-                form.action = '@Url.Action("ReportTrazability", "Trazability")';
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'searchBatch';
-                input.value = id;
-                form.appendChild(input);
-                document.body.appendChild(form);
-                form.submit();
-            };
-        </script>
+        
     }
 
     <button class="btn btn-primary" onclick="window.print()">@Localizer["PrintReport"]</button>
 </div>
 
-@section Scripts {
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
-
-    <!-- Script del modal SIEMPRE cargado -->
-    <script>
-        (function () {
-            if (!window.bootstrap) return;
-
-            var modalEl = document.getElementById('modalBuscarLotes');
-            if (!modalEl) return;
-            var modalBuscarLotes = new bootstrap.Modal(modalEl);
-
-            document.getElementById('btnBuscarPorFechas')?.addEventListener('click', function () {
-                const hoy = new Date().toISOString().slice(0, 10);
-                document.getElementById('fechaIni').value = hoy;
-                document.getElementById('fechaFin').value = hoy;
-                document.querySelector('#tablaLotes tbody').innerHTML = '';
-                document.getElementById('msgLotes').textContent = '';
-                modalBuscarLotes.show();
-            });
-
-            var btnConsultar = document.getElementById('btnConsultarLotes');
-            if (btnConsultar) {
-                btnConsultar.addEventListener('click', async function (ev) {
-                    ev.preventDefault();
-
-                    const ini = document.getElementById('fechaIni').value;
-                    const fin = document.getElementById('fechaFin').value;
-                    const msg = document.getElementById('msgLotes');
-                    const tbody = document.querySelector('#tablaLotes tbody');
-                    tbody.innerHTML = '';
-
-                    if (!ini || !fin) { msg.textContent = '@Localizer["SelectBothDates"]'; return; }
-                    if (ini > fin) { msg.textContent = '@Localizer["StartNotAfterEnd"]'; return; }
-
-                    msg.textContent = '@Localizer["SearchingBatches"]';
-
-                    try {
-                        const url = `@Url.Action("BuscarLotesPorFechas", "Trazability")?fechaIni=${encodeURIComponent(ini)}&fechaFin=${encodeURIComponent(fin)}`;
-                        const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                        if (!resp.ok) throw new Error('net');
-
-                        const data = await resp.json();
-
-                        const items = Array.isArray(data) ? data : (data && Array.isArray(data.$values) ? data.$values : []);
-
-                        if (!items.length) { msg.textContent = '@Localizer["NoResults"]'; return; }
-
-                        items.forEach(x => {
-                            const lote = x.lote ?? x.batchIdentifier ?? x.batch ?? '';
-                            const desc = x.descripcion ?? x.manufacturingReferenceName ?? '';
-                            const inicio = x.inicio ?? x.startDate ?? '';
-                            const finv = x.fin ?? x.endDate ?? '';
-
-                            const tr = document.createElement('tr');
-                            tr.style.cursor = 'pointer';
-                            tr.innerHTML = `
-                                        <td><code>${lote}</code></td>
-                                        <td>${desc}</td>
-                                        <td>${fmtSmart(inicio)}</td>
-                                        <td>${fmtSmart(finv)}</td>
-                                    `;
-                            tr.addEventListener('click', function () {
-                                document.getElementById('txtSearchBatch').value = lote || '';
-                                modalBuscarLotes.hide();
-                                document.getElementById('btnBuscar').closest('form').submit();
-                            });
-                            tbody.appendChild(tr);
-                        });
-
-                        msg.textContent = items.length + ' @Localizer["LotsFound_ClickToSelect"]';
-                    } catch (e) {
-                        console.error(e);
-                        msg.textContent = '@Localizer["ErrorFetchingBatches"]';
-                    }
-                });
-            }
-
-            function fmtSmart(v) {
-                if (!v) return '';
-                if (typeof v === 'string' && v.includes('T')) {
-                    const d = new Date(v);
-                    if (!isNaN(d)) {
-                        // Puedes cambiar 'es-MX' si quieres hacerlo dependiente de CultureInfo.CurrentUICulture.Name
-                        return d.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
-                    }
-                }
-                return v.toString();
-            }
-        })();
-    </script>
-}
 
 <br />
 <br />
@@ -512,4 +302,275 @@ else if (Model.Checklist != null)
             }
         </tbody>
     </table>
+}
+
+
+
+
+@section Scripts {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script>
+        // Etiquetas (puedes cambiarlas o usar Localizer)
+        const LABELS = {
+            Select: "-- Selecciona --",
+            Line: "@Localizer["XR_Line"]",
+            Plant: "@Localizer["XR_Plant"]"
+        };
+
+        // Todas las companies (Company, CompanyName, CountryCode) desde backend
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+
+        // Helpers
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            return [];
+        }
+        function resetSelect($el, placeholder) {
+            $el.empty().append(new Option(placeholder, ""));
+        }
+
+        // 1) País → cargar Plantas
+        function fillPlants(countryCode) {
+            const $planta = $("#planta");
+            resetSelect($planta, LABELS.Plant);
+            resetSelect($("#line"), LABELS.Line); // limpiar línea
+
+            if (!countryCode) return;
+
+            const plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+        }
+
+
+        // Eventos
+        $("#pais").on("change", function () { fillPlants(this.value); });
+
+        // Init opcional: seleccionar el primer país y disparar el llenado
+        $(function () {
+            const $pais = $("#pais");
+            if ($pais[0] && $pais[0].options.length > 1) {
+                $pais[0].selectedIndex = 1;
+                $pais.trigger("change");
+            }
+        });
+    </script>
+
+
+    <script>
+  // ===== Textos para JS =====
+  window.TRZ = {
+    NoInfo: '@Localizer["NoInfo"]',
+    ManufacturedLot: '@Localizer["ManufacturedLot"]',
+    SKU: '@Localizer["SKU"]',
+    Identifier: '@Localizer["Identifier"]',
+    Start: '@Localizer["Start"]',
+    End: '@Localizer["End"]',
+    ViewDetail: '@Localizer["ViewDetail"]'
+  };
+
+  const host = document.getElementById('visorTrazabilidad');
+  if (host && window.echarts) {
+    const chart = echarts.init(host);
+
+    // 👇 variables correctas
+    const trazabilidadDebug = @Html.Raw(traceJson);
+    const rows = @Html.Raw(rowsJson);   // <- array JS, no usa .$values
+
+    const data = [];
+    const links = [];
+    const added = new Map();
+
+    (rows || []).forEach(r => {
+      if (!added.has(r.padre)) {
+        added.set(r.padre, true);
+        data.push({
+          id: r.padre, name: r.padre, symbolSize: [140, 40],
+          info: { sku: r.nombre, id: r.padre, inicio: r.inicio, fin: r.fin }
+        });
+      }
+      if (r.hijo && !added.has(r.hijo)) {
+        added.set(r.hijo, true);
+        data.push({
+          id: r.hijo, name: r.hijo, symbolSize: [140, 40],
+          info: { sku: r.nombre, id: r.hijo, inicio: r.inicio, fin: r.fin }
+        });
+      }
+      if (r.padre && r.hijo) links.push({ source: r.padre, target: r.hijo });
+    });
+
+    const hijos = new Set(rows.map(r => r.hijo));
+    const padres = [...new Set(rows.map(r => r.padre))];
+    let rootId = padres.find(p => !hijos.has(p)) || padres[0];
+
+    const uniqueLinks = [];
+    const seenLinks = new Set();
+    links.forEach(link => {
+      const key = `${link.source}→${link.target}`;
+      if (!seenLinks.has(key)) { seenLinks.add(key); uniqueLinks.push(link); }
+    });
+
+    function buildTreeSafe(rootId, visited = new Set()) {
+      if (visited.has(rootId)) return null;
+      visited.add(rootId);
+      const rootNode = data.find(n => n.id === rootId);
+      if (!rootNode) return null;
+      const children = uniqueLinks
+        .filter(link => link.source === rootId)
+        .map(link => buildTreeSafe(link.target, new Set(visited)))
+        .filter(child => child !== null);
+      return { ...rootNode, children };
+    }
+
+    chart.setOption({
+      tooltip: {
+        trigger: 'item', enterable: true, confine: true,
+        backgroundColor: '#fff', borderColor: '#ccc', borderWidth: 1,
+        textStyle: { color: '#000' },
+        formatter: function (p) {
+          const i = p.data.info; if (!i) return TRZ.NoInfo;
+          return `<div style="max-width:240px;font-size:12px;">
+            <b>${TRZ.ManufacturedLot}</b><br/>
+            <b>${TRZ.SKU}:</b> ${i.sku}<br/>
+            <b>${TRZ.Identifier}:</b> ${i.id}<br/>
+            <b>${TRZ.Start}:</b> ${i.inicio}<br/>
+            <b>${TRZ.End}:</b> ${i.fin}<br/>
+            <a href="javascript:void(0)" onclick="filtrarLote('${i.id}')">🔍 ${TRZ.ViewDetail}</a>
+          </div>`;
+        }
+      },
+      series: [{
+        type: 'tree', layout: 'orthogonal', orient: 'LR',
+        data: [buildTreeSafe(rootId)],
+        symbol: 'rect', symbolSize: [160, 70],
+        edgeShape: 'polyline', edgeForkPosition: '50%',
+        top: '10%', left: '5%', bottom: '10%', right: '20%',
+        nodePadding: 30,
+        label: {
+          show: true, position: 'inside', verticalAlign: 'middle', align: 'center', fontSize: 11,
+          formatter: function (p) {
+            const i = p.data.info; if (!i) return p.data.name || '';
+            const skuShort = (i.sku || '').substring(0, 20);
+            return `{b|${p.data.name}}\n{s|${skuShort}}`;
+          },
+          rich: { b: { fontWeight: 'bold', fontSize: 12 }, s: { fontSize: 10 } }
+        },
+        leaves: { label: { show: true, position: 'inside', verticalAlign: 'middle', align: 'center', fontSize: 11 } },
+        itemStyle: { borderColor: '#666', borderWidth: 1, color: '#eef9ff' },
+        expandAndCollapse: true, initialTreeDepth: -1, lineStyle: { color: '#aaa', width: 2 }
+      }]
+    });
+
+    window.filtrarLote = function (id) {
+      const form = document.createElement('form');
+      form.method = 'get';
+      form.action = '@Url.Action("ReportTrazability", "Trazability")';
+      const input = document.createElement('input');
+      input.type = 'hidden'; input.name = 'searchBatch'; input.value = id;
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+    };
+  }
+</script>
+
+
+    <!-- Script del modal SIEMPRE cargado -->
+    <script>
+        (function () {
+            if (!window.bootstrap) return;
+
+            var modalEl = document.getElementById('modalBuscarLotes');
+            if (!modalEl) return;
+            var modalBuscarLotes = new bootstrap.Modal(modalEl);
+
+            document.getElementById('btnBuscarPorFechas')?.addEventListener('click', function () {
+                const hoy = new Date().toISOString().slice(0, 10);
+                document.getElementById('fechaIni').value = hoy;
+                document.getElementById('fechaFin').value = hoy;
+                document.querySelector('#tablaLotes tbody').innerHTML = '';
+                document.getElementById('msgLotes').textContent = '';
+                modalBuscarLotes.show();
+            });
+
+            var btnConsultar = document.getElementById('btnConsultarLotes');
+            if (btnConsultar) {
+                btnConsultar.addEventListener('click', async function (ev) {
+                    ev.preventDefault();
+
+                    const ini = document.getElementById('fechaIni').value;
+                    const fin = document.getElementById('fechaFin').value;
+                    const planta = document.getElementById('planta').value;
+                    const msg = document.getElementById('msgLotes');
+                    const tbody = document.querySelector('#tablaLotes tbody');
+                    tbody.innerHTML = '';
+
+                    if (!ini || !fin) { msg.textContent = '@Localizer["SelectBothDates"]'; return; }
+                    if (ini > fin) { msg.textContent = '@Localizer["StartNotAfterEnd"]'; return; }
+
+                    msg.textContent = '@Localizer["SearchingBatches"]';
+
+                    try {
+                        const url = `@Url.Action("BuscarLotesPorFechas", "Trazability")?fechaIni=${encodeURIComponent(ini)}&fechaFin=${encodeURIComponent(fin)}&planta=${encodeURIComponent(planta)}`;
+                        const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                        if (!resp.ok) throw new Error('net');
+
+                        const data = await resp.json();
+
+                        const items = Array.isArray(data) ? data : (data && Array.isArray(data.$values) ? data.$values : []);
+
+                        if (!items.length) { msg.textContent = '@Localizer["NoResults"]'; return; }
+
+                        items.forEach(x => {
+                            const lote = x.lote ?? x.batchIdentifier ?? x.batch ?? '';
+                            const desc = x.descripcion ?? x.manufacturingReferenceName ?? '';
+                            const inicio = x.inicio ?? x.startDate ?? '';
+                            const finv = x.fin ?? x.endDate ?? '';
+
+                            const tr = document.createElement('tr');
+                            tr.style.cursor = 'pointer';
+                            tr.innerHTML = `
+                                                <td><code>${lote}</code></td>
+                                                <td>${desc}</td>
+                                                <td>${fmtSmart(inicio)}</td>
+                                                <td>${fmtSmart(finv)}</td>
+                                            `;
+                            tr.addEventListener('click', function () {
+                                document.getElementById('txtSearchBatch').value = lote || '';
+                                modalBuscarLotes.hide();
+                                document.getElementById('btnBuscar').closest('form').submit();
+                            });
+                            tbody.appendChild(tr);
+                        });
+
+                        msg.textContent = items.length + ' @Localizer["LotsFound_ClickToSelect"]';
+                    } catch (e) {
+                        console.error(e);
+                        msg.textContent = '@Localizer["ErrorFetchingBatches"]';
+                    }
+                });
+            }
+
+            function fmtSmart(v) {
+                if (!v) return '';
+                if (typeof v === 'string' && v.includes('T')) {
+                    const d = new Date(v);
+                    if (!isNaN(d)) {
+                        // Puedes cambiar 'es-MX' si quieres hacerlo dependiente de CultureInfo.CurrentUICulture.Name
+                        return d.toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
+                    }
+                }
+                return v.toString();
+            }
+        })();
+    </script>
 }

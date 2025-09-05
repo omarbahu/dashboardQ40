@@ -7,7 +7,9 @@ using static dashboardQ40.Models.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 using System.Data.SqlClient;
-using System.Linq;                         // Linq
+using System.Linq;
+using System.Globalization;
+using Microsoft.Extensions.Options;                         // Linq
 
 
 
@@ -15,18 +17,100 @@ namespace dashboardQ40.Controllers
 {
     public class TrazabilityController : Controller
     {
+        private readonly WebServiceSettings _settings;
+        private readonly AuthService _authService;
+        private readonly ILogger<DashboardController> _logger;
         private readonly IConfiguration _configuration;
 
-        public TrazabilityController(IConfiguration configuration)
+
+        public TrazabilityController(IOptions<WebServiceSettings> settings,
+            AuthService authService,
+            IConfiguration configuration,
+            ILogger<DashboardController> logger)
         {
+            _settings = settings.Value;
+            _authService = authService;
             _configuration = configuration;
+            _logger = logger;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+
+            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
+            if (token != null)
+            {
+                HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
+            }
+
+
+            var ListCompanies = new List<result_companies>();
+            var companies = new List<CompanyOption>();
+
+            if (token != null)
+            {
+
+                Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
+                        token.access_token.ToString(),
+                        _settings.QueryCompany,
+                        _settings.Company,
+                        _settings.trazalog);
+                await Task.WhenAll(dataResultComp);
+
+                if (dataResultComp.Result.result != null)
+                {
+                    foreach (var item in dataResultComp.Result.result)
+                    {
+                        CultureInfo ci;
+                        RegionInfo ri;
+                        try
+                        {
+                            ci = new CultureInfo(item.culture);   // p.ej. "es-MX"
+                            ri = new RegionInfo(ci.Name);         // p.ej. "MX"
+                        }
+                        catch
+                        {
+                            ci = CultureInfo.InvariantCulture;
+                            ri = new RegionInfo("US");            // fallback
+                        }
+
+                        companies.Add(new CompanyOption
+                        {
+                            Company = item.company,
+                            CompanyName = item.companyName,
+                            Culture = ci.Name,
+                            CountryCode = ri.TwoLetterISORegionName
+                        });
+                    }
+
+                }
+
+
+            }
+
+            var countries = companies
+                   .GroupBy(c => c.CountryCode)
+                   .Select(g =>
+                   {
+                       var r = new RegionInfo(g.Key); // admite "MX","US","ES"
+                       return new { Code = g.Key, Name = r.NativeName }; // "México", "Estados Unidos"
+                   })
+                   .OrderBy(x => x.Name)
+                   .ToList();
+
+            // Simulando datos para los selectores
+
+
+
+            ViewBag.Companies = companies;                 // lista completa
+            ViewBag.Countries = countries;                 // países únicos
+            ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
+
+
             return View();
         }
 
-        public IActionResult ReportTrazability(string searchBatch, DateTime? startDate, DateTime? endDate)
+
+        public async Task<IActionResult> ReportTrazability(string searchBatch, DateTime? startDate, DateTime? endDate, string planta)
         {
             var model = new TrazabilidadConChecklistViewModel
             {
@@ -35,10 +119,81 @@ namespace dashboardQ40.Controllers
                 EndDate = endDate
             };
 
+            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
+            if (token != null)
+            {
+                HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
+            }
+
+
+            var ListCompanies = new List<result_companies>();
+            var companies = new List<CompanyOption>();
+
+            if (token != null)
+            {
+
+                Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
+                        token.access_token.ToString(),
+                        _settings.QueryCompany,
+                        _settings.Company,
+                        _settings.trazalog);
+                await Task.WhenAll(dataResultComp);
+
+                if (dataResultComp.Result.result != null)
+                {
+                    foreach (var item in dataResultComp.Result.result)
+                    {
+                        CultureInfo ci;
+                        RegionInfo ri;
+                        try
+                        {
+                            ci = new CultureInfo(item.culture);   // p.ej. "es-MX"
+                            ri = new RegionInfo(ci.Name);         // p.ej. "MX"
+                        }
+                        catch
+                        {
+                            ci = CultureInfo.InvariantCulture;
+                            ri = new RegionInfo("US");            // fallback
+                        }
+
+                        companies.Add(new CompanyOption
+                        {
+                            Company = item.company,
+                            CompanyName = item.companyName,
+                            Culture = ci.Name,
+                            CountryCode = ri.TwoLetterISORegionName
+                        });
+                    }
+
+                }
+
+
+            }
+
+            var countries = companies
+                   .GroupBy(c => c.CountryCode)
+                   .Select(g =>
+                   {
+                       var r = new RegionInfo(g.Key); // admite "MX","US","ES"
+                       return new { Code = g.Key, Name = r.NativeName }; // "México", "Estados Unidos"
+                   })
+                   .OrderBy(x => x.Name)
+                   .ToList();
+
+            // Simulando datos para los selectores
+
+
+
+            ViewBag.Companies = companies;                 // lista completa
+            ViewBag.Countries = countries;                 // países únicos
+            ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
+
+
             if (!string.IsNullOrEmpty(searchBatch))
             {
                 string connStr = _configuration.GetConnectionString("CaptorConnection");
-                string company = _configuration.GetConnectionString("company");
+                string company = planta;
+                //string company = _configuration.GetConnectionString("company");
 
                 BatchInfo batchInfo = TrazabilityClass.GetBatchInfoByText(searchBatch, connStr, company);
                 long batch = batchInfo.BatchId;
@@ -92,13 +247,13 @@ namespace dashboardQ40.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> BuscarLotesPorFechas(DateTime fechaIni, DateTime fechaFin)
+        public async Task<IActionResult> BuscarLotesPorFechas(DateTime fechaIni, DateTime fechaFin, string planta)
         {
             // Normaliza fin al final del día si quieres incluir todo el día
             var fin = fechaFin.Date.AddDays(1).AddTicks(-1);
 
             string connStr = _configuration.GetConnectionString("CaptorConnection");
-            string company = _configuration.GetConnectionString("company");
+            string company = planta;
 
             DataTable batchs = TrazabilityClass.GetBatchbyDates(company, fechaIni, fin, connStr);
             // TODO: reemplaza por tu servicio/consulta real

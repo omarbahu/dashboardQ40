@@ -154,7 +154,7 @@
             <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
         </div>
         <div class="col">
-            <select id="planta" class="form-select form-select-sm">
+            <select id="planta" name="planta" class="form-select form-select-sm">
                 <option value="">-- Selecciona --</option>
             </select>
         </div>
@@ -331,7 +331,7 @@ function loadLinesByCompany(companyId){
         $line.append(new Option(name, id));
       });
     },
-    error: function(xhr){ console.error("ObtenerLineas_XR error", xhr); }
+                error: function (xhr) { console.error("ObtenerLineas error", xhr); }
   });
 }
 
@@ -540,7 +540,7 @@ $(function(){
                     form.appendChild(hiddenInput);
                 }
             });
-
+           
             document.body.appendChild(form);
             form.submit();
             document.body.removeChild(form);
@@ -549,13 +549,13 @@ $(function(){
 
         // ======= AJAX: productos (SKU) en base a filtros =======
          function cargarProductos(){
-            var lineaId=$("#line").val(), fechaInicial=$("#startDate").val(), fechaFinal=$("#endDate").val();
+            var lineaId = $("#line").val(), fechaInicial = $("#startDate").val(), fechaFinal = $("#endDate").val(), planta = $("#planta").val();
             updateSectionsVisibility();
             if (lineaId && fechaInicial && fechaFinal){
                 $.ajax({
                     url:'@Url.Action("ObtenerProductos","Dashboard")',
                     type:'GET',
-                    data:{lineaId,fechaInicial,fechaFinal},
+                    data:{lineaId,fechaInicial,fechaFinal,planta},
                     success:llenarDropdownSKU,
                     error:function(){ alert(T.ErrorLoadSkus); }
                 });
@@ -582,13 +582,13 @@ $(function(){
         function cargarVarY() {
             if (!filtersReady()) return;
             var sku = $("#sku").val();
-            const fechaInicial = $("#startDate").val(), fechaFinal = $("#endDate").val(), lineaId = $("#line").val();
+            const fechaInicial = $("#startDate").val(), fechaFinal = $("#endDate").val(), lineaId = $("#line").val(), planta = $("#planta").val();
             if (!sku) { $("#cardsY").empty(); $("#cardsYEmpty").hide(); $("#secYWrap,#secYContextWrap,#secXWrap").addClass("hidden"); resetYAndX(); return; }
 
             $.ajax({
                 url: '@Url.Action("ObtenerVarY", "Dashboard")',
                 type: 'GET',
-                data: { sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId },
+                data: { sku, startDate: fechaInicial, endDate: fechaFinal, line: lineaId, planta },
                 success: function (data) {
                     const itemsRaw = (data?.value?.$values) ?? (data?.$values) ?? data?.value ?? [];
                     const items = itemsRaw.map(it => ({ ...it, spark: normalizeSpark(it.spark) }));
@@ -655,7 +655,7 @@ $(function(){
         function cargarVarX() {
             const sku = $("#sku").val();
             const varYCode = $("#variableY").val() || $("#cardsY .card-y.selected").attr("data-code") || "";
-            const fechaInicial = $("#startDate").val(), fechaFinal = $("#endDate").val(), lineaId = $("#line").val();
+            const fechaInicial = $("#startDate").val(), fechaFinal = $("#endDate").val(), lineaId = $("#line").val(), planta = $("#planta").val();
             if (!(sku && varYCode)) { $("#cardsX").empty(); $("#noVariablesX").hide(); return; }
 
             $("#cardsX").empty(); $("#noVariablesX").hide(); $("#secXWrap").removeClass("hidden");
@@ -663,7 +663,7 @@ $(function(){
             $.ajax({
                 url: '@Url.Action("ObtenerVarX", "Dashboard")',
                 type: 'GET',
-                data: { sku, varY: varYCode, fechaInicial, fechaFinal, lineaId },
+                data: { sku, varY: varYCode, fechaInicial, fechaFinal, lineaId, planta },
                 cache: false,
                 success: function (data) {
                     const raw = Array.isArray(data) ? data

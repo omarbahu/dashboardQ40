@@ -23,7 +23,7 @@ namespace dashboardQ40.Services
             _settings = settings.Value; // Extrae el valor de IOptions
         }
 
-        public async Task<result_token> ObtenerTokenCaptor()
+        public async Task<result_token> ObtenerTokenCaptor(string company)
         {
             if (_cachedToken != null && DateTime.UtcNow < _tokenExpiration)
             {
@@ -44,7 +44,7 @@ namespace dashboardQ40.Services
                 var data = JsonSerializer.Serialize(cred_tok);
                 HttpContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
 
-                using var response = await _httpClient.PostAsync(_settings.TokenUrl, content).ConfigureAwait(false);
+                using var response = await _httpClient.PostAsync(_settings.TokenUrl + company, content).ConfigureAwait(false);
 
                 if (response.IsSuccessStatusCode)
                 {
