@@ -120,6 +120,9 @@
   <data name="Actions" xml:space="preserve">
     <value>Actions</value>
   </data>
+  <data name="ActLimControl" xml:space="preserve">
+    <value>Update Control Limits</value>
+  </data>
   <data name="AppTitle" xml:space="preserve">
     <value>Dashboard Q.40</value>
   </data>
@@ -1779,17 +1782,50 @@
   <data name="XRCharts" xml:space="preserve">
     <value>X-R Charts</value>
   </data>
+  <data name="XR_CalcAndPlot" xml:space="preserve">
+    <value>Calculate &amp; plot</value>
+  </data>
   <data name="XR_Capability" xml:space="preserve">
     <value>Capability</value>
   </data>
   <data name="XR_CapPlotTitle" xml:space="preserve">
     <value>Capability Plot (Within vs Overall vs Specs)</value>
   </data>
+  <data name="XR_Cart_Clear" xml:space="preserve">
+    <value>Clear all</value>
+  </data>
+  <data name="XR_Cart_Empty" xml:space="preserve">
+    <value>No items selected.</value>
+  </data>
+  <data name="XR_Cart_Process" xml:space="preserve">
+    <value>Process selection</value>
+  </data>
+  <data name="XR_Cart_Title" xml:space="preserve">
+    <value>Selection</value>
+  </data>
+  <data name="XR_Company" xml:space="preserve">
+    <value>Company</value>
+  </data>
   <data name="XR_Country" xml:space="preserve">
     <value>Country:</value>
   </data>
+  <data name="XR_CP" xml:space="preserve">
+    <value>Control Procedure</value>
+  </data>
+  <data name="XR_Cpk" xml:space="preserve">
+    <value>Cpk</value>
+  </data>
+  <data name="XR_CpkFiltered" xml:space="preserve">
+    <value>Cpk (filtered)</value>
+  </data>
+  <data name="XR_CpkRaw" xml:space="preserve">
+    <value>Cpk (raw)</value>
+  </data>
   <data name="XR_Data" xml:space="preserve">
     <value>Data</value>
+  </data>
+  <data name="XR_ErrorN" xml:space="preserve">
+    <value>Error: {0}</value>
   </data>
   <data name="XR_Fit" xml:space="preserve">
     <value>Fit</value>
@@ -1797,17 +1833,65 @@
   <data name="XR_From" xml:space="preserve">
     <value>From:</value>
   </data>
+  <data name="XR_FromDate" xml:space="preserve">
+    <value>From (F1)</value>
+  </data>
+  <data name="XR_HDPlan" xml:space="preserve">
+    <value>Hide action plan rows</value>
+  </data>
   <data name="XR_Hist" xml:space="preserve">
     <value>Histogram (with LSL/USL)</value>
   </data>
+  <data name="XR_IQRk" xml:space="preserve">
+    <value>IQR coefficient (k)</value>
+  </data>
+  <data name="XR_KPI_Cp" xml:space="preserve">
+    <value>Cp</value>
+  </data>
+  <data name="XR_KPI_Cpk" xml:space="preserve">
+    <value>Cpk</value>
+  </data>
+  <data name="XR_KPI_Mean" xml:space="preserve">
+    <value>Mean</value>
+  </data>
+  <data name="XR_KPI_nTotal" xml:space="preserve">
+    <value>n (total)</value>
+  </data>
+  <data name="XR_KPI_nUsed" xml:space="preserve">
+    <value>n (used)</value>
+  </data>
+  <data name="XR_KPI_Std" xml:space="preserve">
+    <value>σ (std)</value>
+  </data>
   <data name="XR_Line" xml:space="preserve">
     <value>Line:</value>
+  </data>
+  <data name="XR_Loading" xml:space="preserve">
+    <value>Loading...</value>
   </data>
   <data name="XR_LoadSkuErr" xml:space="preserve">
     <value>Error while loading SKUs.</value>
   </data>
   <data name="XR_LSL" xml:space="preserve">
     <value>LSL</value>
+  </data>
+  <data name="XR_LSL1" xml:space="preserve">
+    <value>LSL</value>
+  </data>
+  <data name="XR_LSL_New" xml:space="preserve">
+    <value>LSL’ (Suggested)</value>
+  </data>
+  <data name="XR_MaxCpk" xml:space="preserve">
+    <value>Max Cpk</value>
+  </data>
+  <data name="XR_MinN" xml:space="preserve">
+    <value>Min N</value>
+  </data>
+  <data name="XR_Mu" xml:space="preserve">
+    <value>μ (Mean)</value>
+  </data>
+  <data name="XR_N" xml:space="preserve">
+    <value>N</value>
   </data>
   <data name="XR_NoCapData" xml:space="preserve">
     <value>No capability data.</value>
@@ -1817,6 +1901,12 @@
   </data>
   <data name="XR_NormProbTitle" xml:space="preserve">
     <value>Normal Probability Plot</value>
+  </data>
+  <data name="XR_OM_None" xml:space="preserve">
+    <value>No filter</value>
+  </data>
+  <data name="XR_OutlierMethod" xml:space="preserve">
+    <value>Outlier method</value>
   </data>
   <data name="XR_OverallBand" xml:space="preserve">
     <value>Overall (±3σo)</value>
@@ -1830,11 +1920,20 @@
   <data name="XR_Result" xml:space="preserve">
     <value>Result</value>
   </data>
+  <data name="XR_RowTooltip_Plan" xml:space="preserve">
+    <value>Requires action plan (Cpk ≤ threshold)</value>
+  </data>
+  <data name="XR_RowTooltip_Tighten" xml:space="preserve">
+    <value>Candidate to tighten (Cpk &gt; threshold)</value>
+  </data>
   <data name="XR_RTitle" xml:space="preserve">
     <value>R chart — subgroup range</value>
   </data>
   <data name="XR_RunTitle" xml:space="preserve">
     <value>Run chart — individuals</value>
+  </data>
+  <data name="XR_Search" xml:space="preserve">
+    <value>Search</value>
   </data>
   <data name="XR_SelectFilters" xml:space="preserve">
     <value>Please select dates, line, and a variable.</value>
@@ -1845,11 +1944,29 @@
   <data name="XR_SelectVarY" xml:space="preserve">
     <value>Select Y Variable</value>
   </data>
+  <data name="XR_ShowFiltered" xml:space="preserve">
+    <value>Show filtered points</value>
+  </data>
+  <data name="XR_Sigma" xml:space="preserve">
+    <value>σ (Std. Dev.)</value>
+  </data>
   <data name="XR_SKU" xml:space="preserve">
     <value>SKU:</value>
   </data>
+  <data name="XR_SKU1" xml:space="preserve">
+    <value>SKU</value>
+  </data>
+  <data name="XR_StatusSummary" xml:space="preserve">
+    <value>Found: {0} · Action plan: {1} · With limit proposal: {2}</value>
+  </data>
   <data name="XR_Subgroup" xml:space="preserve">
     <value>Subgroup</value>
+  </data>
+  <data name="XR_Tab_Analysis" xml:space="preserve">
+    <value>More analysis</value>
+  </data>
+  <data name="XR_Tab_Summary" xml:space="preserve">
+    <value>Summary</value>
   </data>
   <data name="XR_tbl_Cp" xml:space="preserve">
     <value>Cp</value>
@@ -1893,11 +2010,29 @@
   <data name="XR_Title" xml:space="preserve">
     <value>X-R Report</value>
   </data>
+  <data name="XR_Title_ControlLimits" xml:space="preserve">
+    <value>Control Limit Adjustments</value>
+  </data>
   <data name="XR_To" xml:space="preserve">
     <value>To:</value>
   </data>
+  <data name="XR_ToDate" xml:space="preserve">
+    <value>To (F2)</value>
+  </data>
+  <data name="XR_Unauthorized" xml:space="preserve">
+    <value>Unauthorized. Open Dashboard first to obtain a token.</value>
+  </data>
   <data name="XR_USL" xml:space="preserve">
     <value>USL</value>
+  </data>
+  <data name="XR_USL1" xml:space="preserve">
+    <value>USL</value>
+  </data>
+  <data name="XR_USL_New" xml:space="preserve">
+    <value>USL’ (Suggested)</value>
+  </data>
+  <data name="XR_Variable" xml:space="preserve">
+    <value>Variable</value>
   </data>
   <data name="XR_VarX" xml:space="preserve">
     <value>Variable X:</value>
@@ -1910,6 +2045,9 @@
   </data>
   <data name="XR_XbarTitle" xml:space="preserve">
     <value>X̄ (Xbar) chart — subgroup means</value>
+  </data>
+  <data name="XR_ZThreshold" xml:space="preserve">
+    <value>Z threshold</value>
   </data>
   <data name="XVariablesComparison" xml:space="preserve">
     <value>Y-X Variables Comparison</value>

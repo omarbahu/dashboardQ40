@@ -70,6 +70,15 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Update Control Limits.
+        /// </summary>
+        public static string ActLimControl {
+            get {
+                return ResourceManager.GetString("ActLimControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dashboard Q.40.
         /// </summary>
         public static string AppTitle {
@@ -5038,6 +5047,15 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Calculate &amp; plot.
+        /// </summary>
+        public static string XR_CalcAndPlot {
+            get {
+                return ResourceManager.GetString("XR_CalcAndPlot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Capability.
         /// </summary>
         public static string XR_Capability {
@@ -5056,6 +5074,51 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear all.
+        /// </summary>
+        public static string XR_Cart_Clear {
+            get {
+                return ResourceManager.GetString("XR_Cart_Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No items selected..
+        /// </summary>
+        public static string XR_Cart_Empty {
+            get {
+                return ResourceManager.GetString("XR_Cart_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Process selection.
+        /// </summary>
+        public static string XR_Cart_Process {
+            get {
+                return ResourceManager.GetString("XR_Cart_Process", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selection.
+        /// </summary>
+        public static string XR_Cart_Title {
+            get {
+                return ResourceManager.GetString("XR_Cart_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Company.
+        /// </summary>
+        public static string XR_Company {
+            get {
+                return ResourceManager.GetString("XR_Company", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Country:.
         /// </summary>
         public static string XR_Country {
@@ -5065,11 +5128,56 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Control Procedure.
+        /// </summary>
+        public static string XR_CP {
+            get {
+                return ResourceManager.GetString("XR_CP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cpk.
+        /// </summary>
+        public static string XR_Cpk {
+            get {
+                return ResourceManager.GetString("XR_Cpk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cpk (filtered).
+        /// </summary>
+        public static string XR_CpkFiltered {
+            get {
+                return ResourceManager.GetString("XR_CpkFiltered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cpk (raw).
+        /// </summary>
+        public static string XR_CpkRaw {
+            get {
+                return ResourceManager.GetString("XR_CpkRaw", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data.
         /// </summary>
         public static string XR_Data {
             get {
                 return ResourceManager.GetString("XR_Data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: {0}.
+        /// </summary>
+        public static string XR_ErrorN {
+            get {
+                return ResourceManager.GetString("XR_ErrorN", resourceCulture);
             }
         }
         
@@ -5092,6 +5200,24 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to From (F1).
+        /// </summary>
+        public static string XR_FromDate {
+            get {
+                return ResourceManager.GetString("XR_FromDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide action plan rows.
+        /// </summary>
+        public static string XR_HDPlan {
+            get {
+                return ResourceManager.GetString("XR_HDPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Histogram (with LSL/USL).
         /// </summary>
         public static string XR_Hist {
@@ -5101,11 +5227,83 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IQR coefficient (k).
+        /// </summary>
+        public static string XR_IQRk {
+            get {
+                return ResourceManager.GetString("XR_IQRk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cp.
+        /// </summary>
+        public static string XR_KPI_Cp {
+            get {
+                return ResourceManager.GetString("XR_KPI_Cp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cpk.
+        /// </summary>
+        public static string XR_KPI_Cpk {
+            get {
+                return ResourceManager.GetString("XR_KPI_Cpk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mean.
+        /// </summary>
+        public static string XR_KPI_Mean {
+            get {
+                return ResourceManager.GetString("XR_KPI_Mean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to n (total).
+        /// </summary>
+        public static string XR_KPI_nTotal {
+            get {
+                return ResourceManager.GetString("XR_KPI_nTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to n (used).
+        /// </summary>
+        public static string XR_KPI_nUsed {
+            get {
+                return ResourceManager.GetString("XR_KPI_nUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to σ (std).
+        /// </summary>
+        public static string XR_KPI_Std {
+            get {
+                return ResourceManager.GetString("XR_KPI_Std", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Line:.
         /// </summary>
         public static string XR_Line {
             get {
                 return ResourceManager.GetString("XR_Line", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string XR_Loading {
+            get {
+                return ResourceManager.GetString("XR_Loading", resourceCulture);
             }
         }
         
@@ -5124,6 +5322,60 @@ namespace dashboardQ40.Resources {
         public static string XR_LSL {
             get {
                 return ResourceManager.GetString("XR_LSL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LSL’ (Suggested).
+        /// </summary>
+        public static string XR_LSL_New {
+            get {
+                return ResourceManager.GetString("XR_LSL_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LSL.
+        /// </summary>
+        public static string XR_LSL1 {
+            get {
+                return ResourceManager.GetString("XR_LSL1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max Cpk.
+        /// </summary>
+        public static string XR_MaxCpk {
+            get {
+                return ResourceManager.GetString("XR_MaxCpk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Min N.
+        /// </summary>
+        public static string XR_MinN {
+            get {
+                return ResourceManager.GetString("XR_MinN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to μ (Mean).
+        /// </summary>
+        public static string XR_Mu {
+            get {
+                return ResourceManager.GetString("XR_Mu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to N.
+        /// </summary>
+        public static string XR_N {
+            get {
+                return ResourceManager.GetString("XR_N", resourceCulture);
             }
         }
         
@@ -5151,6 +5403,24 @@ namespace dashboardQ40.Resources {
         public static string XR_NormProbTitle {
             get {
                 return ResourceManager.GetString("XR_NormProbTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No filter.
+        /// </summary>
+        public static string XR_OM_None {
+            get {
+                return ResourceManager.GetString("XR_OM_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outlier method.
+        /// </summary>
+        public static string XR_OutlierMethod {
+            get {
+                return ResourceManager.GetString("XR_OutlierMethod", resourceCulture);
             }
         }
         
@@ -5191,6 +5461,24 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requires action plan (Cpk ≤ threshold).
+        /// </summary>
+        public static string XR_RowTooltip_Plan {
+            get {
+                return ResourceManager.GetString("XR_RowTooltip_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Candidate to tighten (Cpk &gt; threshold).
+        /// </summary>
+        public static string XR_RowTooltip_Tighten {
+            get {
+                return ResourceManager.GetString("XR_RowTooltip_Tighten", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R chart — subgroup range.
         /// </summary>
         public static string XR_RTitle {
@@ -5205,6 +5493,15 @@ namespace dashboardQ40.Resources {
         public static string XR_RunTitle {
             get {
                 return ResourceManager.GetString("XR_RunTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string XR_Search {
+            get {
+                return ResourceManager.GetString("XR_Search", resourceCulture);
             }
         }
         
@@ -5236,6 +5533,24 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show filtered points.
+        /// </summary>
+        public static string XR_ShowFiltered {
+            get {
+                return ResourceManager.GetString("XR_ShowFiltered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to σ (Std. Dev.).
+        /// </summary>
+        public static string XR_Sigma {
+            get {
+                return ResourceManager.GetString("XR_Sigma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SKU:.
         /// </summary>
         public static string XR_SKU {
@@ -5245,11 +5560,47 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SKU.
+        /// </summary>
+        public static string XR_SKU1 {
+            get {
+                return ResourceManager.GetString("XR_SKU1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found: {0} · Action plan: {1} · With limit proposal: {2}.
+        /// </summary>
+        public static string XR_StatusSummary {
+            get {
+                return ResourceManager.GetString("XR_StatusSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Subgroup.
         /// </summary>
         public static string XR_Subgroup {
             get {
                 return ResourceManager.GetString("XR_Subgroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More analysis.
+        /// </summary>
+        public static string XR_Tab_Analysis {
+            get {
+                return ResourceManager.GetString("XR_Tab_Analysis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary.
+        /// </summary>
+        public static string XR_Tab_Summary {
+            get {
+                return ResourceManager.GetString("XR_Tab_Summary", resourceCulture);
             }
         }
         
@@ -5380,6 +5731,15 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Control Limit Adjustments.
+        /// </summary>
+        public static string XR_Title_ControlLimits {
+            get {
+                return ResourceManager.GetString("XR_Title_ControlLimits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to To:.
         /// </summary>
         public static string XR_To {
@@ -5389,11 +5749,56 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to To (F2).
+        /// </summary>
+        public static string XR_ToDate {
+            get {
+                return ResourceManager.GetString("XR_ToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unauthorized. Open Dashboard first to obtain a token..
+        /// </summary>
+        public static string XR_Unauthorized {
+            get {
+                return ResourceManager.GetString("XR_Unauthorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to USL.
         /// </summary>
         public static string XR_USL {
             get {
                 return ResourceManager.GetString("XR_USL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USL’ (Suggested).
+        /// </summary>
+        public static string XR_USL_New {
+            get {
+                return ResourceManager.GetString("XR_USL_New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USL.
+        /// </summary>
+        public static string XR_USL1 {
+            get {
+                return ResourceManager.GetString("XR_USL1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable.
+        /// </summary>
+        public static string XR_Variable {
+            get {
+                return ResourceManager.GetString("XR_Variable", resourceCulture);
             }
         }
         
@@ -5430,6 +5835,15 @@ namespace dashboardQ40.Resources {
         public static string XR_XbarTitle {
             get {
                 return ResourceManager.GetString("XR_XbarTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Z threshold.
+        /// </summary>
+        public static string XR_ZThreshold {
+            get {
+                return ResourceManager.GetString("XR_ZThreshold", resourceCulture);
             }
         }
         

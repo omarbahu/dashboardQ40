@@ -89,89 +89,248 @@
             <button id="btnReporte" type="button" class="btn btn-primary btn-sm" onclick="runReportXR()">
                 📊 @Localizer["XR_ReportBtn"]
             </button>
+            
+
         </div>
     </div>
 
     <input type="hidden" id="variableY" name="variableY" />
 </form>
-
 <div class="mt-3">
-    <div class="row g-3">
 
-        <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_TimeSeries"]</h6>
-                    <div id="chartXR" style="height:340px;"></div>
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="xrTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-resumen"
+                    data-bs-toggle="tab" data-bs-target="#pane-resumen"
+                    type="button" role="tab" aria-controls="pane-resumen" aria-selected="true">
+                @Localizer["XR_Tab_Summary"]  <!-- Resumen -->
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-analisis"
+                    data-bs-toggle="tab" data-bs-target="#pane-analisis"
+                    type="button" role="tab" aria-controls="pane-analisis" aria-selected="false">
+                @Localizer["XR_Tab_Analysis"]  <!-- Más análisis -->
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="xrTabsContent">
+
+        <!-- =======================
+             PESTAÑA 1: RESUMEN
+             (Time series + Histograma + Cpk interactivo)
+             ======================= -->
+        <div class="tab-pane fade show active" id="pane-resumen" role="tabpanel" aria-labelledby="tab-resumen">
+            <div class="row g-3 pt-3">
+
+                <!-- 1) Time series (ids existentes) -->
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_TimeSeries"]</h6>
+                            <div id="chartXR" style="height:340px;"></div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- 2) Histograma (ids existentes) -->
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_Hist"]</h6>
+                            <div id="histXR" style="height:340px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2.1) Capability breve (tabla compacta) -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_Capability"]</h6>
+                            <div id="capTableXR"></div> <!-- ya existente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3) Cpk interactivo con filtro de outliers -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                            <div class="d-flex flex-wrap align-items-end gap-2 mb-2" id="cpkControls">
+                                <div>
+                                    <label class="form-label mb-1" for="cpkMethod">@Localizer["XR_OutlierMethod"]</label>
+                                    <select id="cpkMethod" class="form-select form-select-sm" style="min-width:180px">
+                                        <option value="none">@Localizer["XR_OM_None"]</option>
+                                        <option value="z">Z-score</option>
+                                        <option value="iqr">IQR (Tukey)</option>
+                                    </select>
+                                </div>
+
+                                <div id="cpkZWrap" style="display:none">
+                                    <label class="form-label mb-1" for="cpkZ">@Localizer["XR_ZThreshold"]</label>
+                                    <input id="cpkZ" type="number" step="0.1" class="form-control form-control-sm" value="3" style="width:100px" />
+                                </div>
+
+                                <div id="cpkIqrWrap" style="display:none">
+                                    <label class="form-label mb-1" for="cpkIqrK">@Localizer["XR_IQRk"]</label>
+                                    <input id="cpkIqrK" type="number" step="0.1" class="form-control form-control-sm" value="1.5" style="width:100px" />
+                                </div>
+
+                                <div id="sigmaLegend" style="display:flex; gap:12px; flex-wrap:wrap; margin:8px 0;">
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="display:inline-block;width:16px;height:16px;background:#34c759;border:1px solid #333"></span>
+                                        <span>±1σ</span>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="display:inline-block;width:16px;height:16px;background:#ffcc00;border:1px solid #333"></span>
+                                        <span>±2σ</span>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <span style="display:inline-block;width:16px;height:16px;background:#ff3b30;border:1px solid #333"></span>
+                                        <span>±3σ</span>
+                                    </div>
+                                </div>
+
+                                <div class="ms-auto d-flex gap-2">
+                                    <button id="cpkRun" type="button" class="btn btn-primary btn-sm">
+                                        @Localizer["XR_CalcAndPlot"]   <!-- Calcular y graficar -->
+                                    </button>
+                                    <!--
+                                    <button id="cpkToggleRemoved" type="button" class="btn btn-secondary btn-sm">
+                                        @Localizer["XR_ShowFiltered"]  <!-- Mostrar puntos filtrados 
+                                    </button>
+                                    -->
+                                </div>
+                                <div class="ms-2 d-flex align-items-center gap-2">
+                                    <span id="cpkManualBadge" class="badge bg-warning text-dark">Excluidos: 0</span>
+                                    <button id="cpkResetManual" type="button" class="btn btn-outline-secondary btn-sm">Reset manual</button>
+                                    <button id="cpkResetZoom" type="button" class="btn btn-outline-secondary btn-sm">Reset zoom</button>
+                                </div>
+
+                            </div>
+
+                            <!-- Gráfica Cpk interactivo -->
+                            <div id="cpkChart" style="height:360px;"></div>
+
+                            <!-- KPIs Cpk -->
+                            <div id="cpkKpis" class="row row-cols-2 row-cols-md-6 g-2 mt-2">
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center small">
+                                        <div class="text-muted">@Localizer["XR_KPI_nTotal"]</div><div id="cpk_nTotal">—</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center small">
+                                        <div class="text-muted">@Localizer["XR_KPI_nUsed"]</div><div id="cpk_nUsed">—</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center small">
+                                        <div class="text-muted">@Localizer["XR_KPI_Mean"]</div><div id="cpk_mean">—</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center small">
+                                        <div class="text-muted">@Localizer["XR_KPI_Std"]</div><div id="cpk_std">—</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center small">
+                                        <div class="text-muted">@Localizer["XR_KPI_Cp"]</div><div id="cpk_cp">—</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center small">
+                                        <div class="text-muted">@Localizer["XR_KPI_Cpk"]</div><div id="cpk_cpk">—</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cpk bruto vs filtrado (cards compactas) -->
+                            <div class="row row-cols-1 row-cols-md-2 g-2 mt-2">
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center">
+                                        <div class="text-muted small">@Localizer["XR_CpkRaw"]</div>
+                                        <div id="cpk_raw" class="fs-5">—</div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="border rounded p-2 text-center">
+                                        <div class="text-muted small">@Localizer["XR_CpkFiltered"]</div>
+                                        <div id="cpk_filtered" class="fs-5">—</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_Hist"]</h6>
-                    <div id="histXR" style="height:300px;"></div>
-                </div>
-            </div>
-        </div>
+        <!-- =======================
+             PESTAÑA 2: MÁS ANÁLISIS
+             (Xbar/R, Run, Normal Prob, Capability Plot)
+             ======================= -->
+        <div class="tab-pane fade" id="pane-analisis" role="tabpanel" aria-labelledby="tab-analisis">
+            <div class="row g-3 pt-3">
 
-        <div class="col-12">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_Capability"]</h6>
-                    <div id="capTableXR"></div>
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_XbarTitle"]</h6>
+                            <div id="xbarXR" style="height:260px;"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_XbarTitle"]</h6>
-                    <div id="xbarXR" style="height:260px;"></div>
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_RTitle"]</h6>
+                            <div id="rchartXR" style="height:260px;"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_RTitle"]</h6>
-                    <div id="rchartXR" style="height:260px;"></div>
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_RunTitle"]</h6>
+                            <div id="runXR" style="height:260px;"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_RunTitle"]</h6>
-                    <div id="runXR" style="height:260px;"></div>
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_NormProbTitle"]</h6>
+                            <div id="normprobXR" style="height:280px;"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-12 col-lg-6">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_NormProbTitle"]</h6>
-                    <div id="normprobXR" style="height:280px;"></div>
+                <div class="col-12">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">@Localizer["XR_CapPlotTitle"]</h6>
+                            <div id="capPlotXR" style="height:260px;"></div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-12">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">@Localizer["XR_CapPlotTitle"]</h6>
-                    <div id="capPlotXR" style="height:260px;"></div>
-                </div>
             </div>
         </div>
 
     </div>
 </div>
+
 
 
 @section Scripts {
@@ -268,11 +427,6 @@
             }
         }
 
-        // Evento: cambio de país
-        document.getElementById('pais').addEventListener('change', function () {
-            fillPlants(this.value);
-        });
-
         // Opcional: inicializar con el primer país seleccionado
         (function init() {
             const pais = document.getElementById('pais');
@@ -333,6 +487,118 @@
             if (Array.isArray(data.value)) return data.value;
             return [];
         }
+
+        // --- Detección de Run Rules (Western/Nelson equivalentes) sobre los PUNTOS USADOS ---
+        function detectRunRules(values, keepMask, mean, sd) {
+            const res = { r1: new Set(), r2: new Set(), r3: new Set(), r4: new Set(), r5: new Set() };
+            if (!Number.isFinite(mean) || !Number.isFinite(sd) || sd <= 0) return res;
+
+            const UCL = mean + 3 * sd, LCL = mean - 3 * sd;
+
+            // Lista de puntos incluidos (en orden), con z y lado
+            const inc = values
+                .map((v, i) => ({ i, v, keep: !!keepMask[i] }))
+                .filter(p => p.keep)
+                .map(p => ({ ...p, z: (p.v - mean) / sd, side: (p.v >= mean ? 1 : -1) }));
+
+            // Regla #1: ≥1 punto más allá de ±3σ (fuera de control)
+            inc.forEach(p => { if (p.v > UCL || p.v < LCL) res.r1.add(p.i); });
+
+            // Regla #2: 2 de 3 en Zona A o más allá (|z| ≥ 2) — ventana de 3
+            for (let k = 0; k <= inc.length - 3; k++) {
+                const win = inc.slice(k, k + 3);
+                const hi = win.filter(p => Math.abs(p.z) >= 2);
+                // al menos dos y que compartan signo
+                if (hi.length >= 2 && (hi[0].side === hi[1].side || (hi[2] && hi[0].side === hi[2].side) || (hi[2] && hi[1].side === hi[2].side))) {
+                    hi.forEach(p => res.r2.add(p.i));
+                }
+            }
+
+            // Regla #3: 4 de 5 en Zona B (|z| >= 1) y del MISMO lado — ventana de 5
+            for (let k = 0; k <= inc.length - 5; k++) {
+                const win = inc.slice(k, k + 5);
+                const hi = win.filter(p => Math.abs(p.z) >= 1);
+                if (hi.length >= 4) {
+                    // ¿hay al menos 4 con el mismo side?
+                    const pos = hi.filter(p => p.side === 1).length;
+                    const neg = hi.length - pos;
+                    if (pos >= 4 || neg >= 4) hi.forEach(p => res.r3.add(p.i));
+                }
+            }
+
+            // Regla #4: 8 o más del mismo lado de la media (sin cruzar)
+            let runStart = 0;
+            for (let k = 1; k <= inc.length; k++) {
+                if (k === inc.length || inc[k].side !== inc[k - 1].side) {
+                    const len = k - runStart;
+                    if (len >= 8) for (let j = runStart; j < k; j++) res.r4.add(inc[j].i);
+                    runStart = k;
+                }
+            }
+
+            // Regla #5: 6 o más seguidos en tendencia (estrictamente ↑ o ↓)
+            let incRun = 1, decRun = 1;
+            for (let k = 1; k < inc.length; k++) {
+                if (inc[k].v > inc[k - 1].v) { incRun++; decRun = 1; }
+                else if (inc[k].v < inc[k - 1].v) { decRun++; incRun = 1; }
+                else { /* iguales: no rompas ambas, permite continuidad suave */ incRun++; decRun++; }
+
+                if (incRun >= 6) for (let j = k - incRun + 1; j <= k; j++) res.r5.add(inc[j].i);
+                if (decRun >= 6) for (let j = k - decRun + 1; j <= k; j++) res.r5.add(inc[j].i);
+            }
+
+            return res;
+        }
+
+        // Sustituye tu cpkZonesMarkArea por ESTA versión
+        // Reemplaza COMPLETO cpkZonesMarkArea(...) por esto
+        function cpkZonesMarkArea(mu, sd) {
+            if (!Number.isFinite(mu) || !Number.isFinite(sd) || sd <= 0) return null;
+
+            const z1 = mu - sd, z2 = mu - 2 * sd, z3 = mu - 3 * sd;
+            const p1 = mu + sd, p2 = mu + 2 * sd, p3 = mu + 3 * sd;
+
+            // Colores vivos con más opacidad
+            const C3 = 'rgba(255, 59, 48, 0.35)';   // ±3σ rojo
+            const C2 = 'rgba(255, 204, 0, 0.30)';   // ±2σ amarillo
+            const C1 = 'rgba(52, 199, 89, 0.28)';   // ±1σ verde
+
+            // Helper para crear un "área" con etiqueta centrada
+            const area = (y0, y1, color, label) => ({
+                type: 'line',
+                silent: true,
+                // name no aparece en la leyenda (solo para depurar); las etiquetas van en markArea.label
+                markArea: {
+                    silent: true,
+                    itemStyle: { color },
+                    label: {
+                        show: false,
+                        position: 'inside',
+                        color: '#111',
+                        fontWeight: 'bold',
+                        formatter: label
+                    },
+                    data: [[{ yAxis: y0 }, { yAxis: y1 }]]
+                }
+            });
+
+            return [
+                // ±3σ: (−3σ, −2σ) y (2σ, 3σ)
+                area(z3, z2, C3, '−3σ ⇢ −2σ'),
+                area(p2, p3, C3, '2σ ⇢ 3σ'),
+
+                // ±2σ: (−2σ, −1σ) y (1σ, 2σ)
+                area(z2, z1, C2, '−2σ ⇢ −1σ'),
+                area(p1, p2, C2, '1σ ⇢ 2σ'),
+
+                // ±1σ: (−1σ, μ) y (μ, 1σ)
+                area(z1, mu, C1, '−1σ ⇢ μ'),
+                area(mu, p1, C1, 'μ ⇢ 1σ')
+            ];
+        }
+
+
+
 
         // =======================
         // Estado
@@ -438,13 +704,31 @@
             const to = $("#endDate").val();
             const workplace = $("#line").val();
             const planta = $("#planta").val();
+            const reference = $("#sku").val();
             const controlOp = $("#variablesX").val() || $("#variableYSelect").val();
             if (!(from && to && workplace && controlOp)) { alert(L.SelectFilters); return; }
 
             try {
                 // 1) Base rows
                 const baseUrl = '@Url.Action("GetBaseRows", "XRcharts")';
-                const baseResp = await $.getJSON(baseUrl, { from, to, workplace, reference: null, controlOperation: controlOp, planta });
+                const params = { 
+                    from, 
+                    to, 
+                    workplace, 
+                    reference: null, 
+                    controlOperation: controlOp, 
+                    planta 
+                };
+
+                console.log("➡️ Parámetros enviados a GetBaseRows:", params);
+
+                const query = $.param(params);
+                console.log("➡️ URL final:", baseUrl + "?" + query);
+
+                const baseResp = await $.getJSON(baseUrl, params);
+
+                console.log("📥 BaseRows (raw):", baseResp);  // <--- aquí imprimes todo el JSON crudo
+
                 const rows = Array.isArray(baseResp) ? baseResp :
                     Array.isArray(baseResp?.$values) ? baseResp.$values : baseResp;
 
@@ -465,6 +749,8 @@
                 // 2) Capability
                 const capUrl = '@Url.Action("GetCapability", "XRcharts")';
                 const capResp = await $.getJSON(capUrl, { from, to, workplace, reference: null, controlOperation: controlOp, planta });
+                console.log("📥 Capability (raw):", capResp);  // <--- aquí también
+                
                 const capRows = Array.isArray(capResp) ? capResp :
                     Array.isArray(capResp?.$values) ? capResp.$values : capResp;
                 const cap = capRows && capRows.length ? capRows[0] : null;
@@ -475,6 +761,7 @@
                     if (!bySg[it.sg]) bySg[it.sg] = [];
                     bySg[it.sg].push(it);
                 }
+                console.log(items);
                 const sgKeys = Object.keys(bySg).sort((a, b) => bySg[a][0].ts - bySg[b][0].ts);
 
                 // construir arrays de medias y rangos
@@ -512,6 +799,9 @@
                 renderXRHistogram(items, spec);
                 renderXRCapTable(cap);
 
+                initCpkModule();              // asegura que los controles estén listos (una sola vez)
+                renderCpkInteractive(items, spec);
+
                 // Xbar y R con límites de control + líneas de especificación
                 renderXbarChart(xbarData, ctrlX, spec);
                 renderRChart(rData, ctrlR);
@@ -520,6 +810,8 @@
                 renderRunChart(items, LSL, USL);
                 renderNormalProb(items, LSL, USL);
                 renderCapabilityPlot(cap, LSL, USL);
+
+                window._xr_last = { items, spec, xbarData, rData, ctrlX, ctrlR, LSL, USL, cap };
 
             } catch (err) {
                 console.error(err);
@@ -648,7 +940,7 @@
         }
 
         function renderXbarChart(xbarData, ctrl, specOrLsl, maybeUsl) {
-            const chart = echarts.init(document.getElementById('xbarXR'));
+            const chart = ec('xbarXR');
             const x = xbarData.map(d => d.idx);
             const y = xbarData.map(d => d.mean);
 
@@ -820,6 +1112,37 @@
             });
         }
 
+        // Re-render/resize cuando se muestre la pestaña "Más análisis"
+        document.addEventListener('shown.bs.tab', function (e) {
+          const target = e.target && e.target.getAttribute('data-bs-target');
+          if (target !== '#pane-analisis') return;
+
+          // Opción rápida: si ya existen instancias, solo resize
+          ['xbarXR','rchartXR','runXR','normprobXR','capPlotXR'].forEach(id => {
+            const inst = echarts.getInstanceByDom(document.getElementById(id));
+            if (inst) inst.resize();
+          });
+
+          // Si aún no hay instancias válidas (porque se crearon ocultas con 0 px),
+          // re-renderiza usando el último dataset cacheado.
+          if (window._xr_last) {
+            const { items, spec, xbarData, rData, ctrlX, ctrlR, LSL, USL, cap } = window._xr_last;
+            // Vuelve a pintar los de la pestaña 2
+            renderXbarChart(xbarData, ctrlX, spec);
+            renderRChart(rData, ctrlR);
+            renderRunChart(items, LSL, USL);
+            renderNormalProb(items, LSL, USL);
+            renderCapabilityPlot(cap, LSL, USL);
+          }
+        });
+
+        window.addEventListener('resize', () => {
+            ['xbarXR', 'rchartXR', 'runXR', 'normprobXR', 'capPlotXR', 'chartXR', 'histXR', 'cpkChart'].forEach(id => {
+                const inst = echarts.getInstanceByDom(document.getElementById(id));
+                if (inst) inst.resize();
+            });
+        });
+
         // Limpia combos dependientes
         function resetAfterCountry() {
             $("#line").empty().append(`<option value="">${L.Line}</option>`);
@@ -925,6 +1248,389 @@
         function avg(a) { return a.reduce((s, v) => s + v, 0) / a.length; }
         function rbar(groups) { return avg(groups.map(g => Math.max(...g) - Math.min(...g))); }
         function xbarbar(groups) { return avg(groups.map(g => avg(g))); }
+
+
+        // =======================
+        // CPK INTERACTIVO (outliers + chart + KPIs)
+        // Requiere: echarts, items [{ts,y,lsl,usl,target}], objeto spec {LSL,USL,Target}
+        // =======================
+        let _cpk = {
+            showRemoved: false,
+            method: 'none', // 'none' | 'z' | 'iqr'
+            zth: 3,
+            iqrk: 1.5,
+            chart: null,
+            inited: false,
+            manualExcluded: new Set(), // << NUEVO: guarda sg (ids) excluidos manualmente
+        };
+
+        function cpkYRange(values, mean, sd, LSL, USL) {
+          const fin = values.filter(v => Number.isFinite(v));
+          let lo = Math.min(...fin), hi = Math.max(...fin);
+
+          if (Number.isFinite(sd) && sd > 0) {
+            lo = Math.min(lo, mean - 3*sd);
+            hi = Math.max(hi, mean + 3*sd);
+          }
+          if (LSL != null) lo = Math.min(lo, LSL);
+          if (USL != null) hi = Math.max(hi, USL);
+
+          if (!Number.isFinite(lo) || !Number.isFinite(hi)) { lo = 0; hi = 1; }
+          const pad = (hi - lo) * 0.08 || 0.1; // margen 8% (fallback 0.1)
+          return [lo - pad, hi + pad];
+        }
+
+
+        // ----- utilidades cpk -----
+        function cpkMean(a) { return a.reduce((s, v) => s + v, 0) / a.length; }
+        function cpkStdSample(a) { // muestral
+            if (a.length < 2) return 0;
+            const m = cpkMean(a);
+            const v = a.reduce((s, x) => s + (x - m) * (x - m), 0) / (a.length - 1);
+            return Math.sqrt(v);
+        }
+        function cpkQuantile(sorted, q) {
+            const pos = (sorted.length - 1) * q;
+            const base = Math.floor(pos);
+            const rest = pos - base;
+            if (sorted[base + 1] !== undefined) return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+            return sorted[base];
+        }
+        function cpkFilterIQR(arr, k) {
+            const s = [...arr].sort((a, b) => a - b);
+            const q1 = cpkQuantile(s, 0.25), q3 = cpkQuantile(s, 0.75);
+            const iqr = q3 - q1;
+            const lo = q1 - k * iqr, hi = q3 + k * iqr;
+            const keep = arr.map(v => v >= lo && v <= hi);
+            return { keep, bounds: [lo, hi] };
+        }
+        function cpkFilterZ(arr, z) {
+            const m = cpkMean(arr), sd = cpkStdSample(arr);
+            if (sd === 0) return { keep: arr.map(_ => true), bounds: [m, m] };
+            const keep = arr.map(v => Math.abs((v - m) / sd) <= z);
+            return { keep, bounds: [m - z * sd, m + z * sd] };
+        }
+
+        // calcula Cp/Cpk con manejo de casos 2 lados / 1 lado / sin specs
+        function cpkCalcStats(values, LSL, USL) {
+            if (!values.length) return { n: 0, mean: NaN, sd: NaN, cp: NaN, cpk: NaN };
+            const m = cpkMean(values);
+            const sd = cpkStdSample(values);
+            let cp = NaN, cpk = NaN;
+
+            if (Number.isFinite(sd) && sd > 0) {
+                const cpu = (USL != null) ? (USL - m) / (3 * sd) : NaN;
+                const cpl = (LSL != null) ? (m - LSL) / (3 * sd) : NaN;
+
+                if (USL != null && LSL != null) {
+                    cp = (USL - LSL) / (6 * sd);
+                    cpk = Math.min(cpu, cpl);
+                } else if (USL != null) {
+                    // un solo lado: reporta cpu como Cpk (práctica común)
+                    cpk = cpu;
+                } else if (LSL != null) {
+                    cpk = cpl;
+                }
+            }
+            return { n: values.length, mean: m, sd, cp, cpk };
+        }
+
+        function cpkSafe(v, digits = 3) {
+            return (v == null || !isFinite(v)) ? '—' : Number(v).toFixed(digits);
+        }
+
+        // ----- init de controles (solo una vez) -----
+        function initCpkModule() {
+            if (_cpk.inited) return;
+            _cpk.inited = true;
+
+            // toggle de controles según método
+            const $method = $('#cpkMethod'), $zWrap = $('#cpkZWrap'), $iqrWrap = $('#cpkIqrWrap');
+            $method.on('change', () => {
+                _cpk.method = $method.val();
+                $zWrap.toggle(_cpk.method === 'z');
+                $iqrWrap.toggle(_cpk.method === 'iqr');
+            });
+
+            $('#cpkZ').on('input', () => { _cpk.zth = Number($('#cpkZ').val() || 3); });
+            $('#cpkIqrK').on('input', () => { _cpk.iqrk = Number($('#cpkIqrK').val() || 1.5); });
+
+            $('#cpkToggleRemoved').on('click', () => {
+                _cpk.showRemoved = !_cpk.showRemoved;
+
+                // Cambia el texto del botón
+                $('#cpkToggleRemoved').text(
+                    _cpk.showRemoved
+                        ? (L.HideFiltered || 'Hide filtered points')
+                        : (L.ShowFiltered || 'Show filtered points')
+                );
+
+                // Vuelve a dibujar para mostrar/ocultar la serie "Filtrados"
+                if (window._cpk_last) {
+                    renderCpkInteractive(window._cpk_last.items, window._cpk_last.spec);
+                }
+            });
+
+
+            _cpk.chart = echarts.init(document.getElementById('cpkChart'), null, { renderer: 'svg' });
+
+            // botón calcular (re-render usando último dataset cacheado)
+            $('#cpkRun').on('click', () => {
+                if (window._cpk_last) renderCpkInteractive(window._cpk_last.items, window._cpk_last.spec);
+            });
+
+            // estado inicial
+            $method.val('none').trigger('change');
+
+            $('#cpkResetManual').on('click', () => {
+                _cpk.manualExcluded.clear();   // limpia los manuales
+                $('#cpkManualBadge').text('Excluidos: 0');
+
+                // Resetear el dropdown correcto
+                $('#cpkMethod').val('none').trigger('change');
+                $('#cpkZ').val('2');    // umbral default
+                $('#cpkIqrK').val('1.5');
+
+                renderCpkInteractive(window._cpk_last.items, window._cpk_last.spec);
+            });
+
+            $('#cpkResetZoom').on('click', () => {
+                // Resetea sliders al 100% y vuelve a ajustar Y a la franja de datos actual
+                _cpk.chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });            // X
+                _cpk.chart.dispatchAction({ type: 'dataZoom', yAxisIndex: 0, start: 0, end: 100 }); // Y
+                if (window._cpk_last) renderCpkInteractive(window._cpk_last.items, window._cpk_last.spec);
+            });
+
+        }
+
+        function ec(id) {
+            const el = document.getElementById(id);
+            return echarts.getInstanceByDom(el) || echarts.init(el);
+        }
+        // ----- render principal -----
+        function renderCpkInteractive(items, spec) {
+            if (!_cpk.inited) initCpkModule();
+            window._cpk_last = { items, spec }; // cache para botón "Calcular"
+
+            const LSL = spec?.LSL ?? items.find(p => p.lsl != null)?.lsl ?? null;
+            const USL = spec?.USL ?? items.find(p => p.usl != null)?.usl ?? null;
+
+            const raw = items.map(p => p.y);
+            const idx = items.map((_, i) => i + 1);
+            const sgIds = items.map((p, i) => p.sg || i); // usar el índice del map
+
+
+            // --- filtro automático (none/z/iqr)
+            let autoKeep = raw.map(_ => true), bounds = null;
+            if (_cpk.method === 'z') {
+                const r = cpkFilterZ(raw, _cpk.zth); autoKeep = r.keep; bounds = r.bounds;
+            } else if (_cpk.method === 'iqr') {
+                const r = cpkFilterIQR(raw, _cpk.iqrk); autoKeep = r.keep; bounds = r.bounds;
+            }
+
+            // --- filtro manual por sg
+            const manKeep = sgIds.map(id => !_cpk.manualExcluded.has(id));
+
+            // --- máscara final = auto AND manual
+            const keepMask = autoKeep.map((k, i) => k && manKeep[i]);
+
+            const used = raw.filter((v, i) => keepMask[i]);
+            const removed = raw
+                .map((v, i) => ({ v, i, id: sgIds[i], reason: _cpk.manualExcluded.has(sgIds[i]) ? 'manual' : 'auto' }))
+                .filter((_, i) => !keepMask[i]);
+
+            // métricas (tal como ya haces)
+            const sRaw = cpkCalcStats(raw, LSL, USL);
+            const sUse = cpkCalcStats(used, LSL, USL);
+
+            const [ymin, ymax] = cpkYRange(used, sUse.mean, sUse.sd, LSL, USL);
+
+
+            // --- Detectar violaciones de Run Rules sobre los puntos USADOS (keepMask) ---
+            const rr = detectRunRules(raw, keepMask, sUse.mean, sUse.sd);
+
+            // Mapa para tooltip (qué reglas tiene cada índice)
+            const ruleNames = { r1: 'Rule #1', r2: 'Rule #2', r3: 'Rule #3', r4: 'Rule #4', r5: 'Rule #5' };
+            const ruleMap = {};
+            Object.entries(rr).forEach(([key, set]) => {
+                set.forEach(i => {
+                    if (!ruleMap[i]) ruleMap[i] = [];
+                    ruleMap[i].push(ruleNames[key]);
+                });
+            });
+
+
+            // KPIs (tus elementos existentes)
+            $('#cpk_nTotal').text(sRaw.n);
+            $('#cpk_nUsed').text(used.length);
+            $('#cpk_mean').text(cpkSafe(sUse.mean, 4));
+            $('#cpk_std').text(cpkSafe(sUse.sd, 4));
+            $('#cpk_cp').text(cpkSafe(sUse.cp));
+            $('#cpk_cpk').text(cpkSafe(sUse.cpk));
+            $('#cpk_raw').text(cpkSafe(sRaw.cpk));
+            $('#cpk_filtered').text(cpkSafe(sUse.cpk));
+
+            // líneas base
+            const meanLine = used.length ? new Array(raw.length).fill(sUse.mean) : [];
+            const lslArr = LSL != null ? new Array(raw.length).fill(LSL) : null;
+            const uslArr = USL != null ? new Array(raw.length).fill(USL) : null;
+
+            // series (pinta excluidos automáticos como null y, si activas showRemoved, en un scatter aparte)
+            const series = [
+                {
+                    name: (L.Data || 'Datos') + ' (' + (L?.Used || 'usados') + ')',
+                    type: 'line',
+                    data: raw.map((v, i) => keepMask[i] ? v : null),
+                    symbol: 'circle', showSymbol: true, lineStyle: { width: 2 }, z: 3
+                },
+                {
+                    name: (L?.Mean || 'Media') + ' (sin outliers)',
+                    type: 'line',
+                    data: meanLine,
+                    symbol: 'none',
+                    lineStyle: { width: 2, type: 'dashed' }, z: 2
+                }
+            ];
+
+            // helper para construir data [idx, valor] desde un Set de índices
+            const ruleData = (set) => [...set].map(i => [i + 1, raw[i]]);
+
+            // Overlays por regla (símbolo/color distintos)
+            if (rr.r1.size) series.push({
+                name: 'Rule #1 (fuera ±3σ)',
+                type: 'scatter', data: ruleData(rr.r1), z: 5,
+                symbol: 'x', symbolSize: 14, itemStyle: { color: '#e11d48' }
+            });
+            if (rr.r2.size) series.push({
+                name: 'Rule #2 (2 de 3 en Zona A)',
+                type: 'scatter', data: ruleData(rr.r2), z: 5,
+                symbol: 'triangle', symbolSize: 12, itemStyle: { color: '#f97316' }
+            });
+            if (rr.r3.size) series.push({
+                name: 'Rule #3 (4 de 5 en Zona B)',
+                type: 'scatter', data: ruleData(rr.r3), z: 5,
+                symbol: 'rect', symbolSize: 12, itemStyle: { color: '#facc15' }
+            });
+            if (rr.r4.size) series.push({
+                name: 'Rule #4 (≥8 del mismo lado)',
+                type: 'scatter', data: ruleData(rr.r4), z: 5,
+                symbol: 'diamond', symbolSize: 12, itemStyle: { color: '#8b5cf6' }
+            });
+            if (rr.r5.size) series.push({
+                name: 'Rule #5 (≥6 en tendencia)',
+                type: 'scatter', data: ruleData(rr.r5), z: 5,
+                symbol: 'pin', symbolSize: 12, itemStyle: { color: '#0ea5e9' }
+            });
+
+
+            if (LSL != null) series.push({ name: L.LSL, type: 'line', data: lslArr, symbol: 'none', lineStyle: { width: 2 }, z: 1 });
+            if (USL != null) series.push({ name: L.USL, type: 'line', data: uslArr, symbol: 'none', lineStyle: { width: 2 }, z: 1 });
+
+            // Mostrar “filtrados” (auto+manual)
+            if (_cpk.showRemoved && removed.length) {
+                series.push({
+                    name: (L?.ShowFiltered || 'Filtrados'),
+                    type: 'scatter',
+                    data: removed.map(o => [o.i + 1, o.v]),
+                    symbolSize: 10
+                });
+            }
+
+
+            // bandas opcionales (método)
+            let markArea = undefined;
+            if (bounds) {
+                const bands = [];
+                if (LSL != null) bands.push([{ yAxis: bounds[0] }, { yAxis: LSL }]);
+                if (USL != null) bands.push([{ yAxis: USL }, { yAxis: bounds[1] }]);
+                markArea = { silent: true, itemStyle: { color: 'rgba(148,163,184,0.10)' }, data: bands };
+            }
+
+            const zonesSeries = cpkZonesMarkArea(sUse.mean, sUse.sd) || [];
+
+            // --- Entradas “falsas” para que la leyenda muestre ±1σ / ±2σ / ±3σ
+            const legendBands = [
+                {
+                    name: '±1σ', type: 'line', data: [], showSymbol: false,
+                    lineStyle: { width: 10, color: 'rgba(52, 199, 89, 0.9)' }, // verde vivo
+                    itemStyle: { color: 'rgba(52, 199, 89, 0.9)' }
+                },
+                {
+                    name: '±2σ', type: 'line', data: [], showSymbol: false,
+                    lineStyle: { width: 10, color: 'rgba(255, 204, 0, 0.95)' }, // amarillo vivo
+                    itemStyle: { color: 'rgba(255, 204, 0, 0.95)' }
+                },
+                {
+                    name: '±3σ', type: 'line', data: [], showSymbol: false,
+                    lineStyle: { width: 10, color: 'rgba(255, 59, 48, 0.95)' }, // rojo vivo
+                    itemStyle: { color: 'rgba(255, 59, 48, 0.95)' }
+                },
+            ];
+
+
+            _cpk.chart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: (params) => {
+                        // params = array de puntos bajo el mismo x (idx)
+                        if (!params || !params.length) return '';
+                        const i = params[0].dataIndex; // índice base
+                        const lines = [];
+                        lines.push(`${i + 1}`);
+                        params.forEach(p => {
+                            const val = (Array.isArray(p.data) ? p.data[1] : p.data);
+                            const valTxt = (val == null || isNaN(val)) ? '—' : Number(val).toFixed(4);
+                            lines.push(`${p.marker} ${p.seriesName}: ${valTxt}`);
+                        });
+                        if (ruleMap[i]?.length) {
+                            lines.push(`<span style="color:#ef4444">⚠ ${ruleMap[i].join(', ')}</span>`);
+                        }
+                        return lines.join('<br/>');
+                    }
+                },
+                legend: { top: 0 },
+                xAxis: { type: 'category', data: idx, name: L.Subgroup || 'Muestra' },
+                yAxis: { type: 'value', name: L.Result, min: ymin, max: ymax, scale: true },
+                // <<< NUEVO: dataZoom para zoom/pan con mouse y sliders >>>
+                grid: { left: 50, right: 28, top: 40, bottom: 60 }, // más margen para que no tape el slider vertical
+                dataZoom: [
+                    // X (mouse + slider)
+                    { type: 'inside', xAxisIndex: 0, filterMode: 'none', zoomOnMouseWheel: true, moveOnMouseWheel: true, moveOnMouseMove: true },
+                    { type: 'slider', xAxisIndex: 0, height: 16, bottom: 8, showDataShadow: false, realtime: true },
+
+                    // Y (mouse + slider)
+                    { type: 'inside', yAxisIndex: 0, filterMode: 'none', zoomOnMouseWheel: true, moveOnMouseWheel: true, moveOnMouseMove: true },
+                    { type: 'slider', yAxisIndex: 0, width: 14, right: 8, showDataShadow: false, realtime: true }
+                ],
+
+                series: [
+                    ...zonesSeries,     // las franjas con labels
+                    ...series,//,          // tus series de datos
+                    ...legendBands      // “iconos” para la leyenda
+                ]
+            });
+
+
+
+            _cpk.chart.off('click'); // evita múltiples handlers
+            _cpk.chart.on('click', params => {
+                // Solo actúa si se clicó la serie principal de datos (no líneas LSL/USL/Mean)
+                if (!params || !params.seriesName) return;
+                if (!/Datos|Data/i.test(params.seriesName)) return;
+
+                const i = params.dataIndex;
+                if (i == null || !window._cpk_last) return;
+
+                const sg = window._cpk_last.items[i]?.sg; // usas tu campo sg del dataset
+                if (!sg) return;
+
+                if (_cpk.manualExcluded.has(sg)) _cpk.manualExcluded.delete(sg);
+                else _cpk.manualExcluded.add(sg);
+
+                $('#cpkManualBadge').text(`Excluidos: ${_cpk.manualExcluded.size}`);
+                renderCpkInteractive(window._cpk_last.items, window._cpk_last.spec);
+            });
+        }
 
     </script>
 }

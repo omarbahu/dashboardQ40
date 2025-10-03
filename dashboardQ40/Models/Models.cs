@@ -57,6 +57,25 @@ namespace dashboardQ40.Models
 
         }
 
+        public class result_QResNormLi
+        {
+            public string? query { get; set; }
+            public object? parameters { get; set; }
+            public List<raw_QResNormLi> result { get; set; } = new();
+        }
+
+        public class raw_QResNormLi
+        {
+            public string? controlprocedure { get; set; }
+            public string? controlOperation { get; set; }
+            public string? controlOperationName { get; set; }
+            public double? resultValue { get; set; }
+            public double? minTolerance { get; set; }
+            public double? maxTolerance { get; set; }
+            public DateTime? executionDate { get; set; }
+            public string? manufacturingReference { get; set; } // SKU
+        }
+
         public class result_Q_Companies
         {
             public string query { get; set; }

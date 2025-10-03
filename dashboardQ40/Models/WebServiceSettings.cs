@@ -17,6 +17,7 @@
         public string QueryResultVarY_X { get; set; }
         public string QueryAuthUser { get; set; }
         public string QueryCompany { get; set; }
+        public string QueryLimits { get; set; }
         public bool Produccion { get; set; }
 
     }

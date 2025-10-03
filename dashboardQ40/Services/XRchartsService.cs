@@ -31,6 +31,7 @@ SELECT
   CPrvs.controlOperation,
   CPrvs.controlOperationName,
   CPrrc.idControlProcedureResult,
+  CPrvs.manufacturingReference,
   CONCAT(CPrrc.idControlProcedureResult, '::', CPrvs.controlOperation) AS subgroupId,
   CPrrc.executionDate,
   CAST(CPrvs.resultValue AS decimal(18,6)) AS resultValue,
@@ -65,7 +66,7 @@ WHERE
   AND CPrrc.executionDate BETWEEN @from AND @to
   AND CPrvs.resultValue IS NOT NULL
   AND (@workplace IS NULL OR CPrvs.workplace = @workplace)
-  AND (@reference IS NULL OR CPrvs.manufacturingReference = @reference)
+  --AND (@reference IS NULL OR CPrvs.manufacturingReference = @reference)
   AND (@controlOperation IS NULL OR CPrvs.controlOperation = @controlOperation)
 ORDER BY
   CPrvs.controlOperation,
@@ -207,8 +208,16 @@ ORDER BY CPrvs.controlOperation;";
                 var sOverall = SampleStdDev(vals); // muestral
 
                 // LSL/USL/Target: tomamos el primer no nulo (asumiendo constancia)
-                double? LSL = g.Select(r => r["LSL"]).FirstOrDefault(v => v != DBNull.Value) as double?;
-                double? USL = g.Select(r => r["USL"]).FirstOrDefault(v => v != DBNull.Value) as double?;
+                double? LSL = g.Select(r => r["LSL"])
+                               .Where(v => v != DBNull.Value)
+                               .Select(v => (double?)Convert.ToDouble(v))
+                               .FirstOrDefault();
+
+                double? USL = g.Select(r => r["USL"])
+                               .Where(v => v != DBNull.Value)
+                               .Select(v => (double?)Convert.ToDouble(v))
+                               .FirstOrDefault();
+
 
                 // Stats por subgrupo
                 var subs = g.GroupBy(r => r.Field<string>("subgroupId"))

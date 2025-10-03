@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Serilog;
 using System.Globalization;
+using static dashboardQ40.Models.ControlLimitsModel;
 using static dashboardQ40.Models.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,6 +72,15 @@ builder.Services.Configure<VariablesYConfig>(builder.Configuration.GetSection("V
 // 🌍 HttpClient y AuthService
 builder.Services.AddHttpClient<AuthService>();
 builder.Services.AddTransient<AuthService>();
+
+builder.Services.Configure<ControlLimitsDefaults>(builder.Configuration.GetSection("ControlLimits:Defaults"));
+builder.Services.Configure<ControlLimitsWsOptions>(builder.Configuration.GetSection("ControlLimits:WebService"));
+
+builder.Services.AddScoped<ControlLimitsService>();
+builder.Services.AddScoped<IAutocontrolRepository, WSControlLimitsRepository>();
+
+
+
 
 // 💾 DB
 builder.Services.AddDbContext<AppDbContext>(options =>

@@ -130,7 +130,21 @@ namespace dashboardQ40.Controllers
         [HttpGet("ObtenerLineas_XR")]
         public async Task<JsonResult> ObtenerLineas_XR(string company)
         {
-            var token = HttpContext.Session.GetString("AuthToken");
+            string token;
+            if (company != _settings.Company) // significa que es una compañia diferente a la base y bamos por el token de la compañia
+            {
+                var result = await _authService.ObtenerTokenCaptor(company);
+                if (result != null)
+                {
+                    HttpContext.Session.SetString("AuthToken", result.access_token); // Guardar en sesión
+                }
+                token = result.access_token;  // Usamos el string del token
+            }
+            else
+            {
+                token = HttpContext.Session.GetString("AuthToken");
+            }
+
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(company))
                 return Json(Array.Empty<object>());
 

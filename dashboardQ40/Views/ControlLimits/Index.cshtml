@@ -1,0 +1,709 @@
+﻿@using Microsoft.Extensions.Localization
+@inject IStringLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["XR_Title_ControlLimits"];
+}
+<style>
+    .needs-action {
+        background: #fff3cd !important;
+    }
+    /* amarillo suave */
+    /* pon esto en la vista o en tu css común */
+    #tsChart {
+        width: 100%;
+        height: 520px;
+    }
+    /* o 55vh si prefieres */
+    .modal-xl {
+        --bs-modal-width: min(95vw, 1400px);
+    }
+
+
+    
+  .needs-action { background: #fff3cd !important; } /* ámbar */
+  #tsChart { width:100%; height:520px; }
+  .modal-xl { --bs-modal-width: min(95vw, 1400px); }
+
+  /* --- Layout con panel lateral --- */
+  .cl-wrap{
+  display:grid;
+  grid-template-columns: minmax(780px,1fr) 360px; /* ↑ el carrito ocupa la franja en blanco */
+  gap:1rem;
+}
+
+    @@media (max-width:1200px) {
+        .cl-wrap {
+            grid-template-columns: minmax(780px,1fr) 320px;
+        }
+        /* antes 360px */
+    }
+
+  /* --- Panel lateral (carrito) --- */
+  .cart {
+    position: sticky; top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+    border: 1px solid #e5e7eb; border-radius: .5rem;
+    padding: .75rem; background: #fafafa;
+  }
+  .cart h5 { margin: .25rem 0 .5rem; }
+  .cart-empty { color:#6b7280; font-style: italic; }
+  .cart-ac { border: 1px solid #e5e7eb; border-radius:.5rem; margin-bottom:.5rem; background:#fff; }
+  .cart-ac > .cart-ac-hd {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:.5rem .6rem; font-weight:600; background:#f3f4f6; border-bottom:1px solid #e5e7eb;
+  }
+  .cart-ac > .cart-ac-bd { padding:.5rem .6rem; }
+  .cart-item { display:grid; grid-template-columns: 1fr 80px 80px 24px; gap:.5rem; align-items:center; margin:.25rem 0; }
+  .cart-item small { color:#6b7280; display:block; }
+  .cart-ttl { font-size:.9rem; }
+  .cart .form-control { height: 30px; padding: .25rem .5rem; }
+  .cart-remove { border:none; background:transparent; cursor:pointer; opacity:.6; }
+  .cart-remove:hover { opacity:1; }
+  .cart-footer { position: sticky; bottom: 0; background: #fafafa; padding-top:.5rem; }
+  .muted { color:#6b7280; }
+
+  /* Modo denso */
+    .table.table-sm td, .table.table-sm th {
+        padding: .32rem .45rem;
+    }
+    /* Fila de encabezado de grupo (CP) con gris consistente */
+    .table-striped tbody tr.group-head {
+        --bs-table-accent-bg: transparent; /* anula el striping */
+        background: #e5e7eb !important; /* gris consistente */
+    }
+
+        .table-striped tbody tr.group-head td {
+            border-top: 1px solid #d1d5db;
+            border-bottom: 1px solid #d1d5db;
+            font-weight: 600;
+        }
+
+
+    #grid {
+        width: 100%;
+        table-layout: auto;
+    }
+
+        /* columnas numéricas: que ocupen lo mínimo posible */
+        #grid th:nth-child(4), #grid td:nth-child(4), /* N */
+        #grid th:nth-child(5), #grid td:nth-child(5), /* μ */
+        #grid th:nth-child(6), #grid td:nth-child(6), /* σ */
+        #grid th:nth-child(7), #grid td:nth-child(7), /* LSL */
+        #grid th:nth-child(8), #grid td:nth-child(8), /* USL */
+        #grid th:nth-child(9), #grid td:nth-child(9), /* Cpk */
+        #grid th:nth-child(10), #grid td:nth-child(10), /* LSL' */
+        #grid th:nth-child(11), #grid td:nth-child(11) /* USL' */ {
+            width: 1%; /* truco: colapsa al mínimo */
+            white-space: nowrap;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* columnas de texto (SKU y Variable) que tomen el resto */
+        #grid th:nth-child(2), #grid td:nth-child(2),
+        #grid th:nth-child(3), #grid td:nth-child(3) {
+            width: auto; /* que crezcan */
+        }
+
+    /* quita el tope de 280/360px para que realmente se expandan */
+    .w-clip {
+        max-width: unset;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+</style>
+
+
+
+<div class="container-fluid">
+    <h2>@ViewData["Title"]</h2>
+
+    <form id="filters" class="mb-3" onsubmit="return false;">
+        <div class="row g-2 align-items-end">
+            <div class="col-auto">
+            <label for="pais" class="form-label">@Localizer["XR_Country"]</label>        
+            <select id="pais" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
+                {
+                    <option value="@p.Code">@p.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>        
+            <select id="planta" name="planta" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
+            <div class="col-auto">
+                <label for="f1" class="form-label">@Localizer["XR_FromDate"]</label>
+                <input type="date" id="f1" class="form-control" />
+            </div>
+            <div class="col-auto">
+                <label for="f2" class="form-label">@Localizer["XR_ToDate"]</label>
+                <input type="date" id="f2" class="form-control" />
+            </div>
+            <div class="col-auto">
+                <label for="minN" class="form-label">@Localizer["XR_MinN"]</label>
+                <input type="number" id="minN" class="form-control" value="100" min="2" />
+            </div>
+            <div class="col-auto">
+                <label for="maxCpk" class="form-label">@Localizer["XR_MaxCpk"]</label>
+                <input type="number" id="maxCpk" class="form-control" value="1.33" step="0.01" />
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" onclick="loadData()">
+                    @Localizer["XR_Search"]
+                </button>
+            </div>
+
+            <div class="col-auto form-check ms-2">
+                <input class="form-check-input" type="checkbox" id="hidePlan">
+                <label class="form-check-label" for="hidePlan">                    
+                    @Localizer["XR_HDPlan"]
+                </label>
+            </div>
+        </div>
+    </form>
+
+    <div class="cl-wrap">
+        <!-- Columna izquierda: tabla -->
+        <div>
+            <div id="status" class="my-2"></div>
+
+            <table id="grid" class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:36px;"></th> <!-- checkbox -->
+                        
+                        <th>@Localizer["XR_SKU"]</th>
+                        <th>@Localizer["XR_Variable"]</th>
+                        <th>@Localizer["XR_N"]</th>
+                        <th>@Localizer["XR_Mu"]</th>
+                        <th>@Localizer["XR_Sigma"]</th>
+                        <th>@Localizer["XR_LSL"]</th>
+                        <th>@Localizer["XR_USL"]</th>
+                        <th>@Localizer["XR_Cpk"]</th>
+                        <th>@Localizer["XR_LSL_New"]</th>
+                        <th>@Localizer["XR_USL_New"]</th>
+                        <th></th> <!-- chart -->
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Columna derecha: carrito -->
+        <aside class="cart" id="cart">
+            <h5>🛒 @Localizer["XR_Cart_Title"]</h5>
+            <div class="muted" id="cartSummary">@Localizer["XR_Cart_Empty"]</div>
+            <div id="cartBody"></div>
+            <div class="cart-footer">
+                <button id="btnProcess" class="btn btn-primary w-100" disabled>
+                    @Localizer["XR_Cart_Process"]
+                </button>
+                <div class="text-center mt-1">
+                    <button id="btnClear" class="btn btn-link btn-sm">@Localizer["XR_Cart_Clear"]</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<div class="modal fade" id="tsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="tsTitle" class="modal-title">Timeseries</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@Localizer["XR_Close"]"></button>
+      </div>
+      <div class="modal-body">
+        <div id="tsChart" style="width:100%;height:420px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        // Textos localizados desde .resx
+        const T = {
+            Loading: "@Localizer["XR_Loading"]",
+            Unauthorized: "@Localizer["XR_Unauthorized"]",
+            ErrorN: "@Localizer["XR_ErrorN"]",
+            StatusSummary: "@Localizer["XR_StatusSummary"]",
+            RowPlan: "@Localizer["XR_RowTooltip_Plan"]",
+            RowTighten: "@Localizer["XR_RowTooltip_Tighten"]"
+        };
+
+        document.getElementById('pais').addEventListener('change', function () {
+            fillPlants(this.value);        // ya la tienes hecha
+        });
+
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+
+        function fillPlants(countryCode) {
+            const $planta = document.getElementById('planta');
+            $planta.innerHTML = '<option value="">-- Selecciona --</option>';
+
+            if (!countryCode) return;
+
+            const plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            for (const p of plants) {
+                const opt = document.createElement('option');
+                opt.value = p.Company;          // valor = código de company
+                opt.textContent = p.CompanyName; // texto = nombre de planta
+                $planta.appendChild(opt);
+            }
+        }
+        function iso(d) { return d.toISOString().slice(0, 10); }
+        function fmt(x) { return (x == null || Number.isNaN(x)) ? '—' : Number(x).toFixed(3); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const jan1 = new Date(today.getFullYear(), 0, 1);
+            document.getElementById('f1').value = iso(jan1);
+            document.getElementById('f2').value = iso(today);
+            //loadData();
+        });
+        document.getElementById('hidePlan').addEventListener('change', () => loadData());
+
+
+
+
+        const CART = {};
+
+        function cartKey(cp, sku, variable) { return `${cp}||${sku}||${variable}`; }
+
+        function renderCart() {
+            const body = document.getElementById('cartBody');
+            const summary = document.getElementById('cartSummary');
+            const btnProcess = document.getElementById('btnProcess');
+
+            body.innerHTML = '';
+            const acList = Object.values(CART).filter(ac => ac.items.length);
+
+            if (!acList.length) {
+                summary.textContent = "@Localizer["XR_Cart_Empty"]";
+                btnProcess.disabled = true;
+                return;
+            }
+
+            const totalAC = acList.length;
+            const totalNormas = acList.reduce((a, ac) => a + ac.items.length, 0);
+            summary.textContent = `${totalAC} AC · ${totalNormas} normas`;
+
+            btnProcess.disabled = false;
+
+            acList.forEach(ac => {
+                const acBox = document.createElement('div');
+                acBox.className = 'cart-ac';
+
+                const hd = document.createElement('div');
+                hd.className = 'cart-ac-hd';
+                hd.innerHTML = `<div class="cart-ttl">${ac.cp}</div><div class="muted">${ac.items.length} normas</div>`;
+
+                const bd = document.createElement('div');
+                bd.className = 'cart-ac-bd';
+
+                ac.items.forEach(it => {
+                    const row = document.createElement('div');
+                    row.className = 'cart-item';
+                    row.title = it.tooltip; // tooltip compacto
+
+                    row.innerHTML = `
+                  <div>
+                    <div><strong>${it.variable}</strong></div>
+                    <small>${it.sku}</small>
+                  </div>
+                  <input type="number" step="0.001" class="form-control cart-lsl" value="${fmtN(it.lslNew)}" />
+                  <input type="number" step="0.001" class="form-control cart-usl" value="${fmtN(it.uslNew)}" />
+                  <button class="cart-remove" title="Quitar">✕</button>
+                `;
+
+                    // sincroniza cambios a memoria
+                    row.querySelector('.cart-lsl').addEventListener('input', e => {
+                        const v = parseNum(e.target.value);
+                        it.lslNew = Number.isFinite(v) ? v : null;
+                    });
+                    row.querySelector('.cart-usl').addEventListener('input', e => {
+                        const v = parseNum(e.target.value);
+                        it.uslNew = Number.isFinite(v) ? v : null;
+                    });
+                    row.querySelector('.cart-remove').addEventListener('click', () => {
+                        // quitar del carrito y desmarcar checkbox en tabla
+                        const cb = document.querySelector(`input.row-check[data-key="${it.key}"]`);
+                        if (cb) cb.checked = false;
+                        removeFromCart(it.key);
+                    });
+
+                    bd.appendChild(row);
+                });
+
+                acBox.appendChild(hd);
+                acBox.appendChild(bd);
+                body.appendChild(acBox);
+            });
+        }
+
+        function fmtN(x) { return (x == null || Number.isNaN(Number(x))) ? '' : String(Number(x)); }
+        function parseNum(x) { const n = Number(x); return Number.isFinite(n) ? n : NaN; }
+
+        function addToCart(rec) {
+            const key = cartKey(rec.cp, rec.sku, rec.variable);
+            const group = CART[rec.cp] ?? (CART[rec.cp] = { cp: rec.cp, items: [] });
+            if (group.items.some(i => i.key === key)) return;
+
+            group.items.push({
+                key,
+                sku: rec.sku,
+                variable: rec.variable,
+                lslNew: Number.isFinite(rec.lslSuggested) ? rec.lslSuggested : null,
+                uslNew: Number.isFinite(rec.uslSuggested) ? rec.uslSuggested : null,
+                tooltip: `N=${rec.n} · μ=${fmt(rec.mean)} · σ=${fmt(rec.sigma)} · LSL=${fmt(rec.lsl)} · USL=${fmt(rec.usl)} · Cpk=${fmt(rec.cpk)}`
+            });
+            renderCart();
+        }
+
+        function removeFromCart(key) {
+            for (const cp in CART) {
+                const before = CART[cp].items.length;
+                CART[cp].items = CART[cp].items.filter(i => i.key !== key);
+                // limpia grupos vacíos
+                if (!CART[cp].items.length) delete CART[cp];
+                if (CART[cp]?.items.length !== before) break;
+            }
+            renderCart();
+        }
+
+        document.getElementById('btnClear').addEventListener('click', (e) => {
+            e.preventDefault();
+            // desmarcar todos en tabla
+            document.querySelectorAll('input.row-check:checked').forEach(cb => cb.checked = false);
+            for (const k of Object.keys(CART)) delete CART[k];
+            renderCart();
+        });
+
+        // Aquí solo harías la recolección y validación; todavía SIN llamar servicios.
+        document.getElementById('btnProcess').addEventListener('click', (e) => {
+            e.preventDefault();
+            // Snapshot del carrito listo para enviar
+            const payload = Object.values(CART).map(ac => ({
+                cp: ac.cp,
+                normas: ac.items.map(i => ({
+                    sku: i.sku,
+                    variable: i.variable,
+                    lslNew: i.lslNew,
+                    uslNew: i.uslNew
+                }))
+            }));
+            console.log('Process selection (mock):', payload);
+            alert('Mock: listo para procesar ' + payload.length + ' autocontroles.\n(Revisa la consola para ver el payload).');
+        });
+
+        // ====== loadData: construir tabla con checkbox y agrupar por CP ======
+        function headerRowFor(cp) {
+            const tr = document.createElement('tr');
+            tr.className = 'group-head';
+            tr.innerHTML = `<td></td><td colspan="10"><strong>Control Procedure:</strong> ${cp}</td>`;
+            return tr;
+        }
+
+
+        async function loadData() {
+            // ... (tu fetch igualito; solo cambio el render)
+            const company = document.getElementById('planta').value || '001';
+            const f1 = document.getElementById('f1').value;
+            const f2 = document.getElementById('f2').value;
+            const minN = document.getElementById('minN').value;
+            const maxCpk = Number(document.getElementById('maxCpk').value);
+
+            const status = document.getElementById('status');
+            status.textContent = T.Loading;
+
+            const url = `/api/controllimits/candidates`
+                + `?company=${encodeURIComponent(company)}`
+                + `&f1=${encodeURIComponent(f1)}`
+                + `&f2=${encodeURIComponent(f2)}`
+                + `&minN=${encodeURIComponent(minN)}`
+                + `&maxCpk=${encodeURIComponent(maxCpk)}`;
+
+            let res;
+            try { res = await fetch(url, { credentials: 'same-origin' }); }
+            catch (e) { status.textContent = `${T.ErrorN.replace('{0}', e.message)}`; return; }
+            if (!res.ok) { status.textContent = res.status === 401 ? T.Unauthorized : T.ErrorN.replace('{0}', res.status); return; }
+
+            const raw = await res.json();
+            const rows = Array.isArray(raw) ? raw : (raw?.$values ?? raw?.result ?? []);
+            const norm = rows.map(x => ({
+                cp: x.cp ?? x.Cp,
+                sku: x.sku ?? x.Sku,
+                variable: x.variable ?? x.Variable,
+                n: x.n ?? x.N,
+                mean: x.mean ?? x.Mean,
+                sigma: x.sigma ?? x.Sigma,
+                lsl: x.lsl ?? x.Lsl ?? x.lslCurrent ?? x.LslCurrent,
+                usl: x.usl ?? x.Usl ?? x.uslCurrent ?? x.UslCurrent,
+                cpk: x.cpk ?? x.Cpk ?? x.cpkCurrent ?? x.CpkCurrent,
+                lslSuggested: x.lslSuggested ?? x.LslSuggested ?? x.lslNew ?? x.LslNew,
+                uslSuggested: x.uslSuggested ?? x.UslSuggested ?? x.uslNew ?? x.UslNew
+            }));
+
+            const needsAction = norm.filter(r => Number(r.cpk) <= maxCpk).length;
+            const canTighten = norm.length - needsAction;
+            status.textContent = T.StatusSummary.replace('{0}', norm.length).replace('{1}', needsAction).replace('{2}', canTighten);
+
+            // ordenar por CP para pintar encabezados por grupo
+            norm.sort((a, b) => (a.cp || '').localeCompare(b.cp || '') || (a.sku || '').localeCompare(b.sku || '') || (a.variable || '').localeCompare(b.variable || ''));
+
+            const tbody = document.querySelector('#grid tbody');
+            tbody.innerHTML = '';
+
+            let lastCP = null;
+
+            norm.forEach(r => {
+                // Encabezado por CP
+                if (r.cp !== lastCP) {
+                    tbody.appendChild(headerRowFor(r.cp ?? '(no CP)'));
+                    lastCP = r.cp;
+                }
+
+                const key = cartKey(r.cp ?? '', r.sku ?? '', r.variable ?? '');
+                const tr = document.createElement('tr');
+                const plan = Number(r.cpk) <= maxCpk;
+                if (plan) tr.classList.add('needs-action');
+                tr.title = plan ? T.RowPlan : T.RowTighten;
+                const hidePlan = document.getElementById('hidePlan').checked;
+                
+
+                if (hidePlan && plan) {
+                    return; // salta las amarillas
+                }
+
+                tr.innerHTML = `
+                <td>
+                  <input type="checkbox" class="form-check-input row-check"
+                         data-key="${key}"
+                         data-cp="${r.cp ?? ''}"
+                         data-sku="${r.sku ?? ''}"
+                         data-variable="${r.variable ?? ''}">
+                </td>                
+                <td>${r.sku ?? ''}</td>
+                <td>${r.variable ?? ''}</td>
+                <td>${r.n ?? ''}</td>
+                <td>${fmt(r.mean)}</td>
+                <td>${fmt(r.sigma)}</td>
+                <td>${fmt(r.lsl)}</td>
+                <td>${fmt(r.usl)}</td>
+                <td>${fmt(r.cpk)}</td>
+                <td>${fmt(r.lslSuggested)}</td>
+                <td>${fmt(r.uslSuggested)}</td>
+                <td>
+                  <button type="button" class="btn btn-link p-0 chart-btn"
+                          title="${plan ? T.RowPlan : T.RowTighten}"
+                          data-sku="${r.sku ?? ''}"
+                          data-variable="${r.variable ?? ''}"
+                          data-mean="${r.mean ?? ''}"
+                          data-sigma="${r.sigma ?? ''}"
+                          data-lsl="${r.lsl ?? ''}"
+                          data-usl="${r.usl ?? ''}">
+                    📈
+                  </button>
+                </td>`;
+
+                // comportamiento del checkbox → carrito
+                tr.querySelector('.row-check').addEventListener('change', (ev) => {
+                    if (ev.target.checked) addToCart(r);
+                    else removeFromCart(key);
+                });
+
+                tbody.appendChild(tr);
+            });
+
+            // sincroniza checks si ya había cosas en el carrito
+            document.querySelectorAll('input.row-check').forEach(cb => {
+                if (CART && CART[cb.dataset.cp]) {
+                    const hit = CART[cb.dataset.cp].items.some(i => i.key === cb.dataset.key);
+                    if (hit) cb.checked = true;
+                }
+            });
+
+            renderCart();
+        }
+
+
+
+
+        // grafica
+
+        let tsChart = null;
+        const tsCache = new Map(); // cache por (sku|variable|f1|f2)
+
+        document.addEventListener('click', async (ev) => {
+            const btn = ev.target.closest('.chart-btn');
+            if (!btn) return;
+
+            const sku = btn.dataset.sku;
+            const variable = btn.dataset.variable;
+            const mean = Number(btn.dataset.mean);
+            const sigma = Number(btn.dataset.sigma);
+            const lsl = btn.dataset.lsl ? Number(btn.dataset.lsl) : null;
+            const usl = btn.dataset.usl ? Number(btn.dataset.usl) : null;
+
+            const company = document.getElementById('planta').value || '001';
+            const f1 = document.getElementById('f1').value;
+            const f2 = document.getElementById('f2').value;
+
+            const key = `${company}|${sku}|${variable}|${f1}|${f2}`;
+            const title = `${sku} · ${variable}`;
+
+            // abre modal
+            const modalEl = document.getElementById('tsModal');
+            const bsModal = new bootstrap.Modal(modalEl);
+            document.getElementById('tsTitle').textContent = title;
+            bsModal.show();
+            // fuerza resize cuando el modal YA es visible
+            modalEl.addEventListener('shown.bs.modal', () => {
+                setTimeout(() => { tsChart && tsChart.resize(); }, 0);
+            }, { once: true });
+
+
+            // init chart una sola vez
+            if (!tsChart) {
+                tsChart = echarts.init(document.getElementById('tsChart'));
+                window.addEventListener('resize', () => tsChart && tsChart.resize());
+            }
+
+            tsChart.showLoading();
+
+            try {
+                // cache por rango/sku/variable
+                let cached = tsCache.get(key);
+                let xs, ys, m, s, lslS, uslS;
+
+                if (!cached) {
+                    const url = `/api/controllimits/timeseries`
+                        + `?company=${encodeURIComponent(company)}`
+                        + `&sku=${encodeURIComponent(sku)}`
+                        + `&variable=${encodeURIComponent(variable)}`
+                        + `&f1=${encodeURIComponent(f1)}`
+                        + `&f2=${encodeURIComponent(f2)}`;
+
+                    const resp = await fetch(url, { credentials: 'same-origin' });
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+                    const data = await resp.json();
+
+                    // 1) Normaliza respuesta:
+                    //    a) NUEVO formato: { values:[...], mean, sigma, lsl, usl }
+                    //    b) Formato viejo: [ {timestamp, value}, ... ]  -> fallback
+                    if (Array.isArray(data?.values)) {
+                        ys = data.values.map(Number).filter(v => Number.isFinite(v));
+                        xs = ys.map((_, i) => (i + 1).toString()); // "1","2",...,"N"
+                        m = Number.isFinite(Number(data.mean)) ? Number(data.mean) : NaN;
+                        s = Number.isFinite(Number(data.sigma)) ? Number(data.sigma) : NaN;
+                        lslS = data.lsl != null ? Number(data.lsl) : null;
+                        uslS = data.usl != null ? Number(data.usl) : null;
+                    } else {
+                        // fallback para respuesta vieja con timestamps
+                        const rows = Array.isArray(data) ? data : (data?.$values ?? data?.result ?? []);
+                        const seriesData = rows.map(r => Number(r.value ?? r.Value ?? r.resultValue ?? r.Result))
+                            .filter(v => Number.isFinite(v));
+                        ys = seriesData;
+                        xs = ys.map((_, i) => (i + 1).toString());
+                        // μ/σ preferir del botón; si no, calcula
+                        m = Number.isFinite(mean) ? mean : (ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : NaN);
+                        const varpop = ys.length ? ys.reduce((a, b) => a + (b - m) * (b - m), 0) / ys.length : NaN;
+                        s = Number.isFinite(sigma) ? sigma : (ys.length ? Math.sqrt(varpop) : NaN);
+                        lslS = lsl;
+                        uslS = usl;
+                    }
+
+                    cached = { xs, ys, m, s, lslS, uslS };
+                    tsCache.set(key, cached);
+                }
+
+                ({ xs, ys, m, s, lslS, uslS } = cached);
+
+                // 2) Si μ/σ aún no vienen, calcula rápido
+                if (!Number.isFinite(m) || !Number.isFinite(s)) {
+                    if (ys.length) {
+                        const n = ys.length;
+                        m = Number.isFinite(m) ? m : ys.reduce((a, b) => a + b, 0) / n;
+                        const varpop = ys.reduce((a, b) => a + (b - m) * (b - m), 0) / n;
+                        s = Number.isFinite(s) ? s : Math.sqrt(varpop);
+                    } else {
+                        m = NaN; s = NaN;
+                    }
+                }
+
+                // 3) Líneas guía y bandas
+                const markLines = [];
+                if (Number.isFinite(m)) markLines.push({ yAxis: m, name: 'μ' });
+                if (Number.isFinite(lslS)) markLines.push({ yAxis: lslS, name: 'LSL' });
+                if (Number.isFinite(uslS)) markLines.push({ yAxis: uslS, name: 'USL' });
+
+                const mkArea = (k, text) => ({
+                    type: 'markArea', silent: true, itemStyle: { opacity: 0.12 },
+                    data: [[{ yAxis: m - k * s }, { yAxis: m + k * s }]],
+                    label: { show: true, position: 'insideTop', formatter: text }
+                });
+
+                const bandSeries = [];
+                if (Number.isFinite(m) && Number.isFinite(s)) {
+                    bandSeries.push({ type: 'line', data: [], markArea: mkArea(1, '±1σ') });
+                    bandSeries.push({ type: 'line', data: [], markArea: mkArea(2, '±2σ') });
+                    bandSeries.push({ type: 'line', data: [], markArea: mkArea(3, '±3σ') });
+                }
+
+                const option = {
+                    animation: false,
+                    tooltip: { trigger: 'axis' },
+                    grid: { left: 60, right: 20, top: 30, bottom: 60, containLabel: true },
+                    xAxis: { type: 'category', data: xs, axisLabel: { hideOverlap: true, interval: 'auto' } },
+                    yAxis: { type: 'value', scale: true },
+                    dataZoom: [
+                        { type: 'inside' },
+                        { type: 'slider', height: 18 }
+                    ],
+                    series: [
+                        ...bandSeries,
+                        {
+                            name: 'Result',
+                            type: 'line',
+                            showSymbol: false,
+                            data: ys
+                        },
+                        {
+                            name: 'Guides',
+                            type: 'line',
+                            data: [],
+                            markLine: markLines.length ? {
+                                symbol: 'none',
+                                label: { formatter: '{b}' },
+                                data: markLines
+                            } : undefined
+                        }
+                    ]
+                };
+
+                tsChart.setOption(option, true);
+            } catch (err) {
+                tsChart.clear();
+                tsChart.setOption({ title: { text: `Error: ${err.message}`, left: 'center', top: 'middle' } });
+            } finally {
+                tsChart.hideLoading();
+            }
+
+        });
+
+    </script>
+}
