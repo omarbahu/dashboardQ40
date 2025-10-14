@@ -18,6 +18,8 @@
         public string QueryAuthUser { get; set; }
         public string QueryCompany { get; set; }
         public string QueryLimits { get; set; }
+        public string QueryMP { get; set; }
+        public string QueryMF { get; set; }
         public bool Produccion { get; set; }
 
     }

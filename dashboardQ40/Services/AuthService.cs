@@ -44,7 +44,7 @@ namespace dashboardQ40.Services
                 var data = JsonSerializer.Serialize(cred_tok);
                 HttpContent content = new StringContent(data, System.Text.Encoding.UTF8, "application/json");
 
-                using var response = await _httpClient.PostAsync(_settings.TokenUrl + company, content).ConfigureAwait(false);
+                using var response = await _httpClient.PostAsync(_settings.BaseUrl + _settings.TokenUrl + company, content).ConfigureAwait(false);
 
                 if (response.IsSuccessStatusCode)
                 {

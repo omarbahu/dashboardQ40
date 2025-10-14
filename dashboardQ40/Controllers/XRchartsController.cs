@@ -66,7 +66,7 @@ namespace dashboardQ40.Controllers
 
                 Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
                         token.access_token.ToString(),
-                        _settings.QueryCompany,
+                        _settings.BaseUrl + _settings.QueryCompany,
                         _settings.Company,
                         _settings.trazalog);
                 await Task.WhenAll(dataResultComp);
@@ -151,7 +151,7 @@ namespace dashboardQ40.Controllers
             // Llama a tu servicio; ajusta nombres de método y settings
             var resp = await getDataQuality.getLinesByCompany(
                 token,
-                _settings.QueryLineas + company, // tu query
+                _settings.BaseUrl + _settings.QueryLineas + company, // tu query
                 company,                  // si lo pides, o quítalo
                 _settings.trazalog                             // filtro de company
             );
@@ -174,7 +174,7 @@ namespace dashboardQ40.Controllers
             // Trae filas crudas de controles Y
             var dataTask = getDataQuality.getVarYRows(
                 token,
-                _settings.QueryVarY + planta,
+                _settings.BaseUrl + _settings.QueryVarY + planta,
                 planta,
                 sku,
                 startDate,
@@ -219,7 +219,7 @@ namespace dashboardQ40.Controllers
 
             // Trae posibles X ligadas a esa Y
             var opsTask = getDataQuality.getVarXByvarY(
-                token, _settings.QueryVarX + planta, planta,
+                token, _settings.BaseUrl + _settings.QueryVarX + planta, planta,
                 sku, prefix, fechaInicial, fechaFinal, lineaId);
 
             await Task.WhenAll(opsTask);
@@ -278,7 +278,7 @@ namespace dashboardQ40.Controllers
 
                 var dataResultP = getDataQuality.getProductsByLine(
                         token.ToString(),
-                        _settings.QuerySKUs + planta,
+                        _settings.BaseUrl + _settings.QuerySKUs + planta,
                         planta,
                         lineaId,
                         fechaInicial,

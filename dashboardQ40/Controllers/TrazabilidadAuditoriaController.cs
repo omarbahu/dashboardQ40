@@ -3,6 +3,7 @@ using dashboardQ40.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Globalization;
 using static dashboardQ40.Models.Models;
@@ -45,7 +46,7 @@ namespace dashboardQ40.Controllers
 
                 Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
                         token.access_token.ToString(),
-                        _settings.QueryCompany,
+                        _settings.BaseUrl + _settings.QueryCompany,
                         _settings.Company,
                         _settings.trazalog);
                 await Task.WhenAll(dataResultComp);
@@ -128,6 +129,9 @@ namespace dashboardQ40.Controllers
 
         public async Task<IActionResult> AuditReport(string lote, TimeSpan horaQueja, string company)
         {
+
+            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
+
             if (string.IsNullOrWhiteSpace(lote)) return View();
 
             string connStr = _configuration.GetConnectionString("CaptorConnection");
@@ -145,7 +149,9 @@ namespace dashboardQ40.Controllers
             }            
 
             var trazabilidadNodos = ObtenerTrazabilidadCompleta(company, batchInfo.BatchId, connStr);
+            
             var bloqueMateriaPrima = ObtenerBloqueMateriaPrima(trazabilidadNodos, company, connStr);
+            //var bloqueMateriaPrimaWS = getBloqueMateriaPrima(token.access_token, _settings.BaseUrl + _settings.QueryMP, company, _settings.trazalog, "getMP", lotes);
             var bloqueProdTerm = ObtenerBloqueProductoTerminado(batchInfo.BatchId, company, connStr);
 
 
@@ -304,7 +310,8 @@ namespace dashboardQ40.Controllers
             return modelo;
         }
 
-       
+
+
 
 
     }

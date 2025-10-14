@@ -341,10 +341,12 @@ WHERE NOT ( CTE.batch is null );
 	RC.batch as Batchpadre, 
     RC.batchIdentifier,
     RC.batchIdentifier as batchname,
-    RC.startDate,RC.endDate,MR.isRawMaterial,
+    RC.startDate,RC.endDate,MR.isRawMaterial, MR.manufacturingFamily,MF.manufacturingFamilyName,w.workplace,w.workplacename,RC.bcquantity, RC.consumedquantity,
     1 AS Nivel -- Nivel 0 para los padres
 FROM TraceabilityNodeRelations RC	
 inner join manufacturingreference MR on MR.manufacturingReference = RC.manufacturingReference and MR.company = RC.company
+inner join ManufacturingFamily MF on MR.manufacturingFamily = MF.manufacturingFamily and MR.company = MF.company
+inner join workplace w on RC.workplace = w.workplace and w.company = RC.company
 WHERE RC.company = @company and RC.batch = @batch 
  UNION ALL
   -- Recursividad: encuentra los hijos
@@ -356,10 +358,12 @@ WHERE RC.company = @company and RC.batch = @batch
         t.batch as Batchpadre, 
         t.batchIdentifier,
         bth.batchIdentifier as batchname,
-        t.startDate,t.endDate,MR2.isRawMaterial,
+        t.startDate,t.endDate,MR2.isRawMaterial,MR2.manufacturingFamily,MF2.manufacturingFamilyName,w2.workplace,w2.workplacename,t.bcquantity, t.consumedquantity,
         cte.Nivel + 1 -- Incrementa el nivel para los hijos
     FROM TraceabilityNodeRelations t
     inner join manufacturingreference MR2 on MR2.manufacturingReference = t.manufacturingReference and MR2.company = t.company
+    inner join ManufacturingFamily MF2 on MR2.manufacturingFamily = MF2.manufacturingFamily and MR2.company = MF2.company
+    inner join workplace w2 on t.workplace = w2.workplace and w2.company = t.company
     inner join Batch bth on bth.batch = t.consumedBatch and bth.company = t.company
     INNER JOIN RecursivoCTE cte
         ON t.batch = cte.batch and t.company = @company
@@ -380,11 +384,13 @@ SELECT distinct
 	0 as Batchpadre,
     RC3.batchIdentifier,
     RC3.batchIdentifier as batchname,
-    RC3.startDate,RC3.endDate,MR2.isRawMaterial,
+    RC3.startDate,RC3.endDate,MR2.isRawMaterial,MR2.manufacturingFamily,MF2.manufacturingFamilyName,w2.workplace,w2.workplacename,RC3.bcquantity, RC3.consumedquantity,
 	0, 
     0 AS Nivel -- Nivel 0 para los padres
 FROM TraceabilityNodeRelations RC3	
 inner join manufacturingreference MR2 on MR2.manufacturingReference = RC3.manufacturingReference and MR2.company = RC3.company
+inner join ManufacturingFamily MF2 on MR2.manufacturingFamily = MF2.manufacturingFamily and MR2.company = MF2.company
+inner join workplace w2 on RC3.workplace = w2.workplace and w2.company = RC3.company
 --left join ControlProcedureResult CPR on CPR.company = RC3.company and CPR.batch = RC3.batch
 --left join CProcResultWithValuesStatus CPrvs on CPrvs.company = CPR.company and CPrvs.idControlProcedureResult = CPR.idControlProcedureResult
 --left join CPResultWithRefAndContext CPrrc on CPrvs.company = CPrrc.company and CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
@@ -404,12 +410,14 @@ SELECT
     CTE.Batchpadre,
     CTE.batchIdentifier,
     bth3.batchIdentifier as batchname,
-    CTE.startDate,CTE.endDate,MR3.isRawMaterial,
+    CTE.startDate,CTE.endDate,MR3.isRawMaterial,MR3.manufacturingFamily,MF3.manufacturingFamilyName,w3.workplace,w3.workplacename,CTE.bcquantity, CTE.consumedquantity,
     rn, 
 	Nivel
 FROM RowNumCTE CTE
 inner join manufacturingreference MR3 on MR3.manufacturingReference = CTE.manufacturingReference and MR3.company = CTE.company
+inner join ManufacturingFamily MF3 on MR3.manufacturingFamily = MF3.manufacturingFamily and MR3.company = MF3.company
 inner join Batch bth3 on bth3.batch = CTE.batch and bth3.company = CTE.company
+inner join workplace w3 on CTE.workplace = w3.workplace and w3.company = CTE.company
 -- Condición corregida para filtrar registros donde Padre y Hijo sean NULL
 WHERE NOT ( CTE.batch is null );
             ";
@@ -503,7 +511,10 @@ order by b.batchIdentifier;
                 StartDate = Convert.ToDateTime(row["startDate"]),
                 EndDate = Convert.ToDateTime(row["endDate"]),
                 IsRawMaterial = Convert.ToBoolean(row["isRawMaterial"]),
-                Nivel = Convert.ToInt32(row["Nivel"])
+                Nivel = Convert.ToInt32(row["Nivel"]),
+                ManufacturingFamily = row["ManufacturingFamily"].ToString(),
+                manufacturingFamilyName = row["manufacturingFamilyName"].ToString(),
+                workplacename = row["workplacename"].ToString()
             }).ToList();
         }
 

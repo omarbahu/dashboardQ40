@@ -5,7 +5,7 @@
     @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_MateriaPrima.cshtml", Model.BloqueMateriaPrima)
 </div>
 
-<!-- Información del Producto Terminado / SKU -->
+<!-- Información del Producto Termido / SKU -->
 <div class="accordion" id="accordion-sku">
     @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_SKU.cshtml", Model.BloqueProductoTerminado)
 </div>
@@ -51,16 +51,16 @@
                         <th colspan="6">@Localizer["Sensory_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>@Localizer["Sensory_Analyst"]</th>
+                        <th>@Localizer["Sensory_Alyst"]</th>
                         <th>@Localizer["Sensory_ReleaseDate"]</th>
                         <th>@Localizer["Sensory_Product"]</th>
                         <th>@Localizer["Sensory_Code"]</th>
                         <th>@Localizer["Sensory_Reference"]</th>
                         <th>@Localizer["Sensory_Result"]</th>
                     </tr>
-                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
-                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
-                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- Arranque de Línea -->
@@ -69,15 +69,15 @@
                         <th colspan="5">@Localizer["LineStart_Header"]</th>
                     </tr>
                     <tr class="bg-header">
-                        <th>@Localizer["LineStart_Analyst"]</th>
+                        <th>@Localizer["LineStart_Alyst"]</th>
                         <th>@Localizer["LineStart_ReleaseDate"]</th>
                         <th>@Localizer["LineStart_Product"]</th>
                         <th>@Localizer["LineStart_SampleCode"]</th>
                         <th>@Localizer["LineStart_Result"]</th>
                     </tr>
-                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
-                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
-                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td></td><td></td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- Muestras de Retención -->
@@ -90,7 +90,7 @@
                         <th>@Localizer["Retention_NextSKU"]</th>
                         <th>@Localizer["Retention_Time"]</th>
                     </tr>
-                    <tr><td>#¡REF!</td><td>#¡REF!</td><td>#¡REF!</td></tr>
+                    <tr><td></td><td></td><td></td></tr>
                 </table>
 
             </div>
@@ -109,10 +109,10 @@
         <div id="collapseLavado" class="accordion-collapse collapse show">
             <div class="accordion-body">
 
-                <!-- Proceso de Enjuague Final -->
+                <!-- Proceso de Enjuague Fil -->
                 <table class="tabla-trazabilidad">
                     <tr class="bg-header">
-                        <th colspan="4">@Localizer["Washing_FinalRinse_Header"]</th>
+                        <th colspan="4">@Localizer["Washing_FilRinse_Header"]</th>
                     </tr>
                     <tr class="bg-header">
                         <th>@Localizer["Common_Parameter"]</th>
@@ -120,29 +120,29 @@
                         <th>@Localizer["Washing_Tank2"]</th>
                         <th>@Localizer["Washing_TankCTR"]</th>
                     </tr>
-                    <tr><td>@Localizer["Washing_SodaLot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_DivobriteLot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_BrightwashLot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_ReportedSKUTime"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_SodaConc"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_JetPressure"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_JetAlignment"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_AdditiveDivobrite"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_AdditiveBrightwash"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_SodaLot"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_DivobriteLot"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_BrightwashLot"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_ReportedSKUTime"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_SodaConc"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_JetPressure"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_JetAlignment"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_AdditiveDivobrite"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_AdditiveBrightwash"]</td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- Tanque CTR -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="4">@Localizer["Washing_CTRTank_Header"]</th></tr>
-                    <tr><td>@Localizer["Washing_AdditiveALF380"]</td><td colspan="3">NA</td></tr>
-                    <tr><td>@Localizer["Washing_SodaPercent"]</td><td colspan="3">NA</td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td colspan="3">NA</td></tr>
-                    <tr><td>@Localizer["Washing_ResidualAdditive"]</td><td colspan="3">NA</td></tr>
-                    <tr><td>@Localizer["Washing_BottleContactTime"]</td><td colspan="3">NA</td></tr>
-                    <tr><td>@Localizer["Washing_HitsPerMinute"]</td><td colspan="3">NA</td></tr>
-                    <tr><td>@Localizer["Washing_CausticResidual"]</td><td colspan="3">NA</td></tr>
-                    <tr><td>@Localizer["Washing_MethyleneBlueTest"]</td><td colspan="3">NA</td></tr>
+                    <tr><td>@Localizer["Washing_AdditiveALF380"]</td><td colspan="3"></td></tr>
+                    <tr><td>@Localizer["Washing_SodaPercent"]</td><td colspan="3"></td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td colspan="3"></td></tr>
+                    <tr><td>@Localizer["Washing_ResidualAdditive"]</td><td colspan="3"></td></tr>
+                    <tr><td>@Localizer["Washing_BottleContactTime"]</td><td colspan="3"></td></tr>
+                    <tr><td>@Localizer["Washing_HitsPerMinute"]</td><td colspan="3"></td></tr>
+                    <tr><td>@Localizer["Washing_CausticResidual"]</td><td colspan="3"></td></tr>
+                    <tr><td>@Localizer["Washing_MethyleneBlueTest"]</td><td colspan="3"></td></tr>
                 </table>
 
                 <!-- Rinser -->
@@ -154,32 +154,32 @@
                         <th>@Localizer["Washing_PrevMTRA"]</th>
                         <th>@Localizer["Washing_OtherInvolved"]</th>
                     </tr>
-                    <tr><td>@Localizer["Washing_JetPressure"]</td><td>3.5</td><td>3.5</td><td>3.5</td></tr>
-                    <tr><td>@Localizer["Washing_ChlorinePPM"]</td><td>2</td><td>2</td><td>2</td></tr>
-                    <tr><td>@Localizer["Washing_SprayAligned"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Washing_JetPressure"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_ChlorinePPM"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_SprayAligned"]</td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- Condición de Alarmas -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="3">@Localizer["Washing_WasherAlarms_Header"]</th></tr>
-                    <tr><td>@Localizer["Washing_RunStartCheck"]</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_RunEndCheck"]</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Washing_RunStartCheck"]</td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_RunEndCheck"]</td><td></td><td></td></tr>
                 </table>
 
-                <!-- Enjuague Final -->
+                <!-- Enjuague Fil -->
                 <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">@Localizer["Washing_FinalBottleRinse_Header"]</th></tr>
+                    <tr class="bg-header"><th colspan="4">@Localizer["Washing_FilBottleRinse_Header"]</th></tr>
                     <tr class="bg-header">
                         <th>@Localizer["Common_Parameter"]</th>
                         <th>@Localizer["Washing_ReportedSKUTime"]</th>
                         <th>@Localizer["Washing_PrevMTRA"]</th>
                         <th>@Localizer["Washing_NextMTRA"]</th>
                     </tr>
-                    <tr><td>@Localizer["Common_Pressure"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_WaterOdor"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_RecoveredWaterPressure"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_FinalSoftWaterChlorine"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Washing_FilteredRecWaterChlorine"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Pressure"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_WaterOdor"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_RecoveredWaterPressure"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_FilSoftWaterChlorine"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Washing_FilteredRecWaterChlorine"]</td><td></td><td></td><td></td></tr>
                 </table>
 
             </div>
@@ -210,10 +210,10 @@
                         <th>ALEXUS 220</th>
                         <th>ALEXUS 220</th>
                     </tr>
-                    <tr><td>@Localizer["Inspection_TestTime"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_SAMWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_NOXWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_TestTime"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_SAMWitness"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_NOXWitness"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
 
                     <tr class="bg-header">
                         <th>@Localizer["Common_Parameter"]</th>
@@ -224,13 +224,13 @@
                         <th>ALEXUS 240</th>
                         <th>ALEXUS 240</th>
                     </tr>
-                    <tr><td>@Localizer["Inspection_TestTime"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_SAMWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_NOXWitness"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_TestTime"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_SAMWitness"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_NOXWitness"]</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
                 </table>
 
-                <!-- Rechazo de Botella Llena -->
+                <!-- Rechazo de Botella Lle -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="4">@Localizer["Inspection_FullBottleReject_Header"]</th></tr>
                     <tr class="bg-header">
@@ -239,12 +239,12 @@
                         <th>@Localizer["Common_RunMid"]</th>
                         <th>@Localizer["Common_RunEnd"]</th>
                     </tr>
-                    <tr><td>@Localizer["Inspection_LowNetContentBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>@Localizer["Inspection_HighNetContentBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>@Localizer["Inspection_BadCapBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>@Localizer["Inspection_IllegibleCodeBottle"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>@Localizer["Inspection_FillerStopButton"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
-                    <tr><td>@Localizer["Inspection_MetalTestCane"]</td><td>OK</td><td>OK</td><td>OK</td></tr>
+                    <tr><td>@Localizer["Inspection_LowNetContentBottle"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_HighNetContentBottle"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_BadCapBottle"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_IllegibleCodeBottle"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_FillerStopButton"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_MetalTestCane"]</td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- ASEBI -->
@@ -257,23 +257,23 @@
                         <th>@Localizer["Inspection_RunEndTime"]</th>
                         <th>@Localizer["Common_Result"]</th>
                     </tr>
-                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_1A_NeckDamage"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_2A_Opaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_4A_VentGroove"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_14A_CenterSemiTransp"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_13A_CenterOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_12C_StressFracture"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_11A_ImpactSignal"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_15C_SupportSurfaceOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_16A_SupportSurfaceSemiTransp"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_15A_SupportSurfaceOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_22C_ObjectBehindLabel"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_8A_SideWallSemiTransp"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_7A_LowerWallOpaque"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_17A_ResidualLiquid"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_6A_ScratchWear"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Inspection_12A_StressFracture"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Inspection_EfficiencyPct"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_1A_NeckDamage"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_2A_Opaque"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_4A_VentGroove"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_14A_CenterSemiTransp"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_13A_CenterOpaque"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_12C_StressFracture"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_11A_ImpactSigl"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_15C_SupportSurfaceOpaque"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_16A_SupportSurfaceSemiTransp"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_15A_SupportSurfaceOpaque"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_22C_ObjectBehindLabel"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_8A_SideWallSemiTransp"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_7A_LowerWallOpaque"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_17A_ResidualLiquid"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_6A_ScratchWear"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Inspection_12A_StressFracture"]</td><td></td><td></td><td></td><td></td></tr>
                 </table>
 
             </div>
@@ -295,23 +295,23 @@
                 <!-- 1. General -->
                 <table class="tabla-trazabilidad">
                     <tr class="bg-header"><th colspan="2">@Localizer["Water_GeneralInfo_Header"]</th></tr>
-                    <tr><td>@Localizer["Water_RecirculatedDisinfectantLot"]</td><td>HPHY0424-2</td></tr>
-                    <tr><td>@Localizer["Water_PolyelectrolyteLot"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Water_ActivatedCarbonLot"]</td><td>CAR0323-2</td></tr>
-                    <tr><td>@Localizer["Water_LimeLot"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Water_HCLLot"]</td><td>ACH0424-03 / ACH0424-02</td></tr>
-                    <tr><td>@Localizer["Water_H2SO4Lot"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Water_SilicaSandLot"]</td><td>ARS1122-2</td></tr>
-                    <tr><td>@Localizer["Water_DemineralResinLot"]</td><td>DES1123</td></tr>
-                    <tr><td>@Localizer["Water_DechlorResinLot"]</td><td>LSZ1123-2</td></tr>
-                    <tr><td>@Localizer["Water_PolishingCartridgeLot"]</td><td>CYM1123-04</td></tr>
-                    <tr><td>@Localizer["Water_CleaningsInfo"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Water_SystemSanitationInfo"]</td><td>Limpieza SRO 23/06/24 / Llenado de Tanque de SRO 23/06/24 (cambio cartuchos polipropileno)</td></tr>
-                    <tr><td>@Localizer["Water_SoftWaterContactTanksFillingLog"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Water_TankRetentionTime"]</td><td>4</td></tr>
-                    <tr><td>@Localizer["Water_LoadsInShift"]</td><td>1</td></tr>
-                    <tr><td>@Localizer["Water_AvgVolumePerLoad"]</td><td>5</td></tr>
-                    <tr><td>@Localizer["Water_TotalLitersInShift"]</td><td>5</td></tr>
+                    <tr><td>@Localizer["Water_RecirculatedDisinfectantLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_PolyelectrolyteLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_ActivatedCarbonLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_LimeLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_HCLLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_H2SO4Lot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_SilicaSandLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_DemineralResinLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_DechlorResinLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_PolishingCartridgeLot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_CleaningsInfo"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_SystemSanitationInfo"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_SoftWaterContactTanksFillingLog"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_TankRetentionTime"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_LoadsInShift"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_AvgVolumePerLoad"]</td><td></td></tr>
+                    <tr><td>@Localizer["Water_TotalLitersInShift"]</td><td></td></tr>
                 </table>
 
                 <!-- 2. Fisicoquímicos -->
@@ -324,10 +324,10 @@
                         <th>@Localizer["Common_RunEnd"]</th>
                         <th>@Localizer["Water_WaterType"]</th>
                     </tr>
-                    <tr><td>pH</td><td>6.5</td><td>6.8</td><td>6.6</td><td>@Localizer["Water_Type_TreatedChlorinated"]</td></tr>
-                    <tr><td>@Localizer["Common_Conductivity"]</td><td>35</td><td>32</td><td>30</td><td>@Localizer["Water_Type_Softened"]</td></tr>
-                    <tr><td>@Localizer["Common_Chlorine"]</td><td>0.5</td><td>0.4</td><td>0.3</td><td>@Localizer["Water_Type_Recovered"]</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.1</td><td>1.0</td><td>1.1</td><td>@Localizer["Water_Type_Raw"]</td></tr>
+                    <tr><td>pH</td><td></td><td></td><td></td><td>@Localizer["Water_Type_TreatedChlorited"]</td></tr>
+                    <tr><td>@Localizer["Common_Conductivity"]</td><td></td><td></td><td></td><td>@Localizer["Water_Type_Softened"]</td></tr>
+                    <tr><td>@Localizer["Common_Chlorine"]</td><td></td><td></td><td></td><td>@Localizer["Water_Type_Recovered"]</td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td>@Localizer["Water_Type_Raw"]</td></tr>
                 </table>
 
                 <!-- 3. Agua tratada usada en jarabe simple -->
@@ -340,13 +340,14 @@
                         <th>@Localizer["Common_RunEnd"]</th>
                         <th>@Localizer["Water_TreatedWaterLot"]</th>
                     </tr>
-                    <tr><td>@Localizer["Common_Aluminum"]</td><td>NA</td><td>NA</td><td>NA</td><td>83210234</td></tr>
-                    <tr><td>@Localizer["Common_Chlorides"]</td><td>14</td><td>15</td><td>14</td><td>83210234</td></tr>
-                    <tr><td>@Localizer["Common_Sulfates"]</td><td>28</td><td>26</td><td>27</td><td>83210234</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.3</td><td>1.2</td><td>1.3</td><td>83210234</td></tr>
+                    <tr><td>@Localizer["Common_Aluminum"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Chlorides"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Sulfates"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td></td></tr>
+
                 </table>
 
-                <!-- 4. Agua tratada usada en jarabe terminado -->
+                <!-- 4. Agua tratada usada en jarabe termido -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="5">@Localizer["Water_TreatedForFinishedSyrup_Header"]</th></tr>
                     <tr class="bg-header">
@@ -356,10 +357,11 @@
                         <th>@Localizer["Common_RunEnd"]</th>
                         <th>@Localizer["Water_TreatedWaterLot"]</th>
                     </tr>
-                    <tr><td>@Localizer["Common_Aluminum"]</td><td>NA</td><td>NA</td><td>NA</td><td>83210235</td></tr>
-                    <tr><td>@Localizer["Common_Chlorides"]</td><td>15</td><td>14</td><td>14</td><td>83210235</td></tr>
-                    <tr><td>@Localizer["Common_Sulfates"]</td><td>28</td><td>27</td><td>28</td><td>83210235</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.4</td><td>1.3</td><td>1.4</td><td>83210235</td></tr>
+                    <tr><td>@Localizer["Common_Aluminum"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Chlorides"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Sulfates"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td></td></tr>
+
                 </table>
 
                 <!-- 5. PT + sin recuperada -->
@@ -372,10 +374,11 @@
                         <th>@Localizer["Common_RunEnd"]</th>
                         <th>@Localizer["Water_TreatedWaterLot"]</th>
                     </tr>
-                    <tr><td>@Localizer["Common_Aluminum"]</td><td>NA</td><td>NA</td><td>NA</td><td>83210236</td></tr>
-                    <tr><td>@Localizer["Common_Chlorides"]</td><td>16</td><td>16</td><td>15</td><td>83210236</td></tr>
-                    <tr><td>@Localizer["Common_Sulfates"]</td><td>29</td><td>30</td><td>29</td><td>83210236</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td>1.5</td><td>1.6</td><td>1.5</td><td>83210236</td></tr>
+                    <tr><td>@Localizer["Common_Aluminum"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Chlorides"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Sulfates"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td></td></tr>
+
                 </table>
 
                 <!-- 6. Agua suave sin queja -->
@@ -387,7 +390,7 @@
                         <th>@Localizer["Common_RunMid"]</th>
                         <th>@Localizer["Common_RunEnd"]</th>
                     </tr>
-                    <tr><td>SUAVE-270624</td><td>2</td><td>2</td><td>2</td></tr>
+                    <tr><td></td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- 7. Sensorial tratada -->
@@ -399,8 +402,8 @@
                         <th>@Localizer["Common_RunMid"]</th>
                         <th>@Localizer["Common_RunEnd"]</th>
                     </tr>
-                    <tr><td>Liderador</td><td>Misael Santos</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Reference"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>Liderador</td><td>Misael Santos</td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td></td><td></td><td></td></tr>
                 </table>
 
             </div>
@@ -421,14 +424,15 @@
 
                 <table class="tabla-trazabilidad">
                     <tr class="bg-header"><th colspan="2">@Localizer["Production_Info_Header"]</th></tr>
-                    <tr><td>SKU</td><td>JD 1.5L</td></tr>
-                    <tr><td>@Localizer["Production_ProductName"]</td><td>Jugo de Durazno 1.5 Litros</td></tr>
-                    <tr><td>@Localizer["Production_Date"]</td><td>2024-07-01</td></tr>
-                    <tr><td>@Localizer["Production_Line"]</td><td>Línea 3</td></tr>
-                    <tr><td>@Localizer["Production_Batch"]</td><td>JD15070124</td></tr>
-                    <tr><td>@Localizer["Production_Shift"]</td><td>Turno B</td></tr>
-                    <tr><td>@Localizer["Production_Responsible"]</td><td>Carlos Gómez</td></tr>
-                    <tr><td>@Localizer["Production_QualitySupervisor"]</td><td>Andrea López</td></tr>
+                    <tr><td>SKU</td><td></td></tr>
+                    <tr><td>@Localizer["Production_Productme"]</td><td></td></tr>
+                    <tr><td>@Localizer["Production_Date"]</td><td></td></tr>
+                    <tr><td>@Localizer["Production_Line"]</td><td></td></tr>
+                    <tr><td>@Localizer["Production_Batch"]</td><td></td></tr>
+                    <tr><td>@Localizer["Production_Shift"]</td><td></td></tr>
+                    <tr><td>@Localizer["Production_Responsible"]</td><td></td></tr>
+                    <tr><td>@Localizer["Production_QualitySupervisor"]</td><td></td></tr>
+
                 </table>
 
                 <table class="tabla-trazabilidad mt-4">
@@ -439,7 +443,7 @@
                         <th>@Localizer["Production_UnitsProduced"]</th>
                         <th>@Localizer["Production_UnitsRejected"]</th>
                     </tr>
-                    <tr><td>06:00</td><td>14:00</td><td>24,000</td><td>150</td></tr>
+                    <tr><td></td><td></td><td></td><td></td></tr>
                 </table>
 
             </div>
@@ -447,7 +451,7 @@
     </div>
 </div>
 
-<!-- Materias Primas (sección adicional fija) -->
+<!-- Materias Primas (sección adiciol fija) -->
 <div class="accordion" id="accordion-MateriasPrimas">
     <div class="accordion-item">
         <h2 class="accordion-header">
@@ -467,18 +471,18 @@
                         <th>@Localizer["Common_Previous"]</th>
                         <th>@Localizer["Common_OtherInvolved"]</th>
                     </tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Sugar_Mill"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>Brix</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Moisture"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>% @Localizer["Common_Ash"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Sugar_FlocPotential"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Color"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Sediment"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_TurbidityICU"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Conductivity"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Sugar_Mill"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>Brix</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Moisture"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>% @Localizer["Common_Ash"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Sugar_FlocPotential"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Color"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Sediment"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_TurbidityICU"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Conductivity"]</td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- Sensorial Azúcar -->
@@ -491,27 +495,27 @@
                         <th>@Localizer["Common_OtherInvolved"]</th>
                         <th>@Localizer["Common_PanelResult"]</th>
                     </tr>
-                    <tr><td>@Localizer["Common_Release1"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Release2"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Date"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Reference"]</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td></td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- Fructosa Silo 1 -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo1_Header"]</th></tr>
                     <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Odor"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Taste"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>pH</td><td>NA</td><td>NA</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td>NA</td><td>NA</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Odor"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Taste"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>pH</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- CO2 -->
@@ -519,74 +523,79 @@
                     <tr class="bg-header"><th colspan="4">CO2</th></tr>
                     <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
                     <tr><td>@Localizer["Common_Lot"]</td><td>CO141024-210</td><td>CO121024-209</td><td>CO111024-208</td></tr>
-                    <tr><td>@Localizer["CO2_WaterCO2Attributes"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
-                    <tr><td>@Localizer["CO2_WaterAttributes"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
-                    <tr><td>@Localizer["CO2_AcidulatedCO2"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
-                    <tr><td>@Localizer["CO2_SnowAttributes"]</td><td>IN</td><td>IN</td><td>IN</td></tr>
+                    <tr><td>@Localizer["CO2_WaterCO2Attributes"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["CO2_WaterAttributes"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["CO2_AcidulatedCO2"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["CO2_SnowAttributes"]</td><td></td><td></td><td></td></tr>
+
                 </table>
 
                 <!-- Sensorial CO2 -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="5">@Localizer["CO2_Sensory_Header"]</th></tr>
                     <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
-                    <tr><td>@Localizer["Common_Release1"]</td><td>Misael Martínez</td><td>Jonathan Mata</td><td>Antonia Jimenez</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Release2"]</td><td>Antonia Jimenez</td><td>Viridiana Lopez</td><td>Karen Chaul</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>CO141024-210</td><td>CO121024-209</td><td>CO111024-208</td><td></td></tr>
-                    <tr><td>@Localizer["Common_Date"]</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Reference"]</td><td>NA</td><td>NA</td><td>NA</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td></td><td></td><td></td><td></td></tr>
                 </table>
 
                 <!-- Fructosa Silo 2 -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo2_Header"]</th></tr>
                     <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>FR2141024-901</td><td>FR2111024-895</td><td>FR2111024-892</td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>14/10/2024</td><td>11/10/2024</td><td>11/10/2024</td></tr>
-                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td>2</td><td>2</td><td>2</td></tr>
-                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td>77.12%</td><td>77.46%</td><td>77.10%</td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>@Localizer["Common_Odor"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>@Localizer["Common_Taste"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td>28°C</td><td>30°C</td><td>30°C</td></tr>
-                    <tr><td>pH</td><td>3.6</td><td>3.53</td><td>3.77</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td>16.27 ICU</td><td>14.31 ICU</td><td>12.69 ICU</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Odor"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Taste"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>pH</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td></tr>
+
                 </table>
 
                 <!-- Sensorial Fructosa Silo 2 -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="5">@Localizer["Fructose_Silo2_Sensory_Header"]</th></tr>
                     <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
-                    <tr><td>@Localizer["Common_Release1"]</td><td>Diana Rodríguez</td><td>Margarita Antonio</td><td>Tomas Carranza</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Release2"]</td><td>Yahaira</td><td>Carlos Castillo</td><td>Marcos Robles</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>FR2141024-901</td><td>FR2111024-895</td><td>FR2111024-892</td><td></td></tr>
-                    <tr><td>@Localizer["Common_Date"]</td><td>14/10/2024</td><td>11/10/2024</td><td>11/10/2024</td><td></td></tr>
-                    <tr><td>@Localizer["Common_Reference"]</td><td>FR3141024-900</td><td>FR3111024-894</td><td>FR3101024-891</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td></td><td></td><td></td><td></td></tr>
+
                 </table>
 
                 <!-- Fructosa Silo 3 + sensorial (idéntico patrón de claves) -->
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo3_Header"]</th></tr>
                     <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>FR3141024-900</td><td>FR3121024-897</td><td>FR3111024-894</td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td></tr>
-                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td>3</td><td>3</td><td>3</td></tr>
-                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td>77.29%</td><td>77.25%</td><td>77.04%</td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>@Localizer["Common_Odor"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>@Localizer["Common_Taste"]</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td><td>CARACTERÍSTICO</td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td>28°C</td><td>29°C</td><td>29°C</td></tr>
-                    <tr><td>pH</td><td>3.55</td><td>3.58</td><td>3.56</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td>11.71 ICU</td><td>13.01 ICU</td><td>11.39 ICU</td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Odor"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Taste"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Temperature"]</td><td></td><td></td><td></td></tr>
+                    <tr><td>pH</td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td></tr>
+
                 </table>
 
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="5">@Localizer["Fructose_Silo3_Sensory_Header"]</th></tr>
                     <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
-                    <tr><td>@Localizer["Common_Release1"]</td><td>Tomas Carranza</td><td>Jonathan Salas</td><td>Yaquelin Castro</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Release2"]</td><td>Edith Castro</td><td>Yaquelin Castro</td><td>Juan Guevara</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>FR3141024-900</td><td>FR3121024-897</td><td>FR3111024-894</td><td></td></tr>
-                    <tr><td>@Localizer["Common_Date"]</td><td>14/10/2024</td><td>12/10/2024</td><td>11/10/2024</td><td></td></tr>
-                    <tr><td>@Localizer["Common_Reference"]</td><td>FR1121024-899</td><td>FR1121024-896</td><td>FR1111024-893</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release1"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release2"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Date"]</td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Reference"]</td><td></td><td></td><td></td><td></td></tr>
+
                 </table>
 
             </div>
@@ -612,36 +621,39 @@
                         <th colspan="2">@Localizer["Cleaning_PhysChem_FinishedSyrup"]</th>
                         <th colspan="2">@Localizer["Cleaning_PhysChem_SimpleSyrupTank"]</th>
                     </tr>
-                    <tr><td>@Localizer["Cleaning_LineDetergent"]</td><td>Bevro Sheen / BS141024-86</td><td>@Localizer["Common_Date"]</td><td>15/10/2024</td><td>@Localizer["Common_Date"]</td><td>14/10/2024 / 13/10/2024</td><td>@Localizer["Common_Date"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_SimpleTankDetergent"]</td><td>NA / NA</td><td>@Localizer["Common_Line"]</td><td>3</td><td>@Localizer["Common_Tank"]</td><td>513 / 517</td><td>@Localizer["Common_Silo"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_FinishedTankDetergent"]</td><td>Bevro Sheen / BS071024-84</td><td>@Localizer["Common_Lot"]</td><td>BS141024-86</td><td>@Localizer["Common_Lot"]</td><td>BS071024-84 / BS071024-84</td><td>@Localizer["Common_Lot"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_LineSanitizer"]</td><td>NA / NA</td><td>@Localizer["Common_Detergent"]</td><td>Bevro Sheen</td><td>@Localizer["Common_Detergent"]</td><td>Bevro Sheen / Bevro Sheen</td><td>@Localizer["Common_Detergent"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_SimpleTankSanitizer"]</td><td>NA / NA</td><td>@Localizer["Common_Sanitizer"]</td><td>NA</td><td>@Localizer["Common_Sanitizer"]</td><td>NA / @Localizer["Common_HotWater"]</td><td>@Localizer["Common_Sanitizer"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_FinishedTankSanitizer"]</td><td>@Localizer["Common_HotWater"] / NA</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"] / @Localizer["Cleaning_5Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_SurfaceFoam"]</td><td>Enforce LP / EN141024-38</td><td>@Localizer["Common_Temperature"]</td><td>65 °C</td><td>@Localizer["Common_Temperature"]</td><td>65°C / 85°C</td><td>@Localizer["Common_Temperature"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_ExteriorSanitizer"]</td><td>Vortexx ES / VO220724-07</td><td>@Localizer["Common_Concentration"]</td><td>1.2</td><td>@Localizer["Common_Concentration"]</td><td>0.8 / 0.8</td><td>@Localizer["Common_Concentration"]</td><td>NA</td></tr>
-                    <tr><td>@Localizer["Cleaning_TreatedWaterLot"]</td><td>Agua tratada / 10238376, 10239066, 10241843</td><td>@Localizer["Cleaning_RecirculationTime"]</td><td>15 MIN</td><td>@Localizer["Cleaning_RecirculationTime"]</td><td>15 MIN / 15 MIN</td><td>@Localizer["Cleaning_RecirculationTime"]</td><td>NA</td></tr>
+                    <tr><td>@Localizer["Cleaning_LineDetergent"]</td><td></td><td>@Localizer["Common_Date"]</td><td></td><td>@Localizer["Common_Date"]</td><td></td><td>@Localizer["Common_Date"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_SimpleTankDetergent"]</td><td></td><td>@Localizer["Common_Line"]</td><td></td><td>@Localizer["Common_Tank"]</td><td></td><td>@Localizer["Common_Silo"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_FinishedTankDetergent"]</td><td></td><td>@Localizer["Common_Lot"]</td><td></td><td>@Localizer["Common_Lot"]</td><td></td><td>@Localizer["Common_Lot"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_LineSanitizer"]</td><td></td><td>@Localizer["Common_Detergent"]</td><td></td><td>@Localizer["Common_Detergent"]</td><td></td><td>@Localizer["Common_Detergent"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_SimpleTankSanitizer"]</td><td></td><td>@Localizer["Common_Sanitizer"]</td><td></td><td>@Localizer["Common_Sanitizer"]</td><td>@Localizer["Common_HotWater"]</td><td>@Localizer["Common_Sanitizer"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_FinishedTankSanitizer"]</td><td>@Localizer["Common_HotWater"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"] / @Localizer["Cleaning_5Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_SurfaceFoam"]</td><td></td><td>@Localizer["Common_Temperature"]</td><td></td><td>@Localizer["Common_Temperature"]</td><td></td><td>@Localizer["Common_Temperature"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_ExteriorSanitizer"]</td><td></td><td>@Localizer["Common_Concentration"]</td><td></td><td>@Localizer["Common_Concentration"]</td><td></td><td>@Localizer["Common_Concentration"]</td><td></td></tr>
+                    <tr><td>@Localizer["Cleaning_TreatedWaterLot"]</td><td></td><td>@Localizer["Cleaning_RecirculationTime"]</td><td></td><td>@Localizer["Cleaning_RecirculationTime"]</td><td></td><td>@Localizer["Cleaning_RecirculationTime"]</td><td></td></tr>
+
                 </table>
 
                 <br />
                 <table class="tabla-trazabilidad">
                     <tr class="bg-header"><th colspan="5">@Localizer["Cleaning_Sensory_FinishedSyrupTank_Header"]</th></tr>
-                    <tr class="bg-header"><th>@Localizer["Cleaning_LotDateName"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
-                    <tr><td>Lourdes Contreras</td><td>IN</td></tr>
-                    <tr><td>Luia Amezquita</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Lot"]: 10239066</td><td>@Localizer["Common_Reference"]: @Localizer["Common_TreatedWater"]</td></tr>
-                    <tr><td>@Localizer["Common_Date"]: 14/10/2024</td><td></td></tr>
+                    <tr class="bg-header"><th>@Localizer["Cleaning_LotDateme"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Lot"]:</td><td>@Localizer["Common_Reference"]: @Localizer["Common_TreatedWater"]</td></tr>
+                    <tr><td>@Localizer["Common_Date"]:</td><td></td></tr>
                 </table>
 
                 <br />
+
                 <table class="tabla-trazabilidad">
                     <tr class="bg-header"><th colspan="5">@Localizer["Cleaning_Sensory_Header"]</th></tr>
-                    <tr class="bg-header"><th>@Localizer["Common_DateName"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
-                    <tr><td>Jonathan Mata</td><td>IN</td></tr>
-                    <tr><td>Luis Austria</td><td>IN</td></tr>
-                    <tr><td>@Localizer["Common_Release3"]: NA</td><td>@Localizer["Common_Reference"]: @Localizer["Common_TreatedWater"]</td></tr>
-                    <tr><td>@Localizer["Common_Date"]: 15/10/2024</td><td></td></tr>
+                    <tr class="bg-header"><th>@Localizer["Common_Dateme"]</th><th>@Localizer["Common_PanelResult"]</th></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td>@Localizer["Common_Release3"]:</td><td>@Localizer["Common_Reference"]: @Localizer["Common_TreatedWater"]</td></tr>
+                    <tr><td>@Localizer["Common_Date"]:</td><td></td></tr>
                 </table>
+
 
             </div>
         </div>
@@ -659,13 +671,14 @@
         <div id="collapseResultados" class="accordion-collapse collapse show">
             <div class="accordion-body">
                 <table class="tabla-trazabilidad">
-                    <tr><td>@Localizer["TraceResults_ClientInfo"]</td><td>Se detecta sabor y olor no característico en la Joya Durazno 1.5L</td></tr>
-                    <tr><td>@Localizer["TraceResults_RecoveredFGQty"]</td><td>29 Cajas</td></tr>
-                    <tr><td>@Localizer["TraceResults_InvolvedRMQty"]</td><td>11933</td></tr>
-                    <tr><td>@Localizer["TraceResults_PreparedBy"]</td><td>Margarita Antonio</td></tr>
-                    <tr><td>@Localizer["TraceResults_TraceEfficiency"]</td><td>3.59%</td></tr>
-                    <tr><td>@Localizer["TraceResults_Participants"]</td><td>GARZA ESPARZA JULIO CESAR , ...</td></tr>
-                    <tr><td>@Localizer["Common_Observations"]</td><td>Errores de dedo, información incompleta</td></tr>
+                    <tr><td>@Localizer["TraceResults_ClientInfo"]</td><td></td></tr>
+                    <tr><td>@Localizer["TraceResults_RecoveredFGQty"]</td><td></td></tr>
+                    <tr><td>@Localizer["TraceResults_InvolvedRMQty"]</td><td></td></tr>
+                    <tr><td>@Localizer["TraceResults_PreparedBy"]</td><td></td></tr>
+                    <tr><td>@Localizer["TraceResults_TraceEfficiency"]</td><td></td></tr>
+                    <tr><td>@Localizer["TraceResults_Participants"]</td><td></td></tr>
+                    <tr><td>@Localizer["Common_Observations"]</td><td></td></tr>
+
                 </table>
             </div>
         </div>

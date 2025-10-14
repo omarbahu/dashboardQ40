@@ -51,7 +51,7 @@ namespace dashboardQ40.Controllers
 
                 Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
                         token.access_token.ToString(),
-                        _settings.QueryCompany,
+                        _settings.BaseUrl + _settings.QueryCompany,
                         _settings.Company,
                         _settings.trazalog);
                 await Task.WhenAll(dataResultComp);
@@ -133,7 +133,7 @@ namespace dashboardQ40.Controllers
             // Llama a tu servicio; ajusta nombres de método y settings
             var resp = await getDataQuality.getLinesByCompany(
                 token,
-                _settings.QueryLineas + company, // tu query
+                _settings.BaseUrl + _settings.QueryLineas + company, // tu query
                 company,                  // si lo pides, o quítalo
                 _settings.trazalog                             // filtro de company
             );
@@ -157,7 +157,7 @@ namespace dashboardQ40.Controllers
             {
                 var dataResultComp = await getDataQuality.getCompanies(
                     token.access_token.ToString(),
-                    _settings.QueryCompany,
+                    _settings.BaseUrl + _settings.QueryCompany,
                     _settings.Company,
                     _settings.trazalog);
 
@@ -220,7 +220,7 @@ namespace dashboardQ40.Controllers
                 {
                     var dataResultP = getDataQuality.getResultsByVarX(
                         token.ToString(),
-                        _settings.QueryResultVarY_X + planta,
+                        _settings.BaseUrl + _settings.QueryResultVarY_X + planta,
                         planta,
                         line, startDate, endDate, variableX);
                     await Task.WhenAll(dataResultP);
@@ -278,7 +278,7 @@ namespace dashboardQ40.Controllers
             // 📌 Obtener los datos de la Variable Y
             var dataResultY = getDataQuality.getResultsByVarX(
                 token.ToString(),
-                _settings.QueryResultVarY_X + planta,
+                _settings.BaseUrl + _settings.QueryResultVarY_X + planta,
                 planta,
                 line, startDate, endDate, VariableYEnv);
             await Task.WhenAll(dataResultY);
@@ -351,7 +351,7 @@ namespace dashboardQ40.Controllers
                 foreach (var variableX in variablesX)
                 {
                     var dataResultP = getDataQuality.getResultsByVarX(
-                        token, _settings.QueryResultVarY_X + planta, planta,
+                        token, _settings.BaseUrl + _settings.QueryResultVarY_X + planta, planta,
                         line, startDate, endDate, variableX);
                     await Task.WhenAll(dataResultP);
 
@@ -395,7 +395,7 @@ namespace dashboardQ40.Controllers
             }
 
             var dataResultY = getDataQuality.getResultsByVarX(
-                token, _settings.QueryResultVarY_X + planta, planta,
+                token, _settings.BaseUrl + _settings.QueryResultVarY_X + planta, planta,
                 line, startDate, endDate, VariableYEnv);
             await Task.WhenAll(dataResultY);
 
@@ -439,7 +439,7 @@ namespace dashboardQ40.Controllers
            
                 var dataResultP = getDataQuality.getProductsByLine(
                         token.ToString(),
-                        _settings.QuerySKUs + planta,
+                        _settings.BaseUrl + _settings.QuerySKUs + planta,
                         planta,
                         lineaId,
                         fechaInicial,
@@ -466,7 +466,7 @@ namespace dashboardQ40.Controllers
             //    ⚠️ Esta llamada usa getVarYRows (ver la clase en el punto 2).
             var dataTask = getDataQuality.getVarYRows(
                 token,
-                _settings.QueryVarY + planta,   // tu endpoint/URL configurada para este query
+                _settings.BaseUrl + _settings.QueryVarY + planta,   // tu endpoint/URL configurada para este query
                 planta,
                 sku,
                 startDate,
@@ -569,7 +569,7 @@ namespace dashboardQ40.Controllers
             // 1) Traer lista de X ligadas a la Y y QUITAR DUPLICADOS por código
             var prefix = (varY?.Length >= 3 ? varY.Substring(0, 3) : varY ?? "") + "%";
             var opsTask = getDataQuality.getVarXByvarY(
-                token, _settings.QueryVarX + planta, planta,
+                token, _settings.BaseUrl + _settings.QueryVarX + planta, planta,
                 sku, prefix, fechaInicial, fechaFinal, lineaId);
 
             await Task.WhenAll(opsTask);
@@ -589,7 +589,7 @@ namespace dashboardQ40.Controllers
             foreach (var op in ops)
             {
                 tasks.Add(getDataQuality.getResultsByVarX(
-                    token, _settings.QueryResultVarY_X + planta, planta,
+                    token, _settings.BaseUrl + _settings.QueryResultVarY_X + planta, planta,
                     lineaId, fechaInicial, fechaFinal, op.controlOperation));
             }
 

@@ -158,7 +158,12 @@ public class TrazabilidadNode
     public string Hijo { get; set; }
     public string Company { get; set; }
     public string ManufacturingReference { get; set; }
+    public string ManufacturingFamily { get; set; }
+    public string manufacturingFamilyName { get; set; }    
     public string ManufacturingReferenceName { get; set; }
+    public string workplacename { get; set; }
+    public decimal bcquantity { get; set; }
+    public decimal consumedquantity { get; set; }    
     public long Batch { get; set; }
     public long BatchPadre { get; set; }
     public string BatchIdentifier { get; set; }

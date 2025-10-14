@@ -95,6 +95,25 @@ namespace dashboardQ40.Models
 
         }
 
+        public class result_Q_MateriaPrima
+        {
+            public string query { get; set; }
+            public List<result_MateriaPrima> result { get; set; }
+        }
+
+        public class result_MateriaPrima
+        {
+            public string referenceMovement { get; set; }
+            public string supplier { get; set; }
+            public string supplierBatch { get; set; }
+            public DateTime? issueDate { get; set; }
+            public int? realQuantityInParcel { get; set; }
+            public CultureInfo cultureinfo { get; set; }
+            public RegionInfo regioninfo { get; set; }
+        }
+
+        //SELECT referenceMovement, supplier, supplierBatch, issueDate, realQuantityInParcel FROM EntryFromProvider WHERE company = @company AND referenceMovement IN ({lotes})
+
         public class CompanyOption
         {
             public string Company { get; set; }       // "001"
@@ -120,6 +139,19 @@ namespace dashboardQ40.Models
         {
             public string manufacturingOrder { get; set; }
             public string manufacturingReferenceName { get; set; }
+        }
+
+        public class result_Q_Families
+        {
+            public string query { get; set; }
+            public List<result_Families> result { get; set; }
+
+        }
+
+        public class result_Families
+        {
+            public string manufacturingFamily { get; set; }
+            public string manufacturingFamilyName { get; set; }
         }
 
         public class result_Q_VarY

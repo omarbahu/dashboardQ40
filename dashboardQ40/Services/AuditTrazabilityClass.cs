@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Text;
 using static dashboardQ40.Models.Models;
+using static dashboardQ40.Services.common;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace dashboardQ40.Services
@@ -86,8 +87,8 @@ namespace dashboardQ40.Services
         ? descripciones[loteId].ManufacturingReferenceName
         : "Sin descripción",
 
-                                Proveedor = reader["supplier"]?.ToString() ?? "N/A",
-                                LoteExterno = reader["supplierBatch"]?.ToString() ?? "N/A",
+                                Proveedor = reader["supplier"]?.ToString() ?? "",
+                                LoteExterno = reader["supplierBatch"]?.ToString() ?? "",
 
                                 // LoteInterno usa el BatchIdentifier
                                 LoteInterno = descripciones.ContainsKey(loteId)
@@ -95,8 +96,8 @@ namespace dashboardQ40.Services
         : loteId.ToString(), // fallback si no está
                                 FechaRecepcion = reader["issueDate"] != DBNull.Value
                                     ? Convert.ToDateTime(reader["issueDate"]).ToString("dd/MM/yyyy")
-                                    : "N/A",
-                                Cantidad = reader["realQuantityInParcel"]?.ToString() ?? "N/A"
+                                    : "",
+                                Cantidad = reader["realQuantityInParcel"]?.ToString() ?? ""
                             });
                         }
                     }
@@ -111,11 +112,11 @@ namespace dashboardQ40.Services
                     resultados.Add(new RegistroMateriaPrima
                     {
                         Descripcion = kvp.Value.ManufacturingReferenceName,
-                        Proveedor = "N/A",
-                        LoteExterno = "N/A",
+                        Proveedor = "",
+                        LoteExterno = "",
                         LoteInterno = kvp.Value.BatchName, // usa BatchIdentifier aquí
-                        FechaRecepcion = "N/A",
-                        Cantidad = "N/A"
+                        FechaRecepcion = "",
+                        Cantidad = ""
                     });
                 }
             }
@@ -311,10 +312,10 @@ namespace dashboardQ40.Services
             foreach (var lote in lotesSeleccionados)
             {
                 if (lote == null)
-                {   // Agrega solo "N/A" en todas las filas
+                {   // Agrega solo "" en todas las filas
                     foreach (var fila in registros)
                     {
-                        fila.ValoresPorSku.Add("N/A");
+                        fila.ValoresPorSku.Add("");
                     }
                     continue;
                 }
@@ -326,25 +327,71 @@ namespace dashboardQ40.Services
                 var jarabesimple = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("JARABE SIMPLE"));
                 var azucar = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("AZUCAR"));
                 var aguaTratada = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("AGUA TRATADA"));
-                
+                // Buscar hasta 2 concentrados entre los hijos del lote actual
+                var concentradosTop2 = hijos
+                    .Where(h => !string.IsNullOrWhiteSpace(h.ManufacturingReferenceName)
+                             && h.ManufacturingReferenceName.IndexOf("CONCENTRADO", StringComparison.OrdinalIgnoreCase) >= 0)
+                    .GroupBy(h => h.Batch)                 // evita duplicados por batch (opcional)
+                    .Select(g => g.First())
+                    .OrderBy(h => h.StartDate)            // o .OrderBy(h => h.Batch) según te convenga
+                    .Take(2)
+                    .Select(h => h.BatchName ?? "")       // lo que quieras mostrar (BatchName / Batch / ManufacturingReferenceName)
+                    .ToList();
 
-                registros[0].ValoresPorSku.Add(lote.BatchName ?? "N/A");
+                // Asegura 2 posiciones
+                while (concentradosTop2.Count < 2) concentradosTop2.Add("");
+
+                // Inyecta en el reporte
+                /*
+                 * 
+                 *  "LOTE DE JARABE TERMINADO:",
+                "FECHA DE ELABORACIÓN:",
+                "TANQUE:",
+                "CLAVE:",
+                "HORA INICIO DE LLENADO:",
+                "HORA DE TERMINO LLENADO:",
+                "VOLUMEN PREPARADO DE JARABE TERMINADO:",
+                "VOLUMEN UTILIZADO DE JARABE TERMINADO:",
+                "LOTE DE FRUCTOSA:",
+                "LOTE DE AZUCAR:",
+                "NÚMERO DE BATCH",
+                "LOTE DE AGUA TRATADA:",
+                "LOTE DE CONCENTRADOS PARTE 1:",
+                "LOTE DE CONCENTRADOS PARTE 2:",
+                "PARTES LIQUIDAS Y CONSECUTIVAS DE BOLSAS:",
+                "PARTES SECAS Y CONSECUTIVAS DE BOLSAS:"
+
+                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
+                registros[1].ValoresPorSku.Add(lote.workplacename);
+                registros[2].ValoresPorSku.Add(azucar?.ManufacturingReferenceName ?? "");
+                registros[3].ValoresPorSku.Add(azucar?.BatchName ?? "");
+                registros[4].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm"));
+                registros[5].ValoresPorSku.Add(lote.bcquantity.ToString());
+                registros[6].ValoresPorSku.Add(lote.consumedquantity.ToString());
+                registros[7].ValoresPorSku.Add(""); // falta traer un dato extra de lote,
+                registros[8].ValoresPorSku.Add(aguaTratada?.BatchName ?? "");       // LOTE DE AGUA TRATADA
+                registros[9].ValoresPorSku.Add(materialFiltrante?.BatchName ?? ""); // LOTE DEL MATERIAL FILTRANTE
+                registros[10].ValoresPorSku.Add(filtroBolsa?.BatchName ?? "");      // LOTE DE FILTRO BOLSA
+
+                 */
+
+                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
                 registros[1].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm"));
-                registros[2].ValoresPorSku.Add(batchInfoJT.workplace ?? "N/A");
-                registros[3].ValoresPorSku.Add("N/A");
-                registros[4].ValoresPorSku.Add(batchInfoJT.StartDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A");
-                registros[5].ValoresPorSku.Add(batchInfoJT.EndDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A");
-                registros[6].ValoresPorSku.Add(batchInfoJT.initialQuantity.ToString() ?? "N/A");
-                registros[7].ValoresPorSku.Add("N/A");
-                registros[8].ValoresPorSku.Add("N/A");       
-                registros[9].ValoresPorSku.Add(fructuosa?.BatchName.ToString() ?? "N/A"); //Fructuosa
-                registros[10].ValoresPorSku.Add(azucar?.BatchName.ToString() ?? "N/A");      // azucar
+                registros[2].ValoresPorSku.Add(lote.workplacename);
+                registros[3].ValoresPorSku.Add("");
+                registros[4].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm") ?? "");
+                registros[5].ValoresPorSku.Add(lote.EndDate.ToString("dd/MM/yyyy HH:mm") ?? "");
+                registros[6].ValoresPorSku.Add(lote.bcquantity.ToString());
+                registros[7].ValoresPorSku.Add(lote.consumedquantity.ToString());       
+                registros[8].ValoresPorSku.Add(fructuosa?.BatchName.ToString() ?? ""); //Fructuosa
+                registros[9].ValoresPorSku.Add(azucar?.BatchName.ToString() ?? "");      // azucar
 
-                registros[11].ValoresPorSku.Add(jarabesimple?.BatchName.ToString() ?? "N/A"); //jarabeActivo simple
-                registros[12].ValoresPorSku.Add(aguaTratada?.BatchName.ToString() ?? "N/A");
-                registros[13].ValoresPorSku.Add("N/A");
-                registros[14].ValoresPorSku.Add("N/A");
-                registros[15].ValoresPorSku.Add("N/A");
+                registros[10].ValoresPorSku.Add(jarabesimple?.BatchName.ToString() ?? ""); //jarabeActivo simple
+                registros[11].ValoresPorSku.Add(aguaTratada?.BatchName.ToString() ?? "");
+                registros[12].ValoresPorSku.Add(concentradosTop2[0]); // LOTE DE CONCENTRADOS PARTE 1
+                registros[13].ValoresPorSku.Add(concentradosTop2[1]); // LOTE DE CONCENTRADOS PARTE 2
+                registros[14].ValoresPorSku.Add("");
+                registros[15].ValoresPorSku.Add("");
             }
 
 
@@ -558,7 +605,7 @@ namespace dashboardQ40.Services
                             foreach (var prop in props)
                             {
                                 if (prop.Name != "Descripcion")
-                                    prop.SetValue(modelo, "N/A");
+                                    prop.SetValue(modelo, "");
                             }
 
                             resultados.Add(modelo);
@@ -653,10 +700,10 @@ namespace dashboardQ40.Services
             {
                 if (lote == null)
                 {
-                    // Agrega solo "N/A" en todas las filas
+                    // Agrega solo "" en todas las filas
                     foreach (var fila in registros)
                     {
-                        fila.ValoresPorSku.Add("N/A");
+                        fila.ValoresPorSku.Add("");
                     }
                     continue;
                 }
@@ -674,19 +721,19 @@ namespace dashboardQ40.Services
                 var filtroBolsa = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("FILTRO"));
 
 
-                registros[0].ValoresPorSku.Add(lote.BatchName ?? "N/A");
-                registros[1].ValoresPorSku.Add("N/A");
-                registros[2].ValoresPorSku.Add(azucar?.ManufacturingReferenceName ?? "N/A");
-                registros[3].ValoresPorSku.Add(azucar?.BatchName ?? "N/A");
+                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
+                registros[1].ValoresPorSku.Add(lote.workplacename);
+                registros[2].ValoresPorSku.Add(azucar?.ManufacturingReferenceName ?? "");
+                registros[3].ValoresPorSku.Add(azucar?.BatchName ?? "");
                 registros[4].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm"));
-                registros[5].ValoresPorSku.Add("N/A");
-                registros[6].ValoresPorSku.Add("N/A");
-                registros[7].ValoresPorSku.Add("N/A");
-                registros[8].ValoresPorSku.Add(aguaTratada?.BatchName ?? "N/A");       // LOTE DE AGUA TRATADA
-                registros[9].ValoresPorSku.Add(materialFiltrante?.BatchName ?? "N/A"); // LOTE DEL MATERIAL FILTRANTE
-                registros[10].ValoresPorSku.Add(filtroBolsa?.BatchName ?? "N/A");      // LOTE DE FILTRO BOLSA
+                registros[5].ValoresPorSku.Add(lote.bcquantity.ToString());
+                registros[6].ValoresPorSku.Add(lote.consumedquantity.ToString());
+                registros[7].ValoresPorSku.Add(""); // falta traer un dato extra de lote,
+                registros[8].ValoresPorSku.Add(aguaTratada?.BatchName ?? "");       // LOTE DE AGUA TRATADA
+                registros[9].ValoresPorSku.Add(materialFiltrante?.BatchName ?? ""); // LOTE DEL MATERIAL FILTRANTE
+                registros[10].ValoresPorSku.Add(filtroBolsa?.BatchName ?? "");      // LOTE DE FILTRO BOLSA
 
-                registros[11].ValoresPorSku.Add("N/A");
+                registros[11].ValoresPorSku.Add("");
             }
 
 
@@ -805,7 +852,7 @@ namespace dashboardQ40.Services
                     {
                         if (lote == null)
                         {
-                            registro.ValoresPorLote.Add("N/A");
+                            registro.ValoresPorLote.Add("");
                             continue;
                         }
 
@@ -814,24 +861,24 @@ namespace dashboardQ40.Services
 
                         if (resultado == null)
                         {
-                            registro.ValoresPorLote.Add("N/A");
+                            registro.ValoresPorLote.Add("");
                             continue;
                         }
 
                         string valorFinal;
                         if (resultado.TipoOperacion == 1)
                         {
-                            valorFinal = string.IsNullOrWhiteSpace(resultado.Valor) ? "N/A" : resultado.Valor;
+                            valorFinal = string.IsNullOrWhiteSpace(resultado.Valor) ? "" : resultado.Valor;
                         }
                         else if (resultado.TipoOperacion == 2)
                         {
                             valorFinal = resultado.Atributo == "1" ? "✔"
                                        : resultado.Atributo == "0" ? "✘"
-                                       : "N/A";
+                                       : "";
                         }
                         else
                         {
-                            valorFinal = "N/A";
+                            valorFinal = "";
                         }
 
                         registro.ValoresPorLote.Add(valorFinal);
@@ -983,7 +1030,23 @@ namespace dashboardQ40.Services
             return result;
         }
 
+        // ---- WS -----
 
+        public static async Task<result_Q_MateriaPrima> getBloqueMateriaPrima(string token, string url, string company, string trazalog, string query, string lotes)
+        {
+
+            HttpClient client = Method_Headers(token, url);
+            var jsonBody = "{ 'COMP': '" + company + "', 'LOTES': '" + lotes + "' }";
+            return await WebServiceHelper.SafePostAndDeserialize<result_Q_MateriaPrima>(
+                client,
+                client.BaseAddress.ToString(),
+                jsonBody,
+                query,
+                trazalog
+            );
+        }
+
+        // ------------ 
 
         // --- helpers ---
         static string Norm(string s)

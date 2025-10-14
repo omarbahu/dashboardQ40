@@ -55,6 +55,7 @@ namespace dashboardQ40.Services
         }
 
 
+
         public static async Task<result_Q_Productos> getProductsByLine(string token, string url, string company, string lineaId, DateTime fechaInicial, DateTime fechaFinal)
         {
             var fe1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss");
@@ -69,6 +70,22 @@ namespace dashboardQ40.Services
                 client.BaseAddress.ToString(),
                 jsonBody,
                 "getProductsByLine"
+            );
+        }
+
+        public static async Task<result_Q_Families> getReferencesFamilies(string token, string url, string company, string trazalog)
+        {            
+
+            HttpClient client = Method_Headers(token, url);
+
+            var jsonBody = "{ 'COMP': '" + company + "'}";
+
+            return await WebServiceHelper.SafePostAndDeserialize<result_Q_Families>(
+                client,
+                client.BaseAddress.ToString(),
+                jsonBody,
+                "getFamilies",
+                trazalog
             );
         }
 

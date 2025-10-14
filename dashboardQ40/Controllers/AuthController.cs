@@ -69,10 +69,10 @@ namespace dashboardQ40.Controllers
                 // Llamada al WS
                 _logger.LogInformation(
                     "Invocando getAuthUser | endpoint={Endpoint} | company={Company} | user={User} | cid={CID}",
-                    _settings.QueryAuthUser + company, company, user, correlationId);
+                    _settings.BaseUrl + _settings.QueryAuthUser + company, company, user, correlationId);
 
                 var wsTask = AuthService.getAuthUser(
-                    token.access_token, _settings.QueryAuthUser + company, company, user);
+                    token.access_token, _settings.BaseUrl + _settings.QueryAuthUser + company, company, user);
 
                 var wsResult = await wsTask;
 

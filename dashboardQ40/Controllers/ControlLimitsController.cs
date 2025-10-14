@@ -57,7 +57,7 @@ namespace dashboardQ40.Controllers
 
                 Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
                         token.access_token.ToString(),
-                        _settings.QueryCompany,
+                        _settings.BaseUrl + _settings.QueryCompany,
                         _settings.Company,
                         _settings.trazalog);
                 await Task.WhenAll(dataResultComp);

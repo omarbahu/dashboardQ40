@@ -31,7 +31,7 @@ namespace dashboardQ40.Services
             string token, string company, DateTime start, DateTime end, CancellationToken ct = default)
         {
             // Tu patrón: base + sufijo por compañía (igual que QueryLineas, QueryVarY, etc.)
-            var client = Method_Headers(token, _settings.QueryLimits + company);
+            var client = Method_Headers(token, _settings.BaseUrl + _settings.QueryLimits + company);
 
             var fe1 = start.ToString("yyyy-MM-dd HH:mm:ss");
             var fe2 = end.ToString("yyyy-MM-dd HH:mm:ss");
