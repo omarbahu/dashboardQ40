@@ -341,7 +341,7 @@ WHERE NOT ( CTE.batch is null );
 	RC.batch as Batchpadre, 
     RC.batchIdentifier,
     RC.batchIdentifier as batchname,
-    RC.startDate,RC.endDate,MR.isRawMaterial, MR.manufacturingFamily,MF.manufacturingFamilyName,w.workplace,w.workplacename,RC.bcquantity, RC.consumedquantity,
+    RC.startDate,RC.endDate,MR.isRawMaterial, MR.manufacturingFamily,MF.manufacturingFamilyName,w.workplace,w.workplacename,--RC.bcquantity, RC.consumedquantity,
     1 AS Nivel -- Nivel 0 para los padres
 FROM TraceabilityNodeRelations RC	
 inner join manufacturingreference MR on MR.manufacturingReference = RC.manufacturingReference and MR.company = RC.company
@@ -358,7 +358,7 @@ WHERE RC.company = @company and RC.batch = @batch
         t.batch as Batchpadre, 
         t.batchIdentifier,
         bth.batchIdentifier as batchname,
-        t.startDate,t.endDate,MR2.isRawMaterial,MR2.manufacturingFamily,MF2.manufacturingFamilyName,w2.workplace,w2.workplacename,t.bcquantity, t.consumedquantity,
+        t.startDate,t.endDate,MR2.isRawMaterial,MR2.manufacturingFamily,MF2.manufacturingFamilyName,w2.workplace,w2.workplacename,--t.bcquantity, t.consumedquantity,
         cte.Nivel + 1 -- Incrementa el nivel para los hijos
     FROM TraceabilityNodeRelations t
     inner join manufacturingreference MR2 on MR2.manufacturingReference = t.manufacturingReference and MR2.company = t.company
@@ -384,7 +384,7 @@ SELECT distinct
 	0 as Batchpadre,
     RC3.batchIdentifier,
     RC3.batchIdentifier as batchname,
-    RC3.startDate,RC3.endDate,MR2.isRawMaterial,MR2.manufacturingFamily,MF2.manufacturingFamilyName,w2.workplace,w2.workplacename,RC3.bcquantity, RC3.consumedquantity,
+    RC3.startDate,RC3.endDate,MR2.isRawMaterial,MR2.manufacturingFamily,MF2.manufacturingFamilyName,w2.workplace,w2.workplacename,--RC3.bcquantity, RC3.consumedquantity,
 	0, 
     0 AS Nivel -- Nivel 0 para los padres
 FROM TraceabilityNodeRelations RC3	
@@ -410,7 +410,7 @@ SELECT
     CTE.Batchpadre,
     CTE.batchIdentifier,
     bth3.batchIdentifier as batchname,
-    CTE.startDate,CTE.endDate,MR3.isRawMaterial,MR3.manufacturingFamily,MF3.manufacturingFamilyName,w3.workplace,w3.workplacename,CTE.bcquantity, CTE.consumedquantity,
+    CTE.startDate,CTE.endDate,MR3.isRawMaterial,MR3.manufacturingFamily,MF3.manufacturingFamilyName,w3.workplace,w3.workplacename,--CTE.bcquantity, CTE.consumedquantity,
     rn, 
 	Nivel
 FROM RowNumCTE CTE
@@ -495,28 +495,68 @@ order by b.batchIdentifier;
             }
         }
 
+        private static long ToInt64(DataRow r, string col)
+        {
+            var v = r[col];
+            return v == DBNull.Value ? 0L : Convert.ToInt64(v);  // acepta int, long, string numérica
+        }
+
+        private static bool ToBool(DataRow r, string col)
+        {
+            var v = r[col];
+            if (v == DBNull.Value) return false;
+            if (v is bool b) return b;
+            // algunos campos vienen como 0/1 o "0"/"1"
+            return Convert.ToInt32(v) != 0;
+        }
+
+        private static DateTime ToDateTime(DataRow r, string col)
+        {
+            var v = r[col];
+            return v == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(v);
+        }
+
         public static List<TrazabilidadNode> ConvertirDataTableATrazabilidad(DataTable dt)
         {
-            return dt.AsEnumerable().Select(row => new TrazabilidadNode
+            var nodos = dt.AsEnumerable().Select(row => new TrazabilidadNode
             {
-                Padre = row["Padre"].ToString(),
-                Hijo = row["Hijo"].ToString(),
-                Company = row["company"].ToString(),
-                ManufacturingReference = row["manufacturingReference"].ToString(),
-                ManufacturingReferenceName = row["manufacturingReferenceName"].ToString(),
-                Batch = Convert.ToInt64(row["batch"]),
-                BatchPadre = Convert.ToInt64(row["Batchpadre"]),
-                BatchIdentifier = row["batchIdentifier"].ToString(),
-                BatchName = row["batchname"].ToString(),
-                StartDate = Convert.ToDateTime(row["startDate"]),
-                EndDate = Convert.ToDateTime(row["endDate"]),
-                IsRawMaterial = Convert.ToBoolean(row["isRawMaterial"]),
-                Nivel = Convert.ToInt32(row["Nivel"]),
-                ManufacturingFamily = row["ManufacturingFamily"].ToString(),
-                manufacturingFamilyName = row["manufacturingFamilyName"].ToString(),
-                workplacename = row["workplacename"].ToString()
-            }).ToList();
+                Padre = row["Padre"] == DBNull.Value ? null : row["Padre"]?.ToString(),
+                Hijo = row["Hijo"] == DBNull.Value ? null : row["Hijo"]?.ToString(),
+                Company = row["company"]?.ToString(),
+                ManufacturingReference = row["manufacturingReference"]?.ToString(),
+                ManufacturingReferenceName = row["manufacturingReferenceName"]?.ToString(),
+
+                Batch = ToInt64(row, "batch"),
+                BatchPadre = ToInt64(row, "Batchpadre"),
+                BatchIdentifier = row["batchIdentifier"]?.ToString(),
+                BatchName = row["batchname"]?.ToString(),
+                StartDate = ToDateTime(row, "startDate"),
+                EndDate = ToDateTime(row, "endDate"),
+                IsRawMaterial = ToBool(row, "isRawMaterial"),
+
+                ManufacturingFamily = row["ManufacturingFamily"]?.ToString(),
+                manufacturingFamilyName = row["manufacturingFamilyName"]?.ToString(),
+                workplacename = row["workplacename"]?.ToString()
+            });
+
+            // === DEDUPLICA ===
+            // Opción A: una fila por ARISTA (Company, BatchPadre, Batch)
+            var dedup = nodos
+                .GroupBy(n => (n.Company, n.BatchPadre, n.Batch))
+                .Select(g => g.OrderByDescending(n => n.StartDate).First())
+                .ToList();
+
+            // // Opción B: una fila por NODO (Company, Batch)
+            // var dedup = nodos
+            //     .GroupBy(n => (n.Company, n.Batch))
+            //     .Select(g => g.OrderByDescending(n => n.StartDate).First())
+            //     .ToList();
+
+            return dedup;
         }
+
+
+
 
     }
 }

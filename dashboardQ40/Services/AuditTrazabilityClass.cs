@@ -12,39 +12,7 @@ namespace dashboardQ40.Services
 {
     public class AuditTrazabilityClass
     {
-        /*
-        public static BloqueMateriaPrimaModel ObtenerDatosMateriaPrima(string lote)
-        {
-            return new BloqueMateriaPrimaModel
-            {
-                Registros = new List<RegistroMateriaPrima>
-                {
-                    new RegistroMateriaPrima
-                    {
-                        Descripcion = "FRUCTOSA",
-                        Proveedor = "Almex",
-                        LoteExterno = "MI10132491 / MI10132956",
-                        LoteInterno = "RSH41024-901 / RSH411024-901",
-                        FechaRecepcion = "14-oct-24 / 14-oct-24",
-                        Cantidad = "8,706 Kg / 10,740 Kg"
-                    },
-                    new RegistroMateriaPrima
-                    {
-                        Descripcion = "CO2",
-                        Proveedor = "Linde",
-                        LoteExterno = "79781247",
-                        LoteInterno = "CD241024-710",
-                        FechaRecepcion = "16/oct/24",
-                        Cantidad = "1,064.211 Kg"
-                    },
-                    // agrega más según tu tabla...
-                },
-                SupervisorCalidad = "Margarita Antonio",
-                SupervisorAlmacen = "Raul Juarez"
-            };
-        }
-        */
-
+      
         public static List<RegistroMateriaPrima> ObtenerDatosMateriaPrima(string company, List<long> lotes, Dictionary<long, LoteDescripcionInfo> descripciones, string connectionString)
         {
             var resultados = new List<RegistroMateriaPrima>();
@@ -161,13 +129,13 @@ namespace dashboardQ40.Services
             };
         }
 
-        public static BloqueJarabeSimpleModel ObtenerJarabeSimplePorLote(string lote)
+        public static BloqueLotesPrincipalesModel ObtenerJarabeSimplePorLote(string lote)
         {
-            return new BloqueJarabeSimpleModel
+            return new BloqueLotesPrincipalesModel
             {
                 TituloBloque = "Lote de Jarabe Simple (Núm. Batch)",
                 EncabezadosSku = new List<string> { "SKU QUEJA", "ANTERIOR", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO" },
-                Registros = new List<RegistroJarabeSimple>
+                Registros = new List<RegistroLotesPrincipales>
         {
             new() { DescripcionCampo = "LOTE DE JARABE SIMPLE (NÚM. BATCH):", ValoresPorSku = new() { "JSB1001", "JSB0998", "JSB1000", "JSB0999", "JSB1002" } },
             new() { DescripcionCampo = "# TANQUE DONDE SE ALMACENO EL JARABE SIMPLE:", ValoresPorSku = new() { "TQ-01", "TQ-02", "TQ-03", "TQ-04", "TQ-05" } },
@@ -186,14 +154,14 @@ namespace dashboardQ40.Services
         }
 
 
-        public static BloqueJarabeSimpleModel ObtenerJarabeSimpleConContacto(string lote)
+        public static BloqueLotesPrincipalesModel ObtenerJarabeSimpleConContacto(string lote)
         {
-            return new BloqueJarabeSimpleModel
+            return new BloqueLotesPrincipalesModel
             {
                 TituloBloque = "Lote de Jarabe Simple (Núm. Batch). Mencionar lote correspondiente a la muestra y 2 anteriores que pudieron haber estado en contacto",
                 EncabezadosSku = new List<string> { "SKU QUEJA", "ANTERIOR", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO" },
 
-                Registros = new List<RegistroJarabeSimple>
+                Registros = new List<RegistroLotesPrincipales>
                 { 
        /* new() { DescripcionCampo = "LOTE DE JARABE SIMPLE (NÚM. BATCH):", ValoresPorSku = new() { "JS001", "JS000", "JS002", "JS003", "JS004", "JS005" } },
         new() { DescripcionCampo = "# TANQUE DONDE SE ALMACENO EL JARABE SIMPLE:", ValoresPorSku = new() { "T01", "T01", "T02", "T03", "T04", "T05" } },
@@ -206,15 +174,15 @@ namespace dashboardQ40.Services
         }
 
 
-        public static BloqueJarabeSimpleModel ObtenerAnalisisSensorialJarabeSimple(string lote)
+        public static BloqueLotesPrincipalesModel ObtenerAnalisisSensorialJarabeSimple(string lote)
         {
-            return new BloqueJarabeSimpleModel
+            return new BloqueLotesPrincipalesModel
             {
                 TituloBloque = "Resultados de Análisis Sensorial del Jarabe Simple",
                 EncabezadosSku = new List<string> {
             "SKU QUEJA", "ANTERIOR", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "RESULTADO PANEL"
         },
-                Registros = new List<RegistroJarabeSimple>
+                Registros = new List<RegistroLotesPrincipales>
         {
           /*  new() { DescripcionCampo = "LIBERADOR 1:", ValoresPorSku = new() { "María", "Luis", "Karla", "Pepe", "Sofía", "Laura", "Aprobado" } },
             new() { DescripcionCampo = "LIBERADOR 2:", ValoresPorSku = new() { "José", "Ana", "Miguel", "Elena", "Mario", "Beatriz", "Aprobado" } },
@@ -226,7 +194,7 @@ namespace dashboardQ40.Services
         }
 
 
-        public static BloqueJarabeSimpleModel ObtenerJarabeTerminado(
+        public static BloqueLotesPrincipalesModel ObtenerJarabeTerminado(
    List<TrazabilidadNode> trazabilidadNodos,
    long batchPadre,
    TimeSpan horaQueja, BatchInfo batchInfoJT)
@@ -237,7 +205,7 @@ namespace dashboardQ40.Services
 
             // 1. Obtener nodos de jarabe Terminado ordenados por hora
             var nodosJarabeTerminado = trazabilidadNodos
-                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains("JARABE TERM"))
+                .Where(n => n.ManufacturingFamily.ToUpper().Contains("F003")) // jarabe terminado
                 .OrderBy(n => n.StartDate)
                 .ToList();
 
@@ -294,16 +262,9 @@ namespace dashboardQ40.Services
                 "HORA DE TERMINO LLENADO:",
                 "VOLUMEN PREPARADO DE JARABE TERMINADO:",
                 "VOLUMEN UTILIZADO DE JARABE TERMINADO:",
-                "LOTE DE FRUCTOSA:",
-                "LOTE DE AZUCAR:",
-                "NÚMERO DE BATCH",
-                "LOTE DE AGUA TRATADA:",
-                "LOTE DE CONCENTRADOS PARTE 1:",
-                "LOTE DE CONCENTRADOS PARTE 2:",
-                "PARTES LIQUIDAS Y CONSECUTIVAS DE BOLSAS:",
-                "PARTES SECAS Y CONSECUTIVAS DE BOLSAS:"
+                
             };
-            var registros = campos.Select(c => new RegistroJarabeSimple
+            var registros = campos.Select(c => new RegistroLotesPrincipales
             {
                 DescripcionCampo = c,
                 ValoresPorSku = new List<string>()
@@ -319,6 +280,7 @@ namespace dashboardQ40.Services
                     }
                     continue;
                 }
+                /*
                 var hijos = trazabilidadNodos
                     .Where(x => x.BatchPadre == lote.Batch)
                     .ToList();
@@ -341,39 +303,7 @@ namespace dashboardQ40.Services
                 // Asegura 2 posiciones
                 while (concentradosTop2.Count < 2) concentradosTop2.Add("");
 
-                // Inyecta en el reporte
-                /*
-                 * 
-                 *  "LOTE DE JARABE TERMINADO:",
-                "FECHA DE ELABORACIÓN:",
-                "TANQUE:",
-                "CLAVE:",
-                "HORA INICIO DE LLENADO:",
-                "HORA DE TERMINO LLENADO:",
-                "VOLUMEN PREPARADO DE JARABE TERMINADO:",
-                "VOLUMEN UTILIZADO DE JARABE TERMINADO:",
-                "LOTE DE FRUCTOSA:",
-                "LOTE DE AZUCAR:",
-                "NÚMERO DE BATCH",
-                "LOTE DE AGUA TRATADA:",
-                "LOTE DE CONCENTRADOS PARTE 1:",
-                "LOTE DE CONCENTRADOS PARTE 2:",
-                "PARTES LIQUIDAS Y CONSECUTIVAS DE BOLSAS:",
-                "PARTES SECAS Y CONSECUTIVAS DE BOLSAS:"
-
-                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
-                registros[1].ValoresPorSku.Add(lote.workplacename);
-                registros[2].ValoresPorSku.Add(azucar?.ManufacturingReferenceName ?? "");
-                registros[3].ValoresPorSku.Add(azucar?.BatchName ?? "");
-                registros[4].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm"));
-                registros[5].ValoresPorSku.Add(lote.bcquantity.ToString());
-                registros[6].ValoresPorSku.Add(lote.consumedquantity.ToString());
-                registros[7].ValoresPorSku.Add(""); // falta traer un dato extra de lote,
-                registros[8].ValoresPorSku.Add(aguaTratada?.BatchName ?? "");       // LOTE DE AGUA TRATADA
-                registros[9].ValoresPorSku.Add(materialFiltrante?.BatchName ?? ""); // LOTE DEL MATERIAL FILTRANTE
-                registros[10].ValoresPorSku.Add(filtroBolsa?.BatchName ?? "");      // LOTE DE FILTRO BOLSA
-
-                 */
+               */
 
                 registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
                 registros[1].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm"));
@@ -382,87 +312,256 @@ namespace dashboardQ40.Services
                 registros[4].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm") ?? "");
                 registros[5].ValoresPorSku.Add(lote.EndDate.ToString("dd/MM/yyyy HH:mm") ?? "");
                 registros[6].ValoresPorSku.Add(lote.bcquantity.ToString());
-                registros[7].ValoresPorSku.Add(lote.consumedquantity.ToString());       
-                registros[8].ValoresPorSku.Add(fructuosa?.BatchName.ToString() ?? ""); //Fructuosa
-                registros[9].ValoresPorSku.Add(azucar?.BatchName.ToString() ?? "");      // azucar
+                registros[7].ValoresPorSku.Add(lote.consumedquantity.ToString());
 
-                registros[10].ValoresPorSku.Add(jarabesimple?.BatchName.ToString() ?? ""); //jarabeActivo simple
-                registros[11].ValoresPorSku.Add(aguaTratada?.BatchName.ToString() ?? "");
-                registros[12].ValoresPorSku.Add(concentradosTop2[0]); // LOTE DE CONCENTRADOS PARTE 1
-                registros[13].ValoresPorSku.Add(concentradosTop2[1]); // LOTE DE CONCENTRADOS PARTE 2
-                registros[14].ValoresPorSku.Add("");
-                registros[15].ValoresPorSku.Add("");
+                var hijos = trazabilidadNodos
+               .Where(x => x.BatchPadre == lote.Batch)
+               .ToList();
+
+                foreach (var hijo in hijos)
+                {
+                    // Crea una fila nueva por cada hijo
+                    var registroHijo = new RegistroLotesPrincipales
+                    {
+                        // puedes poner texto libre o el nombre del hijo
+                        DescripcionCampo = "LOTE DE " + hijo.ManufacturingReferenceName ?? "",
+                        ValoresPorSku = new List<string> { hijo.BatchIdentifier + " - " + hijo.BatchName ?? "" }
+                    };
+
+                    registros.Add(registroHijo);
+                }
             }
 
 
-            return new BloqueJarabeSimpleModel
+            return new BloqueLotesPrincipalesModel
             {
                 TituloBloque = "JARABE TERMINADO (NÚM. BATCH)",
                 EncabezadosSku = encabezados,
                 Registros = registros
             };
         }
-        /*
-        public static BloqueJarabeSimpleModel ObtenerJarabeTerminado(string lote)
+
+        public static BloqueLotesPrincipalesModel ObtenerTratamientodeAgua(
+   List<TrazabilidadNode> trazabilidadNodos,
+   long batchPadre,
+   TimeSpan horaQueja, BatchInfo batchInfoJT)
         {
-            return new BloqueJarabeSimpleModel
+            var nodoPadre = trazabilidadNodos.FirstOrDefault(x => x.Batch == batchPadre);
+            DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
+            DateTime fechaHoraQueja = fechaProduccion + horaQueja;
+
+            var nodos = trazabilidadNodos
+                .Where(n => n.ManufacturingFamily.ToUpper().Contains("F014")) // agua tratada
+                .OrderBy(n => n.StartDate)
+                .ToList();
+
+            // 2. Buscar el que estaba activo a la hora de la queja
+            var nodoActivo = nodos
+                .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
+
+
+            // 3. Agregar activo + 4 anteriores
+            var lotesSeleccionados = new List<TrazabilidadNode>();
+            if (nodoActivo != null)
             {
-                TituloBloque = "Jarabe Terminado (Núm. Batch)",
-                EncabezadosSku = new List<string> { "SKU QUEJA", "ANTERIOR", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO" },
-                Registros = new List<RegistroJarabeSimple>
-        {
-            new() { DescripcionCampo = "LOTE DE JARABE TERMINADO:", ValoresPorSku = new() { "JT001", "JT000", "JT002", "JT003", "JT004", "JT005" } },
-            new() { DescripcionCampo = "FECHA DE ELABORACIÓN:", ValoresPorSku = new() { "10/10/24", "09/10/24", "11/10/24", "12/10/24", "13/10/24", "14/10/24" } },
-            new() { DescripcionCampo = "TANQUE:", ValoresPorSku = new() { "T-01", "T-02", "T-03", "T-04", "T-05", "T-06" } },
-            new() { DescripcionCampo = "CLAVE:", ValoresPorSku = new() { "CL-01", "CL-02", "CL-03", "CL-04", "CL-05", "CL-06" } },
-            new() { DescripcionCampo = "HORA INICIO DE LLENADO:", ValoresPorSku = new() { "08:00", "07:45", "08:15", "08:10", "08:05", "07:55" } },
-            new() { DescripcionCampo = "HORA DE TERMINO LLENADO:", ValoresPorSku = new() { "09:00", "08:30", "09:10", "09:00", "08:55", "08:45" } },
-            new() { DescripcionCampo = "VOLUMEN PREPARADO DE JARABE TERMINADO:", ValoresPorSku = new() { "1,000 L", "950 L", "1,100 L", "1,050 L", "1,000 L", "990 L" } },
-            new() { DescripcionCampo = "VOLUMEN UTILIZADO DE JARABE TERMINADO:", ValoresPorSku = new() { "950 L", "900 L", "1,050 L", "1,000 L", "980 L", "960 L" } },
-            new() { DescripcionCampo = "LOTE DE FRUCTOSA:", ValoresPorSku = new() { "F001", "F002", "F003", "F004", "F005", "F006" } },
-            new() { DescripcionCampo = "LOTE DE AZUCAR:", ValoresPorSku = new() { "AZ001", "AZ002", "AZ003", "AZ004", "AZ005", "AZ006" } },
-            new() { DescripcionCampo = "NÚMERO DE BATCH:", ValoresPorSku = new() { "B001", "B002", "B003", "B004", "B005", "B006" } },
-            new() { DescripcionCampo = "LOTE DE AGUA TRATADA:", ValoresPorSku = new() { "AG001", "AG002", "AG003", "AG004", "AG005", "AG006" } },
-            new() { DescripcionCampo = "LOTE DE CONCENTRADOS PARTE 1:", ValoresPorSku = new() { "C1-01", "C1-02", "C1-03", "C1-04", "C1-05", "C1-06" } },
-            new() { DescripcionCampo = "LOTE DE CONCENTRADOS PARTE 2:", ValoresPorSku = new() { "C2-01", "C2-02", "C2-03", "C2-04", "C2-05", "C2-06" } },
-            new() { DescripcionCampo = "PARTES LIQUIDAS Y CONSECUTIVAS DE BOLSAS:", ValoresPorSku = new() { "PLB-01", "PLB-02", "PLB-03", "PLB-04", "PLB-05", "PLB-06" } },
-            new() { DescripcionCampo = "PARTES SECAS Y CONSECUTIVAS DE BOLSAS:", ValoresPorSku = new() { "PSB-01", "PSB-02", "PSB-03", "PSB-04", "PSB-05", "PSB-06" } },
+                lotesSeleccionados.Add(nodoActivo);
+                var anteriores = nodos
+                    .Where(n => n.EndDate < nodoActivo.StartDate)
+                    .OrderByDescending(n => n.EndDate)
+                    .Take(4)
+                    .ToList();
+                lotesSeleccionados.AddRange(anteriores);
+            }
+            else
+            {
+                lotesSeleccionados = nodos
+                    .Where(n => n.EndDate < fechaHoraQueja)
+                    .OrderByDescending(n => n.EndDate)
+                    .Take(5)
+                    .ToList();
+            }
+
+            // 4. Columnas: SKU QUEJA, ANTERIOR, OTRO INVOLUCRADO, ...
+            int totalColumnas = Math.Max(2, lotesSeleccionados.Count);
+
+            // Rellenar con nulls si hay menos de 2
+            while (lotesSeleccionados.Count < totalColumnas)
+            {
+                lotesSeleccionados.Add(null);
+            }
+
+            var encabezados = new List<string>();
+            for (int i = 0; i < totalColumnas; i++)
+            {
+                encabezados.Add(i == 0 ? "SKU QUEJA" : "ANTERIOR");
+            }
+          
+            // 5. Inicializar registros por fila
+            var campos = new List<string>
+            {
+                "LOTE DE TRATAMIENTO DE AGUA:",               
+            };
+            var registros = campos.Select(c => new RegistroLotesPrincipales
+            {
+                DescripcionCampo = c,
+                ValoresPorSku = new List<string>()
+            }).ToList();
+            // 6. Llenar los valores por columna (por lote)
+            foreach (var lote in lotesSeleccionados)
+            {
+                if (lote == null)
+                {   // Agrega solo "" en todas las filas
+                    foreach (var fila in registros)
+                    {
+                        fila.ValoresPorSku.Add("");
+                    }
+                    continue;
+                }               
+
+                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
+
+                var hijos = trazabilidadNodos
+               .Where(x => x.BatchPadre == lote.Batch)
+               .ToList();
+
+                foreach (var hijo in hijos)
+                {
+                    // Crea una fila nueva por cada hijo
+                    var registroHijo = new RegistroLotesPrincipales
+                    {
+                        // puedes poner texto libre o el nombre del hijo
+                        DescripcionCampo = "LOTE DE " + hijo.ManufacturingReferenceName ?? "",
+                        ValoresPorSku = new List<string> { hijo.BatchIdentifier + " - " + hijo.BatchName ?? "" }
+                    };
+
+                    registros.Add(registroHijo);
+                }
+
+            }
+                
+
+            return new BloqueLotesPrincipalesModel
+            {
+                TituloBloque = "TRATAMIENDO DE AGUA (NÚM. BATCH)",
+                EncabezadosSku = encabezados,
+                Registros = registros
+            };
         }
+
+        public static BloqueLotesPrincipalesModel ObtenerSaneo(
+   List<TrazabilidadNode> trazabilidadNodos,
+   long batchPadre,
+   TimeSpan horaQueja, BatchInfo batchInfoJT)
+        {
+            var nodoPadre = trazabilidadNodos.FirstOrDefault(x => x.Batch == batchPadre);
+            DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
+            DateTime fechaHoraQueja = fechaProduccion + horaQueja;
+
+            var nodos = trazabilidadNodos
+                .Where(n => n.ManufacturingFamily.ToUpper().Contains("F015")) // saneos
+                .OrderBy(n => n.StartDate)
+                .ToList();
+
+            // 2. Buscar el que estaba activo a la hora de la queja
+            var nodoActivo = nodos
+                .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
+
+
+            // 3. Agregar activo + 4 anteriores
+            var lotesSeleccionados = new List<TrazabilidadNode>();
+            if (nodoActivo != null)
+            {
+                lotesSeleccionados.Add(nodoActivo);
+                var anteriores = nodos
+                    .Where(n => n.EndDate < nodoActivo.StartDate)
+                    .OrderByDescending(n => n.EndDate)
+                    .Take(4)
+                    .ToList();
+                lotesSeleccionados.AddRange(anteriores);
+            }
+            else
+            {
+                lotesSeleccionados = nodos
+                    .Where(n => n.EndDate < fechaHoraQueja)
+                    .OrderByDescending(n => n.EndDate)
+                    .Take(5)
+                    .ToList();
+            }
+
+            // 4. Columnas: SKU QUEJA, ANTERIOR, OTRO INVOLUCRADO, ...
+            int totalColumnas = Math.Max(2, lotesSeleccionados.Count);
+
+            // Rellenar con nulls si hay menos de 2
+            while (lotesSeleccionados.Count < totalColumnas)
+            {
+                lotesSeleccionados.Add(null);
+            }
+
+            var encabezados = new List<string>();
+            for (int i = 0; i < totalColumnas; i++)
+            {
+                encabezados.Add(i == 0 ? "SKU QUEJA" : "ANTERIOR");
+            }
+
+            // 5. Inicializar registros por fila
+            var campos = new List<string>
+            {   
+                "LOTE DE SANEO:",
+               
+            };
+            var registros = campos.Select(c => new RegistroLotesPrincipales
+            {
+                DescripcionCampo = c,
+                ValoresPorSku = new List<string>()
+            }).ToList();
+            // 6. Llenar los valores por columna (por lote)
+            foreach (var lote in lotesSeleccionados)
+            {
+                if (lote == null)
+                {   // Agrega solo "" en todas las filas
+                    foreach (var fila in registros)
+                    {
+                        fila.ValoresPorSku.Add("");
+                    }
+                    continue;
+                }
+             
+                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
+                var hijos = trazabilidadNodos
+                 .Where(x => x.BatchPadre == lote.Batch)
+                 .ToList();
+
+                foreach (var hijo in hijos)
+                {
+                    // Crea una fila nueva por cada hijo
+                    var registroHijo = new RegistroLotesPrincipales
+                    {
+                        // puedes poner texto libre o el nombre del hijo
+                        DescripcionCampo = "LOTE DE " + hijo.ManufacturingReferenceName ?? "",
+                        ValoresPorSku = new List<string> { hijo.BatchIdentifier + " - " + hijo.BatchName ?? "" }
+                    };
+
+                    registros.Add(registroHijo);
+                }
+            }
+
+
+            return new BloqueLotesPrincipalesModel
+            {
+                TituloBloque = "TRATAMIENDO DE AGUA (NÚM. BATCH)",
+                EncabezadosSku = encabezados,
+                Registros = registros
             };
         }
         
 
-        public static BloqueJarabeSimpleModel ObtenerAnalisisFisicoquimicoJarabeTerminado(string lote)
+        public static BloqueLotesPrincipalesModel ObtenerAnalisisSensorialJarabeTerminado(string lote)
         {
-            return new BloqueJarabeSimpleModel
-            {
-                TituloBloque = "Análisis Fisicoquímicos de Jarabe Terminado",
-                EncabezadosSku = new List<string> { "SKU QUEJA", "ANTERIOR", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO" },
-                Registros = new List<RegistroJarabeSimple>
-        {
-            new() { DescripcionCampo = "BRIX:", ValoresPorSku = new() { "10.5", "10.6", "10.4", "10.7", "10.3", "10.2" } },
-            new() { DescripcionCampo = "P1:", ValoresPorSku = new() { "2.0", "2.1", "2.0", "2.2", "2.0", "2.1" } },
-            new() { DescripcionCampo = "ACIDEZ:", ValoresPorSku = new() { "0.15", "0.16", "0.14", "0.15", "0.16", "0.15" } },
-            new() { DescripcionCampo = "PH:", ValoresPorSku = new() { "3.5", "3.6", "3.4", "3.5", "3.6", "3.5" } },
-            new() { DescripcionCampo = "TEMPERATURA:", ValoresPorSku = new() { "25°C", "26°C", "25°C", "27°C", "24°C", "25°C" } },
-            new() { DescripcionCampo = "APARIENCIA:", ValoresPorSku = new() { "Transparente", "Transparente", "Ligeramente turbio", "Transparente", "Transparente", "Transparente" } },
-            new() { DescripcionCampo = "OLOR:", ValoresPorSku = new() { "Normal", "Normal", "Normal", "Leve", "Normal", "Normal" } },
-            new() { DescripcionCampo = "SABOR:", ValoresPorSku = new() { "Correcto", "Correcto", "Correcto", "Correcto", "Leve variación", "Correcto" } },
-            new() { DescripcionCampo = "LOTE DE AGUA TRATADA:", ValoresPorSku = new() { "AG-JT-01", "AG-JT-02", "AG-JT-03", "AG-JT-04", "AG-JT-05", "AG-JT-06" } },
-            new() { DescripcionCampo = "ANALISTA ENC. JARABES:", ValoresPorSku = new() { "Juan P.", "Ana R.", "Luis G.", "Marta C.", "Carlos S.", "Beatriz Z." } },
-            new() { DescripcionCampo = "SUP. CALIDAD:", ValoresPorSku = new() { "Ricardo M.", "Laura D.", "Luis H.", "Carmen T.", "Silvia V.", "Alejandro B." } }
-        }
-            };
-        }
-        */
-
-        public static BloqueJarabeSimpleModel ObtenerAnalisisSensorialJarabeTerminado(string lote)
-        {
-            return new BloqueJarabeSimpleModel
+            return new BloqueLotesPrincipalesModel
             {
                 TituloBloque = "Resultados de Análisis Sensorial del Jarabe Terminado",
                 EncabezadosSku = new List<string> { "SKU QUEJA", "ANTERIOR", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "OTRO INVOLUCRADO", "RESULTADO PANEL" },
-                Registros = new List<RegistroJarabeSimple>
+                Registros = new List<RegistroLotesPrincipales>
         {
            /* new() { DescripcionCampo = "LIBERADOR 1:", ValoresPorSku = new() { "Juan P.", "Luis G.", "Ana R.", "Carlos S.", "Marta C.", "✅" } },
             new() { DescripcionCampo = "LIBERADOR 2:", ValoresPorSku = new() { "Laura D.", "Beatriz Z.", "Ricardo M.", "Silvia V.", "Alejandro B.", "✅" } },
@@ -613,14 +712,15 @@ namespace dashboardQ40.Services
                     }
                 }
                 return resultados;
-            }
+            }   
         }
 
 
-        public static BloqueJarabeSimpleModel ObtenerJarabeSimpleConContacto(
-   List<TrazabilidadNode> trazabilidadNodos,
-   long batchPadre,
-   TimeSpan horaQueja)
+        public static (BloqueLotesPrincipalesModel Modelo, TrazabilidadNode? JarabeActivo) ObtenerJarabeSimpleConContacto(
+        List<TrazabilidadNode> trazabilidadNodos,
+        long batchPadre,
+        TimeSpan horaQueja)
+
         {
             var nodoPadre = trazabilidadNodos.FirstOrDefault(x => x.Batch == batchPadre);
             DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
@@ -628,7 +728,7 @@ namespace dashboardQ40.Services
 
             // 1. Obtener nodos de jarabe simple ordenados por hora
             var nodosJarabeSimple = trazabilidadNodos
-                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains("JARABE SIMPLE"))
+                .Where(n => n.ManufacturingFamily.ToUpper().Contains("F002")) // jarabe simple
                 .OrderBy(n => n.StartDate)
                 .ToList();
 
@@ -677,19 +777,15 @@ namespace dashboardQ40.Services
     {
         "LOTE DE JARABE SIMPLE (NÚM. BATCH):",
         "# TANQUE DONDE SE ALMACENÓ EL JARABE SIMPLE:",
-        "TIPO DE AZÚCAR UTILIZADA:",
-        "LOTE DE AZÚCAR:",
         "FECHA DE ELABORACIÓN DEL JARABE SIMPLE:",
         "VOLUMEN PREPARADO DE JARABE SIMPLE:",
         "VOLUMEN UTILIZADO DE JARABE SIMPLE:",
         "# TANQUE DISOLUTOR DONDE SE PREPARÓ EL JARABE SIMPLE:",
-        "LOTE DE AGUA TRATADA UTILIZADA JAR. SIMPLE:",
-        "LOTE DEL MATERIAL FILTRANTE (SOKALFLOC, etc):",
-        "LOTE DE FILTRO BOLSA UTILIZADO:",
-        "VOLUMEN PREPARADO:"
+       
     };
+         
 
-            var registros = campos.Select(c => new RegistroJarabeSimple
+            var registros = campos.Select(c => new RegistroLotesPrincipales
             {
                 DescripcionCampo = c,
                 ValoresPorSku = new List<string>()
@@ -707,42 +803,43 @@ namespace dashboardQ40.Services
                     }
                     continue;
                 }
+             
+                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
+                registros[1].ValoresPorSku.Add(lote.workplacename);                
+                registros[2].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm"));
+                registros[3].ValoresPorSku.Add(lote.bcquantity.ToString());
+                registros[4].ValoresPorSku.Add(lote.consumedquantity.ToString());
+                registros[5].ValoresPorSku.Add(""); // falta traer un dato extra de lote,
 
                 var hijos = trazabilidadNodos
-                    .Where(x => x.BatchPadre == lote.Batch)
-                    .ToList();
+                .Where(x => x.BatchPadre == lote.Batch)
+                .ToList();
 
-                var azucar = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("AZUCAR"));
-                var aguaTratada = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("AGUA TRATADA"));
-                var materialFiltrante = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("FLOC")
-                    || h.ManufacturingReferenceName.ToUpper().Contains("POLIACRILAMIDA")
-                    || h.ManufacturingReferenceName.ToUpper().Contains("CELATOM")
-                    || h.ManufacturingReferenceName.ToUpper().Contains("ARBOCEL"));
-                var filtroBolsa = hijos.FirstOrDefault(h => h.ManufacturingReferenceName.ToUpper().Contains("FILTRO"));
+                foreach (var hijo in hijos)
+                {
+                    // Crea una fila nueva por cada hijo
+                    var registroHijo = new RegistroLotesPrincipales
+                    {
+                        // puedes poner texto libre o el nombre del hijo
+                        DescripcionCampo = "LOTE DE " + hijo.ManufacturingReferenceName ?? "",
+                        ValoresPorSku = new List<string> { hijo.BatchIdentifier + " - " + hijo.BatchName ?? "" }
+                    };
 
-
-                registros[0].ValoresPorSku.Add(lote.BatchName ?? "");
-                registros[1].ValoresPorSku.Add(lote.workplacename);
-                registros[2].ValoresPorSku.Add(azucar?.ManufacturingReferenceName ?? "");
-                registros[3].ValoresPorSku.Add(azucar?.BatchName ?? "");
-                registros[4].ValoresPorSku.Add(lote.StartDate.ToString("dd/MM/yyyy HH:mm"));
-                registros[5].ValoresPorSku.Add(lote.bcquantity.ToString());
-                registros[6].ValoresPorSku.Add(lote.consumedquantity.ToString());
-                registros[7].ValoresPorSku.Add(""); // falta traer un dato extra de lote,
-                registros[8].ValoresPorSku.Add(aguaTratada?.BatchName ?? "");       // LOTE DE AGUA TRATADA
-                registros[9].ValoresPorSku.Add(materialFiltrante?.BatchName ?? ""); // LOTE DEL MATERIAL FILTRANTE
-                registros[10].ValoresPorSku.Add(filtroBolsa?.BatchName ?? "");      // LOTE DE FILTRO BOLSA
-
-                registros[11].ValoresPorSku.Add("");
+                    registros.Add(registroHijo);
+                }
             }
+           
 
-
-            return new BloqueJarabeSimpleModel
+            var modelo = new BloqueLotesPrincipalesModel
             {
                 TituloBloque = "LOTE DE JARABE SIMPLE (NÚM. BATCH). MENCIONAR LOTE CORRESPONDIENTE A LA MUESTRA Y 2 ANTERIORES QUE PUDIERON HABER ESTADO EN CONTACTO",
                 EncabezadosSku = encabezados,
                 Registros = registros
             };
+
+            // Devuelve la tupla (modelo, jarabeActivo)
+            return (modelo, jarabeActivo);
+
         }
 
         private static TrazabilidadNode BuscarHijoPorPalabra(List<TrazabilidadNode> hijos, string palabra)
@@ -765,9 +862,9 @@ namespace dashboardQ40.Services
             DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
             DateTime fechaHoraQueja = fechaProduccion + horaQueja;
 
-            // 1. Lotes de jarabe simple bb 
+         
             var nodosJarabeSimple = trazabilidadNodos
-                .Where(n => n.ManufacturingReferenceName.ToUpper().Contains(bloque))
+                .Where(n => n.ManufacturingFamily.ToUpper().Contains(bloque)) 
                 .OrderBy(n => n.StartDate)
                 .ToList();
             if (nodosJarabeSimple.Count() > 0)

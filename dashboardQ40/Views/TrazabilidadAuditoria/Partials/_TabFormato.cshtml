@@ -293,105 +293,22 @@
             <div class="accordion-body">
 
                 <!-- 1. General -->
-                <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="2">@Localizer["Water_GeneralInfo_Header"]</th></tr>
-                    <tr><td>@Localizer["Water_RecirculatedDisinfectantLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_PolyelectrolyteLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_ActivatedCarbonLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_LimeLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_HCLLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_H2SO4Lot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_SilicaSandLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_DemineralResinLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_DechlorResinLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_PolishingCartridgeLot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_CleaningsInfo"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_SystemSanitationInfo"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_SoftWaterContactTanksFillingLog"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_TankRetentionTime"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_LoadsInShift"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_AvgVolumePerLoad"]</td><td></td></tr>
-                    <tr><td>@Localizer["Water_TotalLitersInShift"]</td><td></td></tr>
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.BloqueAguaTratada)
 
                 <!-- 2. Fisicoquímicos -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">@Localizer["Water_PhysChem_Header"]</th></tr>
-                    <tr class="bg-header">
-                        <th>@Localizer["Common_Parameter"]</th>
-                        <th>@Localizer["Common_RunStart"]</th>
-                        <th>@Localizer["Common_RunMid"]</th>
-                        <th>@Localizer["Common_RunEnd"]</th>
-                        <th>@Localizer["Water_WaterType"]</th>
-                    </tr>
-                    <tr><td>pH</td><td></td><td></td><td></td><td>@Localizer["Water_Type_TreatedChlorited"]</td></tr>
-                    <tr><td>@Localizer["Common_Conductivity"]</td><td></td><td></td><td></td><td>@Localizer["Water_Type_Softened"]</td></tr>
-                    <tr><td>@Localizer["Common_Chlorine"]</td><td></td><td></td><td></td><td>@Localizer["Water_Type_Recovered"]</td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td>@Localizer["Water_Type_Raw"]</td></tr>
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloqueaguatratadajarabesimple)
 
                 <!-- 3. Agua tratada usada en jarabe simple -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">@Localizer["Water_TreatedForSimpleSyrup_Header"]</th></tr>
-                    <tr class="bg-header">
-                        <th>@Localizer["Common_Parameter"]</th>
-                        <th>@Localizer["Common_RunStart"]</th>
-                        <th>@Localizer["Common_RunMid"]</th>
-                        <th>@Localizer["Common_RunEnd"]</th>
-                        <th>@Localizer["Water_TreatedWaterLot"]</th>
-                    </tr>
-                    <tr><td>@Localizer["Common_Aluminum"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Chlorides"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Sulfates"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td></td></tr>
-
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloqueaguatratadajarabesimple)
 
                 <!-- 4. Agua tratada usada en jarabe termido -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">@Localizer["Water_TreatedForFinishedSyrup_Header"]</th></tr>
-                    <tr class="bg-header">
-                        <th>@Localizer["Common_Parameter"]</th>
-                        <th>@Localizer["Common_RunStart"]</th>
-                        <th>@Localizer["Common_RunMid"]</th>
-                        <th>@Localizer["Common_RunEnd"]</th>
-                        <th>@Localizer["Water_TreatedWaterLot"]</th>
-                    </tr>
-                    <tr><td>@Localizer["Common_Aluminum"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Chlorides"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Sulfates"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td></td></tr>
-
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloqueaguatratadajarabeterminado)
 
                 <!-- 5. PT + sin recuperada -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="5">@Localizer["Water_TreatedForPT_NoRecovered_Header"]</th></tr>
-                    <tr class="bg-header">
-                        <th>@Localizer["Common_Parameter"]</th>
-                        <th>@Localizer["Common_RunStart"]</th>
-                        <th>@Localizer["Common_RunMid"]</th>
-                        <th>@Localizer["Common_RunEnd"]</th>
-                        <th>@Localizer["Water_TreatedWaterLot"]</th>
-                    </tr>
-                    <tr><td>@Localizer["Common_Aluminum"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Chlorides"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Sulfates"]</td><td></td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td><td></td></tr>
-
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloqueaguatratadacruda)
 
                 <!-- 6. Agua suave sin queja -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">@Localizer["Water_Soft_NoComplaint_Header"]</th></tr>
-                    <tr class="bg-header">
-                        <th>@Localizer["Common_Lot"]</th>
-                        <th>@Localizer["Common_RunStart"]</th>
-                        <th>@Localizer["Common_RunMid"]</th>
-                        <th>@Localizer["Common_RunEnd"]</th>
-                    </tr>
-                    <tr><td></td><td></td><td></td><td></td></tr>
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloqueaguatratadasuave)
 
                 <!-- 7. Sensorial tratada -->
                 <table class="tabla-trazabilidad mt-4">
@@ -411,45 +328,6 @@
     </div>
 </div>
 
-<!-- Producción -->
-<div class="accordion" id="accordion-Produccion">
-    <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProduccion">
-                <h4 class="mb-0">@Localizer["Production_Header"]</h4>
-            </button>
-        </h2>
-        <div id="collapseProduccion" class="accordion-collapse collapse show">
-            <div class="accordion-body">
-
-                <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="2">@Localizer["Production_Info_Header"]</th></tr>
-                    <tr><td>SKU</td><td></td></tr>
-                    <tr><td>@Localizer["Production_Productme"]</td><td></td></tr>
-                    <tr><td>@Localizer["Production_Date"]</td><td></td></tr>
-                    <tr><td>@Localizer["Production_Line"]</td><td></td></tr>
-                    <tr><td>@Localizer["Production_Batch"]</td><td></td></tr>
-                    <tr><td>@Localizer["Production_Shift"]</td><td></td></tr>
-                    <tr><td>@Localizer["Production_Responsible"]</td><td></td></tr>
-                    <tr><td>@Localizer["Production_QualitySupervisor"]</td><td></td></tr>
-
-                </table>
-
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">@Localizer["Production_Log_Header"]</th></tr>
-                    <tr class="bg-header">
-                        <th>@Localizer["Common_StartTime"]</th>
-                        <th>@Localizer["Common_EndTime"]</th>
-                        <th>@Localizer["Production_UnitsProduced"]</th>
-                        <th>@Localizer["Production_UnitsRejected"]</th>
-                    </tr>
-                    <tr><td></td><td></td><td></td><td></td></tr>
-                </table>
-
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Materias Primas (sección adiciol fija) -->
 <div class="accordion" id="accordion-MateriasPrimas">
@@ -463,27 +341,7 @@
             <div class="accordion-body">
 
                 <!-- Azúcar -->
-                <table class="tabla-trazabilidad">
-                    <tr class="bg-header"><th colspan="4">@Localizer["Sugar_Header"]</th></tr>
-                    <tr class="bg-header">
-                        <th></th>
-                        <th>@Localizer["Common_ComplaintSKU"]</th>
-                        <th>@Localizer["Common_Previous"]</th>
-                        <th>@Localizer["Common_OtherInvolved"]</th>
-                    </tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Sugar_Mill"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>Brix</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Moisture"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>% @Localizer["Common_Ash"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Sugar_FlocPotential"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Color"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Sediment"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_TurbidityICU"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Conductivity"]</td><td></td><td></td><td></td></tr>
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueAzucar)
 
                 <!-- Sensorial Azúcar -->
                 <table class="tabla-trazabilidad mt-4">
@@ -503,32 +361,10 @@
                 </table>
 
                 <!-- Fructosa Silo 1 -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo1_Header"]</th></tr>
-                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Odor"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Taste"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>pH</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td></tr>
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueFructuosa1)
 
                 <!-- CO2 -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">CO2</th></tr>
-                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td>CO141024-210</td><td>CO121024-209</td><td>CO111024-208</td></tr>
-                    <tr><td>@Localizer["CO2_WaterCO2Attributes"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["CO2_WaterAttributes"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["CO2_AcidulatedCO2"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["CO2_SnowAttributes"]</td><td></td><td></td><td></td></tr>
-
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueCO2)
 
                 <!-- Sensorial CO2 -->
                 <table class="tabla-trazabilidad mt-4">
@@ -542,21 +378,7 @@
                 </table>
 
                 <!-- Fructosa Silo 2 -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo2_Header"]</th></tr>
-                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Odor"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Taste"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>pH</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td></tr>
-
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueFructuosa2)
 
                 <!-- Sensorial Fructosa Silo 2 -->
                 <table class="tabla-trazabilidad mt-4">
@@ -571,21 +393,7 @@
                 </table>
 
                 <!-- Fructosa Silo 3 + sensorial (idéntico patrón de claves) -->
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header"><th colspan="4">@Localizer["Fructose_Silo3_Header"]</th></tr>
-                    <tr class="bg-header"><th></th><th>@Localizer["Common_ComplaintSKU"]</th><th>@Localizer["Common_Previous"]</th><th>@Localizer["Common_OtherInvolved"]</th></tr>
-                    <tr><td>@Localizer["Common_Lot"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_ReceptionDate"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Fructose_DischargeSilo"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Fructose_HFSolids"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Appearance"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Odor"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Taste"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Temperature"]</td><td></td><td></td><td></td></tr>
-                    <tr><td>pH</td><td></td><td></td><td></td></tr>
-                    <tr><td>@Localizer["Common_Turbidity"]</td><td></td><td></td><td></td></tr>
-
-                </table>
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.BloqueFructuosa3)
 
                 <table class="tabla-trazabilidad mt-4">
                     <tr class="bg-header"><th colspan="5">@Localizer["Fructose_Silo3_Sensory_Header"]</th></tr>
@@ -597,6 +405,8 @@
                     <tr><td>@Localizer["Common_Reference"]</td><td></td><td></td><td></td><td></td></tr>
 
                 </table>
+
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloquenitrogeno)
 
             </div>
         </div>
@@ -614,25 +424,9 @@
         <div id="collapseLimpieza" class="accordion-collapse collapse show">
             <div class="accordion-body">
 
-                <table class="tabla-trazabilidad mt-4">
-                    <tr class="bg-header">
-                        <th colspan="2">@Localizer["Cleaning_GeneralComplaintSKU"]</th>
-                        <th colspan="2">@Localizer["Cleaning_PhysChem_Line"]</th>
-                        <th colspan="2">@Localizer["Cleaning_PhysChem_FinishedSyrup"]</th>
-                        <th colspan="2">@Localizer["Cleaning_PhysChem_SimpleSyrupTank"]</th>
-                    </tr>
-                    <tr><td>@Localizer["Cleaning_LineDetergent"]</td><td></td><td>@Localizer["Common_Date"]</td><td></td><td>@Localizer["Common_Date"]</td><td></td><td>@Localizer["Common_Date"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_SimpleTankDetergent"]</td><td></td><td>@Localizer["Common_Line"]</td><td></td><td>@Localizer["Common_Tank"]</td><td></td><td>@Localizer["Common_Silo"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_FinishedTankDetergent"]</td><td></td><td>@Localizer["Common_Lot"]</td><td></td><td>@Localizer["Common_Lot"]</td><td></td><td>@Localizer["Common_Lot"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_LineSanitizer"]</td><td></td><td>@Localizer["Common_Detergent"]</td><td></td><td>@Localizer["Common_Detergent"]</td><td></td><td>@Localizer["Common_Detergent"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_SimpleTankSanitizer"]</td><td></td><td>@Localizer["Common_Sanitizer"]</td><td></td><td>@Localizer["Common_Sanitizer"]</td><td>@Localizer["Common_HotWater"]</td><td>@Localizer["Common_Sanitizer"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_FinishedTankSanitizer"]</td><td>@Localizer["Common_HotWater"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td>@Localizer["Cleaning_3Steps"] / @Localizer["Cleaning_5Steps"]</td><td>@Localizer["Cleaning_SanitationType"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_SurfaceFoam"]</td><td></td><td>@Localizer["Common_Temperature"]</td><td></td><td>@Localizer["Common_Temperature"]</td><td></td><td>@Localizer["Common_Temperature"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_ExteriorSanitizer"]</td><td></td><td>@Localizer["Common_Concentration"]</td><td></td><td>@Localizer["Common_Concentration"]</td><td></td><td>@Localizer["Common_Concentration"]</td><td></td></tr>
-                    <tr><td>@Localizer["Cleaning_TreatedWaterLot"]</td><td></td><td>@Localizer["Cleaning_RecirculationTime"]</td><td></td><td>@Localizer["Cleaning_RecirculationTime"]</td><td></td><td>@Localizer["Cleaning_RecirculationTime"]</td><td></td></tr>
-
-                </table>
-
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimple.cshtml", Model.Bloquesaneo)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloquesaneojarabesimple)
+                @await Html.PartialAsync("~/Views/TrazabilidadAuditoria/Partials/_F_JarabesLoteJarabeSimpleFisicoquimico.cshtml", Model.Bloquesaneojarabeterminado)
                 <br />
                 <table class="tabla-trazabilidad">
                     <tr class="bg-header"><th colspan="5">@Localizer["Cleaning_Sensory_FinishedSyrupTank_Header"]</th></tr>

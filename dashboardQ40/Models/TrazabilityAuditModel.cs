@@ -16,6 +16,7 @@
         public string UsuarioVobo { get; set; }
         public TimeSpan horaQueja { get; set; }
         public string company { get; set; }
+        public bool simulate { get; set; }
     }
 
     // Models/PersonaReporte.cs
@@ -40,13 +41,13 @@ public class FormatoViewModel
     public BloqueMateriaPrimaModel BloqueMateriaPrima { get; set; }
     public BloqueProductoTerminadoModel BloqueProductoTerminado { get; set; }
     public BloqueEntregaInformacionModel BloqueRegistroTiempo { get; set; }
-    public BloqueJarabeSimpleModel BloqueJarabesLoteJarabeSimple { get; set; }
+    public BloqueLotesPrincipalesModel BloqueJarabesLoteJarabeSimple { get; set; }
 
-    public BloqueJarabeSimpleModel BloqueJarabesLoteJarabeSimpleContacto { get; set; }
-    public BloqueJarabeSimpleModel BloqueAnalisisSensorialJarabeSimple { get; set; }
-    public BloqueJarabeSimpleModel BloqueJarabeTerminado { get; set; }
+    public BloqueLotesPrincipalesModel BloqueJarabesLoteJarabeSimpleContacto { get; set; }
+    public BloqueLotesPrincipalesModel BloqueAnalisisSensorialJarabeSimple { get; set; }
+    public BloqueLotesPrincipalesModel BloqueJarabeTerminado { get; set; }
     public BloqueAnalisisFisicoquimicoModel BloqueAnalisisFisicoquimicoJarabeTerminado { get; set; }
-    public BloqueJarabeSimpleModel BloqueAnalisisSensorialJarabeTerminado { get; set; }
+    public BloqueLotesPrincipalesModel BloqueAnalisisSensorialJarabeTerminado { get; set; }
 
     public List<PruebaLiberacionRow> BloquePruebasLiberacion { get; set; } = new();
     public List<LiberacionSensorialProductoModel> BloqueLiberacionSensorialProducto { get; set; } = new();
@@ -55,6 +56,23 @@ public class FormatoViewModel
 
     public BloqueAnalisisFisicoquimicoModel BloqueAzucar { get; set; }
     public BloqueAnalisisFisicoquimicoModel BloqueFructuosa1 { get; set; }
+    public BloqueLotesPrincipalesModel BloqueAguaTratada { get; set; }
+    public BloqueAnalisisFisicoquimicoModel BloqueFructuosa2 { get; set; }
+    public BloqueAnalisisFisicoquimicoModel BloqueFructuosa3 { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloquenitrogeno { get; set; }
+
+    public BloqueAnalisisFisicoquimicoModel Bloqueaguatratadajarabesimple { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloqueaguatratadajarabeterminado { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloqueaguatratadaproductoterminado { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloqueaguatratadacruda { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloqueaguatratadasuave { get; set; }
+
+    public BloqueLotesPrincipalesModel Bloquesaneo { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloquesaneojarabesimple { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloquesaneojarabeterminado { get; set; }
+    public BloqueAnalisisFisicoquimicoModel Bloqueasaneoproductoterminado { get; set; }
+
+
 
     // ...
 }
@@ -119,17 +137,17 @@ public class BloqueEntregaInformacionModel
 }
 
 
-public class RegistroJarabeSimple
+public class RegistroLotesPrincipales
 {
     public string DescripcionCampo { get; set; } // Por ejemplo: "LOTE DE JARABE SIMPLE"
     public List<string> ValoresPorSku { get; set; } // Columnas: SKU queja, anterior, involucrado, etc.
 }
 
-public class BloqueJarabeSimpleModel
+public class BloqueLotesPrincipalesModel
 {
     public string TituloBloque { get; set; } 
     public List<string> EncabezadosSku { get; set; } // SKU QUEJA, ANTERIOR, OTRO INVOLUCRADO, ...
-    public List<RegistroJarabeSimple> Registros { get; set; } = new();
+    public List<RegistroLotesPrincipales> Registros { get; set; } = new();
 }
 
 

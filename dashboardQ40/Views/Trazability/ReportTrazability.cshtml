@@ -276,34 +276,6 @@ else if (Model.Checklist != null)
     <div class="alert alert-warning">@Localizer["NoChecklistForSelection"]</div>
 }
 
-@if (Model.Trazabilidad != null && Model.Trazabilidad.Rows.Count > 0)
-{
-    <h4>@Localizer["LotsStructure_Header"]</h4>
-    <table class="table table-bordered table-sm">
-        <thead>
-            <tr>
-                <th>@Localizer["Parent"]</th>
-                <th>@Localizer["Child"]</th>
-                <th>@Localizer["Lot"]</th>
-                <th>@Localizer["BatchIdentifier"]</th>
-                <th>@Localizer["Level"]</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (System.Data.DataRow row in Model.Trazabilidad.Rows)
-            {
-                <tr>
-                    <td>@row["Padre"]</td>
-                    <td>@row["Hijo"]</td>
-                    <td>@row["batch"]</td>
-                    <td>@row["batchIdentifier"]</td>
-                    <td>@row["Nivel"]</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
 
 
 

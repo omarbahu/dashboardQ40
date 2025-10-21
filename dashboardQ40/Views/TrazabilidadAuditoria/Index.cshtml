@@ -95,7 +95,7 @@
                         @Localizer["AuditTraceability_RequireRMTraceability_Question"]
                     </label>
                 </div>
-
+                <input type="hidden" name="simulate" id="simulate" value="false" />
                 <div class="text-end">
                     <button type="submit" class="btn btn-success">@Localizer["Common_Save"]</button>
                     <button type="button" class="btn btn-outline-secondary" onclick="regresar()">
@@ -128,6 +128,8 @@
 </div>
 
 @section Scripts {
+    <!-- Incluye SweetAlert2 si no lo tienes aún -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         // Etiquetas (puedes cambiarlas o usar Localizer)
@@ -239,8 +241,26 @@
             document.getElementById("opcionesIniciales").style.display = "block";
         }
 
-        $("#formGuardar").submit(function (e) {
+        $("#formGuardar").submit(async function (e) {
             e.preventDefault();
+
+            const result = await Swal.fire({
+                title: '¿Cómo deseas proceder?',
+                text: 'Puedes guardar el reporte o ejecutar una simulación (no escribirá en la BD).',
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Guardar',
+                denyButtonText: 'Simulación',
+                cancelButtonText: 'Cancelar'
+            });
+
+            // Si canceló, no sigas y asegúrate de ocultar loader si estuviera visible
+            if (result.isDismissed && !result.isConfirmed && !result.isDenied) {
+                detenerAnimacionBloques();
+                $("#global-loader").hide();
+                return;
+            }
 
             const data = {
                 FechaHora: $("#fechaHora").val(),
@@ -253,8 +273,8 @@
                 Revision: $("#revision").val(),
                 UsuarioVobo: $("#usuarioVobo").val(),
                 horaQueja: $("#horaQueja").val(),
-                company: $("#planta").val()
-
+                company: $("#planta").val(),
+                simulate: result.isDenied // Guardar=false, Simulación=true
             };
 
             $("#global-loader").show();
@@ -265,21 +285,49 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
-                success: function (res) {
-                    if (res.success) {
+                success: async function (res) {
+                    detenerAnimacionBloques();
+
+                    if (res && res.success) {
+                        if (data.simulate) {
+                            await Swal.fire({
+                                icon: 'info',
+                                title: 'Simulación realizada',
+                                text: 'No se guardó en la base de datos.',
+                                confirmButtonText: 'Entendido'
+                            });
+                        } else {
+                            await Swal.fire({
+                                icon: 'success',
+                                title: 'Guardado',
+                                text: 'Reporte guardado correctamente.',
+                                confirmButtonText: 'Continuar'
+                            });
+                        }
+
+                        // ✅ Oculta loader solo DESPUÉS de que se cierre el mensaje
+                        $("#global-loader").hide();
+                        $("#global-loader").show();
+                        // Si quieres limpiar y redirigir después del mensaje:
                         $("#formGuardar")[0].reset();
-                        window.location.href = '/TrazabilidadAuditoria/AuditReport?lote=' + encodeURIComponent(data.Lote) + '&horaQueja=' + encodeURIComponent(data.horaQueja) + '&company=' + encodeURIComponent(data.company);
+                        window.location.href =
+                            '/TrazabilidadAuditoria/AuditReport?lote=' +
+                            encodeURIComponent(data.Lote) +
+                            '&horaQueja=' + encodeURIComponent(data.horaQueja) +
+                            '&company=' + encodeURIComponent(data.company);
                     } else {
+                        $("#global-loader").hide();
                         alert("❌ " + T.ErrorUnexpected);
                     }
                 },
                 error: function (err) {
                     console.error(err);
                     detenerAnimacionBloques();
-                    alert("❌ " + T.ErrorSaving);
                     $("#global-loader").hide();
+                    alert("❌ " + T.ErrorSaving);
                 }
             });
         });
+
     </script>
 }
