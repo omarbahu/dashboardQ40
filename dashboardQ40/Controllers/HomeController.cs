@@ -27,6 +27,14 @@ namespace dashboardQ40.Controllers
             return View();
         }
 
+        public IActionResult BpmDashboard()
+    => View("~/Views/Home/BpmDashboard.cshtml");
+
+        public IActionResult BPM()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

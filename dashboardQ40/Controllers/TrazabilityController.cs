@@ -6,7 +6,7 @@ using System.Data;
 using static dashboardQ40.Models.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Globalization;
 using Microsoft.Extensions.Options;                         // Linq

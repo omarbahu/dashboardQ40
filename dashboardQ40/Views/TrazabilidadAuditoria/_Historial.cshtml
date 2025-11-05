@@ -1,0 +1,218 @@
+﻿@* Views/TrazabilidadAuditoria/_Historial.cshtml *@
+<div class="d-flex align-items-center gap-2 my-2">
+    <button class="btn btn-outline-secondary" onclick="volverOpciones()">← Volver</button>
+    <h5 class="m-0">Previous reports</h5>
+    <div class="ms-auto"><span id="hist_totalSpan"></span></div>
+</div>
+
+<!-- País / Planta para HISTORIAL -->
+<!-- País / Planta para HISTORIAL -->
+<div class="row g-2 mb-3">
+    <div class="col">
+        <label for="hist_pais" class="form-label">País</label>
+    </div>
+    <div class="col">
+        <select id="hist_pais" class="form-select form-select-sm" required>
+            <option value="">-- Selecciona --</option>
+        </select>
+    </div>
+    <div class="col">
+        <label for="hist_planta" class="form-label">Planta</label>
+    </div>
+    <div class="col">
+        <select id="hist_planta" class="form-select form-select-sm" required disabled>
+            <option value="">-- Selecciona --</option>
+        </select>
+    </div>
+</div>
+
+
+<div id="hist_hint" class="text-muted small mb-2"></div>
+
+<div class="d-flex gap-2 my-3">
+    <input id="hist_q" class="form-control" style="max-width:320px" placeholder="Buscar: lote / planta / motivo" />
+    <button id="hist_btnBuscar" class="btn btn-primary">Buscar</button>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-sm table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Fecha</th>
+                <th>Lote</th>
+                <th>Planta</th>
+                <th>Motivo</th>
+                <th>% Efic. PT</th>
+                <th>Rev.</th>
+                <th>Status</th>
+                <th style="width:120px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="hist_rows"></tbody>
+    </table>
+</div>
+<script>
+    function showGlobalLoader() { const el = document.getElementById('global-loader'); if (el) { el.classList?.remove('d-none'); el.style.display = 'block'; } }
+
+    // Usa tu select existente como "company" (si tu id es otro, cámbialo aquí)
+    function getCompany() { return (document.getElementById('hist_planta')?.value || '').trim(); }
+
+    // --- Poblar combos de País/Planta (HISTORIAL) con los datos ya cargados en Index ---
+    const HIST_COMPANIES = Array.isArray(window.COMPANIES) ? window.COMPANIES : [];
+
+    function fillHistCountries() {
+        const $pais = document.getElementById('hist_pais');
+        $pais.innerHTML = '<option value="">-- Selecciona --</option>';
+        const set = new Set(HIST_COMPANIES.map(c => c.CountryCode).filter(Boolean));
+        [...set].sort().forEach(code => {
+            // Nombre “bonito” no lo tenemos en el partial: usa code (MX, US, PE, etc.)
+            const opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = code;
+            $pais.appendChild(opt);
+        });
+    }
+
+    function fillHistPlants(countryCode) {
+        const sel = document.getElementById('hist_planta');
+        sel.innerHTML = '<option value="">-- Selecciona --</option>';
+        sel.disabled = true;
+        if (!countryCode) return;
+
+        const plants = HIST_COMPANIES
+            .filter(c => c.CountryCode === countryCode)
+            .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+        plants.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.Company;      // <-- el “company” real
+            opt.textContent = p.CompanyName;
+            sel.appendChild(opt);
+        });
+        sel.disabled = plants.length === 0;
+    }
+
+
+
+    async function cargarHistorial() {
+        const q = document.getElementById('hist_q').value.trim();
+        const company = getCompany(); // <- viene de #planta en Index
+
+        // 👉 si no hay planta, NO cargues nada
+        if (!company) {
+            document.getElementById('hist_rows').innerHTML = '';
+            document.getElementById('hist_totalSpan').textContent = '0 registros';
+            return;
+            const hint = document.getElementById('hist_hint');
+            if (hint) hint.textContent = 'Selecciona país y planta para ver el historial.';
+            return;
+        } else {
+            const hint = document.getElementById('hist_hint');
+            if (hint) hint.textContent = '';
+        }
+
+        const url = '@Url.Action("GetHistorial", "TrazabilidadAuditoria")'
+            + `?q=${encodeURIComponent(q)}&company=${encodeURIComponent(company)}`;
+
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        const raw = (data?.items ?? data);
+        const items = Array.isArray(raw) ? raw : (raw?.$values ?? []);
+        document.getElementById('hist_totalSpan').textContent = `${data?.total ?? items.length} registros`;
+
+        const tb = document.getElementById('hist_rows'); tb.innerHTML = '';
+        items.forEach(it => {
+            const idRep = it.IdReporte ?? it.id_reporte;
+            const lote = it.Lote ?? it.lote ?? '';
+            const plant = it.PlantCode ?? it.plant_code ?? it.plantCode ?? '';
+
+            const motivo = it.MotivoTrazabilidad ?? it.motivo_trazabilidad ?? it.motivo ?? '';
+
+            const eficPT = it.PorcEficProductoTerminado ?? it.porc_efic_producto_terminado ?? it.porcEficPT ?? '';
+
+            const rev = it.Revision ?? it.revision ?? it.revision ?? '';
+
+            const st = it.Status ?? it.status ?? it.status ?? '';
+
+            const fhRaw = it.FechaHora ?? it.fecha_hora ?? it.fechaHora;
+
+            const fh = fhRaw ? new Date(fhRaw).toLocaleString() : '';
+            const plantName = (window.COMPANIES || []).find(x => x.Company === plant)?.CompanyName || plant;
+
+            const horaQ = it.HoraQueja ?? it.hora_queja ?? "09:00:00"; // valor por defecto si viene nulo
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+      <td>${fh}</td><td>${lote}</td><td>${plantName}</td><td>${motivo}</td>
+      <td>${eficPT}</td><td>${rev}</td><td>${st}</td>
+      <td>
+        <a class="btn btn-sm btn-primary"
+           href="/TrazabilidadAuditoria/AuditReport?lote=${encodeURIComponent(lote)}&horaQueja=${encodeURIComponent(horaQ)}&company=${encodeURIComponent(company)}"
+           onclick="showGlobalLoader()">
+           Auditar
+        </a>
+      </td>`;
+            tb.appendChild(tr);
+        });
+    }
+
+    // hook de arranque (como ya lo tienes)
+    window.initHistorial = function () {
+        // Botón buscar
+        fillHistCountries();
+        document.getElementById('hist_pais').addEventListener('change', e => {
+            fillHistPlants(e.target.value);
+            // limpiar resultados hasta que elijan planta
+            document.getElementById('hist_rows').innerHTML = '';
+            document.getElementById('hist_totalSpan').textContent = '0 registros';
+        });
+        document.getElementById('hist_planta').addEventListener('change', () => {
+            cargarHistorial(); // ya trae company del combo del historial
+        });
+
+
+        document.getElementById('hist_btnBuscar').addEventListener('click', cargarHistorial);
+
+        // Preseleccionar primer país disponible y llenar plantas
+        const $pais = $("#hist_pais");
+        if ($pais[0] && $pais[0].options.length > 1) {
+            $pais[0].selectedIndex = 1;
+            $pais.trigger("change");
+        }
+        // NOTA: el grid se carga al elegir planta (#hist_planta.on('change'))
+    };
+
+
+    // exporta para que Index pueda forzar recarga
+    window.cargarHistorial = cargarHistorial;
+
+
+    // Llenar plantas del HISTORIAL con COMPANIES global
+    function fillHistPlants(countryCode) {
+        const $planta = $("#hist_planta");
+        $planta.empty().append(new Option("-- Selecciona --", ""));
+        $planta.prop("disabled", true);
+        if (!countryCode || !Array.isArray(window.COMPANIES)) return;
+
+        const plants = window.COMPANIES
+            .filter(c => c.CountryCode === countryCode)
+            .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+        plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+        $planta.prop("disabled", plants.length === 0);
+    }
+
+    $("#hist_pais").on("change", function () {
+        fillHistPlants(this.value);
+        // Limpia tabla y contador al cambiar país
+        $("#hist_rows").empty();
+        $("#hist_totalSpan").text("0 registros");
+    });
+
+    $("#hist_planta").on("change", function () {
+        // Al elegir planta, carga/filtra el grid
+        if (this.value) cargarHistorial();
+    });
+
+</script>
+

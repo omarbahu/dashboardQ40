@@ -174,7 +174,7 @@
                     _ => "~/Views/TrazabilidadAuditoria/Partials/_TabFormato.cshtml"
                 };
                 <div class="tab-pane fade @(i == 0 ? "show active" : "")" id="@tabId" role="tabpanel">
-                    <div id="collapse-@tabId" class="accordion-collapse collapse show">
+                    <div id="collapse-@tabId" class="accordion-collapse collapse">
                         <div class="accordion-body">
                             @await Html.PartialAsync(partialViewName, Model)
                         </div>
@@ -187,6 +187,33 @@
 
 @section Scripts {
     <script>
-        // (si luego agregas JS específico, aquí va)
+        document.addEventListener("DOMContentLoaded", () => {
+            // Abre SOLO el pane del tab activo
+            const activePane = document.querySelector('.tab-pane.active');
+            document.querySelectorAll('.tab-pane .accordion-collapse').forEach(el => el.classList.remove('show'));
+            activePane?.querySelector('.accordion-collapse')?.classList.add('show');
+
+            // Al cambiar de tab, cierra todos y abre el del tab mostrado
+            const tabs = document.querySelectorAll('#trazabilidadTabs button[data-bs-toggle="tab"]');
+            tabs.forEach(btn => {
+                btn.addEventListener('shown.bs.tab', (e) => {
+                    document.querySelectorAll('.tab-pane .accordion-collapse').forEach(el => el.classList.remove('show'));
+                    const targetPane = document.querySelector(e.target.getAttribute('data-bs-target'));
+                    targetPane?.querySelector('.accordion-collapse')?.classList.add('show');
+                });
+
+                // Fallback si por algo no está Bootstrap JS: al hacer click
+                btn.addEventListener('click', (e) => {
+                    setTimeout(() => {
+                        const targetPane = document.querySelector(e.target.getAttribute('data-bs-target'));
+                        if (!targetPane) return;
+                        document.querySelectorAll('.tab-pane .accordion-collapse').forEach(el => el.classList.remove('show'));
+                        targetPane.querySelector('.accordion-collapse')?.classList.add('show');
+                    }, 0);
+                });
+            });
+        });
     </script>
 }
+
+

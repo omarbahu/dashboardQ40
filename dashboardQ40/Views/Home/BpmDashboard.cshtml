@@ -1,0 +1,488 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard BPM – POC</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --ink: #0b1220;
+            --bg: #0f172a;
+            --card: #111827;
+            --muted: #94a3b8;
+            --border: #1f2937;
+            --ok: #22c55e;
+            --warn: #f59e0b;
+            --bad: #ef4444;
+            --cyan: #06b6d4;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter,Segoe UI,Roboto,Arial,sans-serif;
+            background: linear-gradient(180deg,#0b1324,#0a0f1e);
+            color: #e5e7eb
+        }
+
+        header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: rgba(10,15,30,.85);
+            backdrop-filter: blur(6px);
+            z-index: 20
+        }
+
+            header h1 {
+                margin: 0;
+                font-size: 18px;
+                letter-spacing: .3px
+            }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+            flex-wrap: wrap
+        }
+
+            .toolbar .crumbs {
+                font-size: 13px;
+                color: var(--muted)
+            }
+
+            .toolbar button {
+                background: #1f2937;
+                border: 1px solid var(--border);
+                color: #e5e7eb;
+                padding: 8px 10px;
+                border-radius: 10px;
+                cursor: pointer
+            }
+
+                .toolbar button:hover {
+                    background: #243244
+                }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 16px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 16px
+        }
+
+        .card {
+            background: linear-gradient(180deg,#0f172a,#0b1324);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px
+        }
+
+        .hidden {
+            display: none
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 12px
+        }
+
+        .kpi {
+            background: #0c1426;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px
+        }
+
+            .kpi h3 {
+                font-size: 13px;
+                color: var(--muted);
+                margin: 0 0 6px
+            }
+
+            .kpi .v {
+                font-size: 20px;
+                font-weight: 700
+            }
+
+        .countries {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+            gap: 14px
+        }
+
+        .country-card {
+            cursor: pointer;
+            transition: transform .08s ease
+        }
+
+            .country-card:hover {
+                transform: translateY(-2px)
+            }
+
+            .country-card h3 {
+                margin: 0 0 8px;
+                font-size: 16px
+            }
+
+        .pill {
+            display: inline-block;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: #cbd5e1
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th, td {
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            padding: 8px;
+            font-size: 13px
+        }
+
+        th {
+            color: #cbd5e1;
+            font-weight: 600
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        .ok {
+            color: var(--ok)
+        }
+
+        .warn {
+            color: var(--warn)
+        }
+
+        .bad {
+            color: var(--bad)
+        }
+
+        .cyan {
+            color: var(--cyan)
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 16px
+        }
+
+        .chart {
+            grid-column: span 12;
+            height: 300px
+        }
+
+            .chart.half {
+                grid-column: span 6
+            }
+
+        @media (max-width:900px) {
+            .kpis {
+                grid-template-columns: repeat(2,1fr)
+            }
+
+            .chart.half {
+                grid-column: span 12
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Dashboard BPM – Buenas Prácticas de Manufactura (POC)</h1>
+        <div class="toolbar">
+            <div class="crumbs" id="breadcrumbs">Global</div>
+            <div style="margin-left:auto;display:flex;gap:8px">
+                <button id="btnGlobal">Vista global</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="wrap">
+
+        <!-- VIEW: GLOBAL -->
+        <section id="view-global" data-view class="grid">
+            <div class="card" style="grid-column:span 12">
+                <div class="kpis" id="kpis-global"></div>
+            </div>
+            <div class="charts" style="grid-column:span 12">
+                <div class="card chart" id="chart-global-trend"></div>
+                <div class="card chart" id="chart-global-stacked"></div>
+            </div>
+            <div class="card" style="grid-column:span 12">
+                <h3 style="margin:0 0 12px">Países</h3>
+                <div id="countries" class="countries"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: COUNTRY -->
+        <section id="view-country" data-view class="hidden grid">
+            <div class="card" style="grid-column:span 12">
+                <div class="kpis" id="kpis-country"></div>
+            </div>
+            <div class="charts" style="grid-column:span 12">
+                <div class="card chart" id="chart-country-trend"></div>
+                <div class="card chart" id="chart-country-stacked"></div>
+            </div>
+            <div class="card" style="grid-column:span 12">
+                <h3 style="margin:0 0 12px">Plantas</h3>
+                <div id="plants" class="countries"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: PLANT -->
+        <section id="view-plant" data-view class="hidden grid">
+            <div class="card" style="grid-column:span 12">
+                <div class="kpis" id="kpis-plant"></div>
+            </div>
+            <div class="charts" style="grid-column:span 12">
+                <div class="card chart half" id="chart-plant-trend"></div>
+                <div class="card chart half" id="chart-plant-stacked"></div>
+            </div>
+            <div class="card" style="grid-column:span 12">
+                <h3 style="margin:0 0 8px">Top 5 criterios críticos</h3>
+                <table id="tbl-criteria">
+                    <thead><tr><th>Criterio</th><th>Promedio</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const STATE = { data: null, country: null, plant: null };
+        //const JSON_URL = 'bpm_demo.json'; // ⚠️ coloca bpm_demo.json en wwwroot/data/
+        const JSON_URL = '@Url.Content("~/data/bpm_demo.json")';
+
+        // ---------- Helpers ----------
+        const fmtPct = v => (v != null ? (v * 100).toFixed(1) + '%' : '—');
+        const fmtNum = v => (v != null ? Number(v).toLocaleString('es-MX') : '—');
+        const lastOf = arr => arr[arr.length - 1];
+
+        function setView(id) {
+            document.querySelectorAll('[data-view]').forEach(x => x.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function setCrumbs(parts) {
+            document.getElementById('breadcrumbs').textContent = parts.join(' / ');
+        }
+
+        function makeKpi(title, value, hint, cls) {
+            return `<div class="kpi"><h3>${title}</h3><div class="v ${cls || ''}">${value}</div><div class="muted">${hint || ''}</div></div>`;
+        }
+
+        function computeFromRollup(roll) {
+            if (!roll || !roll.length) return null;
+            const last = lastOf(roll);
+            const total = roll.reduce((s, x) => s + (x.total_checks || 0), 0);
+            return { mean: last.mean, compliance: last.compliance, critical: last.critical, total };
+        }
+
+        function computeFromPlantMonths(months) {
+            if (!months || !months.length) return null;
+            const last = lastOf(months);
+            const total = months.reduce((s, x) => s + (x.total_checks || 0), 0);
+            return { mean: last.mean, compliance: last.compliance, critical: last.critical, total };
+        }
+
+        // ---------- Global render ----------
+        function renderGlobal() {
+            setView('view-global'); setCrumbs(['Global']);
+            const roll = STATE.data.global_rollup;
+            const k = computeFromRollup(roll);
+            const kpis = document.getElementById('kpis-global');
+            kpis.innerHTML = [
+                makeKpi('Cumplimiento global', fmtPct(k.compliance), '≥ 0 (0 y 1)', 'ok'),
+                makeKpi('Críticos global', fmtPct(k.critical), '≤ -1', 'bad'),
+                makeKpi('Promedio global', (k.mean != null ? k.mean.toFixed(2) : '—'), 'escala -2 a 1', 'cyan'),
+                makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
+            ].join('');
+
+            renderTrend('chart-global-trend', roll, 'Promedio global');
+            renderStacked('chart-global-stacked', roll, 'Distribución global');
+
+            // Countries grid
+            const box = document.getElementById('countries');
+            box.innerHTML = '';
+            STATE.data.countries.forEach(country => {
+                const rollC = STATE.data.country_rollup[country.name];
+                const kc = computeFromRollup(rollC);
+                const el = document.createElement('div');
+                el.className = 'card country-card';
+                el.innerHTML = `
+          <h3>${country.name}</h3>
+          <div class="muted" style="margin-bottom:8px">Plantas: ${country.plants.length}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="pill">Cumpl.: ${fmtPct(kc.compliance)}</span>
+            <span class="pill">Críticos: ${fmtPct(kc.critical)}</span>
+            <span class="pill">Prom.: ${kc.mean != null ? kc.mean.toFixed(2) : '—'}</span>
+          </div>
+          <div class="muted">Click para ver plantas</div>`;
+                el.addEventListener('click', () => renderCountry(country.name));
+                box.appendChild(el);
+            });
+        }
+
+        // ---------- Country view ----------
+        function renderCountry(countryName) {
+            STATE.country = countryName; STATE.plant = null;
+            setView('view-country'); setCrumbs(['Global', countryName]);
+
+            const roll = STATE.data.country_rollup[countryName];
+            const k = computeFromRollup(roll);
+            document.getElementById('kpis-country').innerHTML = [
+                makeKpi('Cumplimiento', fmtPct(k.compliance), '≥ 0', 'ok'),
+                makeKpi('Críticos', fmtPct(k.critical), '≤ -1', 'bad'),
+                makeKpi('Promedio', (k.mean != null ? k.mean.toFixed(2) : '—'), 'escala -2 a 1', 'cyan'),
+                makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
+            ].join('');
+
+            renderTrend('chart-country-trend', roll, `Promedio – ${countryName}`);
+            renderStacked('chart-country-stacked', roll, `Distribución – ${countryName}`);
+
+            // Plants list
+            const country = STATE.data.countries.find(c => c.name === countryName);
+            const box = document.getElementById('plants'); box.innerHTML = '';
+            country.plants.forEach(plant => {
+                const kp = computeFromPlantMonths(plant.months);
+                const el = document.createElement('div');
+                el.className = 'card country-card';
+                el.innerHTML = `
+          <h3>${plant.name}</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="pill">Cumpl.: ${fmtPct(kp.compliance)}</span>
+            <span class="pill">Críticos: ${fmtPct(kp.critical)}</span>
+            <span class="pill">Prom.: ${kp.mean != null ? kp.mean.toFixed(2) : '—'}</span>
+          </div>
+          <div class="muted">Click para ver estadísticos de la planta</div>`;
+                el.addEventListener('click', () => renderPlant(countryName, plant.name));
+                box.appendChild(el);
+            });
+        }
+
+        // ---------- Plant view ----------
+        function renderPlant(countryName, plantName) {
+            STATE.plant = plantName;
+            setView('view-plant'); setCrumbs(['Global', countryName, plantName]);
+
+            const country = STATE.data.countries.find(c => c.name === countryName);
+            const plant = country.plants.find(p => p.name === plantName);
+            const k = computeFromPlantMonths(plant.months);
+
+            document.getElementById('kpis-plant').innerHTML = [
+                makeKpi('Cumplimiento', fmtPct(k.compliance), '≥ 0', 'ok'),
+                makeKpi('Críticos', fmtPct(k.critical), '≤ -1', 'bad'),
+                makeKpi('Promedio', (k.mean != null ? k.mean.toFixed(2) : '—'), 'escala -2 a 1', 'cyan'),
+                makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
+            ].join('');
+
+            // Charts
+            renderTrend('chart-plant-trend', plant.months.map(m => ({
+                month: m.month, mean: m.mean, compliance: m.compliance, critical: m.critical, counts: m.counts, total_checks: m.total_checks
+            })), `Promedio – ${plantName}`);
+            renderStacked('chart-plant-stacked', plant.months.map(m => ({
+                month: m.month, counts: m.counts, total_checks: m.total_checks
+            })), `Distribución – ${plantName}`);
+
+            // Criteria table (top 5 worst by avg)
+            const tbody = document.querySelector('#tbl-criteria tbody');
+            tbody.innerHTML = '';
+            const list = (plant.criteria || []).slice().sort((a, b) => a.avg - b.avg).slice(0, 5);
+            list.forEach(row => {
+                const tr = document.createElement('tr');
+                const cls = row.avg <= -1 ? 'bad' : row.avg < 0 ? 'warn' : 'ok';
+                tr.innerHTML = `<td>${row.criterio}</td><td class="${cls}">${row.avg.toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ---------- Charts ----------
+        function renderTrend(domId, roll, title) {
+            const el = document.getElementById(domId);
+            const chart = echarts.init(el);
+            const months = roll.map(x => x.month);
+            const mean = roll.map(x => x.mean);
+            const compliance = roll.map(x => x.compliance);
+            const critical = roll.map(x => x.critical);
+            chart.setOption({
+                title: { text: title, left: 'center', textStyle: { fontSize: 14 } },
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['Promedio', 'Cumplimiento', 'Críticos'] },
+                xAxis: { type: 'category', data: months },
+                yAxis: [{ type: 'value', min: -2, max: 1, name: 'Promedio' }, { type: 'value', min: 0, max: 1, name: '%' }],
+                series: [
+                    { name: 'Promedio', type: 'line', smooth: true, data: mean, yAxisIndex: 0 },
+                    { name: 'Cumplimiento', type: 'line', smooth: true, data: compliance, yAxisIndex: 1 },
+                    { name: 'Críticos', type: 'line', smooth: true, data: critical, yAxisIndex: 1 }
+                ]
+            });
+            new ResizeObserver(() => chart.resize()).observe(el);
+        }
+
+        function renderStacked(domId, roll, title) {
+            const el = document.getElementById(domId);
+            const chart = echarts.init(el);
+            const months = roll.map(x => x.month);
+            const sN2 = roll.map(x => x.counts['-2']);
+            const sN1 = roll.map(x => x.counts['-1']);
+            const s0 = roll.map(x => x.counts['0']);
+            const s1 = roll.map(x => x.counts['1']);
+            chart.setOption({
+                title: { text: title, left: 'center', textStyle: { fontSize: 14 } },
+                tooltip: { trigger: 'axis' },
+                legend: { data: ['-2', '-1', '0', '1'] },
+                xAxis: { type: 'category', data: months },
+                yAxis: { type: 'value' },
+                series: [
+                    { name: '-2', type: 'bar', stack: 't', data: sN2 },
+                    { name: '-1', type: 'bar', stack: 't', data: sN1 },
+                    { name: '0', type: 'bar', stack: 't', data: s0 },
+                    { name: '1', type: 'bar', stack: 't', data: s1 }
+                ]
+            });
+            new ResizeObserver(() => chart.resize()).observe(el);
+        }
+
+        // ---------- Init ----------
+        document.getElementById('btnGlobal').addEventListener('click', () => { STATE.country = null; STATE.plant = null; renderGlobal(); });
+
+        (async function init() {
+            try {
+                const res = await fetch(JSON_URL);
+                STATE.data = await res.json();
+                renderGlobal();
+            } catch (err) {
+                console.error('Error cargando JSON:', err);
+                alert('No se pudo cargar /data/bpm_demo.json. Coloca el archivo en wwwroot/data.');
+            }
+        })();
+    </script>
+</body>
+</html>

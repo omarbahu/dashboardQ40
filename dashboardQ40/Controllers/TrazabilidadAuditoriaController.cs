@@ -104,7 +104,7 @@ namespace dashboardQ40.Controllers
         }
 
         [HttpPost]
-        public IActionResult GuardarReporte([FromBody] ReporteTrazabilidad modelo)
+        public async Task<IActionResult> GuardarReporte([FromBody] ReporteTrazabilidad modelo)
         {
             if (!ModelState.IsValid)
             {
@@ -120,33 +120,27 @@ namespace dashboardQ40.Controllers
             {
                 if (modelo.simulate)
                 {
-                    // 🔹 MODO SIMULACIÓN: no persistir
-                    // (puedes hacer validaciones/cálculos previos aquí)
-                    return Ok(new
-                    {
-                        success = true,
-                        simulated = true,
-                        mensaje = "Simulación realizada. No se guardó en la base de datos."
-                    });
+                    return Ok(new { success = true, simulated = true, mensaje = "Simulación realizada. No se guardó en la base de datos." });
                 }
 
-                // 🔹 MODO GUARDADO REAL
-                // _context.Reportes.Add(modelo);
-                // _context.SaveChanges();
+                // Validación mínima de selects (server-side)
+                if (string.IsNullOrWhiteSpace(modelo.company))
+                    return BadRequest(new { success = false, mensaje = "Plant requerido." });
+                // Si ya mandas country del front, valida también:
+                // if (string.IsNullOrWhiteSpace(modelo.country))
+                //     return BadRequest(new { success = false, mensaje = "Country requerido." });
 
-                return Ok(new
-                {
-                    success = true,
-                    simulated = false,
-                    mensaje = "Reporte guardado correctamente."
-                });
+                var cs = _configuration.GetConnectionString("ArcaTrazability"); // usa el tuyo
+                var id = await AuditTrazabilityClass.GuardarReporteAsync(modelo, cs);
+
+                return Ok(new { success = true, simulated = false, id, mensaje = "Reporte guardado correctamente." });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // log ex ...
                 return StatusCode(500, new { success = false, mensaje = "Error al guardar el reporte." });
             }
         }
+
 
 
 
@@ -238,11 +232,11 @@ namespace dashboardQ40.Controllers
 
             //BLOQUE TRATAMIENDO DE AGUA
             var aguatratada = AuditTrazabilityClass.ObtenerTratamientodeAgua(trazabilidadNodos, batchInfo.BatchId, horaQueja, batchInfoJT);
-            var aguatratadajarabesimple = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfoJS.BatchId, horaQueja, company, connStr, _configuration, "F014", "AGUA TRATADA UTILIZADA EN JARABE SIMPLE", "AnalisisFisicoquimico");
-            var aguatratadajarabeterminado = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfoJT.BatchId, horaQueja, company, connStr, _configuration, "F014", "AGUA TRATADA UTILIZADA EN JARABE TERMINADO", "AnalisisFisicoquimico");
-            var aguatratadaproductoterminado = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "F014", "AGUA TRATADA UTILIZADA EN PRODUCTO TERMINADO", "AnalisisFisicoquimico");
-            var aguatratadacruda = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "F017", "AGUA CRUDA, TRATADA CLORADA,SUAVIZADA O RECUPERADA, PARA EL ENJUAGUE DEL ENVASE (EN CASO DE QUE APLIQUE)", "AnalisisFisicoquimico");
-            var aguatratadasuave = AuditTrazabilityClass.ObtenerAnalisisFisicoquimico(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "F018", "AGUA SUAVE UTILIZADA", "AnalisisFisicoquimico");
+            var aguatratadajarabesimple = AuditTrazabilityClass.ObtenerAnalisisFisicoquimicoBydate(trazabilidadNodos, batchInfoJS.BatchId, horaQueja, company, connStr, _configuration, "F014", "AGUA TRATADA UTILIZADA EN JARABE SIMPLE", "AnalisisFisicoquimicoBydate");
+            var aguatratadajarabeterminado = AuditTrazabilityClass.ObtenerAnalisisFisicoquimicoBydate(trazabilidadNodos, batchInfoJT.BatchId, horaQueja, company, connStr, _configuration, "F014", "AGUA TRATADA UTILIZADA EN JARABE TERMINADO", "AnalisisFisicoquimicoBydate");
+            var aguatratadaproductoterminado = AuditTrazabilityClass.ObtenerAnalisisFisicoquimicoBydate(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "F014", "AGUA TRATADA UTILIZADA EN PRODUCTO TERMINADO", "AnalisisFisicoquimicoBydate");
+            var aguatratadacruda = AuditTrazabilityClass.ObtenerAnalisisFisicoquimicoBydate(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "F017", "AGUA CRUDA, TRATADA CLORADA,SUAVIZADA O RECUPERADA, PARA EL ENJUAGUE DEL ENVASE (EN CASO DE QUE APLIQUE)", "AnalisisFisicoquimicoBydate");
+            var aguatratadasuave = AuditTrazabilityClass.ObtenerAnalisisFisicoquimicoBydate(trazabilidadNodos, batchInfo.BatchId, horaQueja, company, connStr, _configuration, "F018", "AGUA SUAVE UTILIZADA", "AnalisisFisicoquimicoBydate");
 
             // bloque datos de limpieza y saneamiento
             var saneo = AuditTrazabilityClass.ObtenerSaneo(trazabilidadNodos, batchInfo.BatchId, horaQueja, batchInfoJT);
@@ -294,6 +288,31 @@ namespace dashboardQ40.Controllers
             return View(modelo);
         }
 
+        public IActionResult HistorialPartial()
+        {
+            return PartialView("_Historial");
+        }
+
+        [HttpGet]
+        public IActionResult GetHistorial(string q = "", string company = "")
+        {
+            string connStr = _configuration.GetConnectionString("ArcaTrazability");
+            var items = AuditHistorialService.ObtenerHistorial(_configuration, connStr, "HistorialReportes", q, company);
+            return Json(new { items, total = items.Count });
+        }
+
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult AuditarDesdeHistorial(int idReporte, string company)
+        {
+            string connStr = _configuration.GetConnectionString("ArcaTrazability");
+            var dato = AuditHistorialService.ObtenerLoteHoraQuejaPorId(_configuration, connStr, "HistorialReportesById", idReporte);
+            if (dato == null) return NotFound();
+
+            var hora = (dato.HoraQueja ?? new TimeSpan(9, 0, 0)).ToString(@"hh\:mm\:ss");
+            return RedirectToAction("AuditReport", new { lote = dato.Lote, horaQueja = hora, company });
+        }
+
+       
 
         private BatchInfo ObtenerBatchDesdeLote(string lote, string connStr, string company)
         {

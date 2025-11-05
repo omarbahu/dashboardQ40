@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using dashboardQ40.Models;
 using System.Globalization;
 using static dashboardQ40.Models.Models;

@@ -10,13 +10,13 @@ namespace dashboardQ40.Services
 {
     internal sealed class RawNormRow
     {
-        public string? controlOperation { get; set; }
-        public string? controlOperationName { get; set; }
+        public string? controlOperation { get; set; } = string.Empty;
+        public string? controlOperationName { get; set; } = string.Empty;
         public double? resultValue { get; set; }
         public double? minTolerance { get; set; }
         public double? maxTolerance { get; set; }
         public DateTime? executionDate { get; set; }
-        public string? manufacturingReference { get; set; } // SKU
+        public string? manufacturingReference { get; set; } = string.Empty; // SKU
     }
 
 

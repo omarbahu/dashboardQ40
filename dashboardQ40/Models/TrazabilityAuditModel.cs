@@ -8,14 +8,15 @@
         public DateTime FechaHora { get; set; }
         public TimeSpan? HoraInicio { get; set; }
         public TimeSpan? HoraFin { get; set; }
-        public string MotivoTrazabilidad { get; set; }
+        public string MotivoTrazabilidad { get; set; } = string.Empty;
         public bool TrazaProductoMp { get; set; }
         public decimal? PorcEficProductoTerminado { get; set; }
-        public string Lote { get; set; }
-        public string Revision { get; set; }
-        public string UsuarioVobo { get; set; }
+        public string Lote { get; set; } = string.Empty;
+        public string Revision { get; set; } = string.Empty;
+        public string UsuarioVobo { get; set; } = string.Empty;
         public TimeSpan horaQueja { get; set; }
-        public string company { get; set; }
+        public string company { get; set; } = string.Empty;
+        public string? country { get; set; }  // país (código)
         public bool simulate { get; set; }
     }
 
@@ -24,12 +25,12 @@
     {
         public int IdPersonaRep { get; set; }
         public int IdReporte { get; set; }
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
         public TimeSpan? Hora { get; set; }
-        public string Puesto { get; set; }
-        public string Area { get; set; }
-        public string Actividad { get; set; }
-        public string Observaciones { get; set; }
+        public string Puesto { get; set; } = string.Empty;
+        public string Area { get; set; } = string.Empty;
+        public string Actividad { get; set; } = string.Empty;
+        public string Observaciones { get; set; } = string.Empty;
     }
 }
 
@@ -81,18 +82,18 @@ public class FormatoViewModel
 public class BloqueMateriaPrimaModel
 {
     public List<RegistroMateriaPrima> Registros { get; set; }
-    public string SupervisorCalidad { get; set; }
-    public string SupervisorAlmacen { get; set; }
+    public string SupervisorCalidad { get; set; } = string.Empty;
+    public string SupervisorAlmacen { get; set; } = string.Empty;
 }
 
 public class RegistroMateriaPrima
 {
-    public string Descripcion { get; set; }
-    public string Proveedor { get; set; }
-    public string LoteExterno { get; set; }
-    public string LoteInterno { get; set; }
-    public string FechaRecepcion { get; set; }
-    public string Cantidad { get; set; }
+    public string Descripcion { get; set; } = string.Empty;
+    public string Proveedor { get; set; } = string.Empty;
+    public string LoteExterno { get; set; } = string.Empty;
+    public string LoteInterno { get; set; } = string.Empty;
+    public string FechaRecepcion { get; set; } = string.Empty;
+    public string Cantidad { get; set; } = string.Empty;
 }
 
 
@@ -104,31 +105,31 @@ public class BloqueJarabesModel
 
 public class BloqueProductoTerminadoModel
 {
-    public string DescripcionProducto { get; set; }
-    public string CodigoProducto { get; set; }
-    public string EncargadoPruebas { get; set; }
-    public string SupervisorJarabes { get; set; }
-    public string VacioJarabeTerminado { get; set; }
-    public string SupervisorCalidad { get; set; }
-    public string FechaProduccion { get; set; } // ej: "15/10/2024 al 16/10/2024"
-    public string InicioProduccion { get; set; }
-    public string FinProduccion { get; set; }
-    public string SupervisorProduccion { get; set; }
-    public string SupervisorMantenimiento { get; set; }
-    public string Llenadora { get; set; }
-    public string CantidadElaborada { get; set; }
-    public string NumeroLinea { get; set; }
+    public string DescripcionProducto { get; set; } = string.Empty;
+    public string CodigoProducto { get; set; } = string.Empty;
+    public string EncargadoPruebas { get; set; } = string.Empty;
+    public string SupervisorJarabes { get; set; } = string.Empty;
+    public string VacioJarabeTerminado { get; set; } = string.Empty;
+    public string SupervisorCalidad { get; set; } = string.Empty;
+    public string FechaProduccion { get; set; } = string.Empty;// ej: "15/10/2024 al 16/10/2024"
+    public string InicioProduccion { get; set; } = string.Empty;
+    public string FinProduccion { get; set; } = string.Empty;
+    public string SupervisorProduccion { get; set; } = string.Empty;
+    public string SupervisorMantenimiento { get; set; } = string.Empty;
+    public string Llenadora { get; set; } = string.Empty;
+    public string CantidadElaborada { get; set; } = string.Empty;
+    public string NumeroLinea { get; set; } = string.Empty;
 }
 
 public class RegistroEntregaInformacionModel
 {
-    public string NombrePersona { get; set; }
-    public string Hora { get; set; }
-    public string Puesto { get; set; }
-    public string Area { get; set; }
-    public string Actividad { get; set; }
-    public string MedioEntrega { get; set; } // Papel o Electrónico
-    public string Observaciones { get; set; }
+    public string NombrePersona { get; set; } = string.Empty;
+    public string Hora { get; set; } = string.Empty;
+    public string Puesto { get; set; } = string.Empty;
+    public string Area { get; set; } = string.Empty;
+    public string Actividad { get; set; } = string.Empty;
+    public string MedioEntrega { get; set; } = string.Empty;// Papel o Electrónico
+    public string Observaciones { get; set; } = string.Empty;
 }
 
 public class BloqueEntregaInformacionModel
@@ -139,13 +140,13 @@ public class BloqueEntregaInformacionModel
 
 public class RegistroLotesPrincipales
 {
-    public string DescripcionCampo { get; set; } // Por ejemplo: "LOTE DE JARABE SIMPLE"
+    public string DescripcionCampo { get; set; } = string.Empty;// Por ejemplo: "LOTE DE JARABE SIMPLE"
     public List<string> ValoresPorSku { get; set; } // Columnas: SKU queja, anterior, involucrado, etc.
 }
 
 public class BloqueLotesPrincipalesModel
 {
-    public string TituloBloque { get; set; } 
+    public string TituloBloque { get; set; } = string.Empty;
     public List<string> EncabezadosSku { get; set; } // SKU QUEJA, ANTERIOR, OTRO INVOLUCRADO, ...
     public List<RegistroLotesPrincipales> Registros { get; set; } = new();
 }
@@ -153,39 +154,40 @@ public class BloqueLotesPrincipalesModel
 
 public class PruebaLiberacionModel
 {
-    public string Parametro { get; set; }
-    public string InicioCorrida { get; set; }
-    public string MedioCorrida { get; set; }
-    public string FinCorrida { get; set; }
+    public string Parametro { get; set; } = string.Empty;
+    public string InicioCorrida { get; set; } = string.Empty;
+    public string MedioCorrida { get; set; } = string.Empty;
+    public string FinCorrida { get; set; } = string.Empty;
 }
 
 
 public class LiberacionSensorialProductoModel
 {
-    public string Panelista { get; set; }
-    public string FechaLiberacion { get; set; }
-    public string Producto { get; set; }
-    public string CodigoMTRA { get; set; }
-    public string Referencia { get; set; }
-    public string ResultadoPanel { get; set; }
+    public string Panelista { get; set; } = string.Empty;
+    public string FechaLiberacion { get; set; } = string.Empty;
+    public string Producto { get; set; } = string.Empty;
+    public string CodigoMTRA { get; set; } = string.Empty;
+    public string Referencia { get; set; } = string.Empty;
+    public string ResultadoPanel { get; set; } = string.Empty;
 }
 
 public class TrazabilidadNode
 {
-    public string Padre { get; set; }
-    public string Hijo { get; set; }
-    public string Company { get; set; }
-    public string ManufacturingReference { get; set; }
-    public string ManufacturingFamily { get; set; }
-    public string manufacturingFamilyName { get; set; }    
-    public string ManufacturingReferenceName { get; set; }
-    public string workplacename { get; set; }
+    public string Padre { get; set; } = string.Empty;
+    public string Hijo { get; set; } = string.Empty;
+    public string Company { get; set; } = string.Empty;
+    public string ManufacturingReference { get; set; } = string.Empty;
+    public string ManufacturingFamily { get; set; } = string.Empty;
+    public string manufacturingFamilyName { get; set; } = string.Empty;
+    public string ManufacturingReferenceName { get; set; } = string.Empty;
+    public string workplacename { get; set; } = string.Empty;
+    public string workplace { get; set; } = string.Empty;
     public decimal bcquantity { get; set; }
     public decimal consumedquantity { get; set; }    
     public long Batch { get; set; }
     public long BatchPadre { get; set; }
-    public string BatchIdentifier { get; set; }
-    public string BatchName { get; set; }
+    public string BatchIdentifier { get; set; } = string.Empty;
+    public string BatchName { get; set; } = string.Empty;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public bool IsRawMaterial { get; set; }
@@ -194,36 +196,70 @@ public class TrazabilidadNode
 
 public class LoteDescripcionInfo
 {
-    public string BatchName { get; set; }
-    public string ManufacturingReferenceName { get; set; }
+    public string BatchName { get; set; } = string.Empty;
+    public string ManufacturingReferenceName { get; set; } = string.Empty;
 }
 
 public class BloqueAnalisisFisicoquimicoModel
 {
-    public string TituloBloque { get; set; }
+    public string TituloBloque { get; set; } = string.Empty;
     public List<string> EncabezadosSku { get; set; } // SKU QUEJA, ANTERIOR, ETC.
     public List<RegistroAnalisisFisicoquimico> Registros { get; set; }
 }
 
 public class RegistroAnalisisFisicoquimico
 {
-    public string DescripcionParametro { get; set; } // pH, BRIX, TURBIDEZ...
+    public string DescripcionParametro { get; set; } = string.Empty;// pH, BRIX, TURBIDEZ...
     public List<string> ValoresPorLote { get; set; }  // columnas dinámicas
 }
 
 public class ResultadoAnalisisFisicoquimico
 {
     public long Lote { get; set; }               // 🔁 batch
-    public string OperacionNombre { get; set; }  // controlOperationName
-    public string Atributo { get; set; }         // resultAttribute
-    public string Valor { get; set; }            // resultValue
+    public string OperacionNombre { get; set; } = string.Empty; // controlOperationName
+    public string Atributo { get; set; } = string.Empty;       // resultAttribute
+    public string Valor { get; set; } = string.Empty;           // resultValue
     public int TipoOperacion { get; set; }
 }
 
 public class PruebaLiberacionRow
 {
-    public string ControlOperationName { get; set; }
-    public string InicioCorrida { get; set; }
-    public string MedioCorrida { get; set; }
-    public string FinCorrida { get; set; }
+    public string ControlOperationName { get; set; } = string.Empty;
+    public string InicioCorrida { get; set; } = string.Empty;
+    public string MedioCorrida { get; set; } = string.Empty;
+    public string FinCorrida { get; set; } = string.Empty;
 }
+
+public class ResultadoAnalisisFisicoquimicoByDate
+{
+    public string OperacionNombre { get; set; } = string.Empty;
+    public byte? TipoOperacion { get; set; }        // mapeado a TipoOperacionCode
+    public string TipoOperacionTexto { get; set; } = string.Empty;
+    public string InicioValor { get; set; } = string.Empty;
+    public DateTime? InicioFecha { get; set; }
+    public string MedioValor { get; set; } = string.Empty;
+    public DateTime? MedioFecha { get; set; }
+    public string FinValor { get; set; } = string.Empty;
+    public DateTime? FinFecha { get; set; }
+}
+
+public class HistorialReporteItem
+{
+    public int IdReporte { get; set; }
+    public DateTime FechaHora { get; set; }
+    public string Lote { get; set; }
+    public string PlantCode { get; set; }
+    public string Motivo { get; set; }
+    public decimal? PorcEficPT { get; set; }
+    public string Revision { get; set; }
+    public string Status { get; set; }
+    public TimeSpan? HoraQueja { get; set; }
+}
+
+public class HistorialReporteLookup
+{
+    public string Lote { get; set; }
+    public TimeSpan? HoraQueja { get; set; }
+}
+
+

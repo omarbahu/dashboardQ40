@@ -2,8 +2,8 @@
 {
     public class VariableEstadistica
     {
-        public string Lote { get; set; }
-        public string Variable { get; set; }
+        public string Lote { get; set; } = string.Empty;
+        public string Variable { get; set; } = string.Empty;
         public int Conteo { get; set; }
         public double Media { get; set; }
         public double Sigma { get; set; }

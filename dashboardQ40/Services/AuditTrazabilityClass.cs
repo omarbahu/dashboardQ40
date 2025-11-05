@@ -1,12 +1,16 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Globalization;
 using System.Text;
 using static dashboardQ40.Models.Models;
 using static dashboardQ40.Services.common;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Data;
+using System.Text.Json;
+
+using dashboardQ40.Models;
 
 namespace dashboardQ40.Services
 {
@@ -92,7 +96,60 @@ namespace dashboardQ40.Services
             return resultados;
         }
 
+        public static async Task<int> GuardarReporteAsync(ReporteTrazabilidad m, string connectionString)
+        {
+            // Toma los tipos tal cual vienen del DTO
+            var fechaHora = m.FechaHora;                  // DateTime
+            var horaInicio = m.HoraInicio;                 // TimeSpan?
+            var horaFin = m.HoraFin;                    // TimeSpan?
+            var horaQueja = (TimeSpan?)m.horaQueja;       // TimeSpan (lo vuelvo nullable para DB)
 
+            // JSON flexible
+            var extra = new
+            {
+                motivo = m.MotivoTrazabilidad,
+                porcEfic = m.PorcEficProductoTerminado,
+                usuarioVobo = m.UsuarioVobo
+            };
+            var extraJson = JsonSerializer.Serialize(extra);
+
+            const string sql = @"
+INSERT INTO dbo.reporte_trazabilidad
+(
+    country_code, plant_code, fecha_hora, hora_inicio, hora_fin,
+    motivo_trazabilidad, traza_producto_mp, porc_efic_producto_terminado,
+    lote, revision, usuario_vobo, hora_queja, [status], extra_data
+)
+VALUES
+(
+    @country, @plant, @fecha_hora, @hora_inicio, @hora_fin,
+    @motivo, @traza_mp, @porc_efic,
+    @lote, @revision, @usuario_vobo, @hora_queja, @status, @extra
+);
+SELECT CAST(SCOPE_IDENTITY() AS int);";
+
+            using var cn = new SqlConnection(connectionString);
+            await cn.OpenAsync();
+
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@country", (object?)m.country ?? DBNull.Value);  // acepta null si aún no lo mandas
+            cmd.Parameters.AddWithValue("@plant", (object?)m.company ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@fecha_hora", fechaHora);
+            cmd.Parameters.AddWithValue("@hora_inicio", horaInicio);
+            cmd.Parameters.AddWithValue("@hora_fin", horaFin);
+            cmd.Parameters.AddWithValue("@motivo", (object?)m.MotivoTrazabilidad ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@traza_mp", m.TrazaProductoMp);
+            cmd.Parameters.AddWithValue("@porc_efic", (object?)m.PorcEficProductoTerminado ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@lote", (object?)m.Lote ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@revision", (object?)m.Revision ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@usuario_vobo", (object?)m.UsuarioVobo ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@hora_queja", horaQueja);
+            cmd.Parameters.AddWithValue("@status", "Draft"); // o "Final", como decidas
+            cmd.Parameters.AddWithValue("@extra", (object?)extraJson ?? DBNull.Value);
+
+            var newId = (int)await cmd.ExecuteScalarAsync();
+            return newId;
+        }
 
 
         public static BloqueProductoTerminadoModel ObtenerDatosProductoTerminado(string lote)
@@ -121,11 +178,11 @@ namespace dashboardQ40.Services
             return new BloqueEntregaInformacionModel
             {
                 Registros = new List<RegistroEntregaInformacionModel>
-            {
-                new() { NombrePersona = "GARZA ESPARZA JULIO CÉSAR", Hora = "09:11", Puesto = "Planeador", Area = "Producción", Actividad = "Cantidad de material producida", MedioEntrega = "Correo electrónico", Observaciones = "Ninguna" },
-                new() { NombrePersona = "RANGEL CASTILLO VIASIT BERENICE", Hora = "13:18", Puesto = "Supervisor", Area = "Jarabes y saneamiento", Actividad = "Datos de elaboración de jarabe y limpieza y saneamiento", MedioEntrega = "Correo electrónico", Observaciones = "Ninguna" },
-                // ... y así los demás registros
-            }
+                {
+                    new() { NombrePersona = "GARZA ESPARZA JULIO CÉSAR", Hora = "09:11", Puesto = "Planeador", Area = "Producción", Actividad = "Cantidad de material producida", MedioEntrega = "Correo electrónico", Observaciones = "Ninguna" },
+                    new() { NombrePersona = "RANGEL CASTILLO VIASIT BERENICE", Hora = "13:18", Puesto = "Supervisor", Area = "Jarabes y saneamiento", Actividad = "Datos de elaboración de jarabe y limpieza y saneamiento", MedioEntrega = "Correo electrónico", Observaciones = "Ninguna" },
+                    // ... y así los demás registros
+                }
             };
         }
 
@@ -712,7 +769,25 @@ namespace dashboardQ40.Services
                     }
                 }
                 return resultados;
-            }   
+            }
+
+
+            public static string EjecutarEscalar(
+   string sql,
+   Dictionary<string, object> parametros,
+   string connectionString)
+            {
+                using var conn = new SqlConnection(connectionString);
+                using var cmd = new SqlCommand(sql, conn);
+
+                foreach (var p in parametros)
+                    cmd.Parameters.AddWithValue(p.Key, p.Value ?? DBNull.Value);
+
+                conn.Open();
+                var result = cmd.ExecuteScalar();
+                return result?.ToString();
+            }
+
         }
 
 
@@ -1001,6 +1076,117 @@ namespace dashboardQ40.Services
 
 
 
+        public static BloqueAnalisisFisicoquimicoModel ObtenerAnalisisFisicoquimicoBydate(
+    List<TrazabilidadNode> trazabilidadNodos,
+    long batchPadre,
+    TimeSpan horaQueja,
+    string company,
+    string connStr,
+    IConfiguration configuration,
+    string bloque,
+    string tituloBloque,
+    string queryKey = "AnalisisFisicoquimicoBydate")
+        {
+            var nodoPadre = trazabilidadNodos.FirstOrDefault(x => x.Batch == batchPadre);
+            DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
+            DateTime fechaHoraQueja = fechaProduccion + horaQueja;
+
+            var nodosFamilia = trazabilidadNodos
+                .Where(n => (n.ManufacturingFamily ?? "").ToUpper().Contains(bloque?.ToUpper() ?? ""))
+                .OrderBy(n => n.StartDate)
+                .ToList();
+
+            if (nodosFamilia.Count == 0)
+                return new BloqueAnalisisFisicoquimicoModel { TituloBloque = tituloBloque };
+
+            // 1) Lote activo y anteriores
+            var jarabeActivo = nodosFamilia
+                .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
+
+            var seleccion = new List<TrazabilidadNode>();
+            if (jarabeActivo != null)
+            {
+                seleccion.Add(jarabeActivo);
+                seleccion.AddRange(
+                    nodosFamilia.Where(n => n.EndDate < jarabeActivo.StartDate)
+                                .OrderByDescending(n => n.EndDate)
+                                .Take(4));
+            }
+            else
+            {
+                seleccion = nodosFamilia;
+            }
+
+            // 2) Ventana de fechas para el query por fecha (primera a última muestra)
+            var startDate = seleccion.Min(n => n.StartDate);
+            var endDate = seleccion.Max(n => n.EndDate);
+
+            // 3) Manufactura / Workplace: primero del activo, si no, del padre (o del primer nodo de la selección)
+            string manufacturingReference =
+                jarabeActivo?.ManufacturingReference
+                ?? nodoPadre?.ManufacturingReference
+                ?? seleccion.FirstOrDefault()?.ManufacturingReference;
+
+          
+
+            // 4) Ejecutar el query mapeado en appsettings ("AnalisisFisicoquimicoBydate")
+            var query = configuration[$"ExcelToSqlMappings:{queryKey}:Query"];
+            // Buscar el workplace real desde la BD usando el batch del jarabe activo
+            string workplace = null;
+            if (jarabeActivo != null)
+            {
+                string sqlWorkplace = "SELECT TOP 1 consumptionWorkplace FROM BatchConsumptions WHERE batch = @batch";
+                var pWork = new Dictionary<string, object> { { "@batch", jarabeActivo.Batch } };
+                workplace = DynamicSqlService.EjecutarEscalar(sqlWorkplace, pWork, connStr);
+            }
+            // Validaciones mínimas
+            if (string.IsNullOrWhiteSpace(manufacturingReference) || string.IsNullOrWhiteSpace(workplace))
+                return new BloqueAnalisisFisicoquimicoModel { TituloBloque = tituloBloque };
+
+
+
+            var parametros = new Dictionary<string, object>
+    {
+        { "@company", company },
+        { "@startdate", startDate },
+        { "@enddate",   endDate },
+        { "@manufacturingreference", manufacturingReference },
+        { "@workplace", workplace }
+    };
+
+
+            var filas = DynamicSqlService.EjecutarQuery<ResultadoAnalisisFisicoquimicoByDate>(
+    queryKey, parametros, null, configuration, connStr);
+
+            // 5) Render: tres columnas fijas (inicio/medio/fin) ya calculadas en SQL
+            var encabezados = new List<string> { "inicio de corrida", "medio corrida", "fin de corrida" };
+
+            var registros = filas
+                .OrderBy(f => f.OperacionNombre)
+                .Select(f => new RegistroAnalisisFisicoquimico
+                {
+                    DescripcionParametro = f.OperacionNombre,
+                    ValoresPorLote = new List<string>
+                    {
+                f.InicioValor ?? "",
+                f.MedioValor  ?? "",
+                f.FinValor    ?? ""
+                    }
+                })
+                .ToList();
+
+            return new BloqueAnalisisFisicoquimicoModel
+            {
+                TituloBloque = tituloBloque,
+                EncabezadosSku = encabezados,
+                Registros = registros
+            };
+        }
+
+
+
+
+
         public static async Task<List<PruebaLiberacionRow>> ObtenerPruebasLiberacionJarabeTerminadoAsync(
     DateTime? startDate,
     DateTime? endDate,
@@ -1146,6 +1332,9 @@ namespace dashboardQ40.Services
         // ------------ 
 
         // --- helpers ---
+
+       
+
         static string Norm(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) return string.Empty;

@@ -1,0 +1,684 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard BPM</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            /* Paleta modo claro */
+            --bg: #ffffff;
+            --ink: #0B1220; /* texto principal */
+            --muted: #5f6b7a; /* texto secundario */
+            --border: #e6e9ee; /* bordes/splitlines */
+            --card: #ffffff; /* tarjetas */
+            --card-shadow: 0 6px 20px rgba(18, 38, 63, .06);
+            /* Colores de datos */
+            --kpi-green: #14a44d; /* Cumplimiento */
+            --kpi-red: #ef4444; /* Críticos */
+            --kpi-blue: #2563eb; /* Promedio */
+            --kpi-gray: #64748b; /* Neutros/0 */
+            --kpi-amber: #f59e0b; /* 1 (positivo) */
+            --kpi-olive: #7fbf3f; /* -1 */
+            --kpi-navy: #3b82f6; /* -2 */
+
+            --risk-low: #CDEAC8; /* Bajo (verde)   */
+            --risk-mod: #F7E08B; /* Moderado (amarillo) */
+            --risk-high: #F6C08B; /* Alto (naranja) */
+            --risk-crit: #F5A3A3; /* Crítico (rojo) */
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--ink);
+        }
+
+        .dashboard-container {
+            padding: 16px 20px 32px;
+            background: var(--bg);
+        }
+
+        .kpi-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            padding: 18px 20px;
+        }
+
+        .kpi-title {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+            letter-spacing: .2px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .kpi-hint {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            color: var(--muted);
+        }
+
+        .country-tile {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 18px;
+        }
+
+        .btn-link {
+            color: var(--kpi-blue);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+            .btn-link:hover {
+                text-decoration: underline;
+            }
+
+        /* ---------- Layout / contenedores ---------- */
+        .wrap {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12,1fr);
+            gap: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ---------- Tarjetas genéricas ---------- */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--card-shadow);
+            padding: 18px;
+        }
+
+        /* ---------- Charts ---------- */
+        .chart {
+            height: 340px;
+        }
+
+            .chart.half {
+                height: 320px;
+            }
+
+        /* ---------- KPIs ---------- */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 12px;
+        }
+
+        .kpi {
+            padding: 6px 4px;
+        }
+
+            .kpi h3 {
+                margin: 0 0 4px;
+                font-size: 13px;
+                color: var(--muted);
+                font-weight: 600;
+            }
+
+            .kpi .v {
+                font-size: 28px;
+                font-weight: 800;
+                line-height: 1;
+            }
+
+                .kpi .v.ok {
+                    color: var(--kpi-green);
+                }
+
+                .kpi .v.bad {
+                    color: var(--kpi-red);
+                }
+
+                .kpi .v.cyan {
+                    color: var(--kpi-blue);
+                }
+
+            .kpi .muted {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+
+        /* ---------- Países / Plantas ---------- */
+        .countries {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 12px;
+        }
+
+        .country-card h3 {
+            margin: 0 0 6px;
+            font-size: 16px;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            color: var(--muted);
+        }
+
+        /* ---------- Tabla criterios ---------- */
+        #tbl-criteria {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+            #tbl-criteria th, #tbl-criteria td {
+                border: 1px solid var(--border);
+                padding: 8px;
+                text-align: left;
+            }
+
+                #tbl-criteria td.ok {
+                    color: var(--kpi-green);
+                    font-weight: 700;
+                }
+
+                #tbl-criteria td.warn {
+                    color: #f59e0b;
+                    font-weight: 700;
+                }
+
+                #tbl-criteria td.bad {
+                    color: var(--kpi-red);
+                    font-weight: 700;
+                }
+
+        /* ---------- Encabezado / toolbar ---------- */
+        header {
+            max-width: 1200px;
+            margin: 16px auto 8px;
+            padding: 0 12px;
+        }
+
+            header h1 {
+                margin: 0 0 6px;
+                font-size: 22px;
+            }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .crumbs {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        button {
+            background: #f1f5f9;
+            color: #0b1220;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+            button:hover {
+                background: #e8edf5;
+            }
+
+        .badge-risk {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .risk-low {
+            background: var(--risk-low);
+        }
+
+        .risk-mod {
+            background: var(--risk-mod);
+        }
+
+        .risk-high {
+            background: var(--risk-high);
+        }
+
+        .risk-crit {
+            background: var(--risk-crit);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Dashboard BPM – Buenas Prácticas de Manufactura</h1>
+        <div class="toolbar">
+            <div class="crumbs" id="breadcrumbs">Global</div>
+            <div style="margin-left:auto;display:flex;gap:8px">
+                <button id="btnGlobal">Vista global</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="wrap">
+
+        <!-- VIEW: GLOBAL -->
+        <section id="view-global" data-view class="grid">
+            <div class="card" style="grid-column:span 12">
+                <div class="kpis" id="kpis-global"></div>
+            </div>
+            <div class="charts" style="grid-column:span 12">
+                <div class="card chart" id="chart-global-trend"></div>
+                <div class="card chart" id="chart-global-stacked"></div>
+            </div>
+            <div class="card" style="grid-column:span 12">
+                <h3 style="margin:0 0 12px">Países</h3>
+                <div id="countries" class="countries"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: COUNTRY -->
+        <section id="view-country" data-view class="hidden grid">
+            <div class="card" style="grid-column:span 12">
+                <div class="kpis" id="kpis-country"></div>
+            </div>
+            <div class="charts" style="grid-column:span 12">
+                <div class="card chart" id="chart-country-trend"></div>
+                <div class="card chart" id="chart-country-stacked"></div>
+            </div>
+            <div class="card" style="grid-column:span 12">
+                <h3 style="margin:0 0 12px">Plantas</h3>
+                <div id="plants" class="countries"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: PLANT -->
+        <section id="view-plant" data-view class="hidden grid">
+            <div class="card" style="grid-column:span 12">
+                <div class="kpis" id="kpis-plant"></div>
+            </div>
+            <div class="charts" style="grid-column:span 12">
+                <div class="card chart half" id="chart-plant-trend"></div>
+                <div class="card chart half" id="chart-plant-stacked"></div>
+            </div>
+            <div class="card" style="grid-column:span 12">
+                <h3 style="margin:0 0 8px">Top 5 criterios críticos</h3>
+                <table id="tbl-criteria">
+                    <thead><tr><th>Criterio</th><th>Promedio</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <div class="card chart half" id="chart-risk-matrix"></div>
+
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const STATE = { data: null, country: null, plant: null };
+        //const JSON_URL = 'bpm_demo.json'; // ⚠️ coloca bpm_demo.json en wwwroot/data/
+        const JSON_URL = '@Url.Content("~/data/bpm_demo.json")';
+
+        // ---------- Helpers ----------
+        const fmtPct = v => (v != null ? (v * 100).toFixed(1) + '%' : '—');
+        const fmtNum = v => (v != null ? Number(v).toLocaleString('es-MX') : '—');
+        const lastOf = arr => arr[arr.length - 1];
+
+        function setView(id) {
+            document.querySelectorAll('[data-view]').forEach(x => x.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function setCrumbs(parts) {
+            document.getElementById('breadcrumbs').textContent = parts.join(' / ');
+        }
+
+        function makeKpi(title, value, hint, cls) {
+            return `<div class="kpi"><h3>${title}</h3><div class="v ${cls || ''}">${value}</div><div class="muted">${hint || ''}</div></div>`;
+        }
+
+        function computeFromRollup(roll) {
+            if (!roll || !roll.length) return null;
+            const last = lastOf(roll);
+            const total = roll.reduce((s, x) => s + (x.total_checks || 0), 0);
+            return { mean: last.mean, compliance: last.compliance, critical: last.critical, total };
+        }
+
+        function computeFromPlantMonths(months) {
+            if (!months || !months.length) return null;
+            const last = lastOf(months);
+            const total = months.reduce((s, x) => s + (x.total_checks || 0), 0);
+            return { mean: last.mean, compliance: last.compliance, critical: last.critical, total };
+        }
+
+        // ---------- Global render ----------
+        function renderGlobal() {
+            setView('view-global'); setCrumbs(['Global']);
+            const roll = STATE.data.global_rollup;
+            const k = computeFromRollup(roll);
+            const kpis = document.getElementById('kpis-global');
+            kpis.innerHTML = [
+                makeKpi('Cumplimiento global', fmtPct(k.compliance), '≥ 0 (0 y 1)', 'ok'),
+                makeKpi('Críticos global', fmtPct(k.critical), '≤ -1', 'bad'),
+                makeKpi('Promedio global', (k.mean != null ? k.mean.toFixed(2) : '—'), 'escala -2 a 1', 'cyan'),
+                makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
+            ].join('');
+
+            renderTrend('chart-global-trend', roll, 'Promedio global');
+            renderStacked('chart-global-stacked', roll, 'Distribución global');
+
+            // Countries grid
+            const box = document.getElementById('countries');
+            box.innerHTML = '';
+            STATE.data.countries.forEach(country => {
+                const rollC = STATE.data.country_rollup[country.name];
+                const kc = computeFromRollup(rollC);
+                const el = document.createElement('div');
+                el.className = 'card country-card';
+                el.innerHTML = `
+          <h3>${country.name}</h3>
+          <div class="muted" style="margin-bottom:8px">Plantas: ${country.plants.length}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="pill">Cumpl.: ${fmtPct(kc.compliance)}</span>
+            <span class="pill">Críticos: ${fmtPct(kc.critical)}</span>
+            <span class="pill">Prom.: ${kc.mean != null ? kc.mean.toFixed(2) : '—'}</span>
+          </div>
+          <div class="muted">Click para ver plantas</div>`;
+                el.addEventListener('click', () => renderCountry(country.name));
+                box.appendChild(el);
+            });
+        }
+
+        // ---------- Country view ----------
+        function renderCountry(countryName) {
+            STATE.country = countryName; STATE.plant = null;
+            setView('view-country'); setCrumbs(['Global', countryName]);
+
+            const roll = STATE.data.country_rollup[countryName];
+            const k = computeFromRollup(roll);
+            document.getElementById('kpis-country').innerHTML = [
+                makeKpi('Cumplimiento', fmtPct(k.compliance), '≥ 0', 'ok'),
+                makeKpi('Críticos', fmtPct(k.critical), '≤ -1', 'bad'),
+                makeKpi('Promedio', (k.mean != null ? k.mean.toFixed(2) : '—'), 'escala -2 a 1', 'cyan'),
+                makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
+            ].join('');
+
+            renderTrend('chart-country-trend', roll, `Promedio – ${countryName}`);
+            renderStacked('chart-country-stacked', roll, `Distribución – ${countryName}`);
+
+            // Plants list
+            const country = STATE.data.countries.find(c => c.name === countryName);
+            const box = document.getElementById('plants'); box.innerHTML = '';
+            country.plants.forEach(plant => {
+                const kp = computeFromPlantMonths(plant.months);
+                const el = document.createElement('div');
+                el.className = 'card country-card';
+                el.innerHTML = `
+          <h3>${plant.name}</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="pill">Cumpl.: ${fmtPct(kp.compliance)}</span>
+            <span class="pill">Críticos: ${fmtPct(kp.critical)}</span>
+            <span class="pill">Prom.: ${kp.mean != null ? kp.mean.toFixed(2) : '—'}</span>
+          </div>
+          <div class="muted">Click para ver estadísticos de la planta</div>`;
+                el.addEventListener('click', () => renderPlant(countryName, plant.name));
+                box.appendChild(el);
+            });
+        }
+
+        // ---------- Plant view ----------
+        function renderPlant(countryName, plantName) {
+            STATE.plant = plantName;
+            setView('view-plant'); setCrumbs(['Global', countryName, plantName]);
+
+            const country = STATE.data.countries.find(c => c.name === countryName);
+            const plant = country.plants.find(p => p.name === plantName);
+            const k = computeFromPlantMonths(plant.months);
+
+            document.getElementById('kpis-plant').innerHTML = [
+                makeKpi('Cumplimiento', fmtPct(k.compliance), '≥ 0', 'ok'),
+                makeKpi('Críticos', fmtPct(k.critical), '≤ -1', 'bad'),
+                makeKpi('Promedio', (k.mean != null ? k.mean.toFixed(2) : '—'), 'escala -2 a 1', 'cyan'),
+                makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
+            ].join('');
+
+            // Charts
+            renderTrend('chart-plant-trend', plant.months.map(m => ({
+                month: m.month, mean: m.mean, compliance: m.compliance, critical: m.critical, counts: m.counts, total_checks: m.total_checks
+            })), `Promedio – ${plantName}`);
+            renderStacked('chart-plant-stacked', plant.months.map(m => ({
+                month: m.month, counts: m.counts, total_checks: m.total_checks
+            })), `Distribución – ${plantName}`);
+
+            // Criteria table (top 5 worst by avg)
+            const tbody = document.querySelector('#tbl-criteria tbody');
+            tbody.innerHTML = '';
+            const list = (plant.criteria || [])
+                .slice() // copia
+                .sort((a, b) => a.avg - b.avg) // peores primero
+                .slice(0, 5);
+
+            list.forEach(c => {
+                // calcula riesgo
+                const r = riskClass(c.occ ?? 2, c.sev ?? 2);
+                const info = riskLabel(r);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span>${c.criterio}</span>
+                <span class="badge-risk ${info.cls}">${info.txt}</span>
+                <span class="badge">Sev: ${c.sev ?? '—'}</span>
+                <span class="badge">Ocu: ${c.occ ?? '—'}</span>
+                <span class="badge">Frecuencia: ${freqByRisk(r)}</span>
+              </div>
+            </td>
+            <td class="${c.avg < 0 ? 'bad' : 'ok'}">${c.avg.toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+
+        }
+
+        // ---------- Charts ----------
+        function cssVar(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        function renderTrend(domId, roll, title) {
+            const el = document.getElementById(domId);
+            const chart = echarts.init(el);
+            const months = roll.map(x => x.month);
+            const mean = roll.map(x => x.mean);
+            const compliance = roll.map(x => x.compliance);
+            const critical = roll.map(x => x.critical);
+
+            chart.setOption({
+                backgroundColor: '#ffffff',
+                color: [cssVar('--kpi-blue'), cssVar('--kpi-green'), cssVar('--kpi-red')],
+                title: { text: title, left: 'center', textStyle: { fontSize: 14, color: '#0b1220' } },
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: '#111827', borderColor: '#111827',
+                    textStyle: { color: '#fff' }
+                },
+                legend: { data: ['Promedio', 'Cumplimiento', 'Críticos'], textStyle: { color: '#334155' } },
+                grid: { left: 48, right: 20, top: 42, bottom: 36 },
+                xAxis: {
+                    type: 'category', data: months,
+                    axisLine: { lineStyle: { color: '#cbd5e1' } },
+                    axisLabel: { color: '#334155' },
+                    splitLine: { show: false }
+                },
+                yAxis: [
+                    {
+                        type: 'value', min: -2, max: 1, name: 'Promedio',
+                        axisLine: { show: false },
+                        axisLabel: { color: '#334155' },
+                        splitLine: { show: true, lineStyle: { color: cssVar('--border') } },
+                        nameTextStyle: { color: '#334155' }
+                    },
+                    {
+                        type: 'value', min: 0, max: 1, name: '%',
+                        axisLine: { show: false },
+                        axisLabel: { color: '#334155' },
+                        splitLine: { show: false },
+                        nameTextStyle: { color: '#334155' }
+                    }
+                ],
+                series: [
+                    { name: 'Promedio', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, lineStyle: { width: 3 }, data: mean, yAxisIndex: 0 },
+                    { name: 'Cumplimiento', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, lineStyle: { width: 3 }, data: compliance, yAxisIndex: 1 },
+                    { name: 'Críticos', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, lineStyle: { width: 3 }, data: critical, yAxisIndex: 1 }
+                ]
+            });
+            new ResizeObserver(() => chart.resize()).observe(el);
+        }
+
+        function renderStacked(domId, roll, title) {
+            const el = document.getElementById(domId);
+            const chart = echarts.init(el);
+            const months = roll.map(x => x.month);
+            const sN2 = roll.map(x => x.counts['-2']);
+            const sN1 = roll.map(x => x.counts['-1']);
+            const s0 = roll.map(x => x.counts['0']);
+            const s1 = roll.map(x => x.counts['1']);
+
+            chart.setOption({
+                backgroundColor: '#ffffff',
+                color: [cssVar('--kpi-navy'), cssVar('--kpi-olive'), cssVar('--kpi-gray'), cssVar('--kpi-amber')],
+                title: { text: title, left: 'center', textStyle: { fontSize: 14, color: '#0b1220' } },
+                tooltip: {
+                    trigger: 'axis', axisPointer: { type: 'shadow' },
+                    backgroundColor: '#111827', borderColor: '#111827', textStyle: { color: '#fff' }
+                },
+                legend: { data: ['-2', '-1', '0', '1'], textStyle: { color: '#334155' } },
+                grid: { left: 48, right: 20, top: 42, bottom: 36 },
+                xAxis: {
+                    type: 'category', data: months,
+                    axisLine: { lineStyle: { color: '#cbd5e1' } },
+                    axisLabel: { color: '#334155' },
+                    splitLine: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    axisLabel: { color: '#334155' },
+                    splitLine: { show: true, lineStyle: { color: cssVar('--border') } }
+                },
+                series: [
+                    { name: '-2', type: 'bar', stack: 't', barMaxWidth: 28, data: sN2 },
+                    { name: '-1', type: 'bar', stack: 't', data: sN1 },
+                    { name: '0', type: 'bar', stack: 't', data: s0 },
+                    { name: '1', type: 'bar', stack: 't', data: s1 }
+                ]
+            });
+            new ResizeObserver(() => chart.resize()).observe(el);
+        }
+
+        function riskClass(occ, sev) {
+            // Matriz 4x4 como en tu tabla
+            const grid = [
+            /* sev=1 */['BR', 'BR', 'M', 'AR'],
+            /* sev=2 */['BR', 'M', 'AR', 'AR'],
+            /* sev=3 */['M', 'AR', 'AR', 'C'],
+            /* sev=4 */['AR', 'AR', 'C', 'C']
+            ];
+            return grid[sev - 1][occ - 1];
+        }
+
+        function riskLabel(r) {
+            return (
+                r === 'BR' ? { txt: 'Bajo riesgo', cls: 'risk-low' } :
+                    r === 'M' ? { txt: 'Moderado', cls: 'risk-mod' } :
+                        r === 'AR' ? { txt: 'Alto riesgo', cls: 'risk-high' } :
+                            { txt: 'Crítico', cls: 'risk-crit' }
+            );
+        }
+
+        function freqByRisk(r) {
+            return (r === 'C' ? 'Quincenal' :
+                r === 'AR' ? 'Mensual' :
+                    r === 'M' ? 'Bimestral' : 'Trimestral');
+        }
+
+        function renderRiskMatrix(domId, criteria) {
+            const el = document.getElementById(domId);
+            const chart = echarts.init(el);
+            // cuenta criterios por celda (occ,sev)
+            const counts = Array.from({ length: 4 }, () => Array(4).fill(0));
+            (criteria || []).forEach(c => {
+                const o = (c.occ || 2) - 1, s = (c.sev || 2) - 1; counts[s][o] += 1;
+            });
+            const data = [];
+            for (let s = 0; s < 4; s++) for (let o = 0; o < 4; o++) data.push([o, s, counts[s][o]]);
+
+            chart.setOption({
+                tooltip: { formatter: p => `Ocu ${p.value[0] + 1} / Sev ${p.value[1] + 1}: <b>${p.value[2]}</b>` },
+                xAxis: { type: 'category', data: ['1 Baja', '2', '3', '4 Muy alta'] },
+                yAxis: { type: 'category', data: ['1 Baja', '2', '3', '4 Crítica'] },
+                visualMap: {
+                    show: false, min: 0, max: Math.max(1, ...data.map(d => d[2])),
+                    inRange: {
+                        color: [getComputedStyle(document.documentElement).getPropertyValue('--risk-low').trim(),
+                        getComputedStyle(document.documentElement).getPropertyValue('--risk-mod').trim(),
+                        getComputedStyle(document.documentElement).getPropertyValue('--risk-high').trim(),
+                        getComputedStyle(document.documentElement).getPropertyValue('--risk-crit').trim()]
+                    }
+                },
+                series: [{ type: 'heatmap', data, label: { show: true } }]
+            });
+            new ResizeObserver(() => chart.resize()).observe(el);
+        }
+
+
+        // ---------- Init ----------
+        document.getElementById('btnGlobal').addEventListener('click', () => { STATE.country = null; STATE.plant = null; renderGlobal(); });
+
+        (async function init() {
+            try {
+                const res = await fetch(JSON_URL);
+                STATE.data = await res.json();
+                renderGlobal();
+            } catch (err) {
+                console.error('Error cargando JSON:', err);
+                alert('No se pudo cargar /data/bpm_demo.json. Coloca el archivo en wwwroot/data.');
+            }
+        })();
+    </script>
+</body>
+</html>

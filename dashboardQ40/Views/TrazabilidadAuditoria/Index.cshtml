@@ -28,7 +28,7 @@
                         <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
                     </div>
                     <div class="col">
-                        <select id="pais" class="form-select form-select-sm">
+                        <select id="pais" class="form-select form-select-sm" required>
                             <option value="">-- Selecciona --</option>
                             @foreach (var p in ViewBag.Countries)
                             {
@@ -40,7 +40,7 @@
                         <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
                     </div>
                     <div class="col">
-                        <select id="planta" class="form-select form-select-sm">
+                        <select id="planta" class="form-select form-select-sm" required disabled>
                             <option value="">-- Selecciona --</option>
                         </select>
                     </div>
@@ -117,8 +117,10 @@
 </div>
 
 <!-- Loading overlay -->
-<div id="global-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4); z-index:9999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
-    <div class="spinner-border text-light" style="width: 4rem; height: 4rem;" role="status">
+<div id="global-loader"
+      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+            background-color:rgba(0,0,0,0.4); z-index:1040; align-items:center; justify-content:center; flex-direction:column;">
+    <div class="spinner-border text-light" style="width:4rem;height:4rem" role="status">
         <span class="visually-hidden">@Localizer["Common_Loading"]</span>
     </div>
     <div class="mt-3 text-white fw-bold text-center" id="mensaje-loader">
@@ -140,7 +142,7 @@
         };
 
         // Todas las companies (Company, CompanyName, CountryCode) desde backend
-        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+        window.COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
 
         // Helpers
         function toArray(data) {
@@ -159,7 +161,7 @@
         function fillPlants(countryCode) {
             const $planta = $("#planta");
             resetSelect($planta, LABELS.Plant);
-            resetSelect($("#line"), LABELS.Line); // limpiar línea
+            $planta.prop("disabled", true);
 
             if (!countryCode) return;
 
@@ -168,10 +170,8 @@
                 .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
 
             plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+            $planta.prop("disabled", plants.length === 0);
         }
-
-       
-        // Eventos
         $("#pais").on("change", function () { fillPlants(this.value); });
 
 
@@ -183,10 +183,25 @@
                 $pais.trigger("change");
             }
         });
-    </script>
+
+        function validarPaisPlanta() {
+            const pais = $("#pais").val();
+            const planta = $("#planta").val();
+
+            if (!pais) {
+                Swal.fire({ icon: "warning", title: "Selecciona el país", text: "Debes elegir un país." });
+                $("#pais").focus();
+                return false;
+            }
+            if (!planta) {
+                Swal.fire({ icon: "warning", title: "Selecciona la planta", text: "Debes elegir una planta." });
+                $("#planta").focus();
+                return false;
+            }
+            return true;
+        }
 
 
-    <script>
         // Diccionario JS desde Localizer
         const T = {
             Blocks: [
@@ -228,12 +243,26 @@
 
         function mostrarFormulario(tipo) {
             document.getElementById("opcionesIniciales").style.display = "none";
+
             if (tipo === 'nuevo') {
                 document.getElementById("formNuevo").style.display = "block";
             } else if (tipo === 'ver') {
                 document.getElementById("formHistorial").style.display = "block";
+
+                if (!_historialCargado) {
+                    document.getElementById('global-loader')?.classList.remove('d-none');
+                    const url = '@Url.Action("HistorialPartial", "TrazabilidadAuditoria")';
+                    $("#formHistorial").load(url, function () {
+                        _historialCargado = true;
+                        document.getElementById('global-loader')?.classList.add('d-none');
+                        if (window.initHistorial) window.initHistorial(); // dentro valida la planta
+                    });
+                } else {
+                    if (window.cargarHistorial) window.cargarHistorial(); // ya valida planta internamente
+                }
             }
         }
+
 
         function regresar() {
             document.getElementById("formNuevo").style.display = "none";
@@ -243,7 +272,7 @@
 
         $("#formGuardar").submit(async function (e) {
             e.preventDefault();
-
+            if (!validarPaisPlanta()) return;
             const result = await Swal.fire({
                 title: '¿Cómo deseas proceder?',
                 text: 'Puedes guardar el reporte o ejecutar una simulación (no escribirá en la BD).',
@@ -263,6 +292,8 @@
             }
 
             const data = {
+                country: $("#pais").val(),             
+                company: $("#planta").val(),           
                 FechaHora: $("#fechaHora").val(),
                 HoraInicio: $("#horaInicio").val(),
                 HoraFin: $("#horaFin").val(),
@@ -273,20 +304,23 @@
                 Revision: $("#revision").val(),
                 UsuarioVobo: $("#usuarioVobo").val(),
                 horaQueja: $("#horaQueja").val(),
-                company: $("#planta").val(),
                 simulate: result.isDenied // Guardar=false, Simulación=true
             };
 
-            $("#global-loader").show();
-            iniciarAnimacionBloques();
+            $("#mensaje-loader").html(T.LoaderGenerating + "<br/>");
+            $("#global-loader").css('display', 'flex');
 
             $.ajax({
                 url: '@Url.Action("GuardarReporte", "TrazabilidadAuditoria")',
                 type: 'POST',
-                contentType: 'application/json',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
                 data: JSON.stringify(data),
+
                 success: async function (res) {
-                    detenerAnimacionBloques();
+                    // Oculta el overlay ANTES del Swal
+                    //detenerAnimacionBloques();
+                    $("#global-loader").hide();
 
                     if (res && res.success) {
                         if (data.simulate) {
@@ -304,11 +338,13 @@
                                 confirmButtonText: 'Continuar'
                             });
                         }
-
-                        // ✅ Oculta loader solo DESPUÉS de que se cierre el mensaje
-                        $("#global-loader").hide();
-                        $("#global-loader").show();
-                        // Si quieres limpiar y redirigir después del mensaje:
+                        $("#mensaje-loader").html(
+                            `<b>${T.LoaderGenerating}</b><br/>${T.LoaderLoadingBlock} ${T.Blocks[0]}...`
+                        );
+                        iniciarAnimacionBloques();
+                        $("#global-loader").css("display", "flex");
+                        await new Promise(r => setTimeout(r, 300));
+                        // Redirección
                         $("#formGuardar")[0].reset();
                         window.location.href =
                             '/TrazabilidadAuditoria/AuditReport?lote=' +
@@ -316,18 +352,58 @@
                             '&horaQueja=' + encodeURIComponent(data.horaQueja) +
                             '&company=' + encodeURIComponent(data.company);
                     } else {
-                        $("#global-loader").hide();
                         alert("❌ " + T.ErrorUnexpected);
                     }
                 },
+
                 error: function (err) {
                     console.error(err);
-                    detenerAnimacionBloques();
-                    $("#global-loader").hide();
                     alert("❌ " + T.ErrorSaving);
+                },
+
+                complete: function () {
+                    //detenerAnimacionBloques();
+                    $("#global-loader").hide(); // pase lo que pase, apágalo
                 }
             });
         });
 
+        function setInvalid($el, invalid) {
+            $el.toggleClass("is-invalid", invalid);
+        }
+
+
+
+        let _historialCargado = false;
+
+        function mostrarFormulario(tipo) {
+            document.getElementById("opcionesIniciales").style.display = "none";
+
+            if (tipo === 'nuevo') {
+                document.getElementById("formNuevo").style.display = "block";
+            } else if (tipo === 'ver') {
+                document.getElementById("formHistorial").style.display = "block";
+
+                if (!_historialCargado) {
+                    document.getElementById('global-loader')?.classList.remove('d-none');
+                    const url = '@Url.Action("HistorialPartial", "TrazabilidadAuditoria")';
+                    $("#formHistorial").load(url, function () {
+                        _historialCargado = true;
+                        document.getElementById('global-loader')?.classList.add('d-none');
+                        if (window.initHistorial) window.initHistorial();
+                    });
+                } else {
+                    // 🔹 recarga el grid con el company (planta) actual
+                    if (window.cargarHistorial) window.cargarHistorial();
+                }
+            }
+        }
+
+
+        // (Opcional) Volver al inicio desde cualquier sección:
+        window.volverOpciones = function () {
+            $("#formNuevo, #formHistorial").hide();
+            $("#opcionesIniciales").show();
+        }
     </script>
 }

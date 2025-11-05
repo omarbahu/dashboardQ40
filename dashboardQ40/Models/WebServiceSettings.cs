@@ -2,24 +2,24 @@
 {
     public class WebServiceSettings
     {
-        public string BaseUrl { get; set; }
-        public string QueryPlantas { get; set; }
-        public string QueryLineas { get; set; }
-        public string QuerySKUs { get; set; }
-        public string QueryVarY { get; set; }
-        public string QueryVarX { get; set; }
-        public string UserNameWS { get; set; }
-        public string PasswordWS { get; set; }
-        public string TokenUrl { get; set; }
-        public string Company { get; set; }
-        public string trazalog { get; set; }
-        public string logFilePath { get; set; }
-        public string QueryResultVarY_X { get; set; }
-        public string QueryAuthUser { get; set; }
-        public string QueryCompany { get; set; }
-        public string QueryLimits { get; set; }
-        public string QueryMP { get; set; }
-        public string QueryMF { get; set; }
+        public string BaseUrl { get; set; } = string.Empty;
+        public string QueryPlantas { get; set; } = string.Empty;
+        public string QueryLineas { get; set; } = string.Empty;
+        public string QuerySKUs { get; set; } = string.Empty;
+        public string QueryVarY { get; set; } = string.Empty;
+        public string QueryVarX { get; set; } = string.Empty;
+        public string UserNameWS { get; set; } = string.Empty;
+        public string PasswordWS { get; set; } = string.Empty;
+        public string TokenUrl { get; set; } = string.Empty;
+        public string Company { get; set; } = string.Empty;
+        public string trazalog { get; set; } = string.Empty;
+        public string logFilePath { get; set; } = string.Empty;
+        public string QueryResultVarY_X { get; set; } = string.Empty;
+        public string QueryAuthUser { get; set; } = string.Empty;
+        public string QueryCompany { get; set; } = string.Empty;
+        public string QueryLimits { get; set; } = string.Empty;
+        public string QueryMP { get; set; } = string.Empty;
+        public string QueryMF { get; set; } = string.Empty;
         public bool Produccion { get; set; }
 
     }
