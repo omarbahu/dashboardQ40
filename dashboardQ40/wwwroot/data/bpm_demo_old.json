@@ -1,0 +1,996 @@
+{
+  "global_rollup": [
+    {
+      "month": "ENE",
+      "mean": 0.22,
+      "compliance": 0.812,
+      "critical": 0.188,
+      "counts": {
+        "-2": 27,
+        "-1": 40,
+        "0": 117,
+        "1": 172
+      },
+      "total_checks": 356
+    },
+    {
+      "month": "FEB",
+      "mean": 0.28,
+      "compliance": 0.833,
+      "critical": 0.167,
+      "counts": {
+        "-2": 24,
+        "-1": 36,
+        "0": 114,
+        "1": 186
+      },
+      "total_checks": 360
+    },
+    {
+      "month": "MAR",
+      "mean": 0.33,
+      "compliance": 0.85,
+      "critical": 0.15,
+      "counts": {
+        "-2": 20,
+        "-1": 31,
+        "0": 105,
+        "1": 184
+      },
+      "total_checks": 340
+    },
+    {
+      "month": "ABR",
+      "mean": 0.3,
+      "compliance": 0.84,
+      "critical": 0.16,
+      "counts": {
+        "-2": 22,
+        "-1": 32,
+        "0": 106,
+        "1": 178
+      },
+      "total_checks": 338
+    },
+    {
+      "month": "MAY",
+      "mean": 0.32,
+      "compliance": 0.846,
+      "critical": 0.154,
+      "counts": {
+        "-2": 20,
+        "-1": 28,
+        "0": 97,
+        "1": 167
+      },
+      "total_checks": 312
+    },
+    {
+      "month": "JUN",
+      "mean": 0.35,
+      "compliance": 0.857,
+      "critical": 0.143,
+      "counts": {
+        "-2": 16,
+        "-1": 25,
+        "0": 88,
+        "1": 158
+      },
+      "total_checks": 287
+    },
+    {
+      "month": "JUL",
+      "mean": 0.24,
+      "compliance": 0.818,
+      "critical": 0.183,
+      "counts": {
+        "-2": 19,
+        "-1": 29,
+        "0": 86,
+        "1": 129
+      },
+      "total_checks": 263
+    },
+    {
+      "month": "AGO",
+      "mean": 0.21,
+      "compliance": 0.808,
+      "critical": 0.191,
+      "counts": {
+        "-2": 18,
+        "-1": 27,
+        "0": 78,
+        "1": 112
+      },
+      "total_checks": 235
+    },
+    {
+      "month": "SEPT",
+      "mean": 0.17,
+      "compliance": 0.795,
+      "critical": 0.205,
+      "counts": {
+        "-2": 18,
+        "-1": 28,
+        "0": 76,
+        "1": 102
+      },
+      "total_checks": 224
+    },
+    {
+      "month": "OCT",
+      "mean": 0.15,
+      "compliance": 0.788,
+      "critical": 0.211,
+      "counts": {
+        "-2": 19,
+        "-1": 29,
+        "0": 77,
+        "1": 102
+      },
+      "total_checks": 227
+    }
+  ],
+  "countries": [
+    {
+      "name": "México",
+      "plants": [
+        {
+          "name": "Insurgentes",
+          "months": [
+            {
+              "month": "ENE",
+              "mean": 0.22,
+              "compliance": 0.812,
+              "critical": 0.188,
+              "counts": {
+                "-2": 27,
+                "-1": 40,
+                "0": 117,
+                "1": 172
+              },
+              "total_checks": 356
+            },
+            {
+              "month": "FEB",
+              "mean": 0.28,
+              "compliance": 0.833,
+              "critical": 0.167,
+              "counts": {
+                "-2": 24,
+                "-1": 36,
+                "0": 114,
+                "1": 186
+              },
+              "total_checks": 360
+            },
+            {
+              "month": "MAR",
+              "mean": 0.33,
+              "compliance": 0.85,
+              "critical": 0.15,
+              "counts": {
+                "-2": 20,
+                "-1": 31,
+                "0": 105,
+                "1": 184
+              },
+              "total_checks": 340
+            },
+            {
+              "month": "ABR",
+              "mean": 0.3,
+              "compliance": 0.84,
+              "critical": 0.16,
+              "counts": {
+                "-2": 22,
+                "-1": 32,
+                "0": 106,
+                "1": 178
+              },
+              "total_checks": 338
+            },
+            {
+              "month": "MAY",
+              "mean": 0.32,
+              "compliance": 0.846,
+              "critical": 0.154,
+              "counts": {
+                "-2": 20,
+                "-1": 28,
+                "0": 97,
+                "1": 167
+              },
+              "total_checks": 312
+            },
+            {
+              "month": "JUN",
+              "mean": 0.35,
+              "compliance": 0.857,
+              "critical": 0.143,
+              "counts": {
+                "-2": 16,
+                "-1": 25,
+                "0": 88,
+                "1": 158
+              },
+              "total_checks": 287
+            },
+            {
+              "month": "JUL",
+              "mean": 0.24,
+              "compliance": 0.818,
+              "critical": 0.183,
+              "counts": {
+                "-2": 19,
+                "-1": 29,
+                "0": 86,
+                "1": 129
+              },
+              "total_checks": 263
+            },
+            {
+              "month": "AGO",
+              "mean": 0.21,
+              "compliance": 0.808,
+              "critical": 0.191,
+              "counts": {
+                "-2": 18,
+                "-1": 27,
+                "0": 78,
+                "1": 112
+              },
+              "total_checks": 235
+            },
+            {
+              "month": "SEPT",
+              "mean": 0.17,
+              "compliance": 0.795,
+              "critical": 0.205,
+              "counts": {
+                "-2": 18,
+                "-1": 28,
+                "0": 76,
+                "1": 102
+              },
+              "total_checks": 224
+            },
+            {
+              "month": "OCT",
+              "mean": 0.15,
+              "compliance": 0.788,
+              "critical": 0.211,
+              "counts": {
+                "-2": 19,
+                "-1": 29,
+                "0": 77,
+                "1": 102
+              },
+              "total_checks": 227
+            }
+          ],
+          "criteria": [
+            {
+              "criterio": "Línea 1 - Limpieza",
+              "avg": -0.35,
+              "sev": 3,
+              "occ": 3
+            },
+            {
+              "criterio": "Jarabe Simple",
+              "avg": -0.2,
+              "sev": 2,
+              "occ": 3
+            },
+            {
+              "criterio": "Tratamiento de agua",
+              "avg": 0.1,
+              "sev": 2,
+              "occ": 2
+            },
+            {
+              "criterio": "Laboratorio Micro",
+              "avg": -0.15,
+              "sev": 2,
+              "occ": 2
+            },
+            {
+              "criterio": "Rutas BPM personal",
+              "avg": -0.5,
+              "sev": 3,
+              "occ": 4
+            }
+          ],
+          "concepts": [
+            {
+              "name": "Línea 1",
+              "months": [
+                {
+                  "month": "ENE",
+                  "value": 75.93
+                },
+                {
+                  "month": "FEB",
+                  "value": 91.67
+                },
+                {
+                  "month": "MAR",
+                  "value": 100
+                },
+                {
+                  "month": "ABR",
+                  "value": 100
+                },
+                {
+                  "month": "MAY",
+                  "value": 100
+                },
+                {
+                  "month": "JUN",
+                  "value": 100
+                },
+                {
+                  "month": "JUL",
+                  "value": 100
+                },
+                {
+                  "month": "AGO",
+                  "value": null
+                },
+                {
+                  "month": "SEPT",
+                  "value": 100
+                },
+                {
+                  "month": "OCT",
+                  "value": 98.36
+                }
+              ]
+            },
+            {
+              "name": "Línea 2",
+              "months": [
+                {
+                  "month": "ENE",
+                  "value": 100
+                },
+                {
+                  "month": "FEB",
+                  "value": 100
+                },
+                {
+                  "month": "MAR",
+                  "value": 100
+                },
+                {
+                  "month": "ABR",
+                  "value": 100
+                },
+                {
+                  "month": "MAY",
+                  "value": 100
+                },
+                {
+                  "month": "JUN",
+                  "value": 100
+                },
+                {
+                  "month": "JUL",
+                  "value": 100
+                },
+                {
+                  "month": "AGO",
+                  "value": null
+                },
+                {
+                  "month": "SEPT",
+                  "value": 100
+                },
+                {
+                  "month": "OCT",
+                  "value": 93.75
+                }
+              ]
+            },
+            {
+              "name": "Línea 3",
+              "months": [
+                {
+                  "month": "ENE",
+                  "value": 100
+                },
+                {
+                  "month": "FEB",
+                  "value": 100
+                },
+                {
+                  "month": "MAR",
+                  "value": 100
+                },
+                {
+                  "month": "ABR",
+                  "value": 100
+                },
+                {
+                  "month": "MAY",
+                  "value": 100
+                },
+                {
+                  "month": "JUN",
+                  "value": 100
+                },
+                {
+                  "month": "JUL",
+                  "value": 100
+                },
+                {
+                  "month": "AGO",
+                  "value": null
+                },
+                {
+                  "month": "SEPT",
+                  "value": 100
+                },
+                {
+                  "month": "OCT",
+                  "value": 87.5
+                }
+              ]
+            },
+            {
+              "name": "Jarabe Simple (Clarificado)",
+              "months": [
+                {
+                  "month": "ENE",
+                  "value": null
+                },
+                {
+                  "month": "FEB",
+                  "value": 100
+                },
+                {
+                  "month": "MAR",
+                  "value": null
+                },
+                {
+                  "month": "ABR",
+                  "value": 100
+                },
+                {
+                  "month": "MAY",
+                  "value": null
+                },
+                {
+                  "month": "JUN",
+                  "value": 100
+                },
+                {
+                  "month": "JUL",
+                  "value": null
+                },
+                {
+                  "month": "AGO",
+                  "value": null
+                },
+                {
+                  "month": "SEPT",
+                  "value": 100
+                },
+                {
+                  "month": "OCT",
+                  "value": null
+                }
+              ]
+            },
+            {
+              "name": "Laboratorio Control Calidad 1",
+              "months": [
+                {
+                  "month": "ENE",
+                  "value": 100
+                },
+                {
+                  "month": "FEB",
+                  "value": 100
+                },
+                {
+                  "month": "MAR",
+                  "value": 100
+                },
+                {
+                  "month": "ABR",
+                  "value": 100
+                },
+                {
+                  "month": "MAY",
+                  "value": 100
+                },
+                {
+                  "month": "JUN",
+                  "value": 100
+                },
+                {
+                  "month": "JUL",
+                  "value": 100
+                },
+                {
+                  "month": "AGO",
+                  "value": 100
+                },
+                {
+                  "month": "SEPT",
+                  "value": 100
+                },
+                {
+                  "month": "OCT",
+                  "value": 100
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Perú",
+      "plants": [
+        {
+          "name": "Lima",
+          "months": [
+            {
+              "month": "ENE",
+              "mean": 0.22,
+              "compliance": 0.812,
+              "critical": 0.188,
+              "counts": {
+                "-2": 27,
+                "-1": 40,
+                "0": 117,
+                "1": 172
+              },
+              "total_checks": 356
+            },
+            {
+              "month": "FEB",
+              "mean": 0.28,
+              "compliance": 0.833,
+              "critical": 0.167,
+              "counts": {
+                "-2": 24,
+                "-1": 36,
+                "0": 114,
+                "1": 186
+              },
+              "total_checks": 360
+            },
+            {
+              "month": "MAR",
+              "mean": 0.33,
+              "compliance": 0.85,
+              "critical": 0.15,
+              "counts": {
+                "-2": 20,
+                "-1": 31,
+                "0": 105,
+                "1": 184
+              },
+              "total_checks": 340
+            },
+            {
+              "month": "ABR",
+              "mean": 0.3,
+              "compliance": 0.84,
+              "critical": 0.16,
+              "counts": {
+                "-2": 22,
+                "-1": 32,
+                "0": 106,
+                "1": 178
+              },
+              "total_checks": 338
+            },
+            {
+              "month": "MAY",
+              "mean": 0.32,
+              "compliance": 0.846,
+              "critical": 0.154,
+              "counts": {
+                "-2": 20,
+                "-1": 28,
+                "0": 97,
+                "1": 167
+              },
+              "total_checks": 312
+            },
+            {
+              "month": "JUN",
+              "mean": 0.35,
+              "compliance": 0.857,
+              "critical": 0.143,
+              "counts": {
+                "-2": 16,
+                "-1": 25,
+                "0": 88,
+                "1": 158
+              },
+              "total_checks": 287
+            },
+            {
+              "month": "JUL",
+              "mean": 0.24,
+              "compliance": 0.818,
+              "critical": 0.183,
+              "counts": {
+                "-2": 19,
+                "-1": 29,
+                "0": 86,
+                "1": 129
+              },
+              "total_checks": 263
+            },
+            {
+              "month": "AGO",
+              "mean": 0.21,
+              "compliance": 0.808,
+              "critical": 0.191,
+              "counts": {
+                "-2": 18,
+                "-1": 27,
+                "0": 78,
+                "1": 112
+              },
+              "total_checks": 235
+            },
+            {
+              "month": "SEPT",
+              "mean": 0.17,
+              "compliance": 0.795,
+              "critical": 0.205,
+              "counts": {
+                "-2": 18,
+                "-1": 28,
+                "0": 76,
+                "1": 102
+              },
+              "total_checks": 224
+            },
+            {
+              "month": "OCT",
+              "mean": 0.15,
+              "compliance": 0.788,
+              "critical": 0.211,
+              "counts": {
+                "-2": 19,
+                "-1": 29,
+                "0": 77,
+                "1": 102
+              },
+              "total_checks": 227
+            }
+          ],
+          "criteria": [
+            {
+              "criterio": "Agua de proceso",
+              "avg": -0.12,
+              "sev": 2,
+              "occ": 2
+            }
+          ],
+          "concepts": [
+            {
+              "name": "Línea PET",
+              "months": [
+                {
+                  "month": "ENE",
+                  "value": 95
+                },
+                {
+                  "month": "FEB",
+                  "value": 97
+                },
+                {
+                  "month": "MAR",
+                  "value": 99
+                },
+                {
+                  "month": "ABR",
+                  "value": 95
+                },
+                {
+                  "month": "MAY",
+                  "value": 97
+                },
+                {
+                  "month": "JUN",
+                  "value": 99
+                },
+                {
+                  "month": "JUL",
+                  "value": 95
+                },
+                {
+                  "month": "AGO",
+                  "value": 97
+                },
+                {
+                  "month": "SEPT",
+                  "value": 99
+                },
+                {
+                  "month": "OCT",
+                  "value": 95
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "country_rollup": {
+    "México": [
+      {
+        "month": "ENE",
+        "mean": 0.22,
+        "compliance": 0.812,
+        "critical": 0.188,
+        "counts": {
+          "-2": 27,
+          "-1": 40,
+          "0": 117,
+          "1": 172
+        },
+        "total_checks": 356
+      },
+      {
+        "month": "FEB",
+        "mean": 0.28,
+        "compliance": 0.833,
+        "critical": 0.167,
+        "counts": {
+          "-2": 24,
+          "-1": 36,
+          "0": 114,
+          "1": 186
+        },
+        "total_checks": 360
+      },
+      {
+        "month": "MAR",
+        "mean": 0.33,
+        "compliance": 0.85,
+        "critical": 0.15,
+        "counts": {
+          "-2": 20,
+          "-1": 31,
+          "0": 105,
+          "1": 184
+        },
+        "total_checks": 340
+      },
+      {
+        "month": "ABR",
+        "mean": 0.3,
+        "compliance": 0.84,
+        "critical": 0.16,
+        "counts": {
+          "-2": 22,
+          "-1": 32,
+          "0": 106,
+          "1": 178
+        },
+        "total_checks": 338
+      },
+      {
+        "month": "MAY",
+        "mean": 0.32,
+        "compliance": 0.846,
+        "critical": 0.154,
+        "counts": {
+          "-2": 20,
+          "-1": 28,
+          "0": 97,
+          "1": 167
+        },
+        "total_checks": 312
+      },
+      {
+        "month": "JUN",
+        "mean": 0.35,
+        "compliance": 0.857,
+        "critical": 0.143,
+        "counts": {
+          "-2": 16,
+          "-1": 25,
+          "0": 88,
+          "1": 158
+        },
+        "total_checks": 287
+      },
+      {
+        "month": "JUL",
+        "mean": 0.24,
+        "compliance": 0.818,
+        "critical": 0.183,
+        "counts": {
+          "-2": 19,
+          "-1": 29,
+          "0": 86,
+          "1": 129
+        },
+        "total_checks": 263
+      },
+      {
+        "month": "AGO",
+        "mean": 0.21,
+        "compliance": 0.808,
+        "critical": 0.191,
+        "counts": {
+          "-2": 18,
+          "-1": 27,
+          "0": 78,
+          "1": 112
+        },
+        "total_checks": 235
+      },
+      {
+        "month": "SEPT",
+        "mean": 0.17,
+        "compliance": 0.795,
+        "critical": 0.205,
+        "counts": {
+          "-2": 18,
+          "-1": 28,
+          "0": 76,
+          "1": 102
+        },
+        "total_checks": 224
+      },
+      {
+        "month": "OCT",
+        "mean": 0.15,
+        "compliance": 0.788,
+        "critical": 0.211,
+        "counts": {
+          "-2": 19,
+          "-1": 29,
+          "0": 77,
+          "1": 102
+        },
+        "total_checks": 227
+      }
+    ],
+    "Perú": [
+      {
+        "month": "ENE",
+        "mean": 0.22,
+        "compliance": 0.812,
+        "critical": 0.188,
+        "counts": {
+          "-2": 27,
+          "-1": 40,
+          "0": 117,
+          "1": 172
+        },
+        "total_checks": 356
+      },
+      {
+        "month": "FEB",
+        "mean": 0.28,
+        "compliance": 0.833,
+        "critical": 0.167,
+        "counts": {
+          "-2": 24,
+          "-1": 36,
+          "0": 114,
+          "1": 186
+        },
+        "total_checks": 360
+      },
+      {
+        "month": "MAR",
+        "mean": 0.33,
+        "compliance": 0.85,
+        "critical": 0.15,
+        "counts": {
+          "-2": 20,
+          "-1": 31,
+          "0": 105,
+          "1": 184
+        },
+        "total_checks": 340
+      },
+      {
+        "month": "ABR",
+        "mean": 0.3,
+        "compliance": 0.84,
+        "critical": 0.16,
+        "counts": {
+          "-2": 22,
+          "-1": 32,
+          "0": 106,
+          "1": 178
+        },
+        "total_checks": 338
+      },
+      {
+        "month": "MAY",
+        "mean": 0.32,
+        "compliance": 0.846,
+        "critical": 0.154,
+        "counts": {
+          "-2": 20,
+          "-1": 28,
+          "0": 97,
+          "1": 167
+        },
+        "total_checks": 312
+      },
+      {
+        "month": "JUN",
+        "mean": 0.35,
+        "compliance": 0.857,
+        "critical": 0.143,
+        "counts": {
+          "-2": 16,
+          "-1": 25,
+          "0": 88,
+          "1": 158
+        },
+        "total_checks": 287
+      },
+      {
+        "month": "JUL",
+        "mean": 0.24,
+        "compliance": 0.818,
+        "critical": 0.183,
+        "counts": {
+          "-2": 19,
+          "-1": 29,
+          "0": 86,
+          "1": 129
+        },
+        "total_checks": 263
+      },
+      {
+        "month": "AGO",
+        "mean": 0.21,
+        "compliance": 0.808,
+        "critical": 0.191,
+        "counts": {
+          "-2": 18,
+          "-1": 27,
+          "0": 78,
+          "1": 112
+        },
+        "total_checks": 235
+      },
+      {
+        "month": "SEPT",
+        "mean": 0.17,
+        "compliance": 0.795,
+        "critical": 0.205,
+        "counts": {
+          "-2": 18,
+          "-1": 28,
+          "0": 76,
+          "1": 102
+        },
+        "total_checks": 224
+      },
+      {
+        "month": "OCT",
+        "mean": 0.15,
+        "compliance": 0.788,
+        "critical": 0.211,
+        "counts": {
+          "-2": 19,
+          "-1": 29,
+          "0": 77,
+          "1": 102
+        },
+        "total_checks": 227
+      }
+    ]
+  }
+}

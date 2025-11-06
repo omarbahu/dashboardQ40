@@ -284,6 +284,187 @@
         .risk-crit {
             background: var(--risk-crit);
         }
+
+
+        .table-scroll {
+            overflow: auto;
+        }
+
+        .tbl-months {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 760px;
+        }
+
+            .tbl-months th, .tbl-months td {
+                border: 1px solid var(--border);
+                padding: 8px;
+                text-align: center;
+            }
+
+            .tbl-months thead th {
+                background: #f8fafc;
+                color: var(--muted);
+                font-weight: 700;
+            }
+
+        .cell-heat {
+            font-weight: 700;
+        }
+
+            .cell-heat.bad2 {
+                background: #fde2e2;
+                color: #991b1b;
+            }
+
+            .cell-heat.bad1 {
+                background: #ffe7d6;
+                color: #9a3412;
+            }
+
+            .cell-heat.neut {
+                background: #eef2f7;
+                color: #334155;
+            }
+
+            .cell-heat.ok1 {
+                background: #e6f6e9;
+                color: #065f46;
+            }
+
+            .cell-heat.ok2 {
+                background: #d1fae5;
+                color: #065f46;
+            }
+        /* ≥ 0.9 (muy bien) */
+
+        .plant-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px
+        }
+
+        .tab-btn {
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+            .tab-btn.is-active {
+                background: #e8edf5
+            }
+
+        .plant-tab {
+            display: none
+        }
+
+            .plant-tab.is-active {
+                display: block
+            }
+
+        /* tabla mensual (si aún no la tienes) */
+        .table-scroll {
+            overflow: auto
+        }
+
+        .tbl-months {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 760px
+        }
+
+            .tbl-months th, .tbl-months td {
+                border: 1px solid var(--border);
+                padding: 8px;
+                text-align: center
+            }
+
+            .tbl-months thead th {
+                background: #f8fafc;
+                color: var(--muted);
+                font-weight: 700
+            }
+
+        .cell-heat {
+            font-weight: 700
+        }
+
+            .cell-heat.bad2 {
+                background: #fde2e2;
+                color: #991b1b
+            }
+
+            .cell-heat.bad1 {
+                background: #ffe7d6;
+                color: #9a3412
+            }
+
+            .cell-heat.neut {
+                background: #eef2f7;
+                color: #334155
+            }
+
+            .cell-heat.ok1 {
+                background: #e6f6e9;
+                color: #065f46
+            }
+
+            .cell-heat.ok2 {
+                background: #d1fae5;
+                color: #065f46
+            }
+
+        /* Acordeón simple para PPR/escenarios */
+        .acc {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin: 12px 0;
+            overflow: hidden;
+            background: var(--card);
+            box-shadow: var(--card-shadow);
+        }
+
+            .acc > summary {
+                list-style: none;
+                cursor: pointer;
+                padding: 12px 16px;
+                font-weight: 700;
+                background: #f8fafc;
+            }
+
+                .acc > summary::-webkit-details-marker {
+                    display: none;
+                }
+
+            .acc .content {
+                padding: 12px 16px;
+            }
+
+            .acc .avg-pill {
+                margin-left: 8px;
+            }
+
+            .acc h4 {
+                margin: 8px 0;
+            }
+
+        .progress {
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+            .progress .bar {
+                height: 100%;
+                transition: width 0.6s ease;
+            }
+
     </style>
 </head>
 <body>
@@ -331,29 +512,112 @@
 
         <!-- VIEW: PLANT -->
         <section id="view-plant" data-view class="hidden grid">
-            <div class="card" style="grid-column:span 12">
-                <div class="kpis" id="kpis-plant"></div>
+            <!-- Tabs planta -->
+            <div class="plant-tabs" style="grid-column:span 12">
+                <button class="tab-btn is-active" data-tab="resumen">Resumen</button>
+                <button class="tab-btn" data-tab="mensual">Mensual</button>
+                <button class="tab-btn" data-tab="tendencias">Tendencias</button>
             </div>
-            <div class="charts" style="grid-column:span 12">
-                <div class="card chart half" id="chart-plant-trend"></div>
-                <div class="card chart half" id="chart-plant-stacked"></div>
-            </div>
-            <div class="card" style="grid-column:span 12">
-                <h3 style="margin:0 0 8px">Top 5 criterios críticos</h3>
-                <table id="tbl-criteria">
-                    <thead><tr><th>Criterio</th><th>Promedio</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-                <div class="card chart half" id="chart-risk-matrix"></div>
 
-            </div>
+            <!-- CONTENIDO: Resumen (lo que ya tienes) -->
+            <section id="plant-resumen" class="plant-tab is-active" style="grid-column:span 12">
+                <!-- deja aquí tus tarjetas y charts actuales de la planta -->
+
+                <div class="card" style="grid-column:span 12">
+                    <div class="kpis" id="kpis-plant"></div>
+                </div>
+                <div class="charts" style="grid-column:span 12">
+                    <div class="card chart half" id="chart-plant-trend"></div>
+                    <div class="card chart half" id="chart-plant-stacked"></div>
+                </div>
+                <div class="card" style="grid-column:span 12">
+                    <h3 style="margin:0 0 8px">Top 5 criterios críticos</h3>
+                    <table id="tbl-criteria">
+                        <thead><tr><th>Criterio</th><th>Promedio</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="card chart half" id="chart-risk-matrix"></div>
+
+                </div>
+
+                <div class="card" style="grid-column:span 12">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                        <h3 style="margin:0">Detalle mensual (año)</h3>
+                        <span class="pill">Vista tipo Excel</span>
+                        <button id="btnExportMonthsResumen" title="Exportar CSV">Exportar CSV</button>
+                    </div>
+
+                    <div class="table-scroll">
+                        <table id="tbl-months-resumen" class="tbl-months">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Promedio</th>
+                                    <th>Cumplimiento</th>
+                                    <th>Críticos</th>
+                                    <th>-2</th>
+                                    <th>-1</th>
+                                    <th>0</th>
+                                    <th>1</th>
+                                    <th>Total checks</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="plant-mensual" class="plant-tab" style="grid-column:span 12">
+                <div class="card" style="grid-column:span 12">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                        <h3 style="margin:0">Corte mensual por PPR</h3>
+                        <label style="font-weight:600">Mes:</label>
+                        <select id="selPlantMonth"></select>
+                        <button id="btnExportPlantMonth">Exportar CSV</button>
+                        <span class="pill">Solo planta seleccionada</span>
+                    </div>
+                    <div id="plant-accordion"></div>
+                </div>
+            </section>
+
+            
+            <!-- CONTENIDO: Tendencias -->
+            <section id="plant-tendencias" class="plant-tab" style="grid-column:span 12">
+                <div class="card chart" id="chart-trend-mean"></div>
+                <div class="card chart" id="chart-trend-compcrit"></div>
+                <div class="card" style="margin-top:12px">
+                    <h3 style="margin:0 0 8px">Detalle mensual (tipo Excel)</h3>
+                    <!-- reutilizamos la tabla que te pasé antes -->
+                    <div class="table-scroll">
+                        <table id="tbl-months-tend" class="tbl-months">
+                            <thead>
+                                <tr>
+                                    <th>Mes</th>
+                                    <th>Promedio</th>
+                                    <th>Cumplimiento</th>
+                                    <th>Críticos</th>
+                                    <th>-2</th>
+                                    <th>-1</th>
+                                    <th>0</th>
+                                    <th>1</th>
+                                    <th>Total checks</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top:8px"><button id="btnExportMonthsTend">Exportar CSV</button></div>
+                </div>
+            </section>
+
+
         </section>
     </div>
 
     <script>
         const STATE = { data: null, country: null, plant: null };
-        //const JSON_URL = 'bpm_demo.json'; // ⚠️ coloca bpm_demo.json en wwwroot/data/
-        const JSON_URL = '@Url.Content("~/data/bpm_demo.json")';
+        const JSON_URL = '@Url.Content("~/data/bpm_demo_fixed.json")';
 
         // ---------- Helpers ----------
         const fmtPct = v => (v != null ? (v * 100).toFixed(1) + '%' : '—');
@@ -367,7 +631,6 @@
         function setCrumbs(parts) {
             document.getElementById('breadcrumbs').textContent = parts.join(' / ');
         }
-
         function makeKpi(title, value, hint, cls) {
             return `<div class="kpi"><h3>${title}</h3><div class="v ${cls || ''}">${value}</div><div class="muted">${hint || ''}</div></div>`;
         }
@@ -378,7 +641,6 @@
             const total = roll.reduce((s, x) => s + (x.total_checks || 0), 0);
             return { mean: last.mean, compliance: last.compliance, critical: last.critical, total };
         }
-
         function computeFromPlantMonths(months) {
             if (!months || !months.length) return null;
             const last = lastOf(months);
@@ -386,11 +648,12 @@
             return { mean: last.mean, compliance: last.compliance, critical: last.critical, total };
         }
 
-        // ---------- Global render ----------
+        // ---------- Global ----------
         function renderGlobal() {
             setView('view-global'); setCrumbs(['Global']);
             const roll = STATE.data.global_rollup;
             const k = computeFromRollup(roll);
+
             const kpis = document.getElementById('kpis-global');
             kpis.innerHTML = [
                 makeKpi('Cumplimiento global', fmtPct(k.compliance), '≥ 0 (0 y 1)', 'ok'),
@@ -399,69 +662,203 @@
                 makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
             ].join('');
 
+            const allPlants = STATE.data.countries.flatMap(c => c.plants);
+            const gr = summarizeRiskFromPlants(allPlants);
+            const wInfo = riskLabel(gr.worst?.code || 'BR');
+            const div = document.createElement('div');
+            div.style.marginTop = '12px';
+            div.innerHTML = `
+              <div class="pill">Riesgos —
+                <b>BR:</b> ${gr.counts.BR} · <b>M:</b> ${gr.counts.M} ·
+                <b>AR:</b> ${gr.counts.AR} · <b>C:</b> ${gr.counts.C}
+              </div>
+              <div style="margin-top:8px">
+                <span class="badge-risk ${wInfo.cls}">${wInfo.txt}</span>
+                <span class="pill">${gr.worst?.criterio || '—'}</span>
+                <span class="pill">Prom.: ${gr.worst ? gr.worst.avg.toFixed(2) : '—'}</span>
+                <span class="pill">Frecuencia: ${freqByRisk(gr.worst?.code || 'BR')}</span>
+              </div>`;
+            kpis.appendChild(div);
+
             renderTrend('chart-global-trend', roll, 'Promedio global');
             renderStacked('chart-global-stacked', roll, 'Distribución global');
 
-            // Countries grid
-            const box = document.getElementById('countries');
-            box.innerHTML = '';
+            const box = document.getElementById('countries'); box.innerHTML = '';
             STATE.data.countries.forEach(country => {
                 const rollC = STATE.data.country_rollup[country.name];
                 const kc = computeFromRollup(rollC);
+                const rs = summarizeRiskFromPlants(country.plants);
+                const rInfo = riskLabel(rs.worst?.code || 'BR');
+                const riskCountsTitle = `BR: ${rs.counts.BR} · M: ${rs.counts.M} · AR: ${rs.counts.AR} · C: ${rs.counts.C}`;
+
                 const el = document.createElement('div');
                 el.className = 'card country-card';
                 el.innerHTML = `
-          <h3>${country.name}</h3>
-          <div class="muted" style="margin-bottom:8px">Plantas: ${country.plants.length}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-            <span class="pill">Cumpl.: ${fmtPct(kc.compliance)}</span>
-            <span class="pill">Críticos: ${fmtPct(kc.critical)}</span>
-            <span class="pill">Prom.: ${kc.mean != null ? kc.mean.toFixed(2) : '—'}</span>
-          </div>
-          <div class="muted">Click para ver plantas</div>`;
+                <h3>${country.name}</h3>
+                <div class="muted" style="margin-bottom:8px">Plantas: ${country.plants.length}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+                  <span class="pill">Cumpl.: ${fmtPct(kc.compliance)}</span>
+                  <span class="pill">Críticos: ${fmtPct(kc.critical)}</span>
+                  <span class="pill">Prom.: ${kc.mean != null ? kc.mean.toFixed(2) : '—'}</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px" title="${riskCountsTitle}">
+                  <span class="badge-risk ${rInfo.cls}">${rInfo.txt}</span>
+                  <span class="pill" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${rs.worst?.criterio || '—'}</span>
+                  <span class="pill">Prom.: ${rs.worst ? rs.worst.avg.toFixed(2) : '—'}</span>
+                </div>
+                <div class="muted">Click para ver plantas</div>`;
                 el.addEventListener('click', () => renderCountry(country.name));
+
+                // Simulación de porcentaje de avance (puedes sustituir por real)
+                const progress = Math.round(70 + Math.random() * 30); // entre 70 y 100 para demo
+                let color = '#ef4444';
+                if (progress >= 90) color = '#14a44d';
+                else if (progress >= 70) color = '#f59e0b';
+
+                // Agregar barra de avance dentro de cada tarjeta
+                const progressHTML = `
+          <div class="progress">
+            <div class="bar" style="width:${progress}%;background:${color}"></div>
+          </div>
+          <div class="muted" style="margin-top:4px;font-size:12px">
+            Avance de evaluación: <b>${progress}%</b>
+          </div>
+        `;
+
+                // Inserta la barra antes del texto “Click para ver plantas”
+                el.querySelector('.muted:last-of-type').insertAdjacentHTML('beforebegin', progressHTML);
+
                 box.appendChild(el);
             });
         }
 
-        // ---------- Country view ----------
+        // ---------- Country ----------
         function renderCountry(countryName) {
             STATE.country = countryName; STATE.plant = null;
             setView('view-country'); setCrumbs(['Global', countryName]);
 
             const roll = STATE.data.country_rollup[countryName];
             const k = computeFromRollup(roll);
-            document.getElementById('kpis-country').innerHTML = [
+            const kpisEl = document.getElementById('kpis-country');
+            kpisEl.innerHTML = [
                 makeKpi('Cumplimiento', fmtPct(k.compliance), '≥ 0', 'ok'),
                 makeKpi('Críticos', fmtPct(k.critical), '≤ -1', 'bad'),
                 makeKpi('Promedio', (k.mean != null ? k.mean.toFixed(2) : '—'), 'escala -2 a 1', 'cyan'),
                 makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
             ].join('');
 
+            const country = STATE.data.countries.find(c => c.name === countryName);
+            const cr = summarizeRiskFromPlants(country.plants);
+            const cw = riskLabel(cr.worst?.code || 'BR');
+            const rDiv = document.createElement('div');
+            rDiv.style.marginTop = '12px';
+            rDiv.innerHTML = `
+              <div class="pill">Riesgos —
+                <b>BR:</b> ${cr.counts.BR} · <b>M:</b> ${cr.counts.M} ·
+                <b>AR:</b> ${cr.counts.AR} · <b>C:</b> ${cr.counts.C}
+              </div>
+              <div style="margin-top:8px">
+                <span class="badge-risk ${cw.cls}">${cw.txt}</span>
+                <span class="pill">${cr.worst?.criterio || '—'}</span>
+                <span class="pill">Prom.: ${cr.worst ? cr.worst.avg.toFixed(2) : '—'}</span>
+                <span class="pill">Frecuencia: ${freqByRisk(cr.worst?.code || 'BR')}</span>
+              </div>`;
+            kpisEl.appendChild(rDiv);
+
             renderTrend('chart-country-trend', roll, `Promedio – ${countryName}`);
             renderStacked('chart-country-stacked', roll, `Distribución – ${countryName}`);
 
-            // Plants list
-            const country = STATE.data.countries.find(c => c.name === countryName);
             const box = document.getElementById('plants'); box.innerHTML = '';
             country.plants.forEach(plant => {
                 const kp = computeFromPlantMonths(plant.months);
                 const el = document.createElement('div');
                 el.className = 'card country-card';
                 el.innerHTML = `
-          <h3>${plant.name}</h3>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-            <span class="pill">Cumpl.: ${fmtPct(kp.compliance)}</span>
-            <span class="pill">Críticos: ${fmtPct(kp.critical)}</span>
-            <span class="pill">Prom.: ${kp.mean != null ? kp.mean.toFixed(2) : '—'}</span>
-          </div>
-          <div class="muted">Click para ver estadísticos de la planta</div>`;
+                <h3>${plant.name}</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+                  <span class="pill">Cumpl.: ${fmtPct(kp.compliance)}</span>
+                  <span class="pill">Críticos: ${fmtPct(kp.critical)}</span>
+                  <span class="pill">Prom.: ${kp.mean != null ? kp.mean.toFixed(2) : '—'}</span>
+                </div>
+                <div class="muted">Click para ver estadísticos de la planta</div>`;
                 el.addEventListener('click', () => renderPlant(countryName, plant.name));
+                // Simulación de porcentaje de avance (puedes sustituir por real)
+                const progress = Math.round(70 + Math.random() * 30); // entre 70 y 100 para demo
+                let color = '#ef4444';
+                if (progress >= 90) color = '#14a44d';
+                else if (progress >= 70) color = '#f59e0b';
+
+                // Agregar barra de avance dentro de cada tarjeta
+                const progressHTML = `
+          <div class="progress">
+            <div class="bar" style="width:${progress}%;background:${color}"></div>
+          </div>
+          <div class="muted" style="margin-top:4px;font-size:12px">
+            Avance de evaluación: <b>${progress}%</b>
+          </div>
+        `;
+
+                // Inserta la barra antes del texto “Click para ver plantas”
+                el.querySelector('.muted:last-of-type').insertAdjacentHTML('beforebegin', progressHTML);
+
                 box.appendChild(el);
             });
         }
 
-        // ---------- Plant view ----------
+        // ---------- Meses (tabla + export) ----------
+        function heatClassForMean(v) {
+            if (v == null) return 'neut';
+            if (v <= -1.5) return 'bad2';
+            if (v <= -0.5) return 'bad1';
+            if (v < 0.5) return 'neut';
+            if (v < 0.9) return 'ok1';
+            return 'ok2';
+        }
+        function renderPlantMonthlyTable(months, tableId, btnId) {
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            (months || []).forEach(m => {
+                const cls = 'cell-heat ' + heatClassForMean(m.mean);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td style="text-align:left">${m.month}</td>
+                <td class="${cls}">${m.mean != null ? m.mean.toFixed(2) : '—'}</td>
+                <td>${m.compliance != null ? (m.compliance * 100).toFixed(1) + '%' : '—'}</td>
+                <td>${m.critical != null ? (m.critical * 100).toFixed(1) + '%' : '—'}</td>
+                <td>${m.counts?.['-2'] ?? 0}</td>
+                <td>${m.counts?.['-1'] ?? 0}</td>
+                <td>${m.counts?.['0'] ?? 0}</td>
+                <td>${m.counts?.['1'] ?? 0}</td>
+                <td>${m.total_checks ?? 0}</td>`;
+                tbody.appendChild(tr);
+            });
+
+            const btn = document.getElementById(btnId);
+            if (btn && !btn._wired) {
+                btn._wired = true;
+                btn.addEventListener('click', () => exportMonthsCSV(months));
+            }
+        }
+        function exportMonthsCSV(months) {
+            const head = ['Mes', 'Promedio', 'Cumplimiento', 'Críticos', '-2', '-1', '0', '1', 'Total checks'];
+            const rows = (months || []).map(m => [
+                m.month,
+                m.mean != null ? m.mean.toFixed(2) : '',
+                m.compliance != null ? (m.compliance * 100).toFixed(1) + '%' : '',
+                m.critical != null ? (m.critical * 100).toFixed(1) + '%' : '',
+                m.counts?.['-2'] ?? 0, m.counts?.['-1'] ?? 0, m.counts?.['0'] ?? 0, m.counts?.['1'] ?? 0,
+                m.total_checks ?? 0
+            ]);
+            const csv = [head].concat(rows).map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'detalle_mensual_planta.csv';
+            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        }
+
+        // ---------- Plant ----------
         function renderPlant(countryName, plantName) {
             STATE.plant = plantName;
             setView('view-plant'); setCrumbs(['Global', countryName, plantName]);
@@ -477,47 +874,123 @@
                 makeKpi('Checks YTD', fmtNum(k.total), 'suma de meses')
             ].join('');
 
-            // Charts
             renderTrend('chart-plant-trend', plant.months.map(m => ({
                 month: m.month, mean: m.mean, compliance: m.compliance, critical: m.critical, counts: m.counts, total_checks: m.total_checks
             })), `Promedio – ${plantName}`);
+
             renderStacked('chart-plant-stacked', plant.months.map(m => ({
                 month: m.month, counts: m.counts, total_checks: m.total_checks
             })), `Distribución – ${plantName}`);
 
-            // Criteria table (top 5 worst by avg)
-            const tbody = document.querySelector('#tbl-criteria tbody');
-            tbody.innerHTML = '';
-            const list = (plant.criteria || [])
-                .slice() // copia
-                .sort((a, b) => a.avg - b.avg) // peores primero
-                .slice(0, 5);
-
-            list.forEach(c => {
-                // calcula riesgo
+            // Top 5 criterios
+            const tbody = document.querySelector('#tbl-criteria tbody'); tbody.innerHTML = '';
+            (plant.criteria || []).slice().sort((a, b) => a.avg - b.avg).slice(0, 5).forEach(c => {
                 const r = riskClass(c.occ ?? 2, c.sev ?? 2);
                 const info = riskLabel(r);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-            <td>
-              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                <span>${c.criterio}</span>
-                <span class="badge-risk ${info.cls}">${info.txt}</span>
-                <span class="badge">Sev: ${c.sev ?? '—'}</span>
-                <span class="badge">Ocu: ${c.occ ?? '—'}</span>
-                <span class="badge">Frecuencia: ${freqByRisk(r)}</span>
-              </div>
-            </td>
-            <td class="${c.avg < 0 ? 'bad' : 'ok'}">${c.avg.toFixed(2)}</td>`;
+                <td>
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <span>${c.criterio}</span>
+                    <span class="badge-risk ${info.cls}">${info.txt}</span>
+                    <span class="badge">Sev: ${c.sev ?? '—'}</span>
+                    <span class="badge">Ocu: ${c.occ ?? '—'}</span>
+                    <span class="badge">Frecuencia: ${freqByRisk(r)}</span>
+                  </div>
+                </td>
+                <td class="${c.avg < 0 ? 'bad' : 'ok'}">${c.avg.toFixed(2)}</td>`;
                 tbody.appendChild(tr);
             });
+            renderRiskMatrix('chart-risk-matrix', plant.criteria);
 
+            // Tablas mensual (IDs únicos)
+            renderPlantMonthlyTable(plant.months, 'tbl-months-resumen', 'btnExportMonthsResumen');
+            renderPlantMonthlyTable(plant.months, 'tbl-months-tend', 'btnExportMonthsTend');
+
+            // Tabs + gráficas de Tendencias
+            wirePlantTabs();
+            renderMeanTrend('chart-trend-mean', plant.months, `Promedio mensual – ${plantName}`);
+            renderCompCrit('chart-trend-compcrit', plant.months, `Cumplimiento vs Críticos – ${plantName}`);
+            renderConceptTrends(plant);
+
+            fillPlantMonthSelector(plant);
+            renderPlantMonthAccordion(plant, document.getElementById('selPlantMonth').value);
+        }
+
+        function renderMeanTrend(domId, months, title) {
+            const el = document.getElementById(domId);
+            const chart = echarts.init(el);
+
+            const x = months.map(m => m.month);
+            const y = months.map(m => (m.mean ?? null));
+
+            // recta de regresión y = a + b*t
+            const idx = y.map((_, i) => i).filter(i => y[i] != null);
+            const vy = idx.map(i => y[i]);
+            const n = idx.length;
+            let reg = new Array(y.length).fill(null);
+
+            if (n >= 2) {
+                const meanT = idx.reduce((s, v) => s + v, 0) / n;
+                const meanY = vy.reduce((s, v) => s + v, 0) / n;
+                const num = idx.reduce((s, v, i) => s + (v - meanT) * (vy[i] - meanY), 0);
+                const den = idx.reduce((s, v) => s + Math.pow(v - meanT, 2), 0) || 1;
+                const b = num / den;
+                const a = meanY - b * meanT;
+                reg = y.map((_, i) => a + b * i);
+            }
+
+            chart.setOption({
+                backgroundColor: '#ffffff',
+                color: [cssVar('--kpi-blue'), cssVar('--kpi-olive')],
+                title: { text: title, left: 'center', textStyle: { fontSize: 14, color: '#0b1220' } },
+                tooltip: { trigger: 'axis', backgroundColor: '#111827', borderColor: '#111827', textStyle: { color: '#fff' } },
+                legend: { data: ['Promedio', 'Tendencia'], textStyle: { color: '#334155' } },
+                grid: { left: 48, right: 20, top: 42, bottom: 36 },
+                xAxis: { type: 'category', data: x, axisLabel: { color: '#334155' }, axisLine: { lineStyle: { color: '#cbd5e1' } } },
+                yAxis: {
+                    type: 'value', min: -2, max: 1, axisLabel: { color: '#334155' },
+                    splitLine: { show: true, lineStyle: { color: cssVar('--border') } }
+                },
+                series: [
+                    { name: 'Promedio', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, lineStyle: { width: 3 }, data: y },
+                    { name: 'Tendencia', type: 'line', smooth: false, symbol: 'none', lineStyle: { type: 'dashed', width: 2 }, data: reg }
+                ]
+            });
+            new ResizeObserver(() => chart.resize()).observe(el);
+        }
+
+        // --- Gráfico 2: Cumplimiento vs Críticos (áreas) ---
+        function renderCompCrit(domId, months, title) {
+            const el = document.getElementById(domId);
+            const chart = echarts.init(el);
+
+            const x = months.map(m => m.month);
+            const comp = months.map(m => m.compliance ?? 0);
+            const crit = months.map(m => m.critical ?? 0);
+
+            chart.setOption({
+                backgroundColor: '#ffffff',
+                color: [cssVar('--kpi-green'), cssVar('--kpi-red')],
+                title: { text: title, left: 'center', textStyle: { fontSize: 14, color: '#0b1220' } },
+                tooltip: { trigger: 'axis', backgroundColor: '#111827', borderColor: '#111827', textStyle: { color: '#fff' } },
+                legend: { data: ['Cumplimiento', 'Críticos'], textStyle: { color: '#334155' } },
+                grid: { left: 48, right: 20, top: 42, bottom: 36 },
+                xAxis: { type: 'category', data: x, axisLabel: { color: '#334155' }, axisLine: { lineStyle: { color: '#cbd5e1' } } },
+                yAxis: {
+                    type: 'value', min: 0, max: 1, axisLabel: { color: '#334155' },
+                    splitLine: { show: true, lineStyle: { color: cssVar('--border') } }
+                },
+                series: [
+                    { name: 'Cumplimiento', type: 'line', areaStyle: {}, data: comp, smooth: true },
+                    { name: 'Críticos', type: 'line', areaStyle: {}, data: crit, smooth: true }
+                ]
+            });
+            new ResizeObserver(() => chart.resize()).observe(el);
         }
 
         // ---------- Charts ----------
-        function cssVar(name) {
-            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-        }
+        function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
         function renderTrend(domId, roll, title) {
             const el = document.getElementById(domId);
@@ -531,34 +1004,13 @@
                 backgroundColor: '#ffffff',
                 color: [cssVar('--kpi-blue'), cssVar('--kpi-green'), cssVar('--kpi-red')],
                 title: { text: title, left: 'center', textStyle: { fontSize: 14, color: '#0b1220' } },
-                tooltip: {
-                    trigger: 'axis',
-                    backgroundColor: '#111827', borderColor: '#111827',
-                    textStyle: { color: '#fff' }
-                },
+                tooltip: { trigger: 'axis', backgroundColor: '#111827', borderColor: '#111827', textStyle: { color: '#fff' } },
                 legend: { data: ['Promedio', 'Cumplimiento', 'Críticos'], textStyle: { color: '#334155' } },
                 grid: { left: 48, right: 20, top: 42, bottom: 36 },
-                xAxis: {
-                    type: 'category', data: months,
-                    axisLine: { lineStyle: { color: '#cbd5e1' } },
-                    axisLabel: { color: '#334155' },
-                    splitLine: { show: false }
-                },
+                xAxis: { type: 'category', data: months, axisLine: { lineStyle: { color: '#cbd5e1' } }, axisLabel: { color: '#334155' }, splitLine: { show: false } },
                 yAxis: [
-                    {
-                        type: 'value', min: -2, max: 1, name: 'Promedio',
-                        axisLine: { show: false },
-                        axisLabel: { color: '#334155' },
-                        splitLine: { show: true, lineStyle: { color: cssVar('--border') } },
-                        nameTextStyle: { color: '#334155' }
-                    },
-                    {
-                        type: 'value', min: 0, max: 1, name: '%',
-                        axisLine: { show: false },
-                        axisLabel: { color: '#334155' },
-                        splitLine: { show: false },
-                        nameTextStyle: { color: '#334155' }
-                    }
+                    { type: 'value', min: -2, max: 1, name: 'Promedio', axisLine: { show: false }, axisLabel: { color: '#334155' }, splitLine: { show: true, lineStyle: { color: cssVar('--border') } }, nameTextStyle: { color: '#334155' } },
+                    { type: 'value', min: 0, max: 1, name: '%', axisLine: { show: false }, axisLabel: { color: '#334155' }, splitLine: { show: false }, nameTextStyle: { color: '#334155' } }
                 ],
                 series: [
                     { name: 'Promedio', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, lineStyle: { width: 3 }, data: mean, yAxisIndex: 0 },
@@ -582,24 +1034,11 @@
                 backgroundColor: '#ffffff',
                 color: [cssVar('--kpi-navy'), cssVar('--kpi-olive'), cssVar('--kpi-gray'), cssVar('--kpi-amber')],
                 title: { text: title, left: 'center', textStyle: { fontSize: 14, color: '#0b1220' } },
-                tooltip: {
-                    trigger: 'axis', axisPointer: { type: 'shadow' },
-                    backgroundColor: '#111827', borderColor: '#111827', textStyle: { color: '#fff' }
-                },
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: '#111827', borderColor: '#111827', textStyle: { color: '#fff' } },
                 legend: { data: ['-2', '-1', '0', '1'], textStyle: { color: '#334155' } },
                 grid: { left: 48, right: 20, top: 42, bottom: 36 },
-                xAxis: {
-                    type: 'category', data: months,
-                    axisLine: { lineStyle: { color: '#cbd5e1' } },
-                    axisLabel: { color: '#334155' },
-                    splitLine: { show: false }
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLine: { show: false },
-                    axisLabel: { color: '#334155' },
-                    splitLine: { show: true, lineStyle: { color: cssVar('--border') } }
-                },
+                xAxis: { type: 'category', data: months, axisLine: { lineStyle: { color: '#cbd5e1' } }, axisLabel: { color: '#334155' }, splitLine: { show: false } },
+                yAxis: { type: 'value', axisLine: { show: false }, axisLabel: { color: '#334155' }, splitLine: { show: true, lineStyle: { color: cssVar('--border') } } },
                 series: [
                     { name: '-2', type: 'bar', stack: 't', barMaxWidth: 28, data: sN2 },
                     { name: '-1', type: 'bar', stack: 't', data: sN1 },
@@ -610,43 +1049,13 @@
             new ResizeObserver(() => chart.resize()).observe(el);
         }
 
-        function riskClass(occ, sev) {
-            // Matriz 4x4 como en tu tabla
-            const grid = [
-            /* sev=1 */['BR', 'BR', 'M', 'AR'],
-            /* sev=2 */['BR', 'M', 'AR', 'AR'],
-            /* sev=3 */['M', 'AR', 'AR', 'C'],
-            /* sev=4 */['AR', 'AR', 'C', 'C']
-            ];
-            return grid[sev - 1][occ - 1];
-        }
-
-        function riskLabel(r) {
-            return (
-                r === 'BR' ? { txt: 'Bajo riesgo', cls: 'risk-low' } :
-                    r === 'M' ? { txt: 'Moderado', cls: 'risk-mod' } :
-                        r === 'AR' ? { txt: 'Alto riesgo', cls: 'risk-high' } :
-                            { txt: 'Crítico', cls: 'risk-crit' }
-            );
-        }
-
-        function freqByRisk(r) {
-            return (r === 'C' ? 'Quincenal' :
-                r === 'AR' ? 'Mensual' :
-                    r === 'M' ? 'Bimestral' : 'Trimestral');
-        }
-
+        // ---------- Riesgo ----------
         function renderRiskMatrix(domId, criteria) {
             const el = document.getElementById(domId);
             const chart = echarts.init(el);
-            // cuenta criterios por celda (occ,sev)
             const counts = Array.from({ length: 4 }, () => Array(4).fill(0));
-            (criteria || []).forEach(c => {
-                const o = (c.occ || 2) - 1, s = (c.sev || 2) - 1; counts[s][o] += 1;
-            });
-            const data = [];
-            for (let s = 0; s < 4; s++) for (let o = 0; o < 4; o++) data.push([o, s, counts[s][o]]);
-
+            (criteria || []).forEach(c => { const o = (c.occ || 2) - 1, s = (c.sev || 2) - 1; counts[s][o] += 1; });
+            const data = []; for (let s = 0; s < 4; s++) for (let o = 0; o < 4; o++) data.push([o, s, counts[s][o]]);
             chart.setOption({
                 tooltip: { formatter: p => `Ocu ${p.value[0] + 1} / Sev ${p.value[1] + 1}: <b>${p.value[2]}</b>` },
                 xAxis: { type: 'category', data: ['1 Baja', '2', '3', '4 Muy alta'] },
@@ -654,21 +1063,335 @@
                 visualMap: {
                     show: false, min: 0, max: Math.max(1, ...data.map(d => d[2])),
                     inRange: {
-                        color: [getComputedStyle(document.documentElement).getPropertyValue('--risk-low').trim(),
-                        getComputedStyle(document.documentElement).getPropertyValue('--risk-mod').trim(),
-                        getComputedStyle(document.documentElement).getPropertyValue('--risk-high').trim(),
-                        getComputedStyle(document.documentElement).getPropertyValue('--risk-crit').trim()]
+                        color: [
+                            getComputedStyle(document.documentElement).getPropertyValue('--risk-low').trim(),
+                            getComputedStyle(document.documentElement).getPropertyValue('--risk-mod').trim(),
+                            getComputedStyle(document.documentElement).getPropertyValue('--risk-high').trim(),
+                            getComputedStyle(document.documentElement).getPropertyValue('--risk-crit').trim()]
                     }
                 },
                 series: [{ type: 'heatmap', data, label: { show: true } }]
             });
             new ResizeObserver(() => chart.resize()).observe(el);
         }
+        function riskClass(occ, sev) {
+            const grid = [
+                ['BR', 'BR', 'M', 'AR'],
+                ['BR', 'M', 'AR', 'AR'],
+                ['M', 'AR', 'AR', 'C'],
+                ['AR', 'AR', 'C', 'C']
+            ];
+            return grid[(sev || 1) - 1][(occ || 1) - 1];
+        }
+        function riskLabel(code) {
+            return code === 'C' ? { txt: 'Crítico', cls: 'risk-crit' } :
+                code === 'AR' ? { txt: 'Alto riesgo', cls: 'risk-high' } :
+                    code === 'M' ? { txt: 'Moderado', cls: 'risk-mod' } :
+                        { txt: 'Bajo riesgo', cls: 'risk-low' };
+        }
+        function freqByRisk(code) {
+            return code === 'C' ? 'Quincenal' :
+                code === 'AR' ? 'Mensual' :
+                    code === 'M' ? 'Bimestral' : 'Trimestral';
+        }
+        function summarizeRiskFromPlants(plants) {
+            const counts = { BR: 0, M: 0, AR: 0, C: 0 };
+            let worst = null;
+            plants.forEach(p => {
+                (p.criteria || []).forEach(c => {
+                    const code = riskClass(c.occ, c.sev);
+                    counts[code]++;
+                    if (!worst || c.avg < worst.avg) worst = { code, criterio: c.criterio, avg: c.avg };
+                });
+            });
+            return { counts, worst };
+        }
 
+        // ---------- Tabs ----------
+        function wirePlantTabs() {
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('is-active'));
+                    document.querySelectorAll('.plant-tab').forEach(x => x.classList.remove('is-active'));
+                    b.classList.add('is-active');
+                    document.getElementById('plant-' + b.dataset.tab).classList.add('is-active');
+                });
+            });
+        }
+
+        // === NUEVO: utilidades de colores para porcentajes ===
+        function pctClass(v) {
+            if (v == null) return '';
+            if (v >= 95) return 'ok2';      // muy bien
+            if (v >= 90) return 'ok1';
+            if (v >= 80) return 'neut';
+            if (v >= 70) return 'bad1';
+            return 'bad2';
+        }
+
+        // === NUEVO: crea tarjeta + tabla de tendencias por concepto ===
+        function ensureConceptsCard() {
+            const tab = document.getElementById('plant-tendencias');
+            if (!document.getElementById('card-concepts')) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.id = 'card-concepts';
+                card.innerHTML = `
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <h3 style="margin:0">Tendencia por concepto (tipo Excel)</h3>
+                <span class="pill">% cumplimiento por proceso/área</span>
+                <button id="btnExportConcepts" title="Exportar CSV">Exportar CSV</button>
+              </div>
+              <div class="table-scroll">
+                <table id="tbl-concepts" class="tbl-months">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>`;
+                tab.insertBefore(card, tab.firstChild);
+            }
+        }
+
+        // === NUEVO: render de la matriz por concepto ===
+        // Espera que el JSON tenga plant.concepts = [
+        //   { name:"Línea 1", months:[{month:"ENE", value:99.1}, ...] },
+        //   ...
+        // ]
+        // Si no existiera, usa plant.criteria como "conceptos" estáticos (mismo valor todo el año)
+        function renderConceptTrends(plant) {
+            ensureConceptsCard();
+
+            // columnas = meses del año según el JSON de la planta
+            const monthsOrder = (plant.months || []).map(m => m.month);
+            const thead = document.querySelector('#tbl-concepts thead');
+            const tbody = document.querySelector('#tbl-concepts tbody');
+
+            // construir encabezado
+            thead.innerHTML = `
+            <tr>
+              <th style="text-align:left">Concepto</th>
+              ${monthsOrder.map(m => `<th>${m}</th>`).join('')}
+              <th>Total PPR's Acumulado anual</th>
+            </tr>`;
+
+            // fuente de datos
+            let concepts = Array.isArray(plant.concepts) ? plant.concepts : null;
+
+            // fallback: si no hay plant.concepts, arma filas con criterios (promedio fijo anual)
+            if (!concepts || !concepts.length) {
+                concepts = (plant.criteria || []).map(c => ({
+                    name: c.criterio,
+                    months: monthsOrder.map(m => ({ month: m, value: Math.max(0, Math.min(100, 100 + (c.avg ?? 0) * 10)) })) // aprox.
+                }));
+            }
+
+            // pintar filas
+            tbody.innerHTML = '';
+            concepts.forEach(row => {
+                // índice por mes para resolver huecos
+                const idx = Object.fromEntries((row.months || []).map(x => [x.month, x.value]));
+                const vals = monthsOrder.map(m => {
+                    const v = idx[m]; // porcentaje 0–100
+                    return v == null ? null : Number(v);
+                });
+
+                // promedio anual (ignorando nulls)
+                const valid = vals.filter(v => v != null);
+                const anual = valid.length ? (valid.reduce((s, v) => s + v, 0) / valid.length) : null;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+              <td style="text-align:left">${row.name}</td>
+              ${vals.map(v => {
+                    const cls = 'cell-heat ' + pctClass(v);
+                    return `<td class="${cls}">${v != null ? v.toFixed(2) : 'NA'}</td>`;
+                }).join('')}
+              <td class="${'cell-heat ' + pctClass(anual)}">${anual != null ? anual.toFixed(2) : 'NA'}</td>
+            `;
+                tbody.appendChild(tr);
+            });
+
+            // exportar CSV
+            const btn = document.getElementById('btnExportConcepts');
+            if (btn && !btn._wired) {
+                btn._wired = true;
+                btn.addEventListener('click', () => exportConceptsCSV(monthsOrder, concepts));
+            }
+        }
+
+        // === NUEVO: exportación CSV de la matriz por concepto ===
+        function exportConceptsCSV(monthsOrder, concepts) {
+            const head = ['Concepto', ...monthsOrder, 'Total PPRs acumulado anual'];
+            const rows = concepts.map(r => {
+                const idx = Object.fromEntries((r.months || []).map(x => [x.month, x.value]));
+                const vals = monthsOrder.map(m => idx[m] ?? '');
+                const valid = vals.filter(v => v !== '' && v != null);
+                const anual = valid.length ? (valid.reduce((s, v) => s + Number(v), 0) / valid.length) : '';
+                return [r.name, ...vals.map(v => v === '' ? '' : Number(v).toFixed(2)), anual === '' ? '' : Number(anual).toFixed(2)];
+            });
+            const csv = [head, ...rows]
+                .map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(','))
+                .join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'tendencia_por_concepto.csv';
+            document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        }
+
+        // === INTEGRACIÓN: llama a renderConceptTrends desde tu renderPlant ===
+        // Añade/asegúrate de tener esta línea al final de renderPlant(countryName, plantName):
+        //   renderConceptTrends(plant);
+
+
+
+        const SCENARIO_GROUPS = {
+            "Manufactura": [
+                "Línea 1", "Línea 2", "Línea 3", "Línea 5", "Línea 6", "Línea 7",
+                "Surtidora", "Planta Tratadora de Aguas Residuales", "Taparrosca",
+                "Jarabe Simple (Clarificado y Vaciadores de Azucar)",
+                "Jarabe Terminado y Disolución de concentrados",
+                "Tratamiento de agua de proceso", "Área de Retenes y Tanques de sosa",
+                "Laboratorio Control de Calidad 2", "Laboratorio Control de Calidad 1",
+                "Laboratorio Microbiología", "Lab de tratamiento de aguas de proceso",
+                "Taller de Mantenimiento de maquinaria"
+            ],
+            "Logística y MCE": [
+                "Equipos auxiliares", "MIR Y ATRP",
+                "Almacén de mat. Primas, empaques", "Almacén de utensilios generales"
+            ],
+            "Transporte": ["Almacén de producto terminado"],
+            "Capital humano": ["Taller automotriz"],
+            "Ventas": ["Baños Generales y Lockers"]
+        };
+
+        // Normaliza nombres para hacer match robusto
+        function norm(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').replace(/\n/g, ' ').trim(); }
+
+        // Busca valor % (0–100) de un concepto en un mes
+        function getConceptMonthValue(plant, conceptName, monthLabel) {
+            // Indexar conceptos por nombre normalizado
+            if (!plant._conceptIndex) {
+                const idx = {};
+                (plant.concepts || []).forEach(c => {
+                    idx[norm(c.name)] = Object.fromEntries((c.months || []).map(m => [m.month, m.value]));
+                });
+                plant._conceptIndex = idx;
+            }
+            const v = plant._conceptIndex[norm(conceptName)];
+            if (!v) return null;
+            // devolver null si no hay dato para ese mes
+            return (v[monthLabel] == null ? null : Number(v[monthLabel]));
+        }
+
+        // Promedio ignorando null
+        function avgIgnoreNull(arr) {
+            const v = arr.filter(x => x != null && !Number.isNaN(x));
+            if (!v.length) return null;
+            return +(v.reduce((a, b) => a + b, 0) / v.length).toFixed(2);
+        }
+
+        // Construye tabla de un escenario
+        function buildScenarioTable(plant, scenarioName, equipments, monthLabel) {
+            const rows = equipments.map(eq => {
+                const val = getConceptMonthValue(plant, eq, monthLabel);
+                const cls = 'cell-heat ' + pctClass(val);
+                return { eq, val, cls };
+            });
+
+            const tbody = rows.map(r => `
+            <tr>
+              <td style="text-align:left">${r.eq}</td>
+              <td class="${r.cls}">${r.val != null ? r.val.toFixed(2) : 'NA'}</td>
+            </tr>
+          `).join('');
+
+            const avg = avgIgnoreNull(rows.map(r => r.val));
+            const avgCls = 'cell-heat ' + pctClass(avg);
+
+            const table = `
+            <table class="tbl-months" style="min-width:420px">
+              <thead><tr><th style="text-align:left">Equipo / área</th><th>${monthLabel}</th></tr></thead>
+              <tbody>${tbody}</tbody>
+              <tfoot><tr>
+                <th style="text-align:right">Promedio ${scenarioName}</th>
+                <th class="${avgCls}">${avg != null ? avg.toFixed(2) : 'NA'}</th>
+              </tr></tfoot>
+            </table>`;
+            return { html: table, avg };
+        }
+
+        // Render principal del acordeón mensual
+        function renderPlantMonthAccordion(plant, monthLabel) {
+            const host = document.getElementById('plant-accordion');
+            if (!host) return;
+
+            const parts = [];
+            const scenarioAvgs = [];
+
+            for (const [scenario, eqs] of Object.entries(SCENARIO_GROUPS)) {
+                const { html, avg } = buildScenarioTable(plant, scenario, eqs, monthLabel);
+                scenarioAvgs.push(avg);
+                const badge = `<span class="badge avg-pill">${avg != null ? avg.toFixed(2) + '%' : 'NA'}</span>`;
+                parts.push(`
+              <details class="acc" open>
+                <summary>${scenario} ${badge}</summary>
+                <div class="content">${html}</div>
+              </details>
+            `);
+            }
+
+            // TOTAL (promedio de escenarios con dato)
+            const total = avgIgnoreNull(scenarioAvgs);
+            const totCls = 'cell-heat ' + pctClass(total);
+            parts.push(`
+            <div class="card" style="margin-top:6px">
+              <div style="display:flex;gap:10px;align-items:center">
+                <strong>Total planta (${monthLabel}):</strong>
+                <span class="${totCls}" style="padding:4px 10px;border-radius:999px;font-weight:700">
+                  ${total != null ? total.toFixed(2) + '%' : 'NA'}
+                </span>
+              </div>
+            </div>
+          `);
+
+            host.innerHTML = parts.join('');
+
+            // Export CSV del corte mensual
+            const btn = document.getElementById('btnExportPlantMonth');
+            if (btn && !btn._wired) {
+                btn._wired = true;
+                btn.addEventListener('click', () => {
+                    const rows = [];
+                    for (const [scenario, eqs] of Object.entries(SCENARIO_GROUPS)) {
+                        rows.push([scenario, '', '']);
+                        eqs.forEach(eq => {
+                            const v = getConceptMonthValue(plant, eq, monthLabel);
+                            rows.push(['', eq, v != null ? v.toFixed(2) : 'NA']);
+                        });
+                    }
+                    const csv = [['Escenario', 'Equipo/Área', `% ${monthLabel}`], ...rows]
+                        .map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = `corte_mensual_${plant.name}_${monthLabel}.csv`;
+                    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                });
+            }
+        }
+
+        // Llena el selector de mes con los meses disponibles de la planta
+        function fillPlantMonthSelector(plant) {
+            const sel = document.getElementById('selPlantMonth');
+            if (!sel) return;
+            const months = (plant.months || []).map(m => m.month); // usa los labels reales de tu JSON
+            sel.innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join('');
+            sel.value = months[months.length - 1] || ''; // último disponible
+
+            sel.onchange = () => renderPlantMonthAccordion(plant, sel.value);
+        }
 
         // ---------- Init ----------
         document.getElementById('btnGlobal').addEventListener('click', () => { STATE.country = null; STATE.plant = null; renderGlobal(); });
-
         (async function init() {
             try {
                 const res = await fetch(JSON_URL);
@@ -680,5 +1403,6 @@
             }
         })();
     </script>
+
 </body>
 </html>
