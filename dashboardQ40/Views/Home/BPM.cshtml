@@ -1,11 +1,8 @@
-﻿
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard BPM</title>
-    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+﻿@{
+    ViewData["Title"] = "BPMs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    
     <style>
         :root {
             /* Paleta modo claro */
@@ -465,9 +462,44 @@
                 transition: width 0.6s ease;
             }
 
+        .acc {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin: 12px 0;
+            overflow: hidden;
+            background: var(--card);
+            box-shadow: var(--card-shadow);
+        }
+
+            .acc > summary {
+                list-style: none;
+                cursor: pointer;
+                padding: 12px 16px;
+                font-weight: 700;
+                background: #f8fafc;
+            }
+
+                .acc > summary::-webkit-details-marker {
+                    display: none;
+                }
+
+            .acc .content {
+                padding: 12px 16px;
+            }
+
+    .thead-2 th.sub {
+        font-weight: 600;
+        background: #f8fafc;
+        color: var(--muted);
+    }
+
+    #plant-pprgrid .tbl-months th {
+        vertical-align: middle
+    }
+
+
     </style>
-</head>
-<body>
+
     <header>
         <h1>Dashboard BPM – Buenas Prácticas de Manufactura</h1>
         <div class="toolbar">
@@ -517,6 +549,10 @@
                 <button class="tab-btn is-active" data-tab="resumen">Resumen</button>
                 <button class="tab-btn" data-tab="mensual">Mensual</button>
                 <button class="tab-btn" data-tab="tendencias">Tendencias</button>
+                <button class="tab-btn" data-tab="pprs">PPRs</button>
+            <button class="tab-btn" data-tab="pprgrid">Matriz PPR (anual)</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="renderRisk()">Calculadora (cargas/mes)</button>
+
             </div>
 
             <!-- CONTENIDO: Resumen (lo que ya tienes) -->
@@ -612,12 +648,88 @@
             </section>
 
 
+            <!-- TAB NUEVO: PPRs (anual) -->
+            <section id="plant-pprs" class="plant-tab" style="grid-column:span 12">
+                <div class="card">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                        <h3 style="margin:0">PPRs – vista anual</h3>
+                        <button id="btnExportPprYear">Exportar CSV</button>
+                        <span class="pill">Tabla anual por PPR</span>
+                    </div>
+                    <div id="ppr-accordion"></div>
+                </div>
+            </section>
+
+            <section id="plant-pprgrid" class="plant-tab" style="grid-column:span 12">
+                <div class="card">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                        <h3 style="margin:0">Matriz PPR – estilo Excel (POC)</h3>
+                        <span class="pill">Celdas: Riesgo + Frecuencia sugerida</span>
+                        <button id="btnExportPprGrid">Exportar CSV</button>
+                    </div>
+                    <div class="table-scroll">
+                        <table id="tbl-ppr-grid" class="tbl-months"></table>
+                    </div>
+                </div>
+            </section>
+           
+        </section>
+
+        <!-- ===== Vista: Calculadora de Riesgo (POC) ===== -->
+        <section id="view-risk" data-view>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <h4 class="m-0">Calculadora de Riesgo (POC)</h4>
+                <label class="ms-3">
+                    <input type="checkbox" id="risk-use-avg" checked>
+                    Usar tendencia (avg) para ajustar
+                </label>
+                <div class="ms-auto">
+                    <button class="btn btn-sm btn-secondary" onclick="renderRisk()">Recalcular</button>
+                </div>
+            </div>
+
+            <div class="row g-2 mb-2">
+                <div class="col-auto">
+                    <select id="risk-country" class="form-select form-select-sm"></select>
+                </div>
+                <div class="col-auto">
+                    <select id="risk-plant" class="form-select form-select-sm"></select>
+                </div>
+            </div>
+
+            <div id="risk-summary" class="mb-2"></div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered" id="risk-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>PPR</th>
+                            <th>Sev</th>
+                            <th>Occ</th>
+                            <th>Riesgo</th>
+                            <th>avg</th>
+                            <th>Freq actual</th>
+                            <th>Freq sugerida</th>
+                            <th>Cambio</th>
+                            <th>#Equipos</th>
+                            <th>Cargas/mes (act)</th>
+                            <th>Cargas/mes (sug)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </section>
     </div>
 
+    @section Scripts {
+
+<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     <script>
         const STATE = { data: null, country: null, plant: null };
         const JSON_URL = '@Url.Content("~/data/bpm_demo_fixed.json")';
+        const RISK_URL = '@Url.Content("~/data/bpm_riskcalc_poc.json")';
+
 
         // ---------- Helpers ----------
         const fmtPct = v => (v != null ? (v * 100).toFixed(1) + '%' : '—');
@@ -912,9 +1024,13 @@
             renderMeanTrend('chart-trend-mean', plant.months, `Promedio mensual – ${plantName}`);
             renderCompCrit('chart-trend-compcrit', plant.months, `Cumplimiento vs Críticos – ${plantName}`);
             renderConceptTrends(plant);
+            renderPprYearly(plant);
 
             fillPlantMonthSelector(plant);
             renderPlantMonthAccordion(plant, document.getElementById('selPlantMonth').value);
+
+            renderPprGridPOC(plant);
+
         }
 
         function renderMeanTrend(domId, months, title) {
@@ -1268,28 +1384,9 @@
         function norm(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').replace(/\n/g, ' ').trim(); }
 
         // Busca valor % (0–100) de un concepto en un mes
-        function getConceptMonthValue(plant, conceptName, monthLabel) {
-            // Indexar conceptos por nombre normalizado
-            if (!plant._conceptIndex) {
-                const idx = {};
-                (plant.concepts || []).forEach(c => {
-                    idx[norm(c.name)] = Object.fromEntries((c.months || []).map(m => [m.month, m.value]));
-                });
-                plant._conceptIndex = idx;
-            }
-            const v = plant._conceptIndex[norm(conceptName)];
-            if (!v) return null;
-            // devolver null si no hay dato para ese mes
-            return (v[monthLabel] == null ? null : Number(v[monthLabel]));
-        }
+        
 
-        // Promedio ignorando null
-        function avgIgnoreNull(arr) {
-            const v = arr.filter(x => x != null && !Number.isNaN(x));
-            if (!v.length) return null;
-            return +(v.reduce((a, b) => a + b, 0) / v.length).toFixed(2);
-        }
-
+      
         // Construye tabla de un escenario
         function buildScenarioTable(plant, scenarioName, equipments, monthLabel) {
             const rows = equipments.map(eq => {
@@ -1390,19 +1487,451 @@
             sel.onchange = () => renderPlantMonthAccordion(plant, sel.value);
         }
 
+
+
+        const PPR_GROUPS = {
+            "CONSTRUCCIÓN, DISEÑO Y CONDICIÓN DE LAS INSTALACIONES": [
+                "Línea 1", "Línea 2", "Línea 3", "Línea 5", "Línea 6", "Línea 7",
+                "Surtidora", "Planta Tratadora de Aguas Residuales", "Taparrosca",
+                "Jarabe Simple (Clarificado y Vaciadores de Azucar)",
+                "Jarabe Terminado y Disolución de concentrados",
+                "Tratamiento de agua de proceso", "Área de Retenes y Tanques de sosa",
+                "Laboratorio Control de Calidad 1", "Laboratorio Control de Calidad 2",
+                "Laboratorio Microbiología", "Lab de tratamiento de aguas de proceso",
+                "Taller de Mantenimiento de maquinaria"
+            ],
+            "SERVICIO: AGUA, AIRE, ENERGÍA": [
+                "Línea 1", "Línea 2", "Línea 3", "Línea 5", "Línea 6", "Línea 7",
+                "Surtidora", "Planta Tratadora de Aguas Residuales", "Taparrosca",
+                "Jarabe Simple (Clarificado y Vaciadores de Azucar)",
+                "Jarabe Terminado y Disolución de concentrados",
+                "Tratamiento de agua de proceso", "Área de Retenes y Tanques de sosa",
+                "Laboratorio Control de Calidad 1", "Laboratorio Control de Calidad 2",
+                "Laboratorio Microbiología", "Lab de tratamiento de aguas de proceso",
+                "Taller de Mantenimiento de maquinaria"
+            ],
+            // Agrega aquí los demás PPRs (ELIMINACIÓN DE DESECHOS, LIMPIEZA Y SANITIZACIÓN, etc.)
+        };
+
+        // =========== 3.2 Utilidades ===========
+        function monthsOrderFromPlant(plant) {
+            // Usa el orden real de la planta (enero..dic). Si faltan meses, solo mostrará los existentes.
+            return (plant.months || []).map(m => m.month);
+        }
+
+        function getConceptMonthValue(plant, conceptName, monthLabel) {
+            if (!plant._conceptIndex) {
+                const idx = {};
+                (plant.concepts || []).forEach(c => {
+                    idx[norm(c.name)] = Object.fromEntries((c.months || []).map(m => [m.month, m.value]));
+                });
+                plant._conceptIndex = idx;
+            }
+            const v = plant._conceptIndex[norm(conceptName)];
+            return v && v[monthLabel] != null ? Number(v[monthLabel]) : null;
+        }
+
+        function avgIgnoreNull(arr) {
+            const v = arr.filter(x => x != null && !Number.isNaN(x));
+            if (!v.length) return null;
+            return +(v.reduce((a, b) => a + b, 0) / v.length).toFixed(2);
+        }
+
+        // =========== 3.3 Render: acordeones por PPR (anual) ===========
+        function renderPprYearly(plant) {
+            const host = document.getElementById('ppr-accordion');
+            if (!host) return;
+
+            const months = monthsOrderFromPlant(plant);
+            const parts = [];
+            const exportRows = []; // Para CSV
+
+            Object.entries(PPR_GROUPS).forEach(([pprName, equipments]) => {
+                // construir tabla anual del PPR
+                const rowsHtml = [];
+                const pprVals = []; // para promedio PPR
+
+                equipments.forEach(eq => {
+                    const vals = months.map(m => getConceptMonthValue(plant, eq, m));
+                    const anual = avgIgnoreNull(vals);
+                    pprVals.push(...vals.filter(v => v != null));
+
+                    const tds = vals.map(v => {
+                        const cls = 'cell-heat ' + pctClass(v);
+                        return `<td class="${cls}">${v != null ? v.toFixed(2) : 'NA'}</td>`;
+                    }).join('');
+
+                    rowsHtml.push(`
+                <tr>
+                  <td style="text-align:left">${eq}</td>
+                  ${tds}
+                  <td class="cell-heat ${pctClass(anual)}">${anual != null ? anual.toFixed(2) : 'NA'}</td>
+                </tr>
+              `);
+
+                    // CSV
+                    exportRows.push([pprName, eq, ...vals.map(v => v == null ? 'NA' : v.toFixed(2)), anual == null ? 'NA' : anual.toFixed(2)]);
+                });
+
+                const pprAvg = avgIgnoreNull(pprVals);
+                const head = `
+              <tr>
+                <th style="text-align:left">Equipo / área</th>
+                ${months.map(m => `<th>${m}</th>`).join('')}
+                <th>Total PPR acumulado anual</th>
+              </tr>`;
+
+                const table = `
+              <table class="tbl-months">
+                <thead>${head}</thead>
+                <tbody>${rowsHtml.join('')}</tbody>
+                <tfoot>
+                  <tr>
+                    <th style="text-align:right">Promedio ${pprName}</th>
+                    <th colspan="${months.length}" style="background:#f8fafc"></th>
+                    <th class="cell-heat ${pctClass(pprAvg)}">${pprAvg != null ? pprAvg.toFixed(2) : 'NA'}</th>
+                  </tr>
+                </tfoot>
+              </table>
+            `;
+
+                parts.push(`
+              <details class="acc">
+                <summary>${pprName} <span class="badge" style="margin-left:8px">${pprAvg != null ? pprAvg.toFixed(2) + '%' : 'NA'}</span></summary>
+                <div class="content">${table}</div>
+              </details>
+            `);
+            });
+
+            host.innerHTML = parts.join('');
+
+            // Exportar CSV del tab PPRs (toda la planta)
+            const btn = document.getElementById('btnExportPprYear');
+            if (btn && !btn._wired) {
+                btn._wired = true;
+                btn.addEventListener('click', () => {
+                    const head = ['PPR', 'Equipo/Área', ...months, 'Total PPR acumulado anual'];
+                    const csv = [head, ...exportRows]
+                        .map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(','))
+                        .join('\r\n');
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = `PPRs_anual_${plant.name}.csv`;
+                    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                });
+            }
+        }
+
+        // POC: catálogo de PPRs (columnas) con una severidad "típica" para el PPR (1..4).
+        // La OCC vendrá del área/proceso (criterio) y la SEV de aquí, para simular tu Excel.
+        const PPR_COLUMNS = [
+            { key: 'p4', name: '4. Construcción y condición de instalaciones', sev: 4 },
+            { key: 'p5', name: '5. Distribución de locales/espacio de trabajo', sev: 4 },
+            { key: 'p6', name: '6. Servicios: aire, agua, energía', sev: 3 },
+            { key: 'p7', name: '7. Eliminación de desechos', sev: 3 },
+            { key: 'p8', name: '8. Idoneidad de los equipos, limpieza y mtto', sev: 4 },
+            { key: 'p9', name: '9. Gestión de materiales comprados y servicios', sev: 3 },
+            { key: 'p10', name: '10. Medidas para prevención de contaminación cruzada', sev: 4 },
+            { key: 'p11', name: '11. Limpieza y saneamiento', sev: 4 },
+            { key: 'p12', name: '12. Control de plagas', sev: 3 },
+            { key: 'p13', name: '13. Higiene del personal', sev: 3 },
+            { key: 'p15', name: '15. Retiro de producto', sev: 4 },
+            { key: 'p16', name: '16. Almacenamiento', sev: 3 },
+            { key: 'p17', name: '17. Información del producto', sev: 3 },
+            { key: 'p18', name: '18. Defensa de los alimentos', sev: 4 },
+        ];
+
+
+        // Obtiene (occ, avg, current_freq, units) del criterio cuyo nombre coincida con el área/proceso
+        function getAreaStatsFromCriteria(plant, areaName) {
+            const by = Object.fromEntries((plant.criteria || [])
+                .map(c => [norm(c.criterio), c]));
+            const c = by[norm(areaName)];
+            if (!c) return { occ: 2, avg: 0, current_freq: 'Bimestral', units: 1 };
+            return {
+                occ: +c.occ || 2,
+                avg: +c.avg || 0,
+                current_freq: c.current_freq || 'Bimestral',
+                units: +c.units || 1
+            };
+        }
+
+        function renderPprGridPOC(plant) {
+            const host = document.getElementById('tbl-ppr-grid');
+            if (!host) return;
+
+            // Filas (áreas/procesos) – reuso tu catálogo amplio para que luzca
+            const ROWS = Array.from(new Set(Object.values(SCENARIO_GROUPS).flat()));
+
+            // === Encabezado de 2 niveles ===
+            const headRow1 = [
+                '<th rowspan="2" style="text-align:left;min-width:220px">Área / Proceso</th>',
+                ...PPR_COLUMNS.map(p => `<th colspan="2" title="${p.name}">${p.name}</th>`)
+            ].join('');
+
+            const headRow2 = [
+                '<th class="sub">Riesgo</th><th class="sub">Frecuencia</th>'
+            ];
+            // duplica “Riesgo / Frecuencia” por PPR
+            const subHeader = Array.from({ length: PPR_COLUMNS.length })
+                .map(() => headRow2.join('')).join('');
+
+            host.innerHTML = `
+            <thead class="thead-2">
+              <tr>${headRow1}</tr>
+              <tr>${subHeader}</tr>
+            </thead>
+            <tbody></tbody>
+          `;
+
+            const tbody = host.querySelector('tbody');
+            const exportRows = [];
+            // si está el checkbox, úsalo; si no, por defecto true (como tu POC)
+            const useAvg = document.getElementById('risk-use-avg')?.checked ?? true;
+
+            ROWS.forEach(area => {
+                const { occ, avg } = getAreaStatsFromCriteria(plant, area);
+
+                // celdas (dos por PPR)
+                const tds = PPR_COLUMNS.map(col => {
+                    const sev = col.sev;
+                    const baseRisk = classifyRisk(sev, occ);
+                    const adjRisk = modByAvg(baseRisk, avg, useAvg);
+                    const freq = freqOfRisk(adjRisk);
+
+                    exportRows.push([area, col.name, sev, occ, baseRisk, avg.toFixed(2), freq]);
+
+                    const riskBg = COLOR_BY_RISK[baseRisk] || '#eef2f7';
+                    return `
+                <td style="background:${riskBg};font-weight:700;text-align:center">${baseRisk}</td>
+                <td style="font-weight:600;text-align:center">${freq}</td>
+              `;
+                }).join('');
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td style="text-align:left">${area}</td>${tds}`;
+                tbody.appendChild(tr);
+            });
+
+            // Export CSV (2 columnas por PPR)
+            const btn = document.getElementById('btnExportPprGrid');
+            if (btn && !btn._wired) {
+                btn._wired = true;
+                btn.addEventListener('click', () => {
+                    const head = ['Área/Proceso'];
+                    PPR_COLUMNS.forEach(p => { head.push(`${p.name} - Riesgo`, `${p.name} - Frecuencia`); });
+
+                    // Reconstruye filas en el mismo orden visual
+                    const rows = [];
+                    ROWS.forEach(area => {
+                        const { occ, avg } = getAreaStatsFromCriteria(plant, area);
+                        const cells = [];
+                        PPR_COLUMNS.forEach(col => {
+                            const baseRisk = classifyRisk(col.sev, occ);
+                            const adjRisk = modByAvg(baseRisk, avg, document.getElementById('risk-use-avg')?.checked ?? true);
+                            const freq = freqOfRisk(adjRisk);
+                            cells.push(baseRisk, freq);
+                        });
+                        rows.push([area, ...cells]);
+                    });
+
+                    const csv = [head, ...rows]
+                        .map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(','))
+                        .join('\r\n');
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = `matriz_ppr_poc_${plant.name}.csv`;
+                    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                });
+            }
+        }
+
+
+
+
+        // ===== Config POC =====
+        const FREQ_PER_MONTH = { "Quincenal": 2, "Mensual": 1, "Bimestral": 0.5, "Trimestral": 1 / 3 };
+        const FREQ_ORDER = ["Quincenal", "Mensual", "Bimestral", "Trimestral"];
+        const COLOR_BY_RISK = { "C": "#f8d7da", "AR": "#fde2c5", "M": "#fff3cd", "BR": "#d1e7dd" };
+
+        // Matriz 4x4: sev (1..4) x occ (1..4)  => BR/M/AR/C
+        const RISK_MATRIX = [
+            [], // index 0 vacío
+            ["", "BR", "BR", "M", "AR"],   // sev=1
+            ["", "BR", "BR", "M", "AR"],   // sev=2
+            ["", "M", "M", "AR", "C"],     // sev=3
+            ["", "AR", "AR", "C", "C"]     // sev=4
+        ];
+
+        const FREQ_BY_RISK = { "BR": "Trimestral", "M": "Bimestral", "AR": "Mensual", "C": "Quincenal" };
+
+        function classifyRisk(sev, occ) {
+            sev = Math.max(1, Math.min(4, +sev || 1));
+            occ = Math.max(1, Math.min(4, +occ || 1));
+            return RISK_MATRIX[sev][occ] || "M";
+        }
+
+        function modByAvg(risk, avg, useAvg) {
+            if (!useAvg) return risk;
+            const idx = FREQ_ORDER.indexOf(FREQ_BY_RISK[risk]);
+            if (avg <= -0.30) {                      // desempeño negativo -> más exigente
+                return FREQ_ORDER[Math.max(0, idx - 1)] ? riskShift(risk, -1) : risk;
+            }
+            if (avg >= 0.30) {                      // desempeño positivo -> más laxo
+                return riskShift(risk, +1);
+            }
+            return risk;
+        }
+
+        function riskShift(risk, step) {
+            // Mapea riesgo -> índice de frecuencia y lo recorre (más estricto = hacia Quincenal)
+            const curF = FREQ_BY_RISK[risk];
+            let i = FREQ_ORDER.indexOf(curF);
+            i = Math.max(0, Math.min(FREQ_ORDER.length - 1, i - step)); // -step para coincidir
+            const newF = FREQ_ORDER[i];
+            // Invertimos el mapa para obtener la etiqueta de riesgo aproximada
+            const inv = { "Trimestral": "BR", "Bimestral": "M", "Mensual": "AR", "Quincenal": "C" };
+            return inv[newF] || risk;
+        }
+
+        function freqOfRisk(risk) { return FREQ_BY_RISK[risk] || "Bimestral"; }
+
+        function loadsPerMonth(freq, units) {
+            const f = FREQ_PER_MONTH[freq] ?? 0.5;
+            return (f * (units || 1));
+        }
+
+        function renderRisk() {
+            // Preparar selects de país/planta la primera vez
+            const cSel = document.getElementById('risk-country');
+            const pSel = document.getElementById('risk-plant');
+            if (!cSel.dataset.ready) {
+                (STATE.data.countries || []).forEach((c, i) => {
+                    const opt = document.createElement('option'); opt.value = c.name; opt.textContent = c.name;
+                    cSel.appendChild(opt);
+                });
+                cSel.dataset.ready = "1";
+                cSel.addEventListener('change', () => {
+                    fillPlants();
+                    drawRiskTable();
+                });
+                pSel.addEventListener('change', drawRiskTable);
+                fillPlants();
+            }
+
+            if (STATE.country) cSel.value = STATE.country;
+            fillPlants();
+            if (STATE.plant) pSel.value = STATE.plant;
+
+            setView('view-risk');
+            setCrumbs(['Calculadora de Riesgo']);
+            drawRiskTable();
+
+            function fillPlants() {
+                const country = (STATE.data.countries || []).find(x => x.name === cSel.value) || STATE.data.countries?.[0];
+                cSel.value = country?.name || "";
+                pSel.innerHTML = "";
+                (country?.plants || []).forEach(p => {
+                    const opt = document.createElement('option'); opt.value = p.name; opt.textContent = p.name;
+                    pSel.appendChild(opt);
+                });
+            }
+
+            function drawRiskTable() {
+                const useAvg = document.getElementById('risk-use-avg').checked;
+                const country = (STATE.data.countries || []).find(x => x.name === cSel.value) || STATE.data.countries?.[0];
+                const plant = (country?.plants || []).find(p => p.name === pSel.value) || country?.plants?.[0];
+                const rows = plant?.criteria || [];
+
+                const tbody = document.querySelector('#risk-table tbody');
+                tbody.innerHTML = "";
+
+                let totalAct = 0, totalSug = 0;
+
+                rows.forEach(item => {
+                    const sev = item.sev, occ = item.occ, avg = +(item.avg || 0);
+                    const risk = classifyRisk(sev, occ);
+                    const riskAdj = modByAvg(risk, avg, useAvg);
+                    const freqSug = freqOfRisk(riskAdj);
+                    const freqAct = item.current_freq || "Bimestral";
+                    const units = +item.units || 1;
+
+                    const act = loadsPerMonth(freqAct, units);
+                    const sug = loadsPerMonth(freqSug, units);
+                    totalAct += act; totalSug += sug;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${item.criterio}</td>
+                <td>${sev}</td>
+                <td>${occ}</td>
+                <td style="background:${COLOR_BY_RISK[risk] || '#eee'}"><b>${risk}</b></td>
+                <td>${avg?.toFixed(2)}</td>
+                <td>${freqAct}</td>
+                <td><b>${freqSug}</b></td>
+                <td>${deltaIcon(freqAct, freqSug)}</td>
+                <td>${units}</td>
+                <td>${act.toFixed(2)}</td>
+                <td>${sug.toFixed(2)}</td>
+              `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('risk-summary').innerHTML =
+                    `<div class="alert alert-secondary p-2 m-0">
+                 <b>${country?.name} / ${plant?.name}</b> — Cargas/mes actuales: <b>${totalAct.toFixed(2)}</b>,
+                 sugeridas: <b>${totalSug.toFixed(2)}</b> (Δ ${(totalSug - totalAct >= 0 ? '+' : '')}${(totalSug - totalAct).toFixed(2)})
+               </div>`;
+            }
+
+            function deltaIcon(act, sug) {
+                const iAct = FREQ_ORDER.indexOf(act), iSug = FREQ_ORDER.indexOf(sug);
+                if (iSug < iAct) return "↑";
+                if (iSug > iAct) return "↓";
+                return "=";
+            }
+        }
+
+        function applyRiskOverlay(data, risk) {
+            if (!risk?.countries) return;
+
+            const rcIndex = Object.fromEntries((risk.countries || []).map(c => [c.name, c]));
+            (data.countries || []).forEach(c => {
+                const rc = rcIndex[c.name]; if (!rc) return;
+                const rpIndex = Object.fromEntries((rc.plants || []).map(p => [p.name, p]));
+                (c.plants || []).forEach(p => {
+                    const rp = rpIndex[p.name]; if (!rp?.criteria) return;
+
+                    const byName = Object.fromEntries(rp.criteria.map(x => [String(x.criterio).toLowerCase(), x]));
+                    (p.criteria || []).forEach(cr => {
+                        const m = byName[String(cr.criterio).toLowerCase()];
+                        if (!m) return;
+                        if (m.sev != null) cr.sev = m.sev;
+                        if (m.occ != null) cr.occ = m.occ;
+                        if (m.units != null) cr.units = m.units;
+                        if (m.current_freq) cr.current_freq = m.current_freq;
+                        if (m.avg != null) cr.avg = m.avg; // si el POC trae promedio calculado
+                    });
+                });
+            });
+        }
+
+
         // ---------- Init ----------
         document.getElementById('btnGlobal').addEventListener('click', () => { STATE.country = null; STATE.plant = null; renderGlobal(); });
         (async function init() {
             try {
-                const res = await fetch(JSON_URL);
-                STATE.data = await res.json();
+                const [resData, resRisk] = await Promise.all([fetch(JSON_URL), fetch(RISK_URL)]);
+                STATE.data = await resData.json();
+                STATE.risk = await resRisk.json();
+
+                applyRiskOverlay(STATE.data, STATE.risk); // <-- clave
                 renderGlobal();
             } catch (err) {
                 console.error('Error cargando JSON:', err);
-                alert('No se pudo cargar /data/bpm_demo.json. Coloca el archivo en wwwroot/data.');
+                alert('No se pudo cargar los JSON. Colócalos en wwwroot/data.');
             }
         })();
     </script>
 
-</body>
-</html>
+        }

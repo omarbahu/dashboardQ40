@@ -2,6 +2,7 @@
 using dashboardQ40.Middlewares;
 using dashboardQ40.Models;
 using dashboardQ40.Services;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -64,6 +65,8 @@ builder.Services.AddSession(options =>
 // 🔧 Swagger (solo Dev)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IACPayloadService, ACPayloadService>();
 
 // ⚙️ Config externa
 builder.Services.Configure<WebServiceSettings>(builder.Configuration.GetSection("WebServiceSettings"));

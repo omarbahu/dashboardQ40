@@ -1,0 +1,352 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    @inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
+}
+
+@{
+    var y = DateTime.Today.Year;
+    var startDef = new DateTime(y, 6, 1);   // 1 mayo
+    var endDef = new DateTime(y, 8, 30);  // 30 junio
+}
+
+<form id="selectionForm" target="_blank">
+    <div class="row row-cols-lg-auto g-2 align-items-end">
+        <div class="col">
+            <label for="startDate" class="form-label">@Localizer["From"]</label>
+        </div>
+        <div class="col">
+            <input type="date"
+                   id="startDate"
+                   name="startDate"
+                   class="form-control form-control-sm"
+                   value="@startDef.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="col">
+            <label for="endDate" class="form-label">@Localizer["To"]</label>
+        </div>
+        <div class="col">
+            <input type="date"
+                   id="endDate"
+                   name="endDate"
+                   class="form-control form-control-sm"
+                   value="@endDef.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <!-- País / Planta -->
+        <div class="col">
+            <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
+        </div>
+        <div class="col">
+            <select id="pais" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
+                {
+                    <option value="@p.Code">@p.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
+        </div>
+        <div class="col">
+            <select id="planta" name="planta" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
+        <!-- Línea -->
+        <div class="col">
+            <label for="line" class="form-label">@Localizer["XR_Line"]</label>
+        </div>
+        <div class="col">
+            <select id="line" name="line" class="form-select form-select-sm"></select>
+        </div>
+
+        <div class="col">
+            <label for="sku" class="form-label">SKU</label>
+        </div>
+        <div class="col">
+            <select id="sku" name="sku" class="form-select form-select-sm">
+                <option value="">@Localizer["SkuPlaceholder"]</option>
+            </select>
+        </div>
+        <div class="col">
+            <button id="btnBuscar" type="button" class="btn btn-primary btn-sm">Buscar</button>
+        </div>
+        <div class="col">
+            <button id="btnExport" type="button" class="btn btn-success btn-sm">Exportar Excel</button>
+        </div>
+        <div class="mt-4 border p-3">
+            <h5>Carga masiva de autocontroles</h5>
+            <div class="col">
+            <div class="mb-2">
+                <label for="fileACs" class="form-label">Seleccionar archivo Excel (.xlsx)</label>
+                <input type="file"
+                       id="fileACs"
+                       name="file"
+                       class="form-control"
+                       accept=".xlsx,.xls" />
+            </div>
+            </div>
+                <div class="col">
+            <button type="button"
+                    class="btn btn-primary"
+                    onclick="importarExcelACs()">
+                Importar Excel
+            </button>
+            </div>
+            <div class="col">
+            <div id="importResult" class="mt-2 small text-muted"></div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<hr />
+<div id="gridWrap" class="table-responsive" style="display:none">
+    <table id="gridAC" class="table table-sm table-striped">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+    <div id="gridCount" class="mt-2 text-muted"></div>
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+    <script>
+        // --- helpers mínimos ---
+        function resetSelect($el, placeholder) { $el.empty().append(new Option(placeholder || "-- Selecciona --", "")); }
+
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            if (Array.isArray(data.rows)) return data.rows;
+            if (Array.isArray(data.rows?.$values)) return data.rows.$values;
+            return [];
+        }
+
+        // --- combos País/Planta/Línea ---
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+        const LABELS = { Select: "-- Selecciona --", Line: "@Localizer["XR_Line"]", Plant: "@Localizer["XR_Plant"]" };
+
+        function fillPlants(countryCode) {
+            const $planta = $("#planta");
+            resetSelect($planta, LABELS.Plant);
+            resetSelect($("#line"), LABELS.Line);
+            if (!countryCode) return;
+
+            const plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+        }
+
+        function loadLinesByCompany(companyId) {
+            const $line = $("#line");
+            resetSelect($line, LABELS.Line);
+            if (!companyId) return;
+
+            $.ajax({
+                url: '@Url.Action("ObtenerLineas", "Dashboard")',
+                type: 'GET',
+                data: { company: companyId },
+                success: function (data) {
+                    const lines = toArray(data).sort((a, b) => (a.workplaceName || a.name || '').localeCompare((b.workplaceName || b.name || ''), 'es'));
+                    lines.forEach(l => {
+                        const id = l.workplace ?? l.id;
+                        const name = l.workplaceName ?? l.name ?? id;
+                        $line.append(new Option(name, id));
+                    });
+                },
+                error: function (xhr) { console.error("ObtenerLineas error", xhr); }
+            });
+        }
+
+        // --- payload para consulta ---
+        function getPayload() {
+            const company = $("#planta").val() || null;
+            const workplace = $("#line").val() || null;
+            const manufacturingorder = $("#sku").val() || null;
+            const startdate = $("#startDate").val() || null; // yyyy-MM-dd
+            const enddate = $("#endDate").val() || null; // yyyy-MM-dd
+            return { company, workplace, manufacturingorder, startdate, enddate };
+        }
+
+        // --- buscar y pintar grid ---
+        async function buscarACs() {
+            const payload = getPayload();
+
+            const res = await fetch('@Url.Action("ObtenerRows", "CargaACs")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                console.error('ObtenerRows error', res.status, txt);
+                alert('Error al consultar.');
+                return;
+            }
+
+            const js = await res.json();
+            const raw = (js?.rows ?? js);
+            const rows = Array.isArray(raw) ? raw : (raw?.$values ?? []);
+            renderGrid(rows);
+            $("#gridCount").text(`${js?.count ?? rows.length} fila(s)`);
+        }
+
+        function renderGrid(rows) {
+            const $wrap = $("#gridWrap");
+            const $thead = $("#gridAC thead");
+            const $tbody = $("#gridAC tbody");
+            $thead.empty(); $tbody.empty();
+
+            if (!Array.isArray(rows) || rows.length === 0) {
+                $wrap.show();
+                $thead.html('<tr><th>Sin datos</th></tr>');
+                return;
+            }
+
+            const cols = Object.keys(rows[0] || {});
+            const ths = cols.map(k => `<th>${k}</th>`).join('');
+            $thead.html(`<tr>${ths}</tr>`);
+
+            const html = rows.map(r => {
+                const tds = cols.map(c => {
+                    let v = r[c];
+                    if (typeof v === 'string' && v.includes('T') && /^\d{4}-\d{2}-\d{2}T/.test(v)) {
+                        v = v.split('T')[0] + ' ' + (v.split('T')[1] || '').substring(0, 8);
+                    }
+                    return `<td>${v ?? ''}</td>`;
+                }).join('');
+                return `<tr>${tds}</tr>`;
+            }).join('');
+
+            $tbody.html(html);
+            $wrap.show();
+        }
+
+        // --- SKU por línea/fechas ---
+        function cargarProductos() {
+            const lineaId = $("#line").val();
+            const fechaInicial = $("#startDate").val();
+            const fechaFinal = $("#endDate").val();
+            const planta = $("#planta").val();
+
+            if (lineaId && fechaInicial && fechaFinal) {
+                $.ajax({
+                    url: '@Url.Action("ObtenerProductos", "Dashboard")',
+                    type: 'GET',
+                    data: { lineaId, fechaInicial, fechaFinal, planta },
+                    success: llenarDropdownSKU,
+                    error: function () { alert('@Localizer["ErrorLoadSkus"]'); }
+                });
+            } else {
+                $("#sku").empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
+            }
+        }
+
+        function llenarDropdownSKU(data) {
+            const productos = toArray(data);
+            const $dd = $("#sku");
+            $dd.empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
+            productos.forEach(p => {
+                $dd.append(`<option value="${p.manufacturingOrder}">${p.manufacturingReferenceName}</option>`);
+            });
+        }
+
+        // --- bindings ---
+        $("#pais").on("change", function () { fillPlants(this.value); });
+        $("#planta").on("change", function () { loadLinesByCompany(this.value); });
+        $("#line, #startDate, #endDate").on("change", cargarProductos);
+        $("#btnBuscar").on("click", buscarACs);
+
+        // init: seleccionar primer país y disparar llenado
+        $(function () {
+            const $pais = $("#pais");
+            if ($pais[0] && $pais[0].options.length > 1) {
+                $pais[0].selectedIndex = 1;
+                $pais.trigger("change");
+            }
+        });
+
+
+        async function exportExcelACs() {
+            const payload = getPayload();
+
+            const res = await fetch('@Url.Action("ExportRows", "CargaACs")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                console.error('ExportRows error', res.status, txt);
+                alert('No se pudo exportar.');
+                return;
+            }
+
+            const blob = await res.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Autocontroles_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(a.href);
+        }
+
+        $("#btnExport").on("click", exportExcelACs);
+
+
+
+        function importarExcelACs() {
+            var fileInput = document.getElementById('fileACs');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Primero selecciona un archivo Excel.');
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('file', fileInput.files[0]); // el nombre debe ser "file" (como en el action)
+
+            $.ajax({
+                url: '@Url.Action("ImportarExcel", "CargaACs")',  // CargaACsController
+                type: 'POST',
+                data: formData,
+                processData: false,   // IMPORTANTÍSIMO para FormData
+                contentType: false,   // IMPORTANTÍSIMO para FormData
+
+                success: function (res) {
+                    console.log(res);
+                    $('#importResult').text(
+                        'Se leyeron ' + res.totalFilas + ' filas. ' +
+                        (res.primeraFila
+                            ? 'Ejemplo primer registro: ' + JSON.stringify(res.primeraFila)
+                            : '')
+                    );
+                    // En el próximo paso, aquí dispararemos el proceso que manda al WebService.
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    alert('Error al importar: ' + (xhr.responseText || xhr.statusText));
+                }
+            });
+        }
+
+    </script>
+
+}

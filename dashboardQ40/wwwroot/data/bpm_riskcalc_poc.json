@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "title": "BPM – Risk Calculator POC",
+    "version": "0.1",
+    "notes": "Minimal dataset focusing on PPR criteria (sev/occ/avg). Add/modify freely."
+  },
+  "countries": [
+    {
+      "name": "México",
+      "plants": [
+        {
+          "name": "Planta Insurgentes",
+          "criteria": [
+            {
+              "criterio": "Limpieza y saneamiento",
+              "sev": 3,
+              "occ": 3,
+              "avg": -0.1,
+              "current_freq": "Mensual",
+              "units": 6
+            },
+            {
+              "criterio": "Control de plagas",
+              "sev": 3,
+              "occ": 2,
+              "avg": 0.15,
+              "current_freq": "Bimestral",
+              "units": 2
+            },
+            {
+              "criterio": "Gestión de materiales",
+              "sev": 2,
+              "occ": 2,
+              "avg": 0.05,
+              "current_freq": "Trimestral",
+              "units": 3
+            },
+            {
+              "criterio": "Defensa de los alimentos",
+              "sev": 4,
+              "occ": 3,
+              "avg": -0.3,
+              "current_freq": "Mensual",
+              "units": 4
+            },
+            {
+              "criterio": "Higiene del personal",
+              "sev": 3,
+              "occ": 4,
+              "avg": -0.25,
+              "current_freq": "Mensual",
+              "units": 5
+            }
+          ]
+        },
+        {
+          "name": "Planta Monterrey",
+          "criteria": [
+            {
+              "criterio": "Construcción y edificios",
+              "sev": 2,
+              "occ": 1,
+              "avg": 0.2,
+              "current_freq": "Trimestral",
+              "units": 2
+            },
+            {
+              "criterio": "Agua y energía",
+              "sev": 2,
+              "occ": 3,
+              "avg": -0.05,
+              "current_freq": "Bimestral",
+              "units": 3
+            },
+            {
+              "criterio": "Retiro de producto",
+              "sev": 4,
+              "occ": 2,
+              "avg": 0.1,
+              "current_freq": "Mensual",
+              "units": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "USA",
+      "plants": [
+        {
+          "name": "Plant San Diego",
+          "criteria": [
+            {
+              "criterio": "Distribución de locales",
+              "sev": 2,
+              "occ": 2,
+              "avg": 0.0,
+              "current_freq": "Trimestral",
+              "units": 2
+            },
+            {
+              "criterio": "Identidad de equipos",
+              "sev": 3,
+              "occ": 1,
+              "avg": 0.4,
+              "current_freq": "Bimestral",
+              "units": 3
+            },
+            {
+              "criterio": "Información del producto",
+              "sev": 3,
+              "occ": 2,
+              "avg": -0.4,
+              "current_freq": "Bimestral",
+              "units": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

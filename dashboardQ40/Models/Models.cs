@@ -258,7 +258,70 @@ CPrvs.resultValue, CPrvs.minTolerance, CPrvs.maxTolerance, CPrrc.executionDate
             public T result { get; set; }
         }
 
-   
+        public class ACPayloadRow
+        {
+            public string? manufacturingOrder { get; set; }
+            public string? manufacturingPhase { get; set; }
+            public string? batch { get; set; }
+            public string? idControlProcedureResult { get; set; }
+            public string? isManual { get; set; }
+            public string? workplace { get; set; }
+            public string? launchingDate { get; set; }
+            public string? controlProcedure { get; set; }
+            public string? controlProcedureVersion { get; set; }
+            public string? controlProcedureLevel { get; set; }
+            public string? controlProcedureNote { get; set; }
+            public string? worker { get; set; }
+            public string? controlOperation { get; set; }
+            public string? controlOperationNote { get; set; }
+            public string? doesNotApply { get; set; }
+            public string? resultNumber { get; set; }
+            public string? resultAttribute { get; set; }
+            public string? resultValue { get; set; }
+            public string? resultPresetAttributeValue { get; set; }
+            public string? controlOperationResultValueNote { get; set; }
+            public string controlOperationType { get; set; }
+        }
+
+
+        public class RowsRequest
+        {
+            public string? company { get; set; }
+            public string? workplace { get; set; }
+            public string? manufacturingorder { get; set; }
+            public string? startdate { get; set; } // "yyyy-MM-dd"
+            public string? enddate { get; set; }   // "yyyy-MM-dd"
+        }
+
+        public class AutocontrolExcelRow
+        {
+            // Campos raíz del JSON
+            public string Batch { get; set; }
+            public string ManufacturingOrder { get; set; }
+            public string ManufacturingPhase { get; set; }
+            public string IdControlProcedureResult { get; set; }
+            public string IsManual { get; set; }
+            public string Workplace { get; set; }
+            public string LaunchingDate { get; set; }
+            public string ControlProcedure { get; set; }
+            public string ControlProcedureVersion { get; set; }
+            public string ControlProcedureLevel { get; set; }
+            public string ControlProcedureNote { get; set; }
+            public string Worker { get; set; }
+
+            // Campos de operación / valores
+            public string ControlOperation { get; set; }
+            public string ControlOperationNote { get; set; }
+            public string DoesNotApply { get; set; }
+
+            public string ResultAttribute { get; set; }               // luego lo mapeamos a resultAtribute
+            public string ResultNumber { get; set; }
+            public string ResultValue { get; set; }
+            public string ResultPresetAttributeValue { get; set; }
+            public string ControlOperationResultValueNote { get; set; }
+            public string controlOperationType { get; set; }
+
+        }
 
     }
 }
