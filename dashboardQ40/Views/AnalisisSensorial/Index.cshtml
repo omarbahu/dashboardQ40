@@ -1,0 +1,720 @@
+﻿@model dynamic
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Dashboard Arca Planta Insurgentes";
+}
+@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
+<h4>@Localizer["XR_Title"] Analisis Sensorial</h4>
+
+<style>
+    .sensorial-wrapper {
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 4px;
+        background-color: #fafafa;
+        font-size: 12px;
+    }
+
+    .sensorial-header {
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+
+    .sensorial-subtitle {
+        font-weight: bold;
+        margin-bottom: 4px;
+        font-size: 13px;
+    }
+
+    .sensorial-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+        .sensorial-table th,
+        .sensorial-table td {
+            border: 1px solid #ccc;
+            padding: 4px 6px;
+            text-align: center;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        .sensorial-table th {
+            background-color: #cfe2f3;
+            font-weight: bold;
+        }
+
+    .sensorial-ok {
+        background-color: #d4edda;
+        font-weight: bold;
+    }
+
+    .sensorial-bad {
+        background-color: #f8d7da;
+        font-weight: bold;
+    }
+
+    .sensorial-table-panelistas th {
+        font-size: 11px;
+        vertical-align: middle;
+    }
+
+        .sensorial-table-panelistas th[colspan="6"] {
+            background-color: #d9ead3; /* opcional, para distinguir panelistas */
+        }
+
+        .filtro-mini-label {
+    font-size: 11px;
+    margin-bottom: 2px;
+}
+
+.filtro-mini-input {
+    font-size: 11px;
+    padding: 2px 4px;
+    height: 24px;
+    max-width: 110px; /* ajústalo si quieres aún más pequeño */
+}
+
+    .filter-label {
+        font-size: 12px;
+        margin-bottom: 2px;
+        margin-right: 4px;
+        white-space: nowrap;
+    }
+
+    .filter-input {
+        font-size: 12px;
+        padding: 2px 4px;
+        height: 26px;
+    }
+
+    /* Bloques de filtros */
+    .filter-block {
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        padding: 4px 6px; /* antes 6px 8px */
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-block-left {
+        background-color: #f7f7f9;
+    }
+
+    .filter-block-right {
+        background-color: #eef6ff;
+    }
+
+    .filter-block-title {
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+        margin-right: 6px;
+    }
+
+    /* Contenido interno más compacto */
+    .filter-block-content {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: nowrap; /* seguimos en una sola línea */
+        /* quitamos width:100% para que no “se estire” de más */
+    }
+
+    /* Inputs más cortos */
+    .filter-input {
+        font-size: 12px;
+        padding: 2px 4px;
+        height: 26px;
+    }
+
+    /* Limitar ancho de los datetime y textos */
+    .filter-block-left input[type="datetime-local"] {
+        max-width: 170px; /* ajusta a tu gusto (150–180) */
+    }
+
+    .filter-block-right input[type="text"] {
+        max-width: 120px; /* código y hora más cortos */
+    }
+
+    /* Botones: sin pegarse hasta la orilla */
+    .filter-block-content .btn {
+        margin-left: 4px; /* antes auto */
+        flex: 0 0 auto;
+    }
+
+</style>
+
+<form id="selectionForm" target="_blank">
+    <!-- Row 1: País + Planta (común a ambos modos de búsqueda) -->
+    <div class="row row-cols-lg-auto g-2 align-items-end mb-2">
+        <div class="col">
+            <label for="pais" class="form-label filter-label">@Localizer["XR_Country"]</label>
+        </div>
+        <div class="col">
+            <select id="pais" class="form-select form-select-sm filter-input">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
+                {
+                    <option value="@p.Code">@p.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col">
+            <label for="planta" class="form-label filter-label">@Localizer["XR_Plant"]</label>
+        </div>
+        <div class="col">
+            <select id="planta" name="planta" class="form-select form-select-sm filter-input">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Row 2: dos bloques en la misma fila -->
+    <div class="row g-2 align-items-center">
+        <!-- Bloque izquierdo: Fechas + botón azul -->
+        <div class="col-md-6">
+            <div class="filter-block filter-block-left">
+                <div class="filter-block-title">
+                    <span>🕒</span>
+                    <span>Fechas</span>
+                </div>
+                <div class="filter-block-content">
+                    <label for="startDate" class="filter-label">@Localizer["From"]</label>
+                    <input type="datetime-local"
+                           id="startDate"
+                           name="startDate"
+                           class="form-control form-control-sm filter-input" />
+
+                    <label for="endDate" class="filter-label">@Localizer["To"]</label>
+                    <input type="datetime-local"
+                           id="endDate"
+                           name="endDate"
+                           class="form-control form-control-sm filter-input" />
+
+                    <button type="button"
+                            class="btn btn-primary btn-sm"
+                            onclick="runReportAnaSens()">
+                        📊 @Localizer["Report"]
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bloque derecho: Código + hora + botón blanco -->
+        <div class="col-md-6">
+            <div class="filter-block filter-block-right">
+                <div class="filter-block-title">
+                    <span>🔍</span>
+                    <span>Código / hora</span>
+                </div>
+                <div class="filter-block-content">
+                    <label for="productCode" class="filter-label">Código producto</label>
+                    <input type="text"
+                           id="productCode"
+                           name="productCode"
+                           class="form-control form-control-sm filter-input"
+                           placeholder="17MAY26-5" />
+
+                    <label for="productHour" class="filter-label">Hora muestra</label>
+                    <input type="text"
+                           id="productHour"
+                           name="productHour"
+                           class="form-control form-control-sm filter-input"
+                           placeholder="16:29" />
+
+                    <button type="button"
+                            class="btn btn-outline-secondary btn-sm"
+                            onclick="runReportAnaSensByProduct()">
+                        Buscar por código / hora
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<hr />
+
+<div id="reporteContainer"></div>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
+    <!-- Diccionario de textos para JS -->
+    <script>
+
+        const MODULO_PERMISOS = "DQanasens";
+
+        const LABELS = {
+            Select: "-- Selecciona --",
+            Line: "@Localizer["XR_Line"]",
+            Plant: "@Localizer["XR_Plant"]"
+        };
+
+        // Todas las companies (Company, CompanyName, CountryCode) desde backend
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+        console.log("companies", COMPANIES);
+
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            return [];
+        }
+
+        function resetSelect($el, placeholder) {
+            $el.empty().append(new Option(placeholder, ""));
+        }
+
+        // Helpers de permisos
+        function getPermisoModulo() {
+            if (!window.PERMISOS_POR_MODULO) return null;
+            return window.PERMISOS_POR_MODULO[MODULO_PERMISOS] || null;
+        }
+
+        function getUserCompanyInfo() {
+            if (!window.USER_COMPANY || !Array.isArray(COMPANIES)) return null;
+            return COMPANIES.find(c => c.Company === window.USER_COMPANY) || null;
+        }
+
+        // 1) País → cargar Plantas
+        // País → cargar Plantas
+        function fillPlants(countryCode) {
+            const $planta = $("#planta");
+            resetSelect($planta, LABELS.Plant);
+            resetSelect($("#line"), LABELS.Line); // limpiar línea
+
+            if (!countryCode) return;
+
+            const permiso = getPermisoModulo();
+            const userInfo = getUserCompanyInfo();
+            const userCompany = userInfo ? userInfo.Company : null;
+
+            let plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            // SOLO si fuera nivel planta puro (Global=false, Country=false, Planta=true)
+            // limitaríamos a una planta. En DQanasens tienes Country=true, así que ve todas las plantas de México.
+            if (permiso && !permiso.Global && !permiso.Country && permiso.Planta && userCompany) {
+                plants = plants.filter(p => p.Company === userCompany);
+            }
+
+            plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+
+            // Si tiene permiso de planta, auto-seleccionar su planta
+            // Si el permiso es SOLO de planta (sin Global ni Country) → auto-seleccionar y bloquear
+            if (permiso && permiso.Planta && userCompany && !permiso.Global && !permiso.Country) {
+                $planta.val(userCompany);
+                $planta.prop("disabled", true);
+            } else {
+                // En cualquier otro caso: no forzar selección, dejarlo editable
+                $planta.prop("disabled", false);
+            }
+
+        }
+
+
+        // Eventos
+        $("#pais").on("change", function () {
+            fillPlants(this.value);
+        });
+
+        $(function () {
+            const $pais = $("#pais");
+            const permiso = getPermisoModulo();
+            const userInfo = getUserCompanyInfo();
+            const userCountry = userInfo ? userInfo.CountryCode : null;
+
+            if (!$pais[0]) return;
+
+            // Si tiene Global → puede ver todos los países
+            if (permiso && permiso.Global) {
+                if (userCountry) {
+                    $pais.val(userCountry);
+                } else if ($pais[0].options.length > 1) {
+                    $pais[0].selectedIndex = 1;
+                }
+                $pais.prop("disabled", false);
+            }
+            // Si NO Global pero sí Country/Planta → solo su país, bloqueado
+            else if (permiso && (permiso.Country || permiso.Planta) && userCountry) {
+                $pais.find("option").each(function () {
+                    const val = this.value;
+                    if (val && val !== userCountry) {
+                        $(this).remove();
+                    }
+                });
+                $pais.val(userCountry);
+                $pais.prop("disabled", true);
+            }
+            // Fallback (sin permisos, por si acaso)
+            else {
+                if ($pais[0].options.length > 1) {
+                    $pais[0].selectedIndex = 1;
+                }
+                $pais.prop("disabled", false);
+            }
+
+            // Disparar carga de plantas con el país seleccionado
+            const selectedCountry = $pais.val();
+            if (selectedCountry) {
+                fillPlants(selectedCountry);
+            }
+        });
+
+
+
+
+        async function runReportAnaSens() {
+            const from = $("#startDate").val();
+            const to = $("#endDate").val();
+            const planta = $("#planta").val();
+
+            if (!(from && to && planta)) {
+                alert("Por favor selecciona fechas y planta.");
+                return;
+            }
+
+            try {
+                const payload = {
+                    startDate: from,
+                    endDate: to,
+                    company: planta
+                };
+
+                const res = await $.ajax({
+                    url: '@Url.Action("GetReporteAnaSens", "AnalisisSensorial")',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: JSON.stringify(payload)
+                });
+
+                if (!res || !res.success) {
+                    alert("No se pudo generar el reporte.");
+                    return;
+                }
+                console.log(res)
+                // 🔹 Pintar la tabla en el contenedor
+                renderTablaSensorial(res);
+
+            } catch (err) {
+                console.error(err);
+                alert("Error al llamar al servidor.");
+            }
+        }
+
+
+        async function runReportAnaSens() {
+            const from = $("#startDate").val();
+            const to = $("#endDate").val();
+            const planta = $("#planta").val();
+
+            if (!(from && to && planta)) {
+                alert("Por favor selecciona fechas y planta.");
+                return;
+            }
+
+            try {
+                const payload = {
+                    startDate: from,
+                    endDate: to,
+                    company: planta
+                };
+
+                const res = await $.ajax({
+                    url: '@Url.Action("GetReporteAnaSens", "AnalisisSensorial")',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: JSON.stringify(payload)
+                });
+
+                if (!res || !res.success) {
+                    alert("No se pudo generar el reporte.");
+                    return;
+                }
+                console.log(res);
+                renderTablaSensorial(res);
+
+            } catch (err) {
+                console.error(err);
+                alert("Error al llamar al servidor.");
+            }
+        }
+
+        // 🔹 NUEVO: búsqueda por código de producto
+        async function runReportAnaSensByProduct() {
+            const planta = $("#planta").val();
+            const productCode = $("#productCode").val().trim();
+            const productHour = $("#productHour").val(); // formato HH:mm del input type="time"
+
+            if (!planta) {
+                alert("Selecciona una planta.");
+                return;
+            }
+            if (!productCode) {
+                alert("Captura el código de producto.");
+                return;
+            }
+            if (!productHour) {
+                alert("Captura la hora de la muestra.");
+                return;
+            }
+
+            try {
+                const payload = {
+                    company: planta,
+                    productCode: productCode,
+                    productHour: productHour   // 🔹 nuevo
+                };
+
+                const res = await $.ajax({
+                    url: '@Url.Action("GetReporteAnaSensByProduct", "AnalisisSensorial")',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: JSON.stringify(payload)
+                });
+
+                if (!res || !res.success) {
+                    alert("No se pudo generar el reporte por código / hora.");
+                    return;
+                }
+                console.log(res);
+                renderTablaSensorial(res);
+
+            } catch (err) {
+                console.error(err);
+                alert("Error al llamar al servidor (búsqueda por código / hora).");
+            }
+        }
+
+
+
+        function renderTablaSensorial(data) {
+            const cont = document.getElementById("reporteContainer");
+
+            // 1) Normalizamos el array (por el $values)
+            const rawRows = toArray(data.rows);
+            if (!rawRows.length) {
+                cont.innerHTML = `
+                    <div class="sensorial-wrapper">
+                        <p>No se encontraron registros para los filtros seleccionados.</p>
+                    </div>`;
+                return;
+            }
+
+            // 2) Normalizamos nombres (camelCase → PascalCase que usamos en el código)
+            const rows = rawRows.map(r => ({
+                Batch: r.batch,
+                ManufacturingReference: r.manufacturingReference,
+                BatchIdentifier: r.batchIdentifier,
+                ImputationDate: r.imputationDate,
+                StartDate: r.startDate,
+                Workplace: r.workplace,
+                ControlProcedure: r.controlProcedure,
+                ControlProcedureLevel: r.controlProcedureLevel,
+                Worker: r.worker,
+                WorkerName: r.workerName,
+                Numero: r.numero,
+                IdMuestra: r.idMuestra,
+                ProductoExtra: r.productoExtra,
+                LoteBotella: r.loteBotella,
+                Hora: r.hora,
+                NombreProducto: r.nombreProducto,
+                ObsSabor: r.obsSabor,
+                SaborInOut: r.saborInOut,
+                ObsOlor: r.obsOlor,
+                OlorInOut: r.olorInOut,
+                AparienciaInOut: r.aparienciaInOut
+            }));
+
+            const h = rows[0];
+
+            const fechaImp = h.ImputationDate
+                ? new Date(h.ImputationDate).toLocaleString('es-MX')
+                : '';
+
+            const fechaStart = h.StartDate
+                ? new Date(h.StartDate).toLocaleString('es-MX')
+                : '';
+
+            // 3) Sacamos la lista de panelistas (worker + nivel)
+            const panelistasMap = {};
+            rows.forEach(r => {
+                const key = r.Worker; // si quieres, puedes usar `${r.Worker}-${r.ControlProcedureLevel}`
+                if (!panelistasMap[key]) {
+                    panelistasMap[key] = {
+                        Worker: r.Worker,
+                        WorkerName: r.WorkerName,
+                        Nivel: r.ControlProcedureLevel
+                    };
+                }
+            });
+
+            // Ordenamos por nivel CP para que se vean 3,1,2 o como quieras
+            const panelistas = Object.values(panelistasMap)
+                .sort((a, b) => a.Nivel - b.Nivel);
+
+            // 4) Agrupamos por número de muestra
+            const muestrasMap = {};
+            rows.forEach(r => {
+                const num = r.Numero || 0;
+                if (!muestrasMap[num]) {
+                    muestrasMap[num] = {
+                        base: {
+                            Numero: r.Numero,
+                            IdMuestra: r.IdMuestra,
+                            ProductoExtra: r.ProductoExtra,
+                            LoteBotella: r.LoteBotella,
+                            Hora: r.Hora
+                        },
+                        byWorker: {}
+                    };
+                }
+                const m = muestrasMap[num];
+
+                // llenamos campos base solo si están vacíos
+                if (!m.base.IdMuestra && r.IdMuestra) m.base.IdMuestra = r.IdMuestra;
+                if (!m.base.ProductoExtra && r.ProductoExtra) m.base.ProductoExtra = r.ProductoExtra;
+                if (!m.base.LoteBotella && r.LoteBotella) m.base.LoteBotella = r.LoteBotella;
+                if (!m.base.Hora && r.Hora) m.base.Hora = r.Hora;
+
+                m.byWorker[r.Worker] = r;
+            });
+
+            const muestras = Object.values(muestrasMap)
+                .sort((a, b) => (a.base.Numero || 0) - (b.base.Numero || 0));
+
+            // 5) Construimos HTML con cabecera de 2 filas: info lote + panelistas a la derecha
+            let html = `
+            <div class="sensorial-wrapper">
+                <div class="sensorial-header">
+                    <div class="sensorial-subtitle">Datos del lote</div>
+                    <div><strong>Lote Captor:</strong> ${h.Batch} &nbsp;&nbsp; <strong>MRef:</strong> ${h.ManufacturingReference}</div>
+                    <div><strong>Batch Identifier:</strong> ${h.BatchIdentifier}</div>
+                    <div><strong>Workplace:</strong> ${h.Workplace ?? ""}</div>
+                    <div><strong>Fecha imputación:</strong> ${fechaImp}</div>
+                    <div><strong>Inicio lote:</strong> ${fechaStart}</div>
+                    <div><strong>Total filas (muestras x panelistas):</strong> ${rows.length}</div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="sensorial-table sensorial-table-panelistas">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Núm. muestra</th>
+                                
+                                <th rowspan="2">Producto (extra lote)</th>
+                                <th rowspan="2">Lote botella</th>
+                                <th rowspan="2">Hora</th>
+                                        <th rowspan="2">ID muestra</th>
+            `;
+
+            // Encabezado por panelista (colspan con 6 columnas de detalle)
+            panelistas.forEach((p, idx) => {
+                html += `
+                    <th colspan="6">
+                        Panelista ${idx + 1}<br/>
+                        ${p.WorkerName}<br/>
+                        (Nivel CP ${p.Nivel})
+                    </th>`;
+            });
+
+            html += `
+                            </tr>
+                            <tr>
+            `;
+
+            // Segunda fila de encabezado: columnas por panelista
+            panelistas.forEach(() => {
+                html += `
+                    <th>Nombre producto (AC)</th>
+                    <th>Obs. sabor</th>
+                    <th>Sabor IN/OUT</th>
+                    <th>Obs. olor</th>
+                    <th>Olor IN/OUT</th>
+                    <th>Apariencia IN/OUT</th>
+                `;
+            });
+
+            html += `
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // 6) Filas: una por número de muestra; panelistas hacia la derecha
+            muestras.forEach(m => {
+                const base = m.base;
+
+                html += `
+                    <tr>
+                        <td>${base.Numero ?? ""}</td>
+                        
+                        <td>${base.ProductoExtra ?? ""}</td>
+                        <td>${base.LoteBotella ?? ""}</td>
+                        <td>${base.Hora ?? ""}</td>
+                                <td>${base.IdMuestra ?? ""}</td>
+                `;
+
+                panelistas.forEach(p => {
+                    const r = m.byWorker[p.Worker];
+
+                    if (!r) {
+                        // sin datos para ese panelista/muestra → celdas vacías
+                        html += `
+                            <td></td><td></td><td></td><td></td><td></td><td></td>
+                        `;
+                    } else {
+                        const claseSabor = r.SaborInOut === "OUT" ? "sensorial-bad" :
+                            r.SaborInOut === "IN" ? "sensorial-ok" : "";
+
+                        const claseOlor = r.OlorInOut === "OUT" ? "sensorial-bad" :
+                            r.OlorInOut === "IN" ? "sensorial-ok" : "";
+
+                        const claseApar = r.AparienciaInOut === "OUT" ? "sensorial-bad" :
+                            r.AparienciaInOut === "IN" ? "sensorial-ok" : "";
+
+                        html += `
+                            <td>${r.NombreProducto ?? ""}</td>
+                            <td>${r.ObsSabor ?? ""}</td>
+                            <td class="${claseSabor}">${r.SaborInOut ?? ""}</td>
+                            <td>${r.ObsOlor ?? ""}</td>
+                            <td class="${claseOlor}">${r.OlorInOut ?? ""}</td>
+                            <td class="${claseApar}">${r.AparienciaInOut ?? ""}</td>
+                        `;
+                    }
+                });
+
+                html += `</tr>`;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            `;
+
+            cont.innerHTML = html;
+        }
+
+
+
+    </script>
+    }

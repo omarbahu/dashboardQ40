@@ -7,10 +7,73 @@
 
 @{
     var y = DateTime.Today.Year;
-    var startDef = new DateTime(y, 6, 1);   // 1 mayo
+    var startDef = new DateTime(y, 10, 11);   // 1 mayo
     var endDef = new DateTime(y, 8, 30);  // 30 junio
 }
 
+<style>
+#loaderOverlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loaderContent {
+    text-align: center;
+}
+
+.bubbles {
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    position: relative;
+}
+
+.bubbles::before,
+.bubbles::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    animation: bubble 1s infinite ease-in-out;
+}
+
+.bubbles::before {
+    width: 20px;
+    height: 20px;
+    background-color: #e11d48;
+    left: 0;
+}
+
+.bubbles::after {
+    width: 20px;
+    height: 20px;
+    background-color: #0284c7;
+    right: 0;
+    animation-delay: 0.5s;
+}
+
+@@keyframes bubble {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-15px);
+        opacity: 1;
+    }
+}
+
+.loaderText {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}
+</style>
 <form id="selectionForm" target="_blank">
     <div class="row row-cols-lg-auto g-2 align-items-end">
         <div class="col">
@@ -24,16 +87,6 @@
                    value="@startDef.ToString("yyyy-MM-dd")" />
         </div>
 
-        <div class="col">
-            <label for="endDate" class="form-label">@Localizer["To"]</label>
-        </div>
-        <div class="col">
-            <input type="date"
-                   id="endDate"
-                   name="endDate"
-                   class="form-control form-control-sm"
-                   value="@endDef.ToString("yyyy-MM-dd")" />
-        </div>
 
         <!-- País / Planta -->
         <div class="col">
@@ -48,6 +101,7 @@
                 }
             </select>
         </div>
+
         <div class="col">
             <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
         </div>
@@ -56,54 +110,65 @@
                 <option value="">-- Selecciona --</option>
             </select>
         </div>
-        <!-- Línea -->
-        <div class="col">
-            <label for="line" class="form-label">@Localizer["XR_Line"]</label>
-        </div>
-        <div class="col">
-            <select id="line" name="line" class="form-select form-select-sm"></select>
-        </div>
 
+        <!-- Puesto (antes Línea) -->
         <div class="col">
-            <label for="sku" class="form-label">SKU</label>
+            <label for="workplace" class="form-label">Puesto</label>
         </div>
         <div class="col">
-            <select id="sku" name="sku" class="form-select form-select-sm">
-                <option value="">@Localizer["SkuPlaceholder"]</option>
+            <select id="workplace" name="workplace" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
             </select>
         </div>
+
+
         <div class="col">
             <button id="btnBuscar" type="button" class="btn btn-primary btn-sm">Buscar</button>
         </div>
         <div class="col">
             <button id="btnExport" type="button" class="btn btn-success btn-sm">Exportar Excel</button>
         </div>
-        <div class="mt-4 border p-3">
-            <h5>Carga masiva de autocontroles</h5>
-            <div class="col">
-            <div class="mb-2">
-                <label for="fileACs" class="form-label">Seleccionar archivo Excel (.xlsx)</label>
-                <input type="file"
-                       id="fileACs"
-                       name="file"
-                       class="form-control"
-                       accept=".xlsx,.xls" />
-            </div>
-            </div>
-                <div class="col">
-            <button type="button"
-                    class="btn btn-primary"
-                    onclick="importarExcelACs()">
-                Importar Excel
-            </button>
-            </div>
-            <div class="col">
-            <div id="importResult" class="mt-2 small text-muted"></div>
+    </div>
+
+    <!-- Carga masiva en una tarjeta aparte, centrada -->
+    <div class="row mt-4">
+        <div class="col-12 col-lg-8 col-xl-6 mx-auto">
+            <div class="border rounded p-3 shadow-sm">
+                <h5 class="mb-3">Carga masiva de autocontroles</h5>
+
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-md-8">
+                        <label for="fileACs" class="form-label mb-1">
+                            Seleccionar archivo Excel (.xlsx)
+                        </label>
+                        <input type="file"
+                               id="fileACs"
+                               name="file"
+                               class="form-control"
+                               accept=".xlsx,.xls" />
+                    </div>
+
+                    <div class="col-12 col-md-4 text-md-end">
+                        <button type="button"
+                                class="btn btn-primary mt-2 mt-md-0"
+                                onclick="importarExcelACs()">
+                            Importar Excel
+                        </button>
+                    </div>
+                </div>
+
+                <div id="importResult" class="mt-3 small text-muted"></div>
             </div>
         </div>
     </div>
 </form>
 
+<div id="loaderOverlay">
+    <div class="loaderContent">
+        <div class="bubbles"></div>
+        <p class="loaderText">Loading</p>
+    </div>
+</div>
 
 <hr />
 <div id="gridWrap" class="table-responsive" style="display:none">
@@ -113,6 +178,7 @@
     </table>
     <div id="gridCount" class="mt-2 text-muted"></div>
 </div>
+
 
 
 @section Scripts {
@@ -136,12 +202,16 @@
 
         // --- combos País/Planta/Línea ---
         const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
-        const LABELS = { Select: "-- Selecciona --", Line: "@Localizer["XR_Line"]", Plant: "@Localizer["XR_Plant"]" };
+        const LABELS = {
+            Select: "-- Selecciona --",
+            Workplace: "Puesto",
+            Plant: "@Localizer["XR_Plant"]"
+        };
 
         function fillPlants(countryCode) {
             const $planta = $("#planta");
             resetSelect($planta, LABELS.Plant);
-            resetSelect($("#line"), LABELS.Line);
+            resetSelect($("#workplace"), LABELS.Workplace);
             if (!countryCode) return;
 
             const plants = COMPANIES
@@ -151,36 +221,50 @@
             plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
         }
 
-        function loadLinesByCompany(companyId) {
-            const $line = $("#line");
-            resetSelect($line, LABELS.Line);
+
+        function loadWorkplacesByCompany(companyId) {
+            const $workplace = $("#workplace");
+            resetSelect($workplace, LABELS.Workplace);
             if (!companyId) return;
 
             $.ajax({
-                url: '@Url.Action("ObtenerLineas", "Dashboard")',
+                url: '@Url.Action("ObtenerWorkplaces", "CargaACs")', // mismo endpoint, solo cambiamos el combo
                 type: 'GET',
                 data: { company: companyId },
                 success: function (data) {
-                    const lines = toArray(data).sort((a, b) => (a.workplaceName || a.name || '').localeCompare((b.workplaceName || b.name || ''), 'es'));
+                    const lines = toArray(data).sort((a, b) => (a.workplaceName || a.name || '')
+                        .localeCompare((b.workplaceName || b.name || ''), 'es'));
+
                     lines.forEach(l => {
                         const id = l.workplace ?? l.id;
                         const name = l.workplaceName ?? l.name ?? id;
-                        $line.append(new Option(name, id));
+                        $workplace.append(new Option(name, id));
                     });
                 },
                 error: function (xhr) { console.error("ObtenerLineas error", xhr); }
             });
         }
 
+
         // --- payload para consulta ---
         function getPayload() {
             const company = $("#planta").val() || null;
-            const workplace = $("#line").val() || null;
-            const manufacturingorder = $("#sku").val() || null;
-            const startdate = $("#startDate").val() || null; // yyyy-MM-dd
-            const enddate = $("#endDate").val() || null; // yyyy-MM-dd
-            return { company, workplace, manufacturingorder, startdate, enddate };
+            const workplace = $("#workplace").val() || null;
+            const date = $("#startDate").val() || null; // yyyy-MM-dd
+
+            // Rango de 1 día: mandamos la misma fecha como start y end.
+            const startdate = date;
+            const enddate = date;
+
+            return {
+                company,
+                workplace,
+                manufacturingorder: null, // ya no filtramos por SKU
+                startdate,
+                enddate
+            };
         }
+
 
         // --- buscar y pintar grid ---
         async function buscarACs() {
@@ -237,40 +321,12 @@
             $wrap.show();
         }
 
-        // --- SKU por línea/fechas ---
-        function cargarProductos() {
-            const lineaId = $("#line").val();
-            const fechaInicial = $("#startDate").val();
-            const fechaFinal = $("#endDate").val();
-            const planta = $("#planta").val();
-
-            if (lineaId && fechaInicial && fechaFinal) {
-                $.ajax({
-                    url: '@Url.Action("ObtenerProductos", "Dashboard")',
-                    type: 'GET',
-                    data: { lineaId, fechaInicial, fechaFinal, planta },
-                    success: llenarDropdownSKU,
-                    error: function () { alert('@Localizer["ErrorLoadSkus"]'); }
-                });
-            } else {
-                $("#sku").empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
-            }
-        }
-
-        function llenarDropdownSKU(data) {
-            const productos = toArray(data);
-            const $dd = $("#sku");
-            $dd.empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
-            productos.forEach(p => {
-                $dd.append(`<option value="${p.manufacturingOrder}">${p.manufacturingReferenceName}</option>`);
-            });
-        }
 
         // --- bindings ---
         $("#pais").on("change", function () { fillPlants(this.value); });
-        $("#planta").on("change", function () { loadLinesByCompany(this.value); });
-        $("#line, #startDate, #endDate").on("change", cargarProductos);
+        $("#planta").on("change", function () { loadWorkplacesByCompany(this.value); });
         $("#btnBuscar").on("click", buscarACs);
+
 
         // init: seleccionar primer país y disparar llenado
         $(function () {
@@ -321,31 +377,104 @@
             }
 
             var formData = new FormData();
-            formData.append('file', fileInput.files[0]); // el nombre debe ser "file" (como en el action)
+            formData.append('file', fileInput.files[0]);
+
+            // Mostrar overlay
+            $("#loaderOverlay").show();
 
             $.ajax({
-                url: '@Url.Action("ImportarExcel", "CargaACs")',  // CargaACsController
+                url: '@Url.Action("ImportarExcel", "CargaACs")',
                 type: 'POST',
                 data: formData,
-                processData: false,   // IMPORTANTÍSIMO para FormData
-                contentType: false,   // IMPORTANTÍSIMO para FormData
+                processData: false,
+                contentType: false,
+                dataType: 'json',       // <- fuerza parseo a JSON
 
                 success: function (res) {
-                    console.log(res);
-                    $('#importResult').text(
-                        'Se leyeron ' + res.totalFilas + ' filas. ' +
-                        (res.primeraFila
-                            ? 'Ejemplo primer registro: ' + JSON.stringify(res.primeraFila)
-                            : '')
-                    );
-                    // En el próximo paso, aquí dispararemos el proceso que manda al WebService.
+                    console.log('respuesta ImportarExcel:', res);
+
+                    var html = '';
+
+                    html += '<p>';
+                    html += 'Se leyeron <strong>' + (res.totalFilas ?? 0) + '</strong> filas de Excel.<br>';
+                    html += 'Se generaron <strong>' + (res.totalPayloads ?? 0) + '</strong> autocontroles (CPR).<br>';
+                    html += 'Enviados OK: <strong>' + (res.enviadosOk ?? 0) + '</strong>, ';
+                    html += 'Errores: <strong>' + (res.enviadosError ?? 0) + '</strong>';
+                    html += '</p>';
+
+                    // 🔴 ANTES intentábamos tratarlo a mano
+                    // 🔵 AHORA: usamos tu helper toArray
+                    var filasDet = toArray(res.filasDetalle);
+                    console.log('filasDet (array final):', filasDet);
+
+                    if (filasDet.length > 0) {
+                        html += '<h5>Registros procesados</h5>';
+                        html += '<div style="max-height: 400px; overflow: auto;">';
+                        html += '<table class="table table-sm table-bordered">';
+                        html += '<thead><tr>';
+                        html += '<th>batch</th>';
+                        html += '<th>controlOperation</th>';
+                        html += '<th>controlOperationNote</th>';
+                        html += '<th>controlProcedure</th>';
+                        html += '<th>controlProcedureNote</th>';
+                        html += '<th>controlProcedureVersion</th>';
+                        html += '<th>launchingDate</th>';
+                        html += '<th>manufacturingOrder</th>';
+                        html += '<th>resultAttribute</th>';
+                        html += '<th>resultValue</th>';
+                        html += '<th>worker</th>';
+                        html += '<th>workplace</th>';
+                        html += '<th>Estado</th>';
+                        html += '<th>Mensaje</th>';
+                        html += '</tr></thead><tbody>';
+
+                        filasDet.forEach(function (f) {
+                            var cls = '';
+                            if (f.status === 'OK') cls = 'table-success';
+                            else if (f.status === 'ERROR') cls = 'table-danger';
+
+                            html += '<tr class="' + cls + '">';
+                            html += '<td>' + (f.batch || '') + '</td>';
+                            html += '<td>' + (f.controlOperation || '') + '</td>';
+                            html += '<td>' + (f.controlOperationNote || '') + '</td>';
+                            html += '<td>' + (f.controlProcedure || '') + '</td>';
+                            html += '<td>' + (f.controlProcedureNote || '') + '</td>';
+                            html += '<td>' + (f.controlProcedureVersion || '') + '</td>';
+                            html += '<td>' + (f.launchingDate || '') + '</td>';
+                            html += '<td>' + (f.manufacturingOrder || '') + '</td>';
+                            html += '<td>' + (f.resultAttribute || '') + '</td>';
+                            html += '<td>' + (f.resultValue || '') + '</td>';
+                            html += '<td>' + (f.worker || '') + '</td>';
+                            html += '<td>' + (f.workplace || '') + '</td>';
+                            html += '<td>' + (f.status || '') + '</td>';
+                            html += '<td>' + (f.message || '') + '</td>';
+                            html += '</tr>';
+                        });
+
+                        html += '</tbody></table>';
+                        html += '</div>';
+                    }
+
+                    $('#importResult').html(html);
                 },
+
+
                 error: function (xhr) {
-                    console.error(xhr);
+                    console.error('Error AJAX ImportarExcel:', xhr);
                     alert('Error al importar: ' + (xhr.responseText || xhr.statusText));
+                },
+
+                complete: function () {
+                    // Ocultar overlay siempre
+                    $("#loaderOverlay").hide();
                 }
             });
         }
+
+
+
+
+        window.addEventListener("load", function () { const loader = document.getElementById("loaderOverlay"); if (loader) loader.style.display = "none"; });
 
     </script>
 

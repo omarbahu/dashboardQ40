@@ -57,7 +57,7 @@ builder.Services.AddSingleton<IStringLocalizer>(sp =>
 // 🧠 Session
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromHours(8);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -83,6 +83,8 @@ builder.Services.AddScoped<ControlLimitsService>();
 builder.Services.AddScoped<IAutocontrolRepository, WSControlLimitsRepository>();
 
 
+builder.Services.AddScoped<ControlProcedureVersioningService>();
+builder.Services.AddScoped<WSCaptorControlProcedureRepository>();
 
 
 // 💾 DB

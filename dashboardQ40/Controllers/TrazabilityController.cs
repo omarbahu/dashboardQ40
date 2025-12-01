@@ -228,12 +228,20 @@ namespace dashboardQ40.Controllers
                         checklist = filtradas.Any() ? filtradas.CopyToDataTable() : checklist.Clone();
                     }
 
-                    var estadisticas = TrazabilityStats.CalcularEstadisticas(checklist);
-                    var statsDict = estadisticas.ToDictionary(e => $"{e.Lote}|{e.Variable}", e => e);
+                    var estadisticas = TrazabilityStats.CalcularEstadisticas(checklist, trazabilidad);
+                    ViewBag.DebugStats = estadisticas
+    .Select(e => $"{e.Lote} | {e.Variable} | N={e.Conteo} | Media={e.Media:0.00} | Cpk={e.Cpk:0.00}")
+    .ToList();
+                    // Diccionario: clave = "batch|nombreVariable"
+                    var statsDict = estadisticas.ToDictionary(
+                        e => $"{e.Lote}|{e.Variable}",
+                        e => e
+                    );
 
                     model.Checklist = checklist;
                     model.Trazabilidad = trazabilidad;
                     model.Estadisticas = statsDict;
+
                 }
                 else
                 {
@@ -249,33 +257,44 @@ namespace dashboardQ40.Controllers
         [HttpGet]
         public async Task<IActionResult> BuscarLotesPorFechas(DateTime fechaIni, DateTime fechaFin, string planta)
         {
-            // Normaliza fin al final del día si quieres incluir todo el día
-            var fin = fechaFin.Date.AddDays(1).AddTicks(-1);
-
-            string connStr = _configuration.GetConnectionString("CaptorConnection");
-            string company = planta;
-
-            DataTable batchs = TrazabilityClass.GetBatchbyDates(company, fechaIni, fin, connStr);
-            // TODO: reemplaza por tu servicio/consulta real
-            // Debe devolver: lote, descripcion (o SKU), inicio, fin
-            // Si no hay filas, regresa lista vacía
-            if (batchs == null || batchs.Rows.Count == 0)
-                return new JsonResult(Array.Empty<object>());
-
-            // Mapea DataTable -> JSON-friendly
-            var lista = batchs.AsEnumerable().Select(r => new
+            try
             {
-                lote = r.Table.Columns.Contains("batchIdentifier")
-                                ? (r["batchIdentifier"]?.ToString() ?? "")
-                                : (r.Table.Columns.Contains("batch") ? r["batch"]?.ToString() ?? "" : ""),
-                descripcion = r.Table.Columns.Contains("manufacturingReferenceName")
-                                ? (r["manufacturingReferenceName"]?.ToString() ?? "")
-                                : "",
-                inicio = GetNullableDate(r, "startDate"),
-                fin = GetNullableDate(r, "endDate")
-            }).ToList();
+                // Normaliza fin al final del día si quieres incluir todo el día
+                var fin = fechaFin.Date.AddDays(1).AddTicks(-1);
 
-            return new JsonResult(lista);
+                string connStr = _configuration.GetConnectionString("CaptorConnection");
+                string company = planta;
+
+                DataTable batchs = TrazabilityClass.GetBatchbyDates(company, fechaIni, fin, connStr);
+                // TODO: reemplaza por tu servicio/consulta real
+                // Debe devolver: lote, descripcion (o SKU), inicio, fin
+                // Si no hay filas, regresa lista vacía
+                if (batchs == null || batchs.Rows.Count == 0)
+                    return new JsonResult(Array.Empty<object>());
+
+                // Mapea DataTable -> JSON-friendly
+                var lista = batchs.AsEnumerable().Select(r => new
+                {
+                    lote = r.Table.Columns.Contains("batchIdentifier")
+                                    ? (r["batchIdentifier"]?.ToString() ?? "")
+                                    : (r.Table.Columns.Contains("batch") ? r["batch"]?.ToString() ?? "" : ""),
+                    descripcion = r.Table.Columns.Contains("manufacturingReferenceName")
+                                    ? (r["manufacturingReferenceName"]?.ToString() ?? "")
+                                    : "",
+                    inicio = GetNullableDate(r, "startDate"),
+                    fin = GetNullableDate(r, "endDate")
+                }).ToList();
+
+                return new JsonResult(lista);
+            }
+            catch (Exception ex)
+            {
+                // Loguea al archivo/serilog
+                _logger.LogError(ex, "Error en BuscarLotesPorFechas");
+
+                // Y manda el detalle al cliente para que lo veas en Network
+                return StatusCode(500, "Error en BuscarLotesPorFechas: " + ex.ToString());
+            }
         }
 
 

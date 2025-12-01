@@ -1,0 +1,465 @@
+﻿@model dashboardQ40.Models.CertificadoCalidadViewModel
+@using Newtonsoft.Json
+@{
+    Layout = null; // importante para PDF: vista limpia sin menú/header del sitio
+    var fechaImp = Model.FechaImpresion.ToString("dd/MM/yyyy");
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Certificado de Calidad</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            margin: 25px 35px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: none;
+        }
+
+        h2 {
+            font-size: 12px;
+            margin-top: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Bandas grises tipo encabezado del PDF viejo */
+        .band-title {
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
+            background-color: #e6e6e6;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 3px 4px;
+            text-align: center;
+        }
+
+        .band-subtitle {
+            margin-top: 10px;
+            margin-bottom: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
+            background-color: #e6e6e6;
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 2px 4px;
+            text-align: center;
+        }
+
+        .header-row {
+            margin-top: 8px;
+            margin-bottom: 10px;
+        }
+
+            .header-row:after {
+                content: "";
+                display: block;
+                clear: both;
+            }
+
+        .header-left {
+            float: left;
+            font-size: 9px;
+            line-height: 1.3;
+        }
+
+        .header-right {
+            float: right;
+            font-size: 9px;
+            text-align: right;
+            line-height: 1.3;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        /* Carátula principal */
+        .tbl-caratula {
+            margin-top: 8px;
+            width: 65%;
+            font-size: 9px;
+            table-layout: fixed;
+            margin-left: auto;
+            margin-right: auto; /* centrada como en el PDF */
+        }
+
+            .tbl-caratula th,
+            .tbl-caratula td {
+                border: 1px solid #000;
+                padding: 3px 4px;
+            }
+
+            .tbl-caratula th {
+                text-align: left;
+                background-color: #f5f5f5;
+                width: 28%;
+            }
+
+        /* Segunda tabla (analista / jefe / lote) */
+        .tbl-caratula2 {
+            margin-top: 6px;
+            width: 55%;
+            font-size: 9px;
+            table-layout: fixed;
+            margin-left: auto;
+            margin-right: auto; /* también centrada */
+        }
+
+            .tbl-caratula2 th,
+            .tbl-caratula2 td {
+                border: 1px solid #000;
+                padding: 3px 4px;
+            }
+
+            .tbl-caratula2 th {
+                text-align: left;
+                background-color: #f5f5f5;
+                width: 35%;
+            }
+
+        .section-title {
+            margin-top: 14px;
+            margin-bottom: 2px;
+            font-weight: bold;
+            font-size: 11px;
+            text-align: center; /* “Lista de Estadísticas” centrado */
+        }
+
+        /* Tabla de estadísticas del lote liberado */
+        .tbl-estad {
+            width: 100%;
+            font-size: 9px;
+            margin-top: 4px;
+        }
+
+            .tbl-estad th,
+            .tbl-estad td {
+                border: 1px solid #000;
+                padding: 3px 4px;
+                text-align: right;
+            }
+
+            .tbl-estad th {
+                background-color: #f5f5f5;
+            }
+
+                .tbl-estad th:first-child,
+                .tbl-estad td:first-child {
+                    text-align: left;
+                }
+
+        /* Contenedor del gráfico BAT */
+        #batChart {
+            width: 100%;
+            height: 320px;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+          .no-print {
+        text-align: right;
+        margin-top: 6px;
+    }
+
+    .no-print button {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+
+    @@media print {
+        .no-print {
+            display: none;
+        }
+    }
+    </style>
+</head>
+<body>
+    <!-- Encabezado -->
+    <h1>@(string.IsNullOrWhiteSpace(Model.CompanyName) ? "Bebidas Mundiales" : Model.CompanyName)</h1>
+    <h2>Certificado de Calidad</h2>
+    <div class="no-print">
+    <button type="button" onclick="window.print();">
+        Imprimir / Guardar en PDF
+    </button>
+</div>
+    <div class="band-title">Datos del lote liberado</div>
+
+    <div class="header-row">
+        <div class="header-left">
+            <div><span class="label">Formato del reporte:</span> Certificado de calidad</div>
+            <div><span class="label">Comentario:</span> @Model.Comentario</div>
+            @if (!string.IsNullOrWhiteSpace(Model.City))
+            {
+                <div><span class="label">Ciudad:</span> @Model.City</div>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Address))
+            {
+                <div><span class="label">Dirección:</span> @Model.Address</div>
+            }
+            <div><span class="label">Gráficos:</span> Gráfico Bat</div>
+        </div>
+        <div class="header-right">
+            <div><span class="label">Impreso:</span> @fechaImp</div>
+            <div>
+                <span class="label">Nombre - Parte:</span>
+                @Model.NombreParte
+            </div>
+        </div>
+    </div>
+
+    <!-- Carátula principal -->
+    <table class="tbl-caratula">
+        <tr>
+            <th>Linea</th>
+            <td>@Model.Linea</td>
+        </tr>
+        <tr>
+            <th>Turno</th>
+            <td>@Model.Turno</td>
+        </tr>
+        <tr>
+            <th>Código</th>
+            <td>@Model.CodigoProduccion</td>
+        </tr>
+        <tr>
+            <th>Sabor</th>
+            <td>@Model.Sabor</td>
+        </tr>
+        <tr>
+            <th>Apariencia</th>
+            <td>@Model.Apariencia</td>
+        </tr>
+        <tr>
+            <th>Planta Suministro</th>
+            <td>@Model.PlantaSuministro</td>
+        </tr>
+        <tr>
+            <th>Analistas de Proceso</th>
+            <td>@Model.AnalistasProceso</td>
+        </tr>
+        <tr>
+            <th>Supervisor de Calidad</th>
+            <td>@Model.SupervisorCalidad</td>
+        </tr>
+    </table>
+
+    <!-- Segunda tabla tipo JRZ (Analista / Jefe / Lote) -->
+    <table class="tbl-caratula2">
+        <tr>
+            <th>Analista</th>
+            <td>@Model.Analista</td>
+        </tr>
+        <tr>
+            <th>Código</th>
+            <td>@Model.CodigoProduccion</td>
+        </tr>
+        <tr>
+            <th>Supervisor de Calidad</th>
+            <td>@Model.SupervisorCalidad</td>
+        </tr>
+        <tr>
+            <th>Jefe de Calidad</th>
+            <td>@Model.JefeCalidad</td>
+        </tr>
+        <tr>
+            <th>Tamaño de Lote</th>
+            <td>
+                @(string.IsNullOrWhiteSpace(Model.TamanoLoteTexto)
+                    ? (Model.TamanoLoteCajas?.ToString() ?? "")
+                    : Model.TamanoLoteTexto)
+            </td>
+        </tr>
+    </table>
+
+    <!-- Lista de estadísticas -->
+    <div class="band-subtitle">Lista de Estads</div>
+    <div class="band-subtitle">Estadísticas del lote liberado</div>
+
+    <table class="tbl-estad">
+        <thead>
+            <tr>
+                <th>Característica</th>
+                <th>Mtra</th>
+                <th>LEI</th>
+                <th>LES</th>
+                <th>Prom</th>
+                <th>Sig</th>
+                <th>%Bjo LEI</th>
+                <th>%Sre LES</th>
+                <th>CPK</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Caracteristicas != null && Model.Caracteristicas.Any())
+            {
+                foreach (var c in Model.Caracteristicas)
+                {
+                    <tr>
+                        <td>@c.Nombre</td>
+                        <td>@(c.Muestras?.ToString() ?? "")</td>
+                        <td>@(c.LEI?.ToString("0.###") ?? "")</td>
+                        <td>@(c.LES?.ToString("0.###") ?? "")</td>
+                        <td>@(c.Media?.ToString("0.####") ?? "")</td>
+                        <td>@(c.Sigma?.ToString("0.####") ?? "")</td>
+                        <td>@(c.PorcBajoLEI.HasValue ? c.PorcBajoLEI.Value.ToString("0.00") + " %" : "")</td>
+                        <td>@(c.PorcSobreLES.HasValue ? c.PorcSobreLES.Value.ToString("0.00") + " %" : "")</td>
+                        <td>@(c.Cpk?.ToString("0.##") ?? "")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9">No hay datos de características para el rango seleccionado.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="band-subtitle" style="margin-top:16px;">Gráfico Bat</div>
+
+    <div id="batChart"></div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+
+    <script>
+        // Serializamos las características del modelo
+        const batData = @Html.Raw(
+            Newtonsoft.Json.JsonConvert.SerializeObject(
+                Model.Caracteristicas ?? new List<dashboardQ40.Models.CertificadoCaracteristicaDto>()
+            )
+        );
+
+        function buildBatChart() {
+            if (!batData || batData.length === 0) return;
+
+            const dom = document.getElementById('batChart');
+            if (!dom || !window.echarts) return;
+
+            const chart = echarts.init(dom);
+
+            // Normalizamos números
+            const rows = batData.map(c => {
+                const lei   = (c.LEI   != null) ? Number(c.LEI)   : NaN;
+                const les   = (c.LES   != null) ? Number(c.LES)   : NaN;
+                const media = (c.Media != null) ? Number(c.Media) : NaN;
+                return { ...c, lei, les, media };
+            });
+
+            const categories = rows.map(r => r.Nombre);
+
+            // Puntos de media normalizados a [0..1]
+            const meanSeriesData = rows
+                .map((r, idx) => {
+                    if (isNaN(r.lei) || isNaN(r.les) || isNaN(r.media)) return null;
+                    const span = r.les - r.lei;
+                    if (span === 0) return null;
+
+                    let x = (r.media - r.lei) / span;  // 0 = LEI, 1 = LES
+                    if (x < 0) x = 0;
+                    if (x > 1) x = 1;
+
+                    return [x, idx];
+                })
+                .filter(p => p !== null);
+
+            // Para cada característica: barra completa 0→1
+            const rangeSeries = rows.map((r, idx) => ({
+                name: r.Nombre,
+                type: 'line',
+                coordinateSystem: 'cartesian2d',
+                symbol: ['arrow', 'arrow'],
+                symbolSize: 10,
+                lineStyle: { width: 2 },
+                data: [
+                    [0, idx],
+                    [1, idx]
+                ]
+            }));
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: function (params) {
+                        const idx = params[0].dataIndex;
+                        const row = rows[idx];
+                        return `
+<b>${row.Nombre}</b><br/>
+LEI: ${row.LEI ?? ''}<br/>
+LES: ${row.LES ?? ''}<br/>
+Media: ${row.Media ?? ''}<br/>
+Sigma: ${row.Sigma ?? ''}<br/>
+Cpk: ${row.Cpk ?? ''}
+                        `;
+                    }
+                },
+                grid: {
+                    left: 80,
+                    right: 50,
+                    top: 20,
+                    bottom: 40
+                },
+                xAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 1,
+                    axisLabel: { show: false },
+                    splitLine: { show: false }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: categories,
+                    axisTick: { show: false }
+                },
+                series: [
+                    {
+                        name: 'Media',
+                        type: 'scatter',
+                        symbolSize: 8,
+                        data: meanSeriesData,
+                        z: 5,
+                        markLine: {
+                            symbol: 'none',
+                            label: { show: false },
+                            data: [
+                                { xAxis: 0,   lineStyle: { color: '#ef4444', width: 1 } }, // LEI global
+                                { xAxis: 1,   lineStyle: { color: '#ef4444', width: 1 } }, // LES global
+                                { xAxis: 0.5, lineStyle: { color: '#22c5e5', width: 1 } }  // centro turquesa
+                            ]
+                        }
+                    },
+                    ...rangeSeries
+                ]
+            };
+
+            chart.setOption(option);
+        }
+
+        document.addEventListener('DOMContentLoaded', buildBatChart);
+    </script>
+</body>
+</html>

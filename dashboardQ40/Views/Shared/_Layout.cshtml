@@ -5,6 +5,10 @@
     @inject IStringLocalizer Localizer
     @using dashboardQ40.Resources
     @inject IStringLocalizer<SharedResource> T
+@{
+    var permisosJson = Context.Session.GetString("permisosDashboard") ?? "[]";
+    var userCompany = Context.Session.GetString("compania") ?? "";
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -122,27 +126,38 @@
                                     @Localizer["Quality"]
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="menuCalidad">
-                                    <li>
-                                        <a class="dropdown-item"asp-area="" asp-controller="Dashboard" asp-action="Index">
+                                    <li data-program="DQcompyx">
+                                        <a class="dropdown-item" asp-area="" asp-controller="Dashboard" asp-action="Index">
                                             @Localizer["XVariablesComparison"]
                                         </a>
                                     </li>
-                                    <li>
+                                    <li data-program="DQcpk">
                                         <a class="dropdown-item" asp-area="" asp-controller="Dashboard" asp-action="Resumen">
                                             @Localizer["CPKReport"]
                                         </a>
                                     </li>
-                                    <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="XRcharts" asp-action="Index">
+                                    <li data-program="DQxr">
+                                        <a class="dropdown-item" asp-area="" asp-controller="XRcharts" asp-action="Index">
                                             @Localizer["XRCharts"]
                                         </a>
                                     </li>
-                                    <li>
+                                    <li data-program="DQlimites">
                                         <a class="dropdown-item" asp-area="" asp-controller="ControlLimits" asp-action="Index">
                                             @Localizer["ActLimControl"]
                                         </a>
                                     </li>
+                                    <li data-program="DQanasens">
+                                        <a class="dropdown-item" asp-area="" asp-controller="AnalisisSensorial" asp-action="Index">
+                                            @Localizer["AnaSensorial"]
+                                        </a>
+                                    </li>
+                                    <li data-program="DQcertificado">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Dashboard" asp-action="CertificadoCalidad">
+                                            @Localizer["Certificado"]
+                                        </a>
+                                    </li>
                                 </ul>
+
                             </li>
 
                             <!-- TRAZABILIDAD -->
@@ -150,18 +165,19 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="menuTrazabilidad" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     @Localizer["Traceability"]
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="menuTrazabilidad">
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Trazability" asp-action="ReportTrazability">
-                                            @Localizer["LinearTraceability"]
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="TrazabilidadAuditoria" asp-action="Index">
-                                            @Localizer["AuditTraceability"]
-                                        </a>
-                                    </li>
-                                </ul>
+                            <ul class="dropdown-menu" aria-labelledby="menuTrazabilidad">
+                                <li data-program="DQtrazlineal">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Trazability" asp-action="ReportTrazability">
+                                        @Localizer["LinearTraceability"]
+                                    </a>
+                                </li>
+                                <li data-program="DQtrazaudit">
+                                    <a class="dropdown-item" asp-area="" asp-controller="TrazabilidadAuditoria" asp-action="Index">
+                                        @Localizer["AuditTraceability"]
+                                    </a>
+                                </li>
+                            </ul>
+
                             </li>
                         </ul>
                     </div>
@@ -175,6 +191,14 @@
             </nav>
         </header>
 
+          <!-- 🔄 LOADER GLOBAL (para TODA la app) -->
+    <div id="globalLoader">
+        <div class="loaderContent">
+            <div class="bubbles"></div>
+            <p class="loaderText">@Localizer["Loader_Loading"]</p>
+        </div>
+    </div>
+
         <div class="container-fluid px-3">
             <main role="main" class="pt-2 pb-2">
                 @RenderBody()
@@ -186,50 +210,98 @@
         </footer>
 
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 
     <script>
+        // Permisos que vienen de Session (JSON que ya guardas en ValidarUsuario)
+        // Ejemplo: [{ ProgramGroupName:"DQcpk", Global:true, ... }, ...]
+        // JSON con todos los permisos
+        window.PERMISOS_DASH = @Html.Raw(permisosJson);
+        // Company del usuario (ej. "001")
+        window.USER_COMPANY = "@userCompany";
+
+        // Diccionario ProgramGroupName → permiso (DQcpk, DQanasens, etc.)
+        window.PERMISOS_POR_MODULO = {};
+
+        if (Array.isArray(window.PERMISOS_DASH)) {
+            window.PERMISOS_DASH.forEach(function (p) {
+                window.PERMISOS_POR_MODULO[p.ProgramGroupName] = p;
+            });
+        }
+
+        console.log("PERMISOS_DASH:", window.PERMISOS_DASH);
+        console.log("PERMISOS_POR_MODULO:", window.PERMISOS_POR_MODULO);
+        console.log("USER_COMPANY:", window.USER_COMPANY);
+
+        // Diccionario: ProgramGroupName → permiso completo
+        const permisosPorModulo = {};
+        if (Array.isArray(window.PERMISOS_DASH)) {
+            window.PERMISOS_DASH.forEach(function (p) {
+                permisosPorModulo[p.ProgramGroupName] = p;
+            });
+        }
+        window.USER_COMPANY = "@userCompany";
+        function aplicarPermisosMenu() {
+            // 1) Ocultar / mostrar cada <li> según su data-program
+            document.querySelectorAll('[data-program]').forEach(function (li) {
+                const prog = li.getAttribute('data-program'); // ej. "DQcpk"
+                const tienePermiso = !!permisosPorModulo[prog];
+
+                if (!tienePermiso) {
+                    li.classList.add('d-none');   // ocultar si no hay permiso
+                } else {
+                    li.classList.remove('d-none'); // mostrar por si acaso
+                }
+            });
+
+            // 2) Si un dropdown (Calidad / Trazabilidad) quedó sin hijos visibles, ocultar todo el menú
+            document.querySelectorAll('.nav-item.dropdown').forEach(function (drop) {
+                const visibles = drop.querySelectorAll('ul.dropdown-menu li:not(.d-none)');
+                if (visibles.length === 0) {
+                    drop.classList.add('d-none');
+                } else {
+                    drop.classList.remove('d-none');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', aplicarPermisosMenu);
+    </script>
+
+
+    <script>
+       
 
 
         function getUserFromCaptorCookie() {
-            const isLocal = location.hostname === "localhost";
 
-            let cookieValor = "";
+            // 1) Leer parámetros de la URL
+            const params = new URLSearchParams(window.location.search);
+            const userFromUrl = params.get('user');        // "obautista"
+            const companyFromUrl = params.get('company');  // "Mexico - Insurgentes"
 
-            if (isLocal) {
-                // Modo desarrollo: definir cookie simulada
-                const simulada = "UserName=captor&Company=001";
-                const nombre = "LogonData_localhost_CaptorArca";
-                document.cookie = nombre + "=" + encodeURIComponent(simulada) + "; path=/;";
-                cookieValor = simulada;
-            } else {
-                // Modo producción: buscar cookie real de Captor
-                const cookies = document.cookie.split("; ");
-                const captorCookie = cookies.find(c => c.startsWith("LogonData_") && c.includes("CaptorArca"));
-                if (!captorCookie) return null;
+            if (userFromUrl || companyFromUrl) {
 
-                const encoded = captorCookie.split("=")[1];
-                cookieValor = decodeURIComponent(encoded);
+                return {
+                    user: userFromUrl || null,
+                    company: companyFromUrl          // <-- aquí ya es "Insurgentes"
+                };
             }
 
-            // Extraer datos de la cookie
-            const userMatch = cookieValor.match(/UserName=([^&]*)/);
-            const companyMatch = cookieValor.match(/Company=([^&]*)/);
-
-            const user = userMatch ? userMatch[1] : null;
-            const company = companyMatch ? companyMatch[1] : null;
-
-            return { user, company };
+            // 3) Si algún día quieres, aquí podrías dejar tu lógica vieja de cookies
+            return null;
         }
+
 
         // Uso:
         const datos = getUserFromCaptorCookie();
-        if (datos) {
+        if (datos && datos.user) {
             console.log("Usuario:", datos.user);
-            console.log("Empresa:", datos.company);
+            console.log("Empresa:", datos.company);            
             $.ajax({
                 url: '@Url.Action("ValidarUsuario", "Auth")',
                 type: 'GET',
@@ -240,17 +312,44 @@
                             location.reload(); // Solo recarga si aún no había sesión al cargar
                         }
                         } else {
+                            console.log("salio 1");
+                        debugger;
                             window.location.href = "/Home/NoAutorizado";
+                            
+
                         }
                     },
                     error: function () {
                         alert("Error al validar el usuario.");
+                        
                         window.location.href = "/Home/NoAutorizado";
+                        
                     }
             });
         } else {
             console.log("❌ No se encontró la cookie válida.");
         }
+
+        // ✅ Helpers globales accesibles desde cualquier vista
+        window.showGlobalLoader = function () {
+            var el = document.getElementById('globalLoader');
+            if (el) el.style.display = 'flex';
+        };
+
+        window.hideGlobalLoader = function () {
+            var el = document.getElementById('globalLoader');
+            if (el) el.style.display = 'none';
+        };
+
+        // ✅ Opcional: engancharnos a TODAS las llamadas AJAX de jQuery
+        $(function () {
+            $(document).ajaxStart(function () {
+                showGlobalLoader();
+            });
+            $(document).ajaxStop(function () {
+                hideGlobalLoader();
+            });
+        });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

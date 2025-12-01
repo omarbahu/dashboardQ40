@@ -20,3 +20,131 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.page-loader {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-loader-content {
+    text-align: center;
+    padding: 16px 24px;
+    border-radius: 12px;
+    background: #f9fafb;
+    box-shadow: 0 8px 25px rgba(15,23,42,0.15);
+    font-size: 14px;
+}
+
+.page-loader-balls {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+    .page-loader-balls span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #2563eb;
+        animation: page-bounce 0.9s infinite ease-in-out;
+    }
+
+        .page-loader-balls span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .page-loader-balls span:nth-child(3) {
+            animation-delay: 0.30s;
+        }
+
+@keyframes page-bounce {
+    0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: .4;
+    }
+
+    40% {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
+
+.page-loader-text {
+    color: #111827;
+    font-weight: 500;
+}
+
+
+/* Overlay global */
+#globalLoader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 9999;
+    display: none; /* JS cambia entre none / flex */
+    align-items: center;
+    justify-content: center;
+}
+
+.loaderContent {
+    text-align: center;
+}
+
+.bubbles {
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    position: relative;
+}
+
+    .bubbles::before,
+    .bubbles::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        animation: bubble 1s infinite ease-in-out;
+    }
+
+    .bubbles::before {
+        width: 20px;
+        height: 20px;
+        background-color: #e11d48; /* rosa */
+        left: 0;
+    }
+
+    .bubbles::after {
+        width: 20px;
+        height: 20px;
+        background-color: #0284c7; /* azul */
+        right: 0;
+        animation-delay: 0.5s;
+    }
+
+/* Razor: usa @@ para que genere @ en CSS */
+@keyframes bubble {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: translateY(-15px);
+        opacity: 1;
+    }
+}
+
+.loaderText {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}

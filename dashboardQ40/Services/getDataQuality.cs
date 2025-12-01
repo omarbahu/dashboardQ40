@@ -39,6 +39,7 @@ namespace dashboardQ40.Services
             );
         }
 
+
         public static async Task<result_Q_Companies> getCompanies(string token, string url, string company, string trazalog)
         {
             HttpClient client = Method_Headers(token, url);

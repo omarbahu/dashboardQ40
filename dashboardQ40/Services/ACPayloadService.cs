@@ -1,6 +1,7 @@
 ﻿// Services/ACPayloadService.cs
 using System.Data.SqlClient;
 using Dapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using static dashboardQ40.Models.Models; // si no usas Dapper dime y lo hacemos con SqlCommand
 
 public interface IACPayloadService
@@ -44,7 +45,7 @@ SELECT DISTINCT TOP (100)
     CPrvs.resultValue             AS resultValue,
     CPrvs.resultPresetAttributeValue AS resultPresetAttributeValue,
     CPrvs.ctrlProcOpResultValNote AS controlOperationResultValueNote,
-    CPrvs.controlOperationType    AS controlOperationType
+    CPO.controlOperationType    AS controlOperationType
 FROM ControlProcedureResult CPR
 LEFT JOIN CPO_Latest CPO
     ON  CPO.company          = CPR.company
@@ -56,7 +57,6 @@ LEFT JOIN CProcResultWithValuesStatus CPrvs
     AND CPrvs.controlOperation         = CPO.controlOperation
 WHERE CPR.company = @company
   AND (@workplace IS NULL OR CPR.workplace = @workplace)
-  AND (@manufacturingorder IS NULL OR CPR.manufacturingOrder = @manufacturingorder)
   AND (@startdate IS NULL OR CPR.launchingDate >= @startdate)
   AND (@enddate   IS NULL OR CPR.launchingDate <  @enddate)
   AND CPR.completionStatus = 0
@@ -64,8 +64,8 @@ ORDER BY CPR.idControlProcedureResult, CPO.controlOperation, CPrvs.resultNumber;
 ";
 
     public async Task<List<ACPayloadRow>> ObtenerRowsAsync(
-        IDictionary<string, object> parametros,
-        string connectionString)
+    IDictionary<string, object> parametros,
+    string connectionString)
     {
         using var conn = new SqlConnection(connectionString);
         var dynParams = new DynamicParameters();
@@ -80,6 +80,35 @@ ORDER BY CPR.idControlProcedureResult, CPO.controlOperation, CPrvs.resultNumber;
             dynParams
         );
 
-        return result.ToList();
+        var list = result.ToList();
+
+        // ─────────────────────────────────────────────
+        //  Recalcular resultNumber por CPR + norma
+        // ─────────────────────────────────────────────
+        var grupos = list
+            .GroupBy(r => new { r.idControlProcedureResult, r.controlOperation });
+
+        foreach (var g in grupos)
+        {
+            int consecutivo = 0;
+
+            // Si algún día la BD trae resultNumber real, lo respetamos ordenando por él;
+            // hoy viene null, así que todos quedan en 0 y se usa el orden natural.
+            foreach (var row in g.OrderBy(r => SafeParseInt(r.resultNumber)))
+            {
+                row.resultNumber = consecutivo.ToString();
+                consecutivo++;
+            }
+        }
+
+        return list;
     }
+
+    // helper local (puede ser private static en la misma clase)
+    private static int SafeParseInt(string? s)
+    {
+        if (int.TryParse(s, out var n)) return n;
+        return 0;
+    }
+
 }

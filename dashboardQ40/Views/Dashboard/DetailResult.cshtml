@@ -9,6 +9,9 @@
     var variableY = ViewBag.VariableY as string;
     var variablesXData = ViewBag.VariablesXData as Dictionary<string, List<double>>;
     var selectedXVariables = ViewBag.SelectedXVariables as List<string>;
+
+    // >>> nuevo
+    var variableXNames = ViewBag.VariableXNames as Dictionary<string, string>;
 }
 
 @{
@@ -160,15 +163,26 @@
         <!-- 📌 Variables X -->
         @foreach (var xVar in scatterDataX.Keys)
         {
+            var displayName = (variableXNames != null && variableXNames.ContainsKey(xVar))
+            ? variableXNames[xVar]
+            : xVar;
+
             <div class="row">
                 <div class="col-md-6 col-12 print-full-width">
-                    <div class="scatter-chart" id="scatter-@xVar.Replace(" ", "")"></div>
+                    <div class="scatter-chart"
+                         id="scatter-@xVar.Replace(" ", "")"
+                         data-xcode="@xVar"
+                         data-xname="@displayName"></div>
                 </div>
                 <div class="col-md-6 col-12 print-full-width">
-                    <div class="bell-curve-chart" id="bell-@xVar.Replace(" ", "")"></div>
+                    <div class="bell-curve-chart"
+                         id="bell-@xVar.Replace(" ", "")"
+                         data-xcode="@xVar"
+                         data-xname="@displayName"></div>
                 </div>
             </div>
         }
+
     </div>
     
 </div>
@@ -183,26 +197,27 @@
     <script>
         // ===== Diccionario para JS =====
         window.T = {
-            MinLimit: '@Localizer["MinLimit"]',                 // "Lower Spec Limit"
-            MaxLimit: '@Localizer["MaxLimit"]',                 // "Upper Spec Limit"
-            Dist_TitleFmt: '@Localizer["Dist_TitleFmt"]',       // "Distribution - {0}"
-            Dist_YAxis: '@Localizer["Dist_YAxis"]',             // "Frequency"
-            Dist_Line: '@Localizer["Dist_Line"]',               // "Distribution"
-            Dist_Hist: '@Localizer["Dist_Hist"]',               // "Histogram"
-            Dist_LSL: '@Localizer["Dist_LSL"]',                 // "LSL"
-            Dist_USL: '@Localizer["Dist_USL"]',                 // "USL"
-            Legend_Min: '@Localizer["Legend_Min"]',             // "Lower Limit"
-            Legend_Max: '@Localizer["Legend_Max"]',             // "Upper Limit"
-            Stats_Cpk: '@Localizer["Stats_Cpk"]',               // "CPK"
-            Stats_Ppk: '@Localizer["Stats_Ppk"]',               // "PPK"
-            Stats_Mean: '@Localizer["Stats_Mean"]',             // "Mean"
-            Stats_Range: '@Localizer["Stats_Range"]'            // "Range"
+            MinLimit: '@Localizer["MinLimit"]',
+            MaxLimit: '@Localizer["MaxLimit"]',
+            Dist_TitleFmt: '@Localizer["Dist_TitleFmt"]',
+            Dist_YAxis: '@Localizer["Dist_YAxis"]',
+            Dist_Line: '@Localizer["Dist_Line"]',
+            Dist_Hist: '@Localizer["Dist_Hist"]',
+            Dist_LSL: '@Localizer["Dist_LSL"]',
+            Dist_USL: '@Localizer["Dist_USL"]',
+            Legend_Min: '@Localizer["Legend_Min"]',
+            Legend_Max: '@Localizer["Legend_Max"]',
+            Stats_Cpk: '@Localizer["Stats_Cpk"]',
+            Stats_Ppk: '@Localizer["Stats_Ppk"]',
+            Stats_Mean: '@Localizer["Stats_Mean"]',
+            Stats_Range: '@Localizer["Stats_Range"]'
         };
 
-        // ===== Datos del servidor =====
+        // ✅ SOLO ESTE BLOQUE, sin las const duplicadas de arriba
         const dates = @Html.Raw(JsonConvert.SerializeObject(ViewBag.Dates ?? new List<string>()));
         const scatterDataY = @Html.Raw(JsonConvert.SerializeObject(ViewBag.ScatterDataY ?? new List<object>()));
         const scatterDataX = @Html.Raw(JsonConvert.SerializeObject(ViewBag.VariablesXData ?? new Dictionary<string, List<double>>()));
+        const variableXNames = @Html.Raw(JsonConvert.SerializeObject(ViewBag.VariableXNames ?? new Dictionary<string, string>()));
 
         const minThreshold = @Html.Raw(JsonConvert.SerializeObject(ViewBag.MinThreshold));
         const maxThreshold = @Html.Raw(JsonConvert.SerializeObject(ViewBag.MaxThreshold));
@@ -265,56 +280,138 @@
         }
 
         function createBellCurveChart(chartId, variableName, dataValues) {
-            let chart = echarts.init(document.getElementById(chartId));
-            if (!dataValues || dataValues.length === 0) return;
+            const dom = document.getElementById(chartId);
+            if (!dom || !dataValues || !dataValues.length) return;
 
+            const chart = echarts.init(dom);
+
+            // Estadísticos básicos
             const mean = dataValues.reduce((a, b) => a + b, 0) / dataValues.length;
-            const stdDev = Math.sqrt(dataValues.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / dataValues.length);
-            const cpk = Math.min((@ViewBag.MaxThreshold - mean) / (3 * stdDev), (mean - @ViewBag.MinThreshold) / (3 * stdDev));
-            const ppk = cpk * 1.2;
+            const variance = dataValues.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / dataValues.length;
+            const stdDev = Math.sqrt(variance);
             const range = Math.max(...dataValues) - Math.min(...dataValues);
 
-            let bellCurveData = [];
-            for (let i = mean - 3 * stdDev; i <= mean + 3 * stdDev; i += stdDev / 10) {
-                let yValue = Math.exp(-Math.pow(i - mean, 2) / (2 * Math.pow(stdDev, 2)));
-                bellCurveData.push([i, yValue]);
-            }
+            // Histograma
+            const histogramData = {};
+            dataValues.forEach(val => {
+                const bucket = Math.round(val * 10) / 10;
+                histogramData[bucket] = (histogramData[bucket] || 0) + 1;
+            });
+            const histogramSeries = Object.keys(histogramData).map(b => [parseFloat(b), histogramData[b]]);
+            const maxHist = histogramSeries.length ? Math.max(...histogramSeries.map(h => h[1])) : 0;
 
-            let histogramData = {};
-            dataValues.forEach(val => { let bucket = Math.round(val * 10) / 10; histogramData[bucket] = (histogramData[bucket] || 0) + 1; });
-            let histogramSeries = Object.keys(histogramData).map(b => [parseFloat(b), histogramData[b]]);
+            const minSpec = @ViewBag.MinThreshold;
+            const maxSpec = @ViewBag.MaxThreshold;
 
-            let minX = Math.min(...bellCurveData.map(d => d[0]), @ViewBag.MinThreshold) - 0.1;
-            let maxX = Math.max(...bellCurveData.map(d => d[0]), @ViewBag.MaxThreshold) + 0.1;
+            const minX = Math.min(...dataValues, minSpec) - 0.1;
+            const maxX = Math.max(...dataValues, maxSpec) + 0.1;
 
             const titleText = T.Dist_TitleFmt.replace('{0}', variableName);
+
+            const series = [];
+
+            // 🔹 Histograma siempre
+            series.push({
+                name: T.Dist_Hist,
+                type: 'bar',
+                data: histogramSeries
+            });
+
+            // 🔹 Líneas LSL / USL
+            if (isFinite(minSpec)) {
+                series.push({
+                    name: T.Dist_LSL,
+                    type: 'line',
+                    data: [[minSpec, 0], [minSpec, maxHist]],
+                    symbol: 'none',
+                    lineStyle: { type: 'dashed' }
+                });
+            }
+            if (isFinite(maxSpec)) {
+                series.push({
+                    name: T.Dist_USL,
+                    type: 'line',
+                    data: [[maxSpec, 0], [maxSpec, maxHist]],
+                    symbol: 'none',
+                    lineStyle: { type: 'dashed' }
+                });
+            }
+
+            // 🔹 Solo dibujamos campana si stdDev es válido y > 0
+            let cpk = null;
+            let ppk = null;
+
+            if (isFinite(stdDev) && stdDev > 0) {
+                const bellCurveData = [];
+                const from = mean - 3 * stdDev;
+                const to = mean + 3 * stdDev;
+                const step = (to - from) / 60; // 60 puntos aprox
+
+                for (let x = from; x <= to; x += step) {
+                    const y = Math.exp(-Math.pow(x - mean, 2) / (2 * Math.pow(stdDev, 2)));
+                    bellCurveData.push([x, y]);
+                }
+
+                series.unshift({
+                    name: T.Dist_Line,
+                    type: 'line',
+                    data: bellCurveData,
+                    smooth: true,
+                    symbol: 'none'
+                });
+
+                cpk = Math.min(
+                    (maxSpec - mean) / (3 * stdDev),
+                    (mean - minSpec) / (3 * stdDev)
+                );
+                ppk = cpk * 1.2;
+            }
 
             chart.setOption({
                 title: { text: titleText },
                 tooltip: { trigger: 'axis' },
                 xAxis: { type: 'value', name: variableName, min: minX, max: maxX },
                 yAxis: { type: 'value', name: T.Dist_YAxis },
-                dataZoom: [{ type: 'slider', xAxisIndex: 0, start: 0, end: 100 }, { type: 'inside', xAxisIndex: 0 }],
-                series: [
-                    { name: T.Dist_Line, type: 'line', data: bellCurveData },
-                    { name: T.Dist_Hist, type: 'bar', data: histogramSeries },
-                    { name: T.Dist_LSL, type: 'line', data: [[@ViewBag.MinThreshold, 0], [@ViewBag.MinThreshold, Math.max(...histogramSeries.map(h => h[1]))]] },
-                    { name: T.Dist_USL, type: 'line', data: [[@ViewBag.MaxThreshold, 0], [@ViewBag.MaxThreshold, Math.max(...histogramSeries.map(h => h[1]))]] }
-                ]
+                dataZoom: [
+                    { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
+                    { type: 'inside', xAxisIndex: 0 }
+                ],
+                series: series
             });
 
             bellCurveCharts[variableName] = chart;
             updateTooltip(variableName, cpk, ppk, mean, range);
         }
 
+
         // Inicialización
-        createScatterChart("scatter-Y", "@ViewBag.VariableYName", scatterDataY, @ViewBag.MinThreshold, @ViewBag.MaxThreshold);
+        // Y
+        createScatterChart("scatter-Y", "@ViewBag.VariableYName", scatterDataY, minThreshold, maxThreshold);
         createBellCurveChart("bell-Y", "@ViewBag.VariableYName", scatterDataY.map(entry => entry.Value));
 
+        // X
         Object.keys(scatterDataX || {}).forEach((xVar) => {
-            createScatterChart(`scatter-${xVar.replace(/\s/g, '')}`, xVar, scatterDataX[xVar].map((val, i) => ({ Time: dates[i], Value: val })), @ViewBag.MinThreshold, @ViewBag.MaxThreshold);
-            createBellCurveChart(`bell-${xVar.replace(/\s/g, '')}`, xVar, scatterDataX[xVar]);
+            const displayName = (variableXNames && variableXNames[xVar]) ? variableXNames[xVar] : xVar;
+            const domId = xVar.replace(/\s/g, '');
+
+            // Scatter de X
+            createScatterChart(
+                `scatter-${domId}`,
+                displayName,
+                scatterDataX[xVar].map((val, i) => ({ Time: dates[i], Value: val })),
+                minThreshold,
+                maxThreshold
+            );
+
+            // Campana de X
+            createBellCurveChart(
+                `bell-${domId}`,
+                displayName,
+                scatterDataX[xVar]
+            );
         });
+
+
 
         // Tooltips Bootstrap (si usas)
         document.addEventListener("DOMContentLoaded", function () {
@@ -325,15 +422,24 @@
         function updateTooltip(variableName, cpk, ppk, mean, range) {
             let el = document.querySelector(`[data-bs-toggle="tooltip"][data-variable="${variableName}"]`);
             if (!el) return;
+
+            const cpkText = (cpk == null || !isFinite(cpk)) ? "—" : cpk.toFixed(3);
+            const ppkText = (ppk == null || !isFinite(ppk)) ? "—" : ppk.toFixed(3);
+            const meanText = (mean == null || !isFinite(mean)) ? "—" : mean.toFixed(2);
+            const rangeText = (range == null || !isFinite(range)) ? "—" : range.toFixed(2);
+
             let html = `
-                    📊 <b>${T.Stats_Cpk}:</b> ${cpk.toFixed(3)} <br>
-                    📊 <b>${T.Stats_Ppk}:</b> ${ppk.toFixed(3)} <br>
-                    📊 <b>${T.Stats_Mean}:</b> ${mean.toFixed(2)} <br>
-                    📊 <b>${T.Stats_Range}:</b> ${range.toFixed(2)}
-                `;
+                📊 <b>${T.Stats_Cpk}:</b> ${cpkText} <br>
+                📊 <b>${T.Stats_Ppk}:</b> ${ppkText} <br>
+                📊 <b>${T.Stats_Mean}:</b> ${meanText} <br>
+                📊 <b>${T.Stats_Range}:</b> ${rangeText}
+            `;
+
             el.setAttribute("data-bs-original-title", html);
-            let inst = bootstrap.Tooltip.getInstance(el); if (inst) inst.dispose();
+            let inst = bootstrap.Tooltip.getInstance(el);
+            if (inst) inst.dispose();
             new bootstrap.Tooltip(el, { html: true, placement: "right" });
         }
+
     </script>
 }

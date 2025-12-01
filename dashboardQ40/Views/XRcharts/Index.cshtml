@@ -334,7 +334,7 @@
 
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
     <!-- Exponer textos localizados para usarlos en JS -->
@@ -402,39 +402,127 @@
             "Argentina": ["Salta", "Tucumán", "Formosa"]
         };
 
-        const DEFAULT_PAIS = "México";
-        const DEFAULT_PLANTA = "Insurgentes";
+        const MODULO_PERMISOS = "DQxr";
 
-        // Todas las companies (company, companyName, countryCode, ...)
+        const LABELS = {
+            Select: "-- Selecciona --",
+            Line: "@Localizer["XR_Line"]",
+            Plant: "@Localizer["XR_Plant"]"
+        };
+
+        // Todas las companies (Company, CompanyName, CountryCode) desde backend
         const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+        console.log("companies", COMPANIES);
 
-        // Rellena combo de plantas según país
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            return [];
+        }
+
+        function resetSelect($el, placeholder) {
+            $el.empty().append(new Option(placeholder, ""));
+        }
+
+        // Helpers de permisos
+        function getPermisoModulo() {
+            if (!window.PERMISOS_POR_MODULO) return null;
+            return window.PERMISOS_POR_MODULO[MODULO_PERMISOS] || null;
+        }
+
+        function getUserCompanyInfo() {
+            if (!window.USER_COMPANY || !Array.isArray(COMPANIES)) return null;
+            return COMPANIES.find(c => c.Company === window.USER_COMPANY) || null;
+        }
+
+        // 1) País → cargar Plantas
+        // País → cargar Plantas
         function fillPlants(countryCode) {
-            const $planta = document.getElementById('planta');
-            $planta.innerHTML = '<option value="">-- Selecciona --</option>';
+            const $planta = $("#planta");
+            resetSelect($planta, LABELS.Plant);
+            resetSelect($("#line"), LABELS.Line); // limpiar línea
 
             if (!countryCode) return;
 
-            const plants = COMPANIES
+            const permiso = getPermisoModulo();
+            const userInfo = getUserCompanyInfo();
+            const userCompany = userInfo ? userInfo.Company : null;
+
+            let plants = COMPANIES
                 .filter(c => c.CountryCode === countryCode)
                 .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
 
-            for (const p of plants) {
-                const opt = document.createElement('option');
-                opt.value = p.Company;          // valor = código de company
-                opt.textContent = p.CompanyName; // texto = nombre de planta
-                $planta.appendChild(opt);
+            // SOLO si fuera nivel planta puro (Global=false, Country=false, Planta=true)
+            // limitaríamos a una planta. En DQanasens tienes Country=true, así que ve todas las plantas de México.
+            if (permiso && !permiso.Global && !permiso.Country && permiso.Planta && userCompany) {
+                plants = plants.filter(p => p.Company === userCompany);
             }
+
+            plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+
+            // Si tiene permiso de planta, auto-seleccionar su planta
+            // Si el permiso es SOLO de planta (sin Global ni Country) → auto-seleccionar y bloquear
+            if (permiso && permiso.Planta && userCompany && !permiso.Global && !permiso.Country) {
+                $planta.val(userCompany);
+                $planta.prop("disabled", true);
+            } else {
+                // En cualquier otro caso: no forzar selección, dejarlo editable
+                $planta.prop("disabled", false);
+            }
+
         }
 
-        // Opcional: inicializar con el primer país seleccionado
-        (function init() {
-            const pais = document.getElementById('pais');
-            if (pais.options.length > 1) {
-                pais.selectedIndex = 1;       // selecciona primer país real
-                pais.dispatchEvent(new Event('change'));
+
+        // Eventos
+        $("#pais").on("change", function () {
+            fillPlants(this.value);
+        });
+
+        $(function () {
+            const $pais = $("#pais");
+            const permiso = getPermisoModulo();
+            const userInfo = getUserCompanyInfo();
+            const userCountry = userInfo ? userInfo.CountryCode : null;
+
+            if (!$pais[0]) return;
+
+            // Si tiene Global → puede ver todos los países
+            if (permiso && permiso.Global) {
+                if (userCountry) {
+                    $pais.val(userCountry);
+                } else if ($pais[0].options.length > 1) {
+                    $pais[0].selectedIndex = 1;
+                }
+                $pais.prop("disabled", false);
             }
-        })();
+            // Si NO Global pero sí Country/Planta → solo su país, bloqueado
+            else if (permiso && (permiso.Country || permiso.Planta) && userCountry) {
+                $pais.find("option").each(function () {
+                    const val = this.value;
+                    if (val && val !== userCountry) {
+                        $(this).remove();
+                    }
+                });
+                $pais.val(userCountry);
+                $pais.prop("disabled", true);
+            }
+            // Fallback (sin permisos, por si acaso)
+            else {
+                if ($pais[0].options.length > 1) {
+                    $pais[0].selectedIndex = 1;
+                }
+                $pais.prop("disabled", false);
+            }
+
+            // Disparar carga de plantas con el país seleccionado
+            const selectedCountry = $pais.val();
+            if (selectedCountry) {
+                fillPlants(selectedCountry);
+            }
+        });
         // Forzar habilitado inicial (si no usas gating por selects)
         $(document).ready(function () {
             $('#btnReporte').prop('disabled', false);

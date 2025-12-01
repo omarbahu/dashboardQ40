@@ -2070,4 +2070,17 @@
   <data name="Zoom_Reset_Title" xml:space="preserve">
     <value>Reset zoom</value>
   </data>
+	<data name="Quality" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+	<data name="AnaSensorial" xml:space="preserve">
+    <value>Sensory analysis</value>
+  </data>
+	<data name="Certificado" xml:space="preserve">
+    <value>Quality certificate</value>
+  </data>
+	<data name="Loader_Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+
 </root>

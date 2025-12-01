@@ -16,7 +16,21 @@
     double maxThreshold = ViewBag.MaxThreshold ?? 100;
 }
 
-<script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+@{
+    var datesJson = JsonConvert.SerializeObject(ViewBag.Dates ?? new List<string>());
+    var scatterDataYJson = JsonConvert.SerializeObject(ViewBag.ScatterDataY ?? new List<object>());
+    var variablesX = ViewBag.VariablesXData as Dictionary<string, List<double>> ?? new Dictionary<string, List<double>>();
+    var scatterDataXJson = JsonConvert.SerializeObject(variablesX);
+
+    // <<< NUEVO >>>
+    var selectedXVars = ViewBag.SelectedXVariables as List<string> ?? new List<string>();
+    var selectedXJson = JsonConvert.SerializeObject(selectedXVars);
+
+    var minTol = minThreshold;
+    var maxTol = maxThreshold;
+}
+
+
 
 <style>
     .container-flex {
@@ -218,17 +232,9 @@
     </table>
 </div>
 
-@{
-    var datesJson = JsonConvert.SerializeObject(ViewBag.Dates ?? new List<string>());
-    var scatterDataYJson = JsonConvert.SerializeObject(ViewBag.ScatterDataY ?? new List<object>());
-    var variablesX = ViewBag.VariablesXData as Dictionary<string, List<double>> ?? new Dictionary<string, List<double>>();
-    var scatterDataXJson = JsonConvert.SerializeObject(variablesX);
-    var minTol = minThreshold;
-    var maxTol = maxThreshold;
-}
 
-@section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section Scripts {    
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
     <script>
@@ -261,7 +267,11 @@
         const scatterDataY = @Html.Raw(scatterDataYJson);
         const scatterDataX = @Html.Raw(scatterDataXJson);
 
+        // <<< NUEVO: X seleccionadas desde el backend >>>
+        const SELECTED_X = @Html.Raw(selectedXJson);
+
         const VAR_Y_NAME = @Html.Raw(JsonConvert.SerializeObject(ViewBag.VariableYName ?? ""));
+
         const nombrePromedio = `${T.Mean} (${VAR_Y_NAME})`;
         const nombreMuestras = `Samples (${VAR_Y_NAME})`;
 
@@ -369,6 +379,7 @@
                 symbol: 'none',
                 lineStyle: { type: 'dashed' },
                 label: { formatter: p => `${p.name} = ${(+p.value).toFixed(2)}` },
+
                 data: [
                     { yAxis: MIN_TOL, name: T.Bell_LSL },
                     { yAxis: MAX_TOL, name: T.Bell_USL },
@@ -409,9 +420,18 @@
                 }
             }
         });
+        // Todas las claves que vienen del backend (nombres de las X)
+        const xAllKeys = Object.keys(scatterDataX || {});
 
-        // Variables X
-        const xKeys = Object.keys(scatterDataX || {}).filter(k => k !== VAR_Y_NAME);
+        // Por ahora usamos todas las X que llegaron, solo evitamos que se
+        // meta la Y si por alguna razón comparte nombre.
+        const xKeys = xAllKeys.filter(k => k !== VAR_Y_NAME);
+
+        // DEBUG para que veas qué está pasando
+        console.log("scatterDataX keys (nombres):", xAllKeys);
+        console.log("SELECTED_X (códigos):", SELECTED_X);
+        console.log("xKeys usadas en la gráfica:", xKeys);
+
         const xMeans = Object.fromEntries(xKeys.map(k => [k, mean((scatterDataX[k] || []).filter(v => v != null))]));
 
         xKeys.forEach((key, index) => {
@@ -448,9 +468,13 @@
                     markLine: ctrlX ? {
                         symbol: 'none',
                         lineStyle: { type: 'dotted' },
-                        label: { formatter: p => `${p.name} = ${(+p.value).toFixed(2)}` },
-                        data: [{ yAxis: ctrlX.LCL, name: 'LCL' }, { yAxis: ctrlX.UCL, name: 'UCL' }]
+                        label: { show: false },   // <<< NUEVO: sin texto
+                        data: [
+                            { yAxis: ctrlX.LCL, name: 'LCL' },
+                            { yAxis: ctrlX.UCL, name: 'UCL' }
+                        ]
                     } : undefined,
+
                     markArea: ctrlX ? {
                         itemStyle: { color: 'rgba(56,189,248,.10)' },
                         data: [[{ yAxis: ctrlX.LCL }, { yAxis: ctrlX.UCL }]]
@@ -461,26 +485,31 @@
             // Eje para X
             yAxis.push({
                 type: 'value',
-                name: key,
-                position: index % 2 === 0 ? 'right' : 'left',
-                offset: index * 50,
+                name: '',                    // 👈 SIN texto para que no se encime
+                position: 'right',
+                offset: index * 40,
                 min: minX,
                 max: maxX,
                 axisLine: { lineStyle: { color: ['#FFA500', '#4169E1', '#8A2BE2'][index % 3] } },
                 nameLocation: 'middle',
                 nameRotate: 90,
-                nameGap: 45,
+                nameGap: 40,
+                axisLabel: { show: false },
+                nameTextStyle: { fontSize: 10 },
                 axisPointer: { label: { show: false } }
             });
+
+
         });
 
         // Leyenda: promedio Y, muestras Y, cada X y (opcional) bandas de X
+        // Leyenda: promedio Y, muestras Y y cada X
         const legendItems = [
             nombrePromedio,
             nombreMuestras,
-            ...xKeys,
-            ...xKeys.map(k => `${k} UCL/LCL`)
+            ...xKeys
         ];
+
 
         // Tooltip
         function tooltipFormatter(params) {
@@ -520,7 +549,7 @@
         // Render
         chart.setOption({
             title: { text: '', left: 'center' },
-            grid: { left: 60, right: 120, top: 40, bottom: 60 },
+            grid: { left: 60, right: 140, top: 40, bottom: 60 },  
             tooltip: { trigger: 'axis', formatter: tooltipFormatter, axisPointer: { type: 'cross' } },
             legend: { data: legendItems },
             xAxis: { type: 'category', data: xCategories },
@@ -535,26 +564,95 @@
         // -------- Bell curve (tu lógica actual) --------
         function updateBellCurveChart(variableName, dataValues) {
             document.getElementById("bell-curve-loader").style.display = "block";
+
             setTimeout(() => {
                 if (dataValues.length > 0) {
                     const meanVal = mean(dataValues);
-                    const stdDev = Math.sqrt(dataValues.map(x => Math.pow(x - meanVal, 2)).reduce((a, b) => a + b) / dataValues.length);
-                    const cpk = Math.min((MAX_TOL - meanVal) / (3 * stdDev), (meanVal - MIN_TOL) / (3 * stdDev));
-                    const ppk = cpk * 1.2; // simulación
+                    const varSum = dataValues
+                        .map(x => Math.pow(x - meanVal, 2))
+                        .reduce((a, b) => a + b, 0);
+                    const stdDev = Math.sqrt(varSum / dataValues.length);
                     const range = Math.max(...dataValues) - Math.min(...dataValues);
 
-                    let bellCurveData = [], histogramData = {};
+                    // ---- NUEVO: protegernos de stdDev = 0 o NaN ----
+                    if (!isFinite(stdDev) || stdDev === 0) {
+                        // Solo mostramos histograma + stats básicas, sin campana
+                        const histogramData = {};
+                        dataValues.forEach(val => {
+                            const bucket = Math.round(val * 10) / 10;
+                            histogramData[bucket] = (histogramData[bucket] || 0) + 1;
+                        });
+
+                        const histogramSeries = Object.keys(histogramData)
+                            .map(b => [parseFloat(b), histogramData[b]]);
+
+                        let minX = Math.min(
+                            ...histogramSeries.map(h => h[0]),
+                            MIN_TOL
+                        ) - 0.1;
+                        let maxX = Math.max(
+                            ...histogramSeries.map(h => h[0]),
+                            MAX_TOL
+                        ) + 0.1;
+
+                        document.getElementById("cpkValue").innerText = "-";
+                        document.getElementById("ppkValue").innerText = "-";
+                        document.getElementById("meanValue").innerText = meanVal.toFixed(2);
+                        document.getElementById("rangeValue").innerText = range.toFixed(2);
+
+                        bellCurveChart.setOption({
+                            title: { text: T.Bell_Title },
+                            tooltip: { trigger: 'axis' },
+                            xAxis: { type: 'value', name: T.Bell_XAxis, min: minX, max: maxX },
+                            yAxis: { type: 'value', name: T.Bell_YAxis },
+                            dataZoom: [
+                                { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
+                                { type: 'inside', xAxisIndex: 0 }
+                            ],
+                            series: [
+                                { name: T.Bell_Histogram, type: 'bar', data: histogramSeries },
+                                {
+                                    name: T.Bell_LSL,
+                                    type: 'line',
+                                    data: [[MIN_TOL, 0], [MIN_TOL, Math.max(...histogramSeries.map(h => h[1]))]]
+                                },
+                                {
+                                    name: T.Bell_USL,
+                                    type: 'line',
+                                    data: [[MAX_TOL, 0], [MAX_TOL, Math.max(...histogramSeries.map(h => h[1]))]]
+                                }
+                            ]
+                        });
+
+                        document.getElementById("bell-curve-loader").style.display = "none";
+                        return; // 👈 importante, NO seguimos al código de la campana
+                    }
+
+                    // ---- CASO NORMAL (stdDev > 0): campana + histograma ----
+                    const cpk = Math.min(
+                        (MAX_TOL - meanVal) / (3 * stdDev),
+                        (meanVal - MIN_TOL) / (3 * stdDev)
+                    );
+
+                    let bellCurveData = [];
                     for (let i = meanVal - 3 * stdDev; i <= meanVal + 3 * stdDev; i += stdDev / 2) {
-                        let yValue = Math.exp(-Math.pow(i - meanVal, 2) / (2 * Math.pow(stdDev, 2)));
+                        const yValue = Math.exp(-Math.pow(i - meanVal, 2) / (2 * Math.pow(stdDev, 2)));
                         bellCurveData.push([i, yValue]);
                     }
-                    dataValues.forEach(val => { let bucket = Math.round(val * 10) / 10; histogramData[bucket] = (histogramData[bucket] || 0) + 1; });
-                    let histogramSeries = Object.keys(histogramData).map(b => [parseFloat(b), histogramData[b]]);
+
+                    const histogramData = {};
+                    dataValues.forEach(val => {
+                        const bucket = Math.round(val * 10) / 10;
+                        histogramData[bucket] = (histogramData[bucket] || 0) + 1;
+                    });
+                    const histogramSeries = Object.keys(histogramData)
+                        .map(b => [parseFloat(b), histogramData[b]]);
+
                     let minX = Math.min(...bellCurveData.map(d => d[0]), MIN_TOL) - 0.1;
                     let maxX = Math.max(...bellCurveData.map(d => d[0]), MAX_TOL) + 0.1;
 
-                    document.getElementById("cpkValue").innerText = (Math.random() * 10).toFixed(3);
-                    document.getElementById("ppkValue").innerText = (Math.random() * 5).toFixed(3);
+                    document.getElementById("cpkValue").innerText = cpk.toFixed(3);
+                    document.getElementById("ppkValue").innerText = (cpk * 1.2).toFixed(3); // tu simulación
                     document.getElementById("meanValue").innerText = meanVal.toFixed(2);
                     document.getElementById("rangeValue").innerText = range.toFixed(2);
 
@@ -563,18 +661,31 @@
                         tooltip: { trigger: 'axis' },
                         xAxis: { type: 'value', name: T.Bell_XAxis, min: minX, max: maxX },
                         yAxis: { type: 'value', name: T.Bell_YAxis },
-                        dataZoom: [{ type: 'slider', xAxisIndex: 0, start: 0, end: 100 }, { type: 'inside', xAxisIndex: 0 }],
+                        dataZoom: [
+                            { type: 'slider', xAxisIndex: 0, start: 0, end: 100 },
+                            { type: 'inside', xAxisIndex: 0 }
+                        ],
                         series: [
                             { name: T.Bell_Distribution, type: 'line', data: bellCurveData },
                             { name: T.Bell_Histogram, type: 'bar', data: histogramSeries },
-                            { name: T.Bell_LSL, type: 'line', data: [[MIN_TOL, 0], [MIN_TOL, Math.max(...histogramSeries.map(h => h[1]))]] },
-                            { name: T.Bell_USL, type: 'line', data: [[MAX_TOL, 0], [MAX_TOL, Math.max(...histogramSeries.map(h => h[1]))]] }
+                            {
+                                name: T.Bell_LSL,
+                                type: 'line',
+                                data: [[MIN_TOL, 0], [MIN_TOL, Math.max(...histogramSeries.map(h => h[1]))]]
+                            },
+                            {
+                                name: T.Bell_USL,
+                                type: 'line',
+                                data: [[MAX_TOL, 0], [MAX_TOL, Math.max(...histogramSeries.map(h => h[1]))]]
+                            }
                         ]
                     });
                 }
+
                 document.getElementById("bell-curve-loader").style.display = "none";
             }, 50);
         }
+
 
         chart.on('click', function (params) {
             if (params.seriesName === nombrePromedio || params.seriesName === nombreMuestras) {

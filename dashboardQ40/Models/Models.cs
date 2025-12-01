@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using static dashboardQ40.Models.Models;
 
 namespace dashboardQ40.Models
 {
@@ -207,11 +208,32 @@ namespace dashboardQ40.Models
 
         public class result_authUser
         {
-
             public string appUser { get; set; } = string.Empty;
             public string appUserName { get; set; } = string.Empty;
+            public string role { get; set; } = string.Empty;
             public string culture { get; set; } = string.Empty;
+            public string company { get; set; } = string.Empty;
 
+            // OJO: aquí como string, porque en el JSON viene "101"
+            public string programGroup { get; set; } = string.Empty;
+            public string programGroupName { get; set; } = string.Empty;
+
+            public bool canread { get; set; }
+            public bool caninsert { get; set; }
+            public bool canmodify { get; set; }
+            public bool candelete { get; set; }
+        }
+
+
+        public class DashboardProgramPermission
+        {
+            public string ProgramGroup { get; set; }
+            public string ProgramGroupName { get; set; } = string.Empty;
+
+            public bool Global { get; set; }
+            public bool Country { get; set; }
+            public bool Planta { get; set; }
+            public bool Modify { get; set; }
         }
 
         /*
@@ -321,6 +343,21 @@ CPrvs.resultValue, CPrvs.minTolerance, CPrvs.maxTolerance, CPrrc.executionDate
             public string ControlOperationResultValueNote { get; set; }
             public string controlOperationType { get; set; }
 
+        }
+
+        public class CapabilityRowDto
+        {
+            public string VariableName { get; set; }   // "CONTENIDO NETO - CCL SC 600ML"
+            public int N { get; set; }                 // n
+            public double? Mean { get; set; }          // Media
+            public double? SigmaGlobal { get; set; }   // σ Global (o la que uses en el certificado)
+            public double? LSL { get; set; }           // LSL
+            public double? USL { get; set; }           // USL
+            public double? Cpk { get; set; }           // Cpk
+            public double? PctBelowLsl { get; set; }   // % bajo LEI
+            public double? PctAboveUsl { get; set; }   // % sobre LES
+                                                       // Si tu DTO trae Cp, Pp, Ppk y luego los quieres mostrar,
+                                                       // aquí también los agregamos.
         }
 
     }

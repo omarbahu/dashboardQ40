@@ -79,6 +79,15 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sensory analysis.
+        /// </summary>
+        public static string AnaSensorial {
+            get {
+                return ResourceManager.GetString("AnaSensorial", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dashboard Q.40.
         /// </summary>
         public static string AppTitle {
@@ -399,6 +408,15 @@ namespace dashboardQ40.Resources {
         public static string Button_ShowTable {
             get {
                 return ResourceManager.GetString("Button_ShowTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality certificate.
+        /// </summary>
+        public static string Certificado {
+            get {
+                return ResourceManager.GetString("Certificado", resourceCulture);
             }
         }
         
@@ -2428,6 +2446,15 @@ namespace dashboardQ40.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string Loader_Loading {
+            get {
+                return ResourceManager.GetString("Loader_Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loading block:.
         /// </summary>
         public static string Loader_LoadingBlock {
@@ -2865,6 +2892,15 @@ namespace dashboardQ40.Resources {
         public static string Production_UnitsRejected {
             get {
                 return ResourceManager.GetString("Production_UnitsRejected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quality.
+        /// </summary>
+        public static string Quality {
+            get {
+                return ResourceManager.GetString("Quality", resourceCulture);
             }
         }
         

@@ -1,0 +1,706 @@
+﻿@model dynamic
+@using Newtonsoft.Json
+@inject Microsoft.Extensions.Localization.IStringLocalizer Localizer
+
+<style>
+    /* ====== Selects "estado" ocultos (se usan para el POST) ====== */
+    #variablesY {
+        display: none !important;
+    }
+
+    /* ====== Cards layout ====== */
+    .cards-section-title {
+        margin-top: 18px;
+        margin-bottom: 10px;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: 12px;
+    }
+
+    @@media (max-width:1200px) {
+        .cards-grid {
+            grid-template-columns: repeat(2,minmax(0,1fr));
+        }
+    }
+
+    @@media (max-width:768px) {
+        .cards-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .card-y {
+        position: relative;
+        border: 1px solid #d1d5db;
+        border-radius: 14px;
+        background: #fff;
+        padding: 10px 12px;
+        box-shadow: 0 1px 0 rgba(0,0,0,0.03);
+        cursor: pointer;
+        transition: border-color .15s ease, box-shadow .15s ease, transform .04s ease;
+    }
+
+        .card-y:hover {
+            border-color: #94a3b8;
+            box-shadow: 0 2px 7px rgba(0,0,0,0.06);
+        }
+
+        .card-y.selected {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+        }
+
+    .card-title {
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 2px 0;
+        font-size: .95rem;
+        padding-left: 24px;
+        min-height: auto;
+        position: relative;
+    }
+
+    /* “checkbox” redondo para Y (multi-selección) */
+    .card-y .radio-dot {
+        position: absolute;
+        top: 2px;
+        left: 0;
+        width: 18px;
+        height: 18px;
+        border-radius: 6px;
+        border: 2px solid #334155;
+        background: #fff;
+    }
+
+    .card-y.selected .radio-dot {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+        .card-y.selected .radio-dot::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+    .badge {
+        display: inline-block;
+        border-radius: 12px;
+        padding: 2px 7px;
+        font-size: .72rem;
+        border: 1px solid transparent;
+        margin-right: 6px;
+        margin-top: 2px;
+    }
+
+    .b-primary {
+        background: #e8eefc;
+        border-color: #93c5fd;
+        color: #1d4ed8;
+    }
+
+    .b-warn {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+
+    .b-muted {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+        color: #374151;
+    }
+
+    .meta-row {
+        padding-left: 24px;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .spark {
+        width: 128px;
+        height: 28px;
+        margin-left: auto;
+        border-radius: 8px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+    }
+
+        .spark canvas, .spark svg {
+            display: block !important;
+        }
+
+    .empty-msg {
+        color: #9ca3af;
+        font-style: italic;
+        padding: 8px 0;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .datetime-compact {
+        max-width: 150px;
+        font-size: 0.8rem;
+        padding: 2px 4px;
+    }
+
+    /* Carátula */
+    .block-header {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-top: 18px;
+        background: #f9fafb;
+    }
+
+        .block-header h5 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+@{
+    ViewData["Title"] = "Certificado de Calidad";
+}
+
+<form id="selectionForm" target="_blank">
+    <!-- Row 1: filtros -->
+    <div class="row row-cols-lg-auto g-2 align-items-end">
+        <div class="col">
+            <label for="fecha" class="form-label">Fecha lote</label>
+        </div>
+        <div class="col">
+            <input type="date" id="fecha" name="Fecha" class="form-control form-control-sm datetime-compact w-auto" />
+        </div>
+
+        <!-- País / Planta -->
+        <div class="col">
+            <label for="pais" class="form-label">@Localizer["XR_Country"]</label>
+        </div>
+        <div class="col">
+            <select id="pais" name="Pais" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+                @foreach (var p in ViewBag.Countries)
+                {
+                    <option value="@p.Code">@p.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col">
+            <label for="planta" class="form-label">@Localizer["XR_Plant"]</label>
+        </div>
+        <div class="col">
+            <select id="planta" name="Planta" class="form-select form-select-sm">
+                <option value="">-- Selecciona --</option>
+            </select>
+        </div>
+
+        <!-- Línea -->
+        <div class="col">
+            <label for="line" class="form-label">@Localizer["XR_Line"]</label>
+        </div>
+        <div class="col">
+            <select id="line" name="Line" class="form-select form-select-sm"></select>
+        </div>
+
+        <!-- SKU -->
+        <div class="col">
+            <label for="sku" class="form-label">SKU</label>
+        </div>
+        <div class="col">
+            <select id="sku" name="Sku" class="form-select form-select-sm">
+                <option value="">@Localizer["SkuPlaceholder"]</option>
+            </select>
+        </div>
+
+      
+    </div>
+
+    <!-- Hint -->
+    <div id="filtersHint" class="alert alert-light border mt-3" role="alert">
+        @Localizer["FiltersHint"]
+    </div>
+
+    <!-- Step 1: selecciona Variables Y -->
+    <div id="secYWrap" class="hidden">
+        <div class="cards-section-title">1) Selecciona las variables a incluir</div>
+        <div id="cardsY" class="cards-grid"></div>
+        <div id="cardsYEmpty" class="empty-msg" style="display:none;">@Localizer["NoYVariables"]</div>
+    </div>
+
+    <!-- Hidden: variables Y seleccionadas -->
+    <select id="variablesY" name="VariablesY" multiple="multiple" class="d-none"></select>
+
+    <!-- Carátula del certificado -->
+    <div id="secCaratula" class="block-header hidden">
+        <h5>2) Datos del certificado</h5>
+
+        <div class="row g-2">
+            <div class="col-md-2">
+                <label class="form-label">Línea</label>
+                <input type="text" name="LineaTexto" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Turno</label>
+                <input type="text" name="Turno" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Código lote (ej. 20NOV25)</label>
+                <input type="text" name="CodigoLote" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Sabor</label>
+                <input type="text" name="Sabor" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Apariencia</label>
+                <input type="text" name="Apariencia" class="form-control form-control-sm" />
+            </div>
+        </div>
+
+        <div class="row g-2 mt-1">
+            <div class="col-md-3">
+                <label class="form-label">Planta suministro</label>
+                <input type="text" name="PlantaSuministro" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Analistas de Proceso</label>
+                <input type="text" name="AnalistasProceso" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Supervisor de Calidad</label>
+                <input type="text" name="SupervisorCalidad" class="form-control form-control-sm" />
+            </div>
+        </div>
+
+        <div class="row g-2 mt-1">
+            <div class="col-md-3">
+                <label class="form-label">Analista</label>
+                <input type="text" name="Analista" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Jefe de Calidad</label>
+                <input type="text" name="JefeCalidad" class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tamaño de lote</label>
+                <input type="text" name="TamanoLoteTexto" class="form-control form-control-sm" placeholder="ej. 5000 CAJAS" />
+            </div>
+        </div>
+
+        <!-- Botón hasta abajo -->
+        <div class="mt-3 text-end">
+            <button id="btnCertificado" type="button" class="btn btn-primary btn-sm" disabled
+                    onclick="submitForm('@Url.Action("GenerarCertificado", "Dashboard")')">
+                📝 Generar certificado
+            </button>
+
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    
+
+    <script>
+        window.T = {
+            CKlists: '@Localizer["Checklists"]',
+            OOS: '@Localizer["OOS"]',
+            Last: '@Localizer["Last"]',
+            FiltersHint: '@Localizer["FiltersHint"]',
+            NoYVariables: '@Localizer["NoYVariables"]',
+            ErrorLoadSkus: '@Localizer["ErrorLoadSkus"]',
+            Tooltip_LastN: '@Localizer["Tooltip_LastN"]',
+            Tooltip_Value: '@Localizer["Tooltip_Value"]',
+            Tooltip_Limits: '@Localizer["Tooltip_Limits"]'
+        };
+    </script>
+
+    <script>
+        const MODULO_PERMISOS = "DQlimites";
+        const LABELS = {
+            Select: "-- Selecciona --",
+            Line: "@Localizer["XR_Line"]",
+            Plant: "@Localizer["XR_Plant"]"
+        };
+        const COMPANIES = @Html.Raw(ViewBag.CompaniesJson ?? "[]");
+
+        function toArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (Array.isArray(data.$values)) return data.$values;
+            if (Array.isArray(data.value?.$values)) return data.value.$values;
+            if (Array.isArray(data.value)) return data.value;
+            return [];
+        }
+        function resetSelect($el, placeholder) {
+            $el.empty().append(new Option(placeholder, ""));
+        }
+        function getPermisoModulo() {
+            if (!window.PERMISOS_POR_MODULO) return null;
+            return window.PERMISOS_POR_MODULO[MODULO_PERMISOS] || null;
+        }
+        function getUserCompanyInfo() {
+            if (!window.USER_COMPANY || !Array.isArray(COMPANIES)) return null;
+            return COMPANIES.find(c => c.Company === window.USER_COMPANY) || null;
+        }
+
+        function fillPlants(countryCode) {
+            const $planta = $("#planta");
+            resetSelect($planta, LABELS.Plant);
+            resetSelect($("#line"), LABELS.Line);
+            if (!countryCode) return;
+
+            const permiso = getPermisoModulo();
+            const userInfo = getUserCompanyInfo();
+            const userCompany = userInfo ? userInfo.Company : null;
+
+            let plants = COMPANIES
+                .filter(c => c.CountryCode === countryCode)
+                .sort((a, b) => a.CompanyName.localeCompare(b.CompanyName, 'es'));
+
+            if (permiso && !permiso.Global && !permiso.Country && permiso.Planta && userCompany) {
+                plants = plants.filter(p => p.Company === userCompany);
+            }
+
+            plants.forEach(p => $planta.append(new Option(p.CompanyName, p.Company)));
+
+            if (permiso && permiso.Planta && userCompany && !permiso.Global && !permiso.Country) {
+                $planta.val(userCompany);
+                $planta.prop("disabled", true);
+            } else {
+                $planta.prop("disabled", false);
+            }
+        }
+
+        $("#pais").on("change", function () { fillPlants(this.value); });
+
+        $(function () {
+            const $pais = $("#pais");
+            const permiso = getPermisoModulo();
+            const userInfo = getUserCompanyInfo();
+            const userCountry = userInfo ? userInfo.CountryCode : null;
+
+            if (!$pais[0]) return;
+
+            if (permiso && permiso.Global) {
+                if (userCountry) { $pais.val(userCountry); }
+                else if ($pais[0].options.length > 1) { $pais[0].selectedIndex = 1; }
+                $pais.prop("disabled", false);
+            } else if (permiso && (permiso.Country || permiso.Planta) && userCountry) {
+                $pais.find("option").each(function () {
+                    const val = this.value;
+                    if (val && val !== userCountry) $(this).remove();
+                });
+                $pais.val(userCountry);
+                $pais.prop("disabled", true);
+            } else {
+                if ($pais[0].options.length > 1) $pais[0].selectedIndex = 1;
+                $pais.prop("disabled", false);
+            }
+
+            const selectedCountry = $pais.val();
+            if (selectedCountry) {
+                fillPlants(selectedCountry);
+            }
+        });
+
+        function loadLinesByCompany(companyId) {
+            const $line = $("#line");
+            resetSelect($line, LABELS.Line);
+            if (!companyId) return;
+
+            $.ajax({
+                url: '@Url.Action("ObtenerLineas", "Dashboard")',
+                type: 'GET',
+                data: { company: companyId },
+                success: function (data) {
+                    const lines = toArray(data)
+                        .sort((a, b) => (a.workplaceName || a.name).localeCompare((b.workplaceName || b.name), 'es'));
+                    lines.forEach(l => {
+                        const id = l.workplace ?? l.id;
+                        const name = l.workplaceName ?? l.name;
+                        $line.append(new Option(name, id));
+                    });
+                },
+                error: function (xhr) { console.error("ObtenerLineas error", xhr); }
+            });
+        }
+
+        $("#planta").on("change", function () { loadLinesByCompany(this.value); });
+
+        // Helpers fecha
+        function addOneDay(dateStr) {
+            const d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            d.setDate(d.getDate() + 1);
+            return d.toISOString().substring(0, 10);
+        }
+
+        // ====== Y cards ======
+        function cssSafeId(s) {
+            return String(s ?? '').replace(/[^A-Za-z0-9_-]/g, '_');
+        }
+
+        function yCardHtml(item, selected) {
+            return `
+                <div class="card-y ${selected ? 'selected' : ''}"
+                     data-code="${item.codigo}"
+                     data-name="${item.nombre}">
+                    <div class="radio-dot"></div>
+                    <div class="card-title">${item.nombre}</div>
+                </div>`;
+        }
+
+
+
+        function resetY() {
+            $("#variablesY").empty();
+            $("#cardsY").empty();
+            $("#cardsYEmpty").hide();
+            $("#secCaratula").addClass("hidden");   
+            updateReportButtons();
+        }
+
+        function filtersReady() {
+            return $("#fecha").val() && $("#planta").val() && $("#line").val() && $("#sku").val();
+        }
+
+        function updateSectionsVisibility() {
+            if (!filtersReady()) {
+                $("#filtersHint").removeClass("hidden").text(T.FiltersHint);
+                $("#secYWrap").addClass("hidden");
+                $("#secCaratula").addClass("hidden");   // 👈 también se oculta
+                resetY();
+                return;
+            }
+            $("#filtersHint").addClass("hidden");
+            // Aquí NO mostramos nada todavía; lo hará cargarVarY() cuando tenga datos
+        }
+
+
+        function updateReportButtons() {
+            const hasY = $("#variablesY option").length > 0;
+            $("#btnCertificado").prop("disabled", !hasY);
+        }
+
+
+        function renderYCards(items) {
+            const $wrap = $("#cardsY"), $empty = $("#cardsYEmpty"), $sel = $("#variablesY");
+            $wrap.empty();
+            $sel.empty();
+
+            if (!items || !items.length) {
+                $empty.text(T.NoYVariables).show();
+                return;
+            }
+            $empty.hide();
+
+            items.forEach(it => {
+                $wrap.append(yCardHtml(it, false));
+            });
+
+            $("#cardsY .card-y").off("click").on("click", function () {
+                const code = String($(this).data("code"));
+                const name = $(this).data("name");
+                $(this).toggleClass("selected");
+
+                const $opt = $sel.find(`option[value="${code}"]`);
+                if ($(this).hasClass("selected")) {
+                    if ($opt.length === 0) {
+                        $sel.append(`<option value="${code}" selected>${name}</option>`);
+                    } else {
+                        $opt.prop("selected", true);
+                    }
+                } else {
+                    $opt.remove();
+                }
+                updateReportButtons();
+            });
+        }
+
+        // ===== AJAX: productos (SKU) con una sola fecha =====
+        function cargarProductos() {
+            const lineaId = $("#line").val();
+            const fecha = $("#fecha").val();
+            const planta = $("#planta").val();
+            updateSectionsVisibility();
+
+            if (lineaId && fecha && planta) {
+                const fechaInicial = fecha + "T00:00";
+                const fechaFinal = addOneDay(fecha) + "T00:00";
+
+                $.ajax({
+                    url: '@Url.Action("ObtenerProductos", "Dashboard")',
+                    type: 'GET',
+                    data: { lineaId, fechaInicial, fechaFinal, planta },
+                    success: llenarDropdownSKU,
+                    error: function () { alert(T.ErrorLoadSkus); }
+                });
+            } else {
+                $("#sku").empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
+            }
+        }
+
+        function llenarDropdownSKU(data) {
+            let productos = data.$values || [];
+            let $dd = $("#sku");
+            $dd.empty().append(`<option value="">${'@Localizer["SkuPlaceholder"]'}</option>`);
+            productos.forEach(p => {
+                $dd.append(`<option value="${p.manufacturingOrder}">${p.manufacturingReferenceName}</option>`);
+            });
+            updateSectionsVisibility();
+        }
+
+        $("#line, #fecha, #planta").on("change", cargarProductos);
+
+        // ===== AJAX: Y en base a SKU =====
+        $("#sku").on("change", function () {
+            updateSectionsVisibility();
+            cargarVarY();
+        });
+
+        function cargarVarY() {
+            if (!filtersReady()) return;
+
+            const sku = $("#sku").val();
+            const fecha = $("#fecha").val();
+            const lineaId = $("#line").val();
+            const planta = $("#planta").val();
+            if (!sku) {
+                resetY();
+                $("#secYWrap").addClass("hidden");
+                $("#secCaratula").addClass("hidden");
+                return;
+            }
+
+            const startDate = fecha + "T00:00";
+            const endDate = addOneDay(fecha) + "T00:00";
+
+            $.ajax({
+                url: '@Url.Action("ObtenerAllVarCertf", "Dashboard")',
+                type: 'GET',
+                data: { sku, startDate, endDate, line: lineaId, planta },
+                success: function (data) {
+                    const itemsRaw =
+                        (data?.value?.$values) ??
+                        (data?.$values) ??
+                        data?.value ??
+                        [];
+
+                    // Normalizamos a { codigo, nombre, spark, ... }
+                    const items = itemsRaw.map(raw => {
+                        const codigo =
+                            raw.codigo ??
+                            raw.code ??
+                            raw.value ??
+                            raw.controlOperation ??
+                            "";
+
+                        const nombre =
+                            raw.nombre ??
+                            raw.name ??
+                            raw.controlOperationName ??
+                            codigo;
+
+                        return {
+                            ...raw,
+                            codigo,
+                            nombre,
+                            spark: normalizeSpark(raw.spark)
+                        };
+                    });
+
+                    resetY();
+
+                    if (!items.length) {
+                        $("#secYWrap").addClass("hidden");
+                        $("#secCaratula").addClass("hidden");
+                        return;
+                    }
+
+                    $("#secYWrap").removeClass("hidden");
+                    $("#secCaratula").removeClass("hidden");
+
+                    renderYCards(items);
+                    renderAllSparks(items);   // ahora ya no truena
+                },
+
+                error: function (err) { console.error("Error ObtenerVarY:", err); }
+            });
+        }
+
+        function normalizeSpark(s) {
+            // En la otra pantalla XR esto normaliza datos para el spark.
+            // Aquí, mientras tanto, solo devolvemos algo seguro.
+            return s || null;
+        }
+        function renderAllSparks(items) {
+            // Por ahora no dibujamos nada.
+            // Lo dejamos vacío para que no truene la llamada.
+            // Cuando quieras, copiamos aquí la lógica de la pantalla XR.
+        }
+        // ===== Envío (igual que en la otra página) =====
+        function submitForm(actionUrl) {
+            const originalForm = document.getElementById("selectionForm");
+            if (!originalForm) {
+                console.error("No se encontró #selectionForm");
+                return;
+            }
+
+            const fd = new FormData(originalForm);
+
+            console.log("=== FORM DATA ENVIADO (Certificado) ===");
+            for (const [name, value] of fd.entries()) {
+                console.log(name, "=", value);
+            }
+
+            const newForm = document.createElement("form");
+            newForm.method = "post";
+            newForm.action = actionUrl;
+            newForm.target = "_blank";
+
+            for (const [name, value] of fd.entries()) {
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = name;
+                hidden.value = value;
+                newForm.appendChild(hidden);
+            }
+
+            document.body.appendChild(newForm);
+            if (window.showGlobalLoader) showGlobalLoader();
+            newForm.submit();
+            setTimeout(function () {
+                if (window.hideGlobalLoader) hideGlobalLoader();
+            }, 5000);
+            document.body.removeChild(newForm);
+        }
+        window.submitForm = submitForm;
+
+        $(document).ready(function () {
+            updateSectionsVisibility();
+        });
+    </script>
+}

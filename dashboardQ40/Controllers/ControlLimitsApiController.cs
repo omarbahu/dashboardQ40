@@ -11,15 +11,20 @@ namespace dashboardQ40.Controllers
     public sealed class ControlLimitsApiController : ControllerBase
     {
         private readonly ControlLimitsService _svc;
+        private readonly ControlProcedureVersioningService _cpVersioningSvc;
         private readonly AuthService _authService;
         private readonly WebServiceSettings _settings;
 
         public ControlLimitsApiController(
-            ControlLimitsService svc,
-            AuthService authService,
-            IOptions<WebServiceSettings> settings)
+        ControlLimitsService svc,
+        ControlProcedureVersioningService cpVersioningSvc,
+        AuthService authService,
+        IOptions<WebServiceSettings> settings)
         {
-            _svc = svc; _authService = authService; _settings = settings.Value;
+            _svc = svc;
+            _cpVersioningSvc = cpVersioningSvc;
+            _authService = authService;
+            _settings = settings.Value;
         }
 
         // GET /api/controllimits/candidates?company=001&f1=2025-01-01&f2=2025-09-25&minN=100&minCpk=1.33&cpkTarget=1.40
@@ -95,6 +100,43 @@ namespace dashboardQ40.Controllers
                 usl = dto.Usl
             });
         }
+
+
+        // POST /api/controllimits/apply
+        [HttpPost("apply")]
+        public async Task<IActionResult> Apply(
+            [FromBody] ApplyLimitsRequest req,
+            CancellationToken ct = default)
+        {
+            if (req == null || string.IsNullOrWhiteSpace(req.Company) || req.Items == null || req.Items.Count == 0)
+                return BadRequest(new { error = "Company e Items son requeridos." });
+
+            // Reusar mismo patrón de token que en Candidates
+            string company = req.Company;
+            string? token = HttpContext.Session.GetString("AuthToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                var tk = await _authService.ObtenerTokenCaptor(
+                    company != _settings.Company ? company : _settings.Company);
+
+                if (tk == null || string.IsNullOrWhiteSpace(tk.access_token))
+                    return Unauthorized(new { error = "No se pudo obtener el token." });
+
+                token = tk.access_token;
+                HttpContext.Session.SetString("AuthToken", token);
+            }
+
+            try
+            {
+                await _cpVersioningSvc.ApplyAsync(token, req, ct);
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Problem(title: "Error al aplicar cambios de límites", detail: ex.Message, statusCode: 500);
+            }
+        }
+
 
 
     }

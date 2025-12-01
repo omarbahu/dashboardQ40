@@ -2,13 +2,11 @@
 using dashboardQ40.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Globalization;
-using System.Text.Json;
 using static dashboardQ40.Models.Models;
+using System.Data;
 
 namespace dashboardQ40.Controllers
 {
@@ -19,6 +17,7 @@ namespace dashboardQ40.Controllers
         private readonly Dictionary<string, string> _variablesY;
         private readonly ILogger<DashboardController> _logger;
         private readonly IConfiguration _configuration;
+        private string ConnStr => _configuration.GetConnectionString("CaptorConnection");
 
 
         public DashboardController(IOptions<WebServiceSettings> settings, AuthService authService, IConfiguration configuration, ILogger<DashboardController> logger)
@@ -249,31 +248,9 @@ namespace dashboardQ40.Controllers
 
             var VariableYEnv = "";
             var VariableYName = "";
-            if (!_settings.Produccion)
-            {
-                //VariableYEnv = variableY;
-                switch (variableY)
-                {
-                    case "CB-":
-                        VariableYEnv = "A-L7-2";
-                        VariableYName = "Carbonatacion";
-                        break;
-                    case "BX-":
-                        VariableYEnv = "A-L7-1";
-                        VariableYName = "Brix";
-                        break;
-                    case "CN-":
-                        VariableYEnv = "A-L7-3";
-                        VariableYName = "Contenido Neto";
-                        break;
-                }
-            } else
-            {
+
                 VariableYEnv = variableY;
-            }
-            // 📌 Definir equivalencias para Variable Y
-            
-          
+
 
             // 📌 Obtener los datos de la Variable Y
             var dataResultY = getDataQuality.getResultsByVarX(
@@ -282,7 +259,12 @@ namespace dashboardQ40.Controllers
                 planta,
                 line, startDate, endDate, VariableYEnv);
             await Task.WhenAll(dataResultY);
-
+            if (string.IsNullOrEmpty(VariableYName))
+            {
+                VariableYName = dataResultY.Result.result?
+                    .FirstOrDefault()?.controlOperationName
+                    ?? variableY; // si no hay nombre, al menos el código
+            }
             // 📌 Extraer valores de la Variable Y
             var scatterDataY = new List<object>();
             double minY = 0, maxY = 10;
@@ -331,97 +313,151 @@ namespace dashboardQ40.Controllers
         }
 
 
+        // Máx. puntos que mandaremos al front por serie
+        const int MAX_POINTS_PER_SERIES = 2000;
+
         [HttpPost]
         public async Task<IActionResult> SubmitSelectionDetail(
-    string line,
-    DateTime startDate,
-    DateTime endDate,
-    string product,
-    string variableY,
-    string planta,
-    List<string> variablesX)
+            string line,
+            DateTime startDate,
+            DateTime endDate,
+            string product,
+            string variableY,
+            string planta,
+            List<string> variablesX)
         {
             string token = HttpContext.Session.GetString("AuthToken");
-            var result_Resultados = new List<result_Resultados>();
             var random = new Random();
-            var variablesXData = new Dictionary<string, List<double>>();
 
+            var variablesXData = new Dictionary<string, List<double>>();
+            var variablesXNames = new Dictionary<string, string>();   // código -> nombre amigable
+
+            // ========= 1) VARIABLES X =========
             if (variablesX != null && variablesX.Count > 0)
             {
                 foreach (var variableX in variablesX)
                 {
-                    var dataResultP = getDataQuality.getResultsByVarX(
-                        token, _settings.BaseUrl + _settings.QueryResultVarY_X + planta, planta,
-                        line, startDate, endDate, variableX);
-                    await Task.WhenAll(dataResultP);
+                    var dataResultP = await getDataQuality.getResultsByVarX(
+                        token,
+                        _settings.BaseUrl + _settings.QueryResultVarY_X + planta,
+                        planta,
+                        line,
+                        startDate,
+                        endDate,
+                        variableX);
 
-                    if (dataResultP.Result.result != null)
+                    if (dataResultP?.result == null || !dataResultP.result.Any())
+                        continue;
+
+                    // Ordenamos por fecha por si hace falta
+                    var orderedX = dataResultP.result
+                        .Where(r => r.resultValue != null)
+                        .OrderBy(r => r.executionDate)
+                        .ToList();
+
+                    var values = orderedX
+                        .Select(r => Convert.ToDouble(r.resultValue))
+                        .ToList();
+
+                    // Downsampling para X (mismas reglas que Y)
+                    if (values.Count > MAX_POINTS_PER_SERIES)
                     {
-                        var values = dataResultP.Result.result
-                            .Where(r => r.resultValue != null)
-                            .Select(r => Convert.ToDouble(r.resultValue))
+                        var stepX = (int)Math.Ceiling(values.Count / (double)MAX_POINTS_PER_SERIES);
+                        values = values
+                            .Where((v, idx) => idx % stepX == 0)
                             .ToList();
-
-                        if (!values.Any()) values = Enumerable.Range(0, 30).Select(_ => (double)random.Next(1, 100)).ToList();
-                        variablesXData[variableX] = values;
                     }
+
+                    if (!values.Any())
+                    {
+                        // Fallback demo
+                        values = Enumerable.Range(0, 30)
+                            .Select(_ => (double)random.Next(1, 100))
+                            .ToList();
+                    }
+
+                    variablesXData[variableX] = values;
+
+                    // Nombre amigable de la operación (si viene en el WS)
+                    var opName = dataResultP.result
+                        .Select(r => r.controlOperationName)
+                        .FirstOrDefault(n => !string.IsNullOrWhiteSpace(n));
+
+                    variablesXNames[variableX] = opName ?? variableX;
                 }
             }
 
-            var VariableYEnv = "";
-            var VariableYName = "";
-            if (!_settings.Produccion)
+            // ========= 2) VARIABLE Y =========
+            var VariableYEnv = variableY; // de momento mismo código
+            var VariableYName = variableY;
+
+            var dataResultY = await getDataQuality.getResultsByVarX(
+                token,
+                _settings.BaseUrl + _settings.QueryResultVarY_X + planta,
+                planta,
+                line,
+                startDate,
+                endDate,
+                VariableYEnv);
+
+            var scatterDataY = new List<object>();
+            var datesForY = new List<string>();
+
+            if (dataResultY?.result != null && dataResultY.result.Any())
             {
-                //VariableYEnv = variableY;
-                switch (variableY)
+                var all = dataResultY.result;
+
+                // 📌 Umbrales usando TODOS los puntos originales de Y
+                ViewBag.MinThreshold = all.Min(r => r.minTolerance ?? r.resultValue ?? 0);
+                ViewBag.MaxThreshold = all.Max(r => r.maxTolerance ?? r.resultValue ?? 0);
+
+                // Ordenamos por fecha
+                var ordered = all
+                    .Where(r => r.resultValue != null)
+                    .OrderBy(r => r.executionDate)
+                    .ToList();
+
+                // 📉 Downsampling (si hay muchos puntos)
+                if (ordered.Count > MAX_POINTS_PER_SERIES)
                 {
-                    case "CB-":
-                        VariableYEnv = "A-L7-2";
-                        VariableYName = "Carbonatacion";
-                        break;
-                    case "BX-":
-                        VariableYEnv = "A-L7-1";
-                        VariableYName = "Brix";
-                        break;
-                    case "CN-":
-                        VariableYEnv = "A-L7-3";
-                        VariableYName = "Contenido Neto";
-                        break;
+                    var step = (int)Math.Ceiling(ordered.Count / (double)MAX_POINTS_PER_SERIES);
+                    ordered = ordered
+                        .Where((r, idx) => idx % step == 0)
+                        .ToList();
                 }
+
+                // ⚠️ Aquí ya NO usamos "??" con DateTime → asumimos que executionDate NO es nullable.
+                scatterDataY = ordered
+                    .Select(r => new
+                    {
+                        Time = r.executionDate.ToString("dd-MM-yy HH:mm"),
+                        Value = Convert.ToDouble(r.resultValue ?? 0)
+                    })
+                    .Cast<object>()
+                    .ToList();
+
+                datesForY = ordered
+                    .Select(r => r.executionDate.ToString("dd-MM-yy HH:mm"))
+                    .ToList();
             }
             else
             {
-                VariableYEnv = variableY;
+                ViewBag.MinThreshold = 0d;
+                ViewBag.MaxThreshold = 0d;
             }
 
-            var dataResultY = getDataQuality.getResultsByVarX(
-                token, _settings.BaseUrl + _settings.QueryResultVarY_X + planta, planta,
-                line, startDate, endDate, VariableYEnv);
-            await Task.WhenAll(dataResultY);
-
-            var scatterDataY = new List<object>();
-            if (dataResultY.Result.result != null)
-            {
-                scatterDataY = dataResultY.Result.result
-                    .Where(r => r.resultValue != null && r.executionDate != null)
-                    .OrderBy(r => r.executionDate)
-                    .Select(r => new { Time = r.executionDate.ToString("dd-MM-yy HH:mm"), Value = r.resultValue ?? 0 })
-                    .ToList<object>();
-                // 📌 Obtener los valores min y max de la variable Y
-                ViewBag.MinThreshold = dataResultY.Result.result.Min(r => r.minTolerance ?? r.resultValue ?? 0);
-                ViewBag.MaxThreshold = dataResultY.Result.result.Max(r => r.maxTolerance ?? r.resultValue ?? 0);
-                
-            }
-
+            // ========= 3) ViewBags hacia la vista =========
             ViewBag.ScatterDataY = scatterDataY;
             ViewBag.VariableY = VariableYEnv;
             ViewBag.VariableYName = VariableYName;
             ViewBag.VariablesXData = variablesXData;
-            ViewBag.VariableY = variableY;
-            ViewBag.Dates = scatterDataY.Select(d => ((dynamic)d).Time).ToList();
+            ViewBag.VariableXNames = variablesXNames;   // <<< nombres amigables de X
+            ViewBag.Dates = datesForY;
 
-            return View("DetailResult");  // 🔥 Redirigir a la nueva vista
+            return View("DetailResult");
         }
+
+
 
 
 
@@ -555,7 +591,104 @@ namespace dashboardQ40.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<JsonResult> ObtenerAllVarCertf(string sku, DateTime startDate, DateTime endDate, string line, string planta)
+        {
+            var token = HttpContext.Session.GetString("AuthToken");
+            if (string.IsNullOrEmpty(token))
+                return Json(new { value = Array.Empty<object>(), error = "Token no disponible" });
 
+            // 1) Llamada al WS que devuelve FILAS CRUDAS (resultValue, min/maxTolerance, executionDate, etc.)
+            //    ⚠️ Esta llamada usa getVarYRows (ver la clase en el punto 2).
+            var dataTask = getDataQuality.getVarYRows(
+                token,
+                _settings.BaseUrl + _settings.QueryVarAllCert + planta,   // tu endpoint/URL configurada para este query
+                planta,
+                sku,
+                startDate,
+                endDate,
+                line
+            );
+
+            await Task.WhenAll(dataTask);
+
+            // Materializamos a lista para poder usar .Count, .ToList(), etc.
+            var rows = (dataTask.Result?.result ?? Enumerable.Empty<YRawRow>()).ToList();
+            if (rows.Count == 0)
+                return Json(new { value = Array.Empty<object>() });
+
+            // 2) Construir el objeto que espera tu UI (cards + spark)
+            int totalDays = (int)(endDate.Date - startDate.Date).TotalDays + 1;
+
+            // ... arriba no cambies nada
+
+            var items = rows
+                .GroupBy(r => new {
+                    Op = (r.controlOperation ?? "").Trim().ToUpper(),
+                    Name = (r.controlOperationName ?? "").Trim()
+                })
+                .Select(g =>
+                {
+                    var ordered = g.OrderBy(r => r.executionDate).ToList();
+                    int tests = ordered.Count;
+
+                    // Último registro (para "last" y tolerancias)
+                    DateTime? lastTs = null; double? lastVal = null;
+                    double? lsl = null, usl = null;
+                    if (tests > 0)
+                    {
+                        var last = ordered[^1];
+                        lastTs = last.executionDate;
+                        lastVal = last.resultValue;
+                        lsl = last.minTolerance;
+                        usl = last.maxTolerance;
+                    }
+
+                    // Cobertura y OOS
+                    int coverageDays = ordered.Select(r => r.executionDate.Date).Distinct().Count();
+                    int oos = ordered.Count(r =>
+                        r.resultValue.HasValue &&
+                        r.minTolerance.HasValue &&
+                        r.maxTolerance.HasValue &&
+                        (r.resultValue.Value < r.minTolerance.Value ||
+                         r.resultValue.Value > r.maxTolerance.Value));
+
+                    // Media
+                    double? mean = null;
+                    var valsAll = ordered.Where(r => r.resultValue.HasValue).Select(r => r.resultValue!.Value).ToList();
+                    if (valsAll.Count > 0) mean = valsAll.Average();
+
+                    // 🔹 SPARK: ÚLTIMOS 10 CONTROLES (no por día)
+                    var last10Vals = ordered
+                        .Where(r => r.resultValue.HasValue)
+                        .OrderByDescending(r => r.executionDate)
+                        .Take(10)
+                        .Select(r => r.resultValue!.Value)
+                        .Reverse()             // para que se dibuje cronológicamente izquierda→derecha
+                        .ToList();
+
+                    return new
+                    {
+                        codigo = g.Key.Op,
+                        nombre = $"[{tests}] {g.Key.Name}",
+                        tests = tests,
+                        cov = $"{coverageDays}/{totalDays} días",
+                        last = lastTs.HasValue
+                                    ? $"{lastTs:dd-MM-yy HH:mm} ({(lastVal.HasValue ? lastVal.Value.ToString("0.##") : "—")})"
+                                    : "—",
+                        oos = oos,
+                        mean = mean,
+                        spark = last10Vals,   // 👈 ahora es una lista simple con los últimos 10
+                        lsl = lsl,          // 👈 límites (si existen)
+                        usl = usl
+                    };
+                })
+                .OrderByDescending(x => x.tests)
+                .ToList();
+
+            return Json(new { value = items });
+
+        }
 
 
         [HttpGet]
@@ -716,6 +849,168 @@ namespace dashboardQ40.Controllers
             return View("Resumen", rows);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CertificadoCalidad()
+        {
+            await CargarCombosAsync();
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GenerarCertificado(CertificadoRequestModel model)
+        {
+            string token = HttpContext.Session.GetString("AuthToken");
+            if (string.IsNullOrEmpty(token))
+                return BadRequest("Token no disponible.");
+
+            // Rango de 1 día (esto tú ya lo usabas así)
+            var start = model.Fecha.Date;
+            var end = start.AddDays(1);
+
+            var listaVariables = new List<CertificadoCaracteristicaDto>();
+
+            if (model.VariablesY != null && model.VariablesY.Count > 0)
+            {
+                foreach (var codigo in model.VariablesY)
+                {
+                    // OJO: aquí sólo usamos LO QUE YA EXISTE:
+                    // getDataQuality.getResultsByVarX  +  Helpers.BuildCertificadoRow
+
+                    var dataResult = await getDataQuality.getResultsByVarX(
+                        token,
+                        _settings.BaseUrl + _settings.QueryResultVarY_X + model.Planta,
+                        model.Planta,
+                        model.Line,
+                        start,
+                        end,
+                        codigo);
+
+                    var rows = dataResult?.result?.ToList() ?? new List<result_Resultados>();
+
+                    // Este helper es el que ya tenías para armar la fila del certificado
+                    var rowStat = Helpers.BuildCertificadoRow(codigo, rows);
+
+                    if (rowStat != null)
+                        listaVariables.Add(rowStat);
+                }
+            }
+
+            var vm = new CertificadoCalidadViewModel
+            {
+                CompanyName = "",
+                PlantName = model.PlantaSuministro ?? model.Planta,
+                Country = model.Pais,
+                City = "",
+                Address = "",
+                Comentario = model.PlantaSuministro,
+                FechaImpresion = DateTime.Now,
+                NombreParte = model.Sku,
+                Linea = model.LineaTexto ?? model.Line,
+                Turno = model.Turno,
+                CodigoProduccion = model.CodigoLote,
+                Lote = model.CodigoLote,
+                TamanoLoteCajas = Helpers.ParseTamanoLote(model.TamanoLoteTexto),
+                Analista = model.Analista,
+                AnalistasProceso = model.AnalistasProceso,
+                SupervisorCalidad = model.SupervisorCalidad,
+                JefeCalidad = model.JefeCalidad,
+                Sabor = model.Sabor,
+                Apariencia = model.Apariencia,
+                PlantaSuministro = model.PlantaSuministro,
+                TamanoLoteTexto = model.TamanoLoteTexto,
+                Caracteristicas = listaVariables
+            };
+
+            return View("CertificadoPreview", vm);
+        }
+
+
+
+        private CertificadoCaracteristicaDto? BuildCaracteristicaDesdeXR(
+    string planta,
+    DateTime fecha,
+    string line,
+    string codigoVarY)
+        {
+            var f1 = fecha.Date;
+            var f2 = f1.AddDays(1);
+
+            // 1) Traer lecturas base con la misma lógica que XR
+            var baseDt = XRchartsService.GetXRBaseRows(
+                planta,
+                f1,
+                f2,
+                ConnStr,
+                line,
+                reference: null,
+                controlOperation: codigoVarY
+            );
+
+            if (baseDt == null || baseDt.Rows.Count == 0)
+                return null;
+
+            // 2) Calcular capability (Cp, Cpk, etc.) igual que XR
+            var capDt = XRchartsService.BuildCapability(baseDt);
+            if (capDt == null || capDt.Rows.Count == 0)
+                return null;
+
+            var capRow = capDt.Rows[0];   // viene una por operación
+
+            // --- Campos de capability (los mismos que usas en renderXRCapTable) ---
+            var nombre = capRow.Field<string>("controlOperationName")
+                         ?? capRow.Field<string>("controlOperation")
+                         ?? codigoVarY;
+
+            int? nPoints = capRow.Field<int?>("nPoints");
+            decimal? meanAll = capRow.Field<decimal?>("meanAll");
+            decimal? sigmaWithin = capRow.Field<decimal?>("sigmaWithin");
+            decimal? sigmaOverall = capRow.Field<decimal?>("sigmaOverall");
+            decimal? lsl = capRow.Field<decimal?>("LSL");
+            decimal? usl = capRow.Field<decimal?>("USL");
+            decimal? cpk = capRow.Field<decimal?>("Cpk");
+            // si luego quieres Cp/Pp/Ppk también los puedes tomar de aquí
+
+            // --- Cálculo de % bajo LEI y % sobre LES a partir de baseDt ---
+            var valores = baseDt
+                .AsEnumerable()
+                .Select(r => new
+                {
+                    Value = r.Field<decimal?>("resultValue"),
+                    LSL = r.Field<decimal?>("LSL"),
+                    USL = r.Field<decimal?>("USL")
+                })
+                .Where(x => x.Value.HasValue)
+                .ToList();
+
+            int n = valores.Count;
+            decimal? pctBajo = null;
+            decimal? pctSobre = null;
+
+            if (n > 0)
+            {
+                int bajo = valores.Count(v => v.LSL.HasValue && v.Value.Value < v.LSL.Value);
+                int sobre = valores.Count(v => v.USL.HasValue && v.Value.Value > v.USL.Value);
+
+                pctBajo = (decimal)bajo * 100m / n;
+                pctSobre = (decimal)sobre * 100m / n;
+            }
+
+            // OJO: aquí asumo propiedades de tu DTO,
+            // sólo mapea a los nombres reales de CertificadoCaracteristicaDto
+            return new CertificadoCaracteristicaDto
+            {
+                Nombre = nombre,
+                Muestras = nPoints,
+                LEI = lsl,
+                LES = usl,
+                Media = meanAll,
+                // Usa la que prefieras: Within o Overall
+                Sigma = sigmaWithin ?? sigmaOverall,
+                PorcBajoLEI = pctBajo,
+                PorcSobreLES = pctSobre,
+                Cpk = cpk
+            };
+        }
 
         public IActionResult ConfigDashboard()
         {
