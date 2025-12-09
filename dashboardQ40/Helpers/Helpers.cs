@@ -2,7 +2,7 @@
 using System.Text.Json;
 using dashboardQ40.Models;
 using System.Globalization;
-namespace dashboardQ40.Services
+namespace dashboardQ40.Helpers
 {
     public class Helpers
     {
@@ -79,13 +79,13 @@ namespace dashboardQ40.Services
                 {
                     int countLow = rows.Count(r =>
                         r.resultValue.HasValue && r.resultValue.Value < lsl.Value);
-                    pctLow = (decimal)countLow * 100m / n;
+                    pctLow = countLow * 100m / n;
                 }
                 if (usl.HasValue)
                 {
                     int countHigh = rows.Count(r =>
                         r.resultValue.HasValue && r.resultValue.Value > usl.Value);
-                    pctHigh = (decimal)countHigh * 100m / n;
+                    pctHigh = countHigh * 100m / n;
                 }
             }
 

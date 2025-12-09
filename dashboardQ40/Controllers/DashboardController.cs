@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Globalization;
 using static dashboardQ40.Models.Models;
 using System.Data;
+using dashboardQ40.Helpers;
 
 namespace dashboardQ40.Controllers
 {
@@ -986,7 +987,7 @@ namespace dashboardQ40.Controllers
 
                         var rows = dataResult?.result?.ToList() ?? new List<result_Resultados>();
 
-                        var rowStat = Helpers.BuildCertificadoRow(codigo, rows);
+                        var rowStat = dashboardQ40.Helpers.Helpers.BuildCertificadoRow(codigo, rows);
 
                         if (rowStat != null)
                             listaVariables.Add(rowStat);
@@ -1007,7 +1008,7 @@ namespace dashboardQ40.Controllers
                     Turno = model.Turno,
                     CodigoProduccion = model.CodigoLote,
                     Lote = model.CodigoLote,
-                    TamanoLoteCajas = Helpers.ParseTamanoLote(model.TamanoLoteTexto),
+                    TamanoLoteCajas = dashboardQ40.Helpers.Helpers.ParseTamanoLote(model.TamanoLoteTexto),
                     Analista = model.Analista,
                     AnalistasProceso = model.AnalistasProceso,
                     SupervisorCalidad = model.SupervisorCalidad,

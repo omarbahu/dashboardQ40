@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace dashboardQ40.Services
+namespace dashboardQ40.Helpers
 {
     public class common
     {

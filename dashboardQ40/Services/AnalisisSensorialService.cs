@@ -1,8 +1,9 @@
 ﻿using static dashboardQ40.Models.AnalisisSensorialesModel;
 using System.Text.RegularExpressions;
 using static dashboardQ40.Models.Models;
-using static dashboardQ40.Services.common;
+using static dashboardQ40.Helpers.common;
 using System.Text.Json;
+using dashboardQ40.Helpers;
 
 namespace dashboardQ40.Services
 {

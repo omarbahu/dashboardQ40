@@ -1,8 +1,9 @@
 ﻿// Services/IAutocontrolRepository.cs
 using System.Threading;
 using System.Threading.Tasks;
+using dashboardQ40.Services;
 
-namespace dashboardQ40.Services
+namespace dashboardQ40.Repositories
 {
     public interface IAutocontrolRepository
     {
@@ -12,6 +13,6 @@ namespace dashboardQ40.Services
             DateTime start,
             DateTime end,
             CancellationToken ct = default);
-      
+
     }
 }

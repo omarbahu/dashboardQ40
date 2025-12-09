@@ -1,6 +1,7 @@
 ﻿using dashboardQ40.DAL;
 using dashboardQ40.Middlewares;
 using dashboardQ40.Models;
+using dashboardQ40.Repositories;
 using dashboardQ40.Services;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Localization;

@@ -4,11 +4,12 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using dashboardQ40.Helpers;
 using dashboardQ40.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace dashboardQ40.Services
+namespace dashboardQ40.Repositories
 {
     public class WSCaptorControlProcedureRepository
     {

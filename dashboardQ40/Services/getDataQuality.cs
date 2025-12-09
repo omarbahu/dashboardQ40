@@ -3,9 +3,10 @@ using Microsoft.Extensions.Options;
 using System.Text.Json;
 using System.Text;
 using Serilog;
-using static dashboardQ40.Services.common;
+using static dashboardQ40.Helpers.common;
 using static dashboardQ40.Models.Models;
 using System.Net.Http.Headers;
+using dashboardQ40.Helpers;
 
 namespace dashboardQ40.Services
 {
