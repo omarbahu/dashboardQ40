@@ -360,4 +360,19 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsd
+FodyWeavers.xsd"appsettings.json" 
+"appsettings.Production.json" 
+"appsettings.*.json" 
+# Configuración con credenciales
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+appsettings.*.json
+!appsettings.TEMPLATE.json
+
+# Logs con información sensible
+Logs/
+*.log
+/dashboardQ40/appsettings.json
+/dashboardQ40/appsettings.Production.json
+/dashboardQ40/appsettings.Development.zip
