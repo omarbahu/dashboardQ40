@@ -26,140 +26,161 @@ namespace dashboardQ40.Controllers
           
 
         }
+    
         public async Task<IActionResult> Index()
         {
-            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
-            if (token != null)
+            try
             {
-                HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
-            }
-
-            var ListCompanies = new List<result_companies>();
-            var companies = new List<CompanyOption>();
-
-            if (token != null)
-            {
-
-
-                Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
-                        token.access_token.ToString(),
-                        _settings.BaseUrl + _settings.QueryCompany,
-                        _settings.Company,
-                        _settings.trazalog);
-                await Task.WhenAll(dataResultComp);
-
-                if (dataResultComp.Result.result != null)
+                var token = await _authService.ObtenerTokenCaptor(_settings.Company);
+                if (token != null)
                 {
-                    foreach (var item in dataResultComp.Result.result)
-                    {
-                        CultureInfo ci;
-                        RegionInfo ri;
-                        try
-                        {
-                            ci = new CultureInfo(item.culture);   // p.ej. "es-MX"
-                            ri = new RegionInfo(ci.Name);         // p.ej. "MX"
-                        }
-                        catch
-                        {
-                            ci = CultureInfo.InvariantCulture;
-                            ri = new RegionInfo("US");            // fallback
-                        }
-
-                        companies.Add(new CompanyOption
-                        {
-                            Company = item.company,
-                            CompanyName = item.companyName,
-                            Culture = ci.Name,
-                            CountryCode = ri.TwoLetterISORegionName
-                        });
-                    }
-
+                    HttpContext.Session.SetString("AuthToken", token.access_token);
                 }
 
+                var ListCompanies = new List<result_companies>();
+                var companies = new List<CompanyOption>();
 
-                var countries = companies
-                       .GroupBy(c => c.CountryCode)
-                       .Select(g =>
-                       {
-                           var r = new RegionInfo(g.Key); // admite "MX","US","ES"
-                           return new { Code = g.Key, Name = r.NativeName }; // "México", "Estados Unidos"
-                       })
-                       .OrderBy(x => x.Name)
-                       .ToList();
+                if (token != null)
+                {
+                    Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
+                            token.access_token.ToString(),
+                            _settings.BaseUrl + _settings.QueryCompany,
+                            _settings.Company,
+                            _settings.trazalog);
+                    await Task.WhenAll(dataResultComp);
 
-                ViewBag.Companies = companies;                 // lista completa
-                ViewBag.Countries = countries;                 // países únicos
-                ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
+                    if (dataResultComp.Result.result != null)
+                    {
+                        foreach (var item in dataResultComp.Result.result)
+                        {
+                            CultureInfo ci;
+                            RegionInfo ri;
+                            try
+                            {
+                                ci = new CultureInfo(item.culture);
+                                ri = new RegionInfo(ci.Name);
+                            }
+                            catch
+                            {
+                                ci = CultureInfo.InvariantCulture;
+                                ri = new RegionInfo("US");
+                            }
 
+                            companies.Add(new CompanyOption
+                            {
+                                Company = item.company,
+                                CompanyName = item.companyName,
+                                Culture = ci.Name,
+                                CountryCode = ri.TwoLetterISORegionName
+                            });
+                        }
+                    }
 
-                ViewBag.produccion = _settings.Produccion;
+                    var countries = companies
+                           .GroupBy(c => c.CountryCode)
+                           .Select(g =>
+                           {
+                               var r = new RegionInfo(g.Key);
+                               return new { Code = g.Key, Name = r.NativeName };
+                           })
+                           .OrderBy(x => x.Name)
+                           .ToList();
 
+                    ViewBag.Companies = companies;
+                    ViewBag.Countries = countries;
+                    ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
+                    ViewBag.produccion = _settings.Produccion;
+                }
+
+                return View();
             }
-
-            return View();
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed in AnalisisSensorial Index");
+                ViewBag.ErrorMessage = "Unable to load company data. Please try again.";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in AnalisisSensorial Index");
+                ViewBag.ErrorMessage = "An unexpected error occurred.";
+                return View();
+            }
         }
 
+        // ========================================
 
         [HttpPost]
         public async Task<IActionResult> GetReporteAnaSens([FromBody] AnalisisSensorialRequest req)
         {
-            if (req == null || string.IsNullOrWhiteSpace(req.startDate) ||
-                string.IsNullOrWhiteSpace(req.endDate) ||
-                string.IsNullOrWhiteSpace(req.company))
-            {
-                return BadRequest("Faltan parámetros.");
-            }
-
-            if (!DateTime.TryParse(req.startDate, out var from))
-                return BadRequest("Fecha inicial inválida.");
-
-            if (!DateTime.TryParse(req.endDate, out var to))
-                return BadRequest("Fecha final inválida.");
-
-            // Por si quieres asegurar que to > from
-            if (to < from)
-            {
-                var tmp = from;
-                from = to;
-                to = tmp;
-            }
-
-            var company = req.company;
-
             try
             {
-                // Token (usamos el de sesión si existe, si no pedimos uno nuevo)
+                // Validación de entrada
+                if (req == null || string.IsNullOrWhiteSpace(req.startDate) ||
+                    string.IsNullOrWhiteSpace(req.endDate) ||
+                    string.IsNullOrWhiteSpace(req.company))
+                {
+                    _logger.LogWarning("Missing parameters in GetReporteAnaSens");
+                    return BadRequest("Missing parameters.");
+                }
+
+                if (!DateTime.TryParse(req.startDate, out var from))
+                {
+                    _logger.LogWarning("Invalid start date: {StartDate}", req.startDate);
+                    return BadRequest("Invalid start date.");
+                }
+
+                if (!DateTime.TryParse(req.endDate, out var to))
+                {
+                    _logger.LogWarning("Invalid end date: {EndDate}", req.endDate);
+                    return BadRequest("Invalid end date.");
+                }
+
+                // Swap si están invertidas
+                if (to < from)
+                {
+                    var tmp = from;
+                    from = to;
+                    to = tmp;
+                }
+
+                var company = req.company;
+
+                // Token
                 var tokenStr = HttpContext.Session.GetString("AuthToken");
                 if (string.IsNullOrEmpty(tokenStr))
                 {
                     var tokenObj = await _authService.ObtenerTokenCaptor(company);
                     if (tokenObj == null)
-                        return BadRequest("No se pudo obtener token de Captor.");
+                    {
+                        _logger.LogWarning("Failed to obtain token for company: {Company}", company);
+                        return BadRequest("Could not obtain authentication token.");
+                    }
                     tokenStr = tokenObj.access_token;
                     HttpContext.Session.SetString("AuthToken", tokenStr);
                 }
 
                 string trazalog = _settings.trazalog;
 
-                
+                // 1) Query de lotes
                 var loteResult = await AnalisisSensorialService.getLoteAnaSens(
                     tokenStr,
                     _settings.BaseUrl + _settings.QueryanasensDEL + _settings.Company,
                     company,
-                    trazalog,                    
+                    trazalog,
                     from,
                     to);
 
                 var loteRows = loteResult?.result ?? new List<BatchExtraRowDto>();
                 if (!loteRows.Any())
                 {
+                    _logger.LogInformation("No batches found for date range: {From} to {To}", from, to);
                     return Json(new { success = true, rows = new List<ReporteSensorialFila>() });
                 }
 
-                // Tomamos el Batch de la primera fila (asumimos que el query ya viene filtrado a un lote)
                 int batch = loteRows.First().Batch;
 
-                // 2) Segundo query: ACs (CProcResultWithValuesStatus) por batch
+                // 2) Query de ACs
                 var acsResult = await AnalisisSensorialService.getACsAnaSens(
                     tokenStr,
                     _settings.BaseUrl + _settings.QueryanasensACs + _settings.Company,
@@ -169,53 +190,68 @@ namespace dashboardQ40.Controllers
 
                 var acRows = acsResult?.result ?? new List<AutoControlRowDto>();
 
-                // 3) Mezclamos ambos para armar el reporte por fila
+                // 3) Generar reporte
                 var filas = AnalisisSensorialService.BuildReporteSensorial(loteRows, acRows);
 
-                var retorno = Json(new
+                _logger.LogInformation("Sensorial report generated successfully for batch: {Batch}, rows: {Count}", batch, filas.Count);
+
+                return Json(new
                 {
                     success = true,
                     batch = batch,
                     total = filas.Count,
                     rows = filas
                 });
-                return retorno;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed in GetReporteAnaSens");
+                return StatusCode(503, "External service unavailable.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetReporteAnaSens");
-                return StatusCode(500, "Error interno al generar el reporte.");
+                _logger.LogError(ex, "Unexpected error in GetReporteAnaSens");
+                return StatusCode(500, "Internal error while generating report.");
             }
         }
+
+        // ========================================
 
         [HttpPost]
         public async Task<IActionResult> GetReporteAnaSensByProduct([FromBody] AnalisisSensorialRequest req)
         {
-            if (req == null ||
-                string.IsNullOrWhiteSpace(req.company) ||
-                string.IsNullOrWhiteSpace(req.productCode))
-            {
-                return BadRequest("Faltan parámetros (company / productCode).");
-            }
-
-            var company = req.company;
-            var productCode = req.productCode;
-            var productHour = req.productHour;
             try
             {
-                // Token (igual que en GetReporteAnaSens)
+                // Validación
+                if (req == null ||
+                    string.IsNullOrWhiteSpace(req.company) ||
+                    string.IsNullOrWhiteSpace(req.productCode))
+                {
+                    _logger.LogWarning("Missing parameters in GetReporteAnaSensByProduct");
+                    return BadRequest("Missing parameters (company / productCode).");
+                }
+
+                var company = req.company;
+                var productCode = req.productCode;
+                var productHour = req.productHour;
+
+                // Token
                 var tokenStr = HttpContext.Session.GetString("AuthToken");
                 if (string.IsNullOrEmpty(tokenStr))
                 {
                     var tokenObj = await _authService.ObtenerTokenCaptor(company);
                     if (tokenObj == null)
-                        return BadRequest("No se pudo obtener token de Captor.");
+                    {
+                        _logger.LogWarning("Failed to obtain token for company: {Company}", company);
+                        return BadRequest("Could not obtain authentication token.");
+                    }
                     tokenStr = tokenObj.access_token;
                     HttpContext.Session.SetString("AuthToken", tokenStr);
                 }
 
                 string trazalog = _settings.trazalog;
 
+                // 1) Query de lotes por código de producto
                 var loteResult = await AnalisisSensorialService.getLoteAnaSensbyCode(
                     tokenStr,
                     _settings.BaseUrl + _settings.QueryanasensDELbycode + _settings.Company,
@@ -227,22 +263,22 @@ namespace dashboardQ40.Controllers
                 var loteRows = loteResult?.result ?? new List<BatchExtraRowDto>();
                 if (!loteRows.Any())
                 {
+                    _logger.LogInformation("No batches found for productCode: {ProductCode}", productCode);
                     return Json(new { success = true, rows = new List<ReporteSensorialFila>() });
                 }
 
-                // 🔹 Agrupamos por batch porque puede haber más de un lote que cumpla código+hora
+                // Agrupamos por batch (puede haber múltiples lotes)
                 var gruposPorBatch = loteRows
-                .GroupBy(r => r.Batch)
-                // Ordenamos por la fecha de inicio más reciente del grupo
-                .OrderByDescending(g => g.Max(r => r.StartDate))
-                .ToList();
+                    .GroupBy(r => r.Batch)
+                    .OrderByDescending(g => g.Max(r => r.StartDate))
+                    .ToList();
 
-                // 🔹 Nos quedamos con el lote "más reciente"
+                // Lote más reciente
                 var loteSeleccionado = gruposPorBatch.First();
                 int batch = loteSeleccionado.Key;
                 loteRows = loteSeleccionado.ToList();
 
-                // ACs de TODO ese lote (como antes)
+                // 2) ACs del lote
                 var acsResult = await AnalisisSensorialService.getACsAnaSens(
                     tokenStr,
                     _settings.BaseUrl + _settings.QueryanasensACs + _settings.Company,
@@ -252,11 +288,10 @@ namespace dashboardQ40.Controllers
 
                 var acRows = acsResult?.result ?? new List<AutoControlRowDto>();
 
-                // 1) Números de muestra que tenemos en EXTRAS (ya vienen filtrados por código/hora)
+                // Filtrar ACs por números de muestra válidos
                 var extrasPorNumero = AnalisisSensorialService.MapLoteExtras(loteRows);
                 var numerosValidos = extrasPorNumero.Keys.ToHashSet();
 
-                // 2) Filtrar ACs SOLO a esos números
                 var acRowsFiltrados = acRows
                     .Where(a =>
                     {
@@ -265,8 +300,11 @@ namespace dashboardQ40.Controllers
                     })
                     .ToList();
 
-                // 3) Mezclar
+                // 3) Generar reporte
                 var filas = AnalisisSensorialService.BuildReporteSensorial(loteRows, acRowsFiltrados);
+
+                _logger.LogInformation("Sensorial report by product generated successfully. Batch: {Batch}, ProductCode: {ProductCode}, Rows: {Count}",
+                    batch, productCode, filas.Count);
 
                 return Json(new
                 {
@@ -275,14 +313,16 @@ namespace dashboardQ40.Controllers
                     total = filas.Count,
                     rows = filas
                 });
-
-
-
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed in GetReporteAnaSensByProduct for productCode: {ProductCode}", req?.productCode);
+                return StatusCode(503, "External service unavailable.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetReporteAnaSensByProduct");
-                return StatusCode(500, "Error interno al generar el reporte por código de producto.");
+                _logger.LogError(ex, "Unexpected error in GetReporteAnaSensByProduct for productCode: {ProductCode}", req?.productCode);
+                return StatusCode(500, "Internal error while generating report by product code.");
             }
         }
 

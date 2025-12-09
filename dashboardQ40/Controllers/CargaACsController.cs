@@ -265,7 +265,7 @@ namespace dashboardQ40.Controllers
                 //       (si quieres, puedes poner contraseña: ws.Protect("ACs2025"))
                 // --------------------------------------------------------------------
                 ws.Columns().AdjustToContents();
-
+                /*
                 // Proteger la hoja, pero:
                 // - Permitir seleccionar celdas desbloqueadas (para editarlas)
                 // - Permitir cambiar ancho de columnas
@@ -274,7 +274,7 @@ namespace dashboardQ40.Controllers
                     XLSheetProtectionElements.SelectUnlockedCells |
                     XLSheetProtectionElements.SelectLockedCells |   // opcional, si quieres que también puedan seleccionarlas
                     XLSheetProtectionElements.FormatColumns;
-
+                */
 
                 using var ms = new MemoryStream();
                 wb.SaveAs(ms);
@@ -339,7 +339,7 @@ namespace dashboardQ40.Controllers
                 filas = AutocontrolExcelReader.LeerDesdeExcel(stream);
             }
 
-            // 2) Construir payloads: 1 JSON por IdControlProcedureResult
+            // 2) Construir payloads: 1 JSON por CPR+Versión+Nivel
             var payloads = AutocontrolPayloadBuilder.BuildOnePerControlProcedureResult(filas);
 
             // 3) Config de SOAP
@@ -354,12 +354,18 @@ namespace dashboardQ40.Controllers
             int enviadosError = 0;
             var errores = new List<string>();
 
-            // Mapa: CPR → (status, mensaje)
+            // Mapa: (CPR+Versión+Nivel) → (status, mensaje)
             var statusPorCpr = new Dictionary<string, (string Status, string Mensaje)>();
 
-            // 4) Enviar un payload por CPR
+            // 4) Enviar un payload por CPR+Versión+Nivel
             foreach (var payload in payloads)
             {
+                var key = BuildCprKey(
+                    payload.IdControlProcedureResult,
+                    payload.ControlProcedureVersion,
+                    payload.ControlProcedureLevel.ToString(CultureInfo.InvariantCulture)
+                );
+
                 try
                 {
                     string json = JsonConvert.SerializeObject(payload);
@@ -374,22 +380,27 @@ namespace dashboardQ40.Controllers
                     );
 
                     enviadosOk++;
-                    statusPorCpr[payload.IdControlProcedureResult] = ("OK", "");
+                    statusPorCpr[key] = ("OK", "");
                 }
                 catch (Exception ex)
                 {
                     enviadosError++;
                     var msg = ex.Message;
-                    errores.Add($"[SOAP] CPR {payload.IdControlProcedureResult}: {msg}");
-                    statusPorCpr[payload.IdControlProcedureResult] = ("ERROR", msg);
+                    errores.Add($"[SOAP] CPR {key}: {msg}");
+                    statusPorCpr[key] = ("ERROR", msg);
                 }
             }
 
             // 5) Armar detalle por FILA de Excel (las columnas amarillas + estado)
             var filasDetalle = filas.Select(f =>
             {
-                statusPorCpr.TryGetValue(f.IdControlProcedureResult, out var info);
+                var key = BuildCprKey(
+                    f.IdControlProcedureResult,
+                    f.ControlProcedureVersion,
+                    f.ControlProcedureLevel
+                );
 
+                statusPorCpr.TryGetValue(key, out var info);
                 if (string.IsNullOrEmpty(info.Status))
                     info = ("NO_ENVIADO", "");
 
@@ -401,6 +412,7 @@ namespace dashboardQ40.Controllers
                     controlProcedure = f.ControlProcedure,
                     controlProcedureNote = f.ControlProcedureNote,
                     controlProcedureVersion = f.ControlProcedureVersion,
+                    controlProcedureLevel = f.ControlProcedureLevel,
                     launchingDate = f.LaunchingDate,
                     manufacturingOrder = f.ManufacturingOrder,
                     resultAttribute = f.ResultAttribute,
@@ -418,12 +430,13 @@ namespace dashboardQ40.Controllers
                 totalPayloads = payloads.Count,
                 enviadosOk,
                 enviadosError,
-                filasDetalle   // 👈 ESTA ES LA CLAVE
+                filasDetalle
             });
         }
 
 
-
+        private static string BuildCprKey(string idCpr, string? version, string? level)
+    => $"{idCpr}||{version}||{level}";
 
     }
 }

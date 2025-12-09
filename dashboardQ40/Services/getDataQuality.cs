@@ -28,7 +28,9 @@ namespace dashboardQ40.Services
         {
             HttpClient client = Method_Headers(token, url);
 
-            var jsonBody = "{ 'COMP': '" + company + "' }";
+            //var jsonBody = "{ 'COMP': '" + company + "' }";
+            var requestBody = new { COMP = company };
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_Lineas>(
                 client,
@@ -64,7 +66,16 @@ namespace dashboardQ40.Services
 
             HttpClient client = Method_Headers(token, url);
 
-            var jsonBody = "{ 'COMP': '" + company + "','WP': '" + lineaId + "', 'STARTD': '" + fe1 + "', 'ENDD': '" + fe2 + "' }";
+            // ✅ SEGURO: Todo en un objeto
+            var requestBody = new
+            {
+                COMP = company,
+                WP = lineaId,
+                STARTD = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss"),
+                ENDD = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss")
+            };
+            var jsonBody = JsonSerializer.Serialize(requestBody);
+            
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_Productos>(
                 client,
@@ -79,7 +90,8 @@ namespace dashboardQ40.Services
 
             HttpClient client = Method_Headers(token, url);
 
-            var jsonBody = "{ 'COMP': '" + company + "'}";
+            var requestBody = new { COMP = company };
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_Families>(
                 client,
@@ -94,9 +106,20 @@ namespace dashboardQ40.Services
         public static async Task<result_Q_VarY> getVarYBysku(string token, string url, string company, string sku, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
         {
             HttpClient client = Method_Headers(token, url);
-            var fe1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss");
+/*            var fe1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss");
             var fe2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss");
             var jsonBody = "{ 'COMP': '" + company + "','SKU': '" + sku + "','F1': '" + fe1 + "', 'F2': '" + fe2 + "','WP': '" + lineaId + "'}";
+*/
+            var requestBody = new
+            {
+                COMP = company,
+                SKU = sku,
+
+                F1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss"),
+                F2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss"),
+                WP = lineaId
+            };
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_VarY>(
                 client,
@@ -109,10 +132,25 @@ namespace dashboardQ40.Services
         public static async Task<result_Q_VarY> getVarXByvarY(string token, string url, string company, string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId)
         {
             HttpClient client = Method_Headers(token, url);
+            /*
             var fe1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss");
             var fe2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss");
 
             var jsonBody = "{ 'COMP': '" + company + "','SKU': '" + sku + "','VARY': '" + varY.Substring(0, 3) + "%','F1': '" + fe1 + "', 'F2': '" + fe2 + "','WP': '" + lineaId + "'}";
+            */
+            // ✅ SEGURO: Validación + serialización
+            var prefix = varY?.Length >= 3 ? varY.Substring(0, 3) + "%" : varY ?? "";
+
+            var requestBody = new
+            {
+                COMP = company,
+                SKU = sku,
+                VARY = prefix,
+                F1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss"),
+                F2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss"),
+                WP = lineaId
+            };
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_VarY>(
                 client,
@@ -130,7 +168,17 @@ namespace dashboardQ40.Services
             var fe1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss");
             var fe2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var jsonBody = "{ 'COMP': '" + company + "','WP': '" + lineaId + "','COP': '" + variable + "','F1': '" + fe1 + "', 'F2': '" + fe2 + "' }";
+            //var jsonBody = "{ 'COMP': '" + company + "','WP': '" + lineaId + "','COP': '" + variable + "','F1': '" + fe1 + "', 'F2': '" + fe2 + "' }";
+
+            var requestBody = new
+            {
+                COMP = company,
+                COP = variable,
+                F1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss"),
+                F2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss"),
+                WP = lineaId
+            };
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_Resultados>(
                 client,
@@ -225,13 +273,23 @@ namespace dashboardQ40.Services
 
             var fe1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss");
             var fe2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss");
-
+            /*
             var jsonBody =
                 "{ 'COMP':'" + company + "'," +
                 "  'SKU':'" + sku + "'," +
                 "  'F1':'" + fe1 + "'," +
                 "  'F2':'" + fe2 + "'," +
                 "  'WP':'" + lineaId + "' }";
+            */
+            var requestBody = new
+            {
+                COMP = company,
+                SKU = sku,
+                F1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss"),
+                F2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss"),
+                WP = lineaId
+            };
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             // ❗ Usa aquí el nombre de la acción que tengas configurada para tu NUEVO query
             // que devuelve las filas crudas (resultValue, min/maxTolerance, executionDate, etc.)
@@ -251,14 +309,28 @@ namespace dashboardQ40.Services
             var client = Method_Headers(token, url);
             var fe1 = f1.ToString("yyyy-MM-dd HH:mm:ss");
             var fe2 = f2.ToString("yyyy-MM-dd HH:mm:ss");
-            var prefix = (varY?.Substring(0, 3) ?? "") + "%";
-
+            //var prefix = (varY?.Substring(0, 3) ?? "") + "%";
+            /*
             var jsonBody = "{ 'COMP':'" + company + "'," +
                            "  'SKU':'" + sku + "'," +
                            "  'F1':'" + fe1 + "'," +
                            "  'F2':'" + fe2 + "'," +
                            "  'WP':'" + line + "'," +
                            "  'VARY':'" + prefix + "' }";
+            */
+            var prefix = varY?.Length >= 3 ? varY.Substring(0, 3) + "%" : varY ?? "";
+
+            var requestBody = new
+            {
+                COMP = company,
+                SKU = sku,
+                VARY = prefix,
+                F1 = f1.ToString("yyyy-MM-dd HH:mm:ss"),
+                F2 = f2.ToString("yyyy-MM-dd HH:mm:ss"),
+                WP = line
+            };
+
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             // Cambia "getVarXRows" por el nombre real de tu procedimiento/endpoint
             return await WebServiceHelper.SafePostAndDeserialize<ResultEnvelope<List<YRawRow>>>(

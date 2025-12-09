@@ -5,6 +5,8 @@ using System.Text;
 using static dashboardQ40.Services.common; // Method_Headers, WebServiceHelper
 using dashboardQ40.Models;
 using static dashboardQ40.Models.Models;
+using DocumentFormat.OpenXml.Vml;
+using System.Text.Json;
 
 namespace dashboardQ40.Services
 {
@@ -33,15 +35,21 @@ namespace dashboardQ40.Services
             // Tu patrón: base + sufijo por compañía (igual que QueryLineas, QueryVarY, etc.)
             var client = Method_Headers(token, _settings.BaseUrl + _settings.QueryLimits + company);
 
-            var fe1 = start.ToString("yyyy-MM-dd HH:mm:ss");
-            var fe2 = end.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var body = "{ 'COMP':'" + company + "', 'F1':'" + fe1 + "', 'F2':'" + fe2 + "' }";
+            var requestBody = new
+            {
+                COMP = company,                
+                F1 = start.ToString("yyyy-MM-dd HH:mm:ss"),
+                F2 = end.ToString("yyyy-MM-dd HH:mm:ss")
+                
+            };
+
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             var env = await WebServiceHelper.SafePostAndDeserialize<result_QResNormLi>(
               client,
               client.BaseAddress!.ToString(),
-              body,
+              jsonBody,
               "QResNormLi",         // ← la MISMA operación que en Postman
               "ControlLimits.QResNormLi"   // (opcional) trazalog
           );

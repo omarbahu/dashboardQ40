@@ -50,231 +50,279 @@ namespace dashboardQ40.Controllers
         [HttpGet("")]
         public async Task<IActionResult> IndexAsync()
         {
-
-            var token = await _authService.ObtenerTokenCaptor(_settings.Company);
-            if (token != null)
+            try
             {
-                HttpContext.Session.SetString("AuthToken", token.access_token); // Guardar en sesión
-            }
-
-            
-            var ListCompanies = new List<result_companies>();            
-            var companies = new List<CompanyOption>();
-
-            if (token != null)
-            {
-
-                Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
-                        token.access_token.ToString(),
-                        _settings.BaseUrl + _settings.QueryCompany,
-                        _settings.Company,
-                        _settings.trazalog);
-                await Task.WhenAll(dataResultComp);
-
-                if (dataResultComp.Result.result != null)
+                var token = await _authService.ObtenerTokenCaptor(_settings.Company);
+                if (token != null)
                 {
-                    foreach (var item in dataResultComp.Result.result)
+                    HttpContext.Session.SetString("AuthToken", token.access_token);
+                }
+
+                var ListCompanies = new List<result_companies>();
+                var companies = new List<CompanyOption>();
+
+                if (token != null)
+                {
+                    Task<result_Q_Companies> dataResultComp = getDataQuality.getCompanies(
+                            token.access_token.ToString(),
+                            _settings.BaseUrl + _settings.QueryCompany,
+                            _settings.Company,
+                            _settings.trazalog);
+                    await Task.WhenAll(dataResultComp);
+
+                    if (dataResultComp.Result.result != null)
                     {
-                        CultureInfo ci;
-                        RegionInfo ri;
-                        try
+                        foreach (var item in dataResultComp.Result.result)
                         {
-                            ci = new CultureInfo(item.culture);   // p.ej. "es-MX"
-                            ri = new RegionInfo(ci.Name);         // p.ej. "MX"
-                        }
-                        catch
-                        {
-                            ci = CultureInfo.InvariantCulture;
-                            ri = new RegionInfo("US");            // fallback
-                        }
+                            CultureInfo ci;
+                            RegionInfo ri;
+                            try
+                            {
+                                ci = new CultureInfo(item.culture);
+                                ri = new RegionInfo(ci.Name);
+                            }
+                            catch
+                            {
+                                ci = CultureInfo.InvariantCulture;
+                                ri = new RegionInfo("US");
+                            }
 
-                        companies.Add(new CompanyOption
-                        {
-                            Company = item.company,
-                            CompanyName = item.companyName,
-                            Culture = ci.Name,
-                            CountryCode = ri.TwoLetterISORegionName
-                        });
+                            companies.Add(new CompanyOption
+                            {
+                                Company = item.company,
+                                CompanyName = item.companyName,
+                                Culture = ci.Name,
+                                CountryCode = ri.TwoLetterISORegionName
+                            });
+                        }
                     }
+                }
 
-                }              
+                var countries = companies
+                       .GroupBy(c => c.CountryCode)
+                       .Select(g =>
+                       {
+                           var r = new RegionInfo(g.Key);
+                           return new { Code = g.Key, Name = r.NativeName };
+                       })
+                       .OrderBy(x => x.Name)
+                       .ToList();
 
+                ViewBag.Companies = companies;
+                ViewBag.Countries = countries;
+                ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
+                ViewBag.produccion = _settings.Produccion;
 
+                return View();
             }
-
-            var countries = companies
-                   .GroupBy(c => c.CountryCode)
-                   .Select(g =>
-                   {
-                       var r = new RegionInfo(g.Key); // admite "MX","US","ES"
-                       return new { Code = g.Key, Name = r.NativeName }; // "México", "Estados Unidos"
-                   })
-                   .OrderBy(x => x.Name)
-                   .ToList();
-
-            // Simulando datos para los selectores
-            
-            
-
-            ViewBag.Companies = companies;                 // lista completa
-            ViewBag.Countries = countries;                 // países únicos
-            ViewBag.CompaniesJson = JsonConvert.SerializeObject(companies);
-
-            
-                        ViewBag.produccion = _settings.Produccion;
-
-            return View();
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed in XRcharts IndexAsync");
+                ViewBag.ErrorMessage = "Unable to load company data. Please try again.";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in XRcharts IndexAsync");
+                ViewBag.ErrorMessage = "An unexpected error occurred.";
+                return View();
+            }
         }
 
 
         [HttpGet("ObtenerLineas_XR")]
         public async Task<JsonResult> ObtenerLineas_XR(string company)
         {
-            string token;
-            if (company != _settings.Company) // significa que es una compañia diferente a la base y bamos por el token de la compañia
+            try
             {
-                var result = await _authService.ObtenerTokenCaptor(company);
-                if (result != null)
+                string token;
+                if (company != _settings.Company)
                 {
-                    HttpContext.Session.SetString("AuthToken", result.access_token); // Guardar en sesión
+                    var result = await _authService.ObtenerTokenCaptor(company);
+                    if (result == null)
+                    {
+                        _logger.LogWarning("Failed to obtain token for company: {Company}", company);
+                        return Json(new { error = "Authentication failed" });
+                    }
+
+                    HttpContext.Session.SetString("AuthToken", result.access_token);
+                    token = result.access_token;
                 }
-                token = result.access_token;  // Usamos el string del token
+                else
+                {
+                    token = HttpContext.Session.GetString("AuthToken");
+                }
+
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(company))
+                {
+                    _logger.LogWarning("Token or company is empty");
+                    return Json(Array.Empty<object>());
+                }
+
+                var resp = await getDataQuality.getLinesByCompany(
+                    token,
+                    _settings.BaseUrl + _settings.QueryLineas + company,
+                    company,
+                    _settings.trazalog
+                );
+
+                var list = resp?.result?.Select(w => new {
+                    workplace = w.workplace,
+                    workplaceName = w.workplaceName
+                }) ?? Enumerable.Empty<object>();
+
+                return Json(list);
             }
-            else
+            catch (HttpRequestException ex)
             {
-                token = HttpContext.Session.GetString("AuthToken");
+                _logger.LogError(ex, "HTTP request failed in ObtenerLineas_XR for company: {Company}", company);
+                return Json(new { error = "External service unavailable" });
             }
-
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(company))
-                return Json(Array.Empty<object>());
-
-            // Llama a tu servicio; ajusta nombres de método y settings
-            var resp = await getDataQuality.getLinesByCompany(
-                token,
-                _settings.BaseUrl + _settings.QueryLineas + company, // tu query
-                company,                  // si lo pides, o quítalo
-                _settings.trazalog                             // filtro de company
-            );
-
-            var list = resp?.result?.Select(w => new {
-                workplace = w.workplace,           // id
-                workplaceName = w.workplaceName    // nombre
-            }) ?? Enumerable.Empty<object>();
-
-            return Json(list);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in ObtenerLineas_XR for company: {Company}", company);
+                return Json(new { error = "Internal server error" });
+            }
         }
 
         [HttpGet("ObtenerVarY_XR")]
         public async Task<JsonResult> ObtenerVarY_XR(string sku, DateTime startDate, DateTime endDate, string line, string planta)
         {
-            var token = HttpContext.Session.GetString("AuthToken");
-            if (string.IsNullOrEmpty(token))
-                return Json(new { value = Array.Empty<object>(), error = "Token no disponible" });
-
-            // Trae filas crudas de controles Y
-            var dataTask = getDataQuality.getVarYRows(
-                token,
-                _settings.BaseUrl + _settings.QueryVarY + planta,
-                planta,
-                sku,
-                startDate,
-                endDate,
-                line
-            );
-
-            await Task.WhenAll(dataTask);
-
-            var rows = (dataTask.Result?.result ?? Enumerable.Empty<YRawRow>());
-
-            // Agrupa por operación y arma {value, name}
-            var items = rows
-                .Where(r => !string.IsNullOrWhiteSpace(r.controlOperation))
-                .GroupBy(r => new
+            try
+            {
+                var token = HttpContext.Session.GetString("AuthToken");
+                if (string.IsNullOrEmpty(token))
                 {
-                    Op = (r.controlOperation ?? "").Trim().ToUpper(),
-                    Name = (r.controlOperationName ?? "").Trim()
-                })
-                .Select(g => new
-                {
-                    value = g.Key.Op,                  // código para el dropdown
-                    name = string.IsNullOrEmpty(g.Key.Name) ? g.Key.Op : g.Key.Name  // texto visible
-                })
-                .OrderBy(x => x.name)
-                .ToList();
+                    _logger.LogWarning("Token not found in session for ObtenerVarY_XR");
+                    return Json(new { value = Array.Empty<object>(), error = "Token not available" });
+                }
 
-            return Json(new { value = items });
+                var dataTask = getDataQuality.getVarYRows(
+                    token,
+                    _settings.BaseUrl + _settings.QueryVarY + planta,
+                    planta,
+                    sku,
+                    startDate,
+                    endDate,
+                    line
+                );
+
+                await Task.WhenAll(dataTask);
+
+                var rows = (dataTask.Result?.result ?? Enumerable.Empty<YRawRow>());
+
+                var items = rows
+                    .Where(r => !string.IsNullOrWhiteSpace(r.controlOperation))
+                    .GroupBy(r => new
+                    {
+                        Op = (r.controlOperation ?? "").Trim().ToUpper(),
+                        Name = (r.controlOperationName ?? "").Trim()
+                    })
+                    .Select(g => new
+                    {
+                        value = g.Key.Op,
+                        name = string.IsNullOrEmpty(g.Key.Name) ? g.Key.Op : g.Key.Name
+                    })
+                    .OrderBy(x => x.name)
+                    .ToList();
+
+                return Json(new { value = items });
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed in ObtenerVarY_XR for sku: {Sku}", sku);
+                return Json(new { value = Array.Empty<object>(), error = "External service unavailable" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in ObtenerVarY_XR for sku: {Sku}", sku);
+                return Json(new { value = Array.Empty<object>(), error = "Internal server error" });
+            }
         }
 
 
         [HttpGet("ObtenerVarX_XR")]
         public async Task<JsonResult> ObtenerVarX_XR(
-            string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId, string planta)
+    string sku, string varY, DateTime fechaInicial, DateTime fechaFinal, string lineaId, string planta)
         {
-            var token = HttpContext.Session.GetString("AuthToken");
-            if (string.IsNullOrEmpty(token))
-                return Json(new { value = Array.Empty<object>(), error = "Token no disponible" });
-
-            // Prefijo para buscar X relacionadas con la Y (incluye a la Y cuando aplica)
-            var prefix = (varY?.Length >= 3 ? varY.Substring(0, 3) : varY ?? "") + "%";
-
-            // Trae posibles X ligadas a esa Y
-            var opsTask = getDataQuality.getVarXByvarY(
-                token, _settings.BaseUrl + _settings.QueryVarX + planta, planta,
-                sku, prefix, fechaInicial, fechaFinal, lineaId);
-
-            await Task.WhenAll(opsTask);
-
-            var opsRaw = opsTask.Result?.result ?? new List<result_varY>();
-
-            // DEDUP por código y map a {value, name}
-            var xs = opsRaw
-                .Where(o => !string.IsNullOrWhiteSpace(o.controlOperation))
-                .GroupBy(o => o.controlOperation!.Trim().ToUpper())
-                .Select(g =>
-                {
-                    var first = g.First();
-                    var code = g.Key;
-                    var name = (first.controlOperationName ?? "").Trim();
-                    return new
-                    {
-                        value = code,
-                        name = string.IsNullOrEmpty(name) ? code : name
-                    };
-                })
-                .OrderBy(x => x.name)
-                .ToList();
-
-            // Asegura que la Y aparezca como opción en X (primera posición)
-            var yName = opsRaw
-                .FirstOrDefault(o => string.Equals(o.controlOperation?.Trim(), varY?.Trim(), StringComparison.OrdinalIgnoreCase))
-                ?.controlOperationName;
-
-            var yOption = new
+            try
             {
-                value = (varY ?? "").Trim().ToUpper(),
-                name = string.IsNullOrWhiteSpace(yName) ? $"[Y] {varY}" : $"[Y] {yName.Trim()}"
-            };
+                var token = HttpContext.Session.GetString("AuthToken");
+                if (string.IsNullOrEmpty(token))
+                {
+                    _logger.LogWarning("Token not found in session for ObtenerVarX_XR");
+                    return Json(new { value = Array.Empty<object>(), error = "Token not available" });
+                }
 
-            // Si ya viene en la lista, reemplázala por la versión con etiqueta [Y]; si no, la insertamos al inicio
-            xs = xs.Where(x => !string.Equals(x.value, yOption.value, StringComparison.OrdinalIgnoreCase))
-                   .Prepend(yOption)
-                   .ToList();
+                var prefix = (varY?.Length >= 3 ? varY.Substring(0, 3) : varY ?? "") + "%";
 
-            return Json(new { value = xs });
+                var opsTask = getDataQuality.getVarXByvarY(
+                    token, _settings.BaseUrl + _settings.QueryVarX + planta, planta,
+                    sku, prefix, fechaInicial, fechaFinal, lineaId);
+
+                await Task.WhenAll(opsTask);
+
+                var opsRaw = opsTask.Result?.result ?? new List<result_varY>();
+
+                var xs = opsRaw
+                    .Where(o => !string.IsNullOrWhiteSpace(o.controlOperation))
+                    .GroupBy(o => o.controlOperation!.Trim().ToUpper())
+                    .Select(g =>
+                    {
+                        var first = g.First();
+                        var code = g.Key;
+                        var name = (first.controlOperationName ?? "").Trim();
+                        return new
+                        {
+                            value = code,
+                            name = string.IsNullOrEmpty(name) ? code : name
+                        };
+                    })
+                    .OrderBy(x => x.name)
+                    .ToList();
+
+                var yName = opsRaw
+                    .FirstOrDefault(o => string.Equals(o.controlOperation?.Trim(), varY?.Trim(), StringComparison.OrdinalIgnoreCase))
+                    ?.controlOperationName;
+
+                var yOption = new
+                {
+                    value = (varY ?? "").Trim().ToUpper(),
+                    name = string.IsNullOrWhiteSpace(yName) ? $"[Y] {varY}" : $"[Y] {yName.Trim()}"
+                };
+
+                xs = xs.Where(x => !string.Equals(x.value, yOption.value, StringComparison.OrdinalIgnoreCase))
+                       .Prepend(yOption)
+                       .ToList();
+
+                return Json(new { value = xs });
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed in ObtenerVarX_XR for sku: {Sku}, varY: {VarY}", sku, varY);
+                return Json(new { value = Array.Empty<object>(), error = "External service unavailable" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in ObtenerVarX_XR for sku: {Sku}, varY: {VarY}", sku, varY);
+                return Json(new { value = Array.Empty<object>(), error = "Internal server error" });
+            }
         }
+
+        // ========================================
 
         [HttpGet("ObtenerProductos_XR")]
         public async Task<JsonResult> ObtenerProductos_XR(string lineaId, DateTime fechaInicial, DateTime fechaFinal, string planta)
         {
-            string token = HttpContext.Session.GetString("AuthToken"); // Obtener el token de la sesión
-
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                return Json(new { error = "Token no disponible" });
-            }
-            else
-            {
+                string token = HttpContext.Session.GetString("AuthToken");
 
+                if (string.IsNullOrEmpty(token))
+                {
+                    _logger.LogWarning("Token not found in session for ObtenerProductos_XR");
+                    return Json(new { error = "Token not available" });
+                }
 
                 var dataResultP = getDataQuality.getProductsByLine(
                         token.ToString(),
@@ -287,18 +335,21 @@ namespace dashboardQ40.Controllers
 
                 var resultado = Json(dataResultP.Result.result);
                 return resultado;
-
             }
-
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError(ex, "HTTP request failed in ObtenerProductos_XR for line: {LineId}", lineaId);
+                return Json(new { error = "External service unavailable" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error in ObtenerProductos_XR for line: {LineId}", lineaId);
+                return Json(new { error = "Internal server error" });
+            }
         }
 
+        // ========================================
 
-
-
-        // --------------------------------------------------------------------
-        // 1) VARIABLES (para llenar dropdowns de la vista)
-        // GET /XRcharts/variables?from=2025-06-01&to=2025-06-30&workplace=L7&reference=COCA...
-        // --------------------------------------------------------------------
         [HttpGet("variables")]
         public IActionResult GetVariables(
             DateTime? from,
@@ -318,22 +369,21 @@ namespace dashboardQ40.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetVariables");
-                return Problem("Error obteniendo variables.");
+                _logger.LogError(ex, "Error in GetVariables for workplace: {Workplace}, reference: {Reference}", workplace, reference);
+                return Problem("Error retrieving variables.");
             }
         }
 
-        // --------------------------------------------------------------------
-        // 2) FILAS BASE (lecturas crudas con LSL/USL/Target, subgroupId, etc.)
-        // GET /XRcharts/base?from=...&to=...&workplace=...&reference=...&controlOperation=...
-        // --------------------------------------------------------------------
+        // ========================================
+
         [HttpGet("base")]
         public IActionResult GetBaseRows(
             DateTime? from,
             DateTime? to,
             string? workplace,
             string? reference,
-            string? controlOperation, string planta)
+            string? controlOperation,
+            string planta)
         {
             try
             {
@@ -347,15 +397,13 @@ namespace dashboardQ40.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetBaseRows");
-                return Problem("Error obteniendo datos base.");
+                _logger.LogError(ex, "Error in GetBaseRows for workplace: {Workplace}, operation: {ControlOperation}", workplace, controlOperation);
+                return Problem("Error retrieving base data.");
             }
         }
 
-        // --------------------------------------------------------------------
-        // 3) STATS DE SUBGRUPO (Xbar/S por subgroupId)
-        // GET /XRcharts/subgroups?from=...&to=...&workplace=...&reference=...&controlOperation=...
-        // --------------------------------------------------------------------
+        // ========================================
+
         [HttpGet("subgroups")]
         public IActionResult GetSubgroupStats(
             DateTime? from,
@@ -377,23 +425,21 @@ namespace dashboardQ40.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetSubgroupStats");
-                return Problem("Error calculando estadísticas de subgrupos.");
+                _logger.LogError(ex, "Error in GetSubgroupStats for workplace: {Workplace}, operation: {ControlOperation}", workplace, controlOperation);
+                return Problem("Error calculating subgroup statistics.");
             }
         }
 
-        // --------------------------------------------------------------------
-        // 4) CAPABILITY POR VARIABLE (Cp/Cpk y Pp/Ppk)
-        // GET /XRcharts/capability?from=...&to=...&workplace=...&reference=...&controlOperation=...
-        //    *controlOperation opcional: si lo envías, filtra a una sola variable*
-        // --------------------------------------------------------------------
+        // ========================================
+
         [HttpGet("capability")]
         public IActionResult GetCapability(
             DateTime? from,
             DateTime? to,
             string? workplace,
             string? reference,
-            string? controlOperation, string planta)
+            string? controlOperation,
+            string planta)
         {
             try
             {
@@ -408,9 +454,11 @@ namespace dashboardQ40.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error en GetCapability");
-                return Problem("Error calculando capability.");
+                _logger.LogError(ex, "Error in GetCapability for workplace: {Workplace}, operation: {ControlOperation}", workplace, controlOperation);
+                return Problem("Error calculating capability.");
             }
         }
+
+
     }
 }

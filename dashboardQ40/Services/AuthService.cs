@@ -86,8 +86,17 @@ namespace dashboardQ40.Services
                 HttpClient client = Method_Headers(token, url);
 
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Uri.EscapeUriString(client.BaseAddress.ToString()));
-                var data = "{ 'COMP': '" + company + "' , 'APPUSER': '" + appuser + "' }";
-                request.Content = new StringContent(data, Encoding.UTF8, "application/json");
+                //var data = "{ 'COMP': '" + company + "' , 'APPUSER': '" + appuser + "' }";
+
+                var requestBody = new
+                {
+                    COMP = company,
+                    APPUSER = appuser
+                };
+
+                var jsonBody = JsonSerializer.Serialize(requestBody);
+
+                request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
                 request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 HttpResponseMessage tokenResponse = await client.PostAsync(Uri.EscapeUriString(client.BaseAddress.ToString()), request.Content);
                 

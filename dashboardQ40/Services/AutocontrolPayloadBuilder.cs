@@ -10,7 +10,8 @@ namespace dashboardQ40.Services
     public static class AutocontrolPayloadBuilder
     {
         /// <summary>
-        /// Construye 1 payload por IdControlProcedureResult,
+        /// Construye 1 payload por combinación:
+        /// IdControlProcedureResult + ControlProcedureVersion + ControlProcedureLevel
         /// agrupando operaciones y valores.
         /// </summary>
         public static List<ControlProcedureResultPayload> BuildFromExcelRows(List<AutocontrolExcelRow> filas)
@@ -19,8 +20,13 @@ namespace dashboardQ40.Services
             if (filas == null || filas.Count == 0)
                 return result;
 
-            // 1) Agrupamos por idControlProcedureResult (1 JSON por autocontrol)
-            var gruposCPR = filas.GroupBy(f => f.IdControlProcedureResult);
+            // 1) Agrupamos por CPR + Versión + Nivel
+            var gruposCPR = filas.GroupBy(f => new
+            {
+                f.IdControlProcedureResult,
+                f.ControlProcedureVersion,
+                f.ControlProcedureLevel
+            });
 
             foreach (var grp in gruposCPR)
             {
@@ -68,7 +74,7 @@ namespace dashboardQ40.Services
                     Worker = first.Worker
                 };
 
-                // 2) Dentro de cada CPR, agrupamos por operación
+                // 2) Dentro de cada CPR+Versión+Nivel, agrupamos por operación
                 var gruposOperacion = grp.GroupBy(f => new
                 {
                     f.ControlOperation,
@@ -109,7 +115,7 @@ namespace dashboardQ40.Services
         }
 
         /// <summary>
-        /// Azúcar sintáctica: ordena filas y delega en BuildFromExcelRows.
+        /// Ordena filas y delega en BuildFromExcelRows.
         /// </summary>
         public static List<ControlProcedureResultPayload> BuildOnePerControlProcedureResult(
             List<AutocontrolExcelRow> filas)
@@ -119,6 +125,8 @@ namespace dashboardQ40.Services
 
             var filasOrdenadas = filas
                 .OrderBy(f => f.IdControlProcedureResult)
+                .ThenBy(f => f.ControlProcedureVersion)
+                .ThenBy(f => f.ControlProcedureLevel)
                 .ThenBy(f => f.ControlProcedure)
                 .ThenBy(f => f.ControlOperation)
                 .ThenBy(f => f.ResultNumber)

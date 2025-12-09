@@ -1,5 +1,5 @@
 ﻿// Services/ACPayloadService.cs
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;  
 using Dapper;
 using DocumentFormat.OpenXml.Spreadsheet;
 using static dashboardQ40.Models.Models; // si no usas Dapper dime y lo hacemos con SqlCommand
@@ -15,16 +15,7 @@ public class ACPayloadService : IACPayloadService
 {
     // Aquí pegas tu query completo, con saltos de línea
     private const string SqlACPayloadRows = @"
-;WITH CPO_Latest AS (
-    SELECT
-        CPO.*,
-        ROW_NUMBER() OVER (
-            PARTITION BY CPO.company, CPO.controlProcedure, CPO.controlOperation
-            ORDER BY CPO.controlProcedureVersion DESC, CPO.controlProcedureLevel DESC
-        ) AS rn
-    FROM ControlProcedureOperation CPO
-)
-SELECT DISTINCT TOP (100)
+SELECT DISTINCT 
     CPR.manufacturingOrder        AS manufacturingOrder,
     CPR.manufacturingPhase        AS manufacturingPhase,
     CPR.batch                     AS batch,
@@ -33,12 +24,15 @@ SELECT DISTINCT TOP (100)
     CPR.workplace                 AS workplace,
     CPR.launchingDate             AS launchingDate,
     CPR.controlProcedure          AS controlProcedure,
-    CPO.controlProcedureVersion   AS controlProcedureVersion,
-    CPO.controlProcedureLevel     AS controlProcedureLevel,
+    CPR.controlProcedureVersion   AS controlProcedureVersion,
+    CPR.controlProcedureLevel     AS controlProcedureLevel,
+	CP.controlProcedureLevelName as controlProcedureLevelName,
     CPR.controlProcResultNote     AS controlProcedureNote,
     CPR.worker                    AS worker,
     CPO.controlOperation          AS controlOperation,
-    CPO.controlOperationName      AS controlOperationNote,
+    CPO.controlOperationName      AS controlOperationNote,	
+	CPO.sampleSize      AS sampleSize,
+	CPO.position   as position   ,
     CAST(ISNULL(CPrvs.doesNotApply,0) AS bit) AS doesNotApply,
     CPrvs.resultNumber            AS resultNumber,
     CPrvs.resultAttribute         AS resultAttribute,
@@ -47,20 +41,28 @@ SELECT DISTINCT TOP (100)
     CPrvs.ctrlProcOpResultValNote AS controlOperationResultValueNote,
     CPO.controlOperationType    AS controlOperationType
 FROM ControlProcedureResult CPR
-LEFT JOIN CPO_Latest CPO
+LEFT JOIN ControlProcedureOperation CPO
     ON  CPO.company          = CPR.company
     AND CPO.controlProcedure = CPR.controlProcedure
-    AND CPO.rn               = 1
+	AND CPO.controlProcedureVersion = CPR.controlProcedureVersion
+	AND CPO.controlProcedureLevel = CPR.controlProcedureLevel
+left join ControlProcedure CP 
+	on CP.controlProcedure = CPR.controlProcedure 
+	and CP.controlProcedureVersion = CPR.controlProcedureVersion
+    and CP.controlProcedureLevel = CPR.controlProcedureLevel    
+	and CP.company = CPO.company
 LEFT JOIN CProcResultWithValuesStatus CPrvs
     ON  CPrvs.company                  = CPR.company
     AND CPrvs.idControlProcedureResult = CPR.idControlProcedureResult
     AND CPrvs.controlOperation         = CPO.controlOperation
 WHERE CPR.company = @company
-  AND (@workplace IS NULL OR CPR.workplace = @workplace)
-  AND (@startdate IS NULL OR CPR.launchingDate >= @startdate)
-  AND (@enddate   IS NULL OR CPR.launchingDate <  @enddate)
-  AND CPR.completionStatus = 0
-ORDER BY CPR.idControlProcedureResult, CPO.controlOperation, CPrvs.resultNumber;
+  AND CPR.workplace = @workplace
+  AND CPR.launchingDate >= @startdate
+  AND CPR.launchingDate <  @enddate
+  AND CPR.isManual = 0
+  and CPR.executionDate is null
+ORDER BY CPR.launchingDate, CPR.idControlProcedureResult, CPR.controlProcedureVersion ,
+CPR.controlProcedureLevel, CPO.position
 ";
 
     public async Task<List<ACPayloadRow>> ObtenerRowsAsync(
@@ -80,28 +82,29 @@ ORDER BY CPR.idControlProcedureResult, CPO.controlOperation, CPrvs.resultNumber;
             dynParams
         );
 
-        var list = result.ToList();
+        var baseList = result.ToList();
+        var finalList = new List<ACPayloadRow>();
 
-        // ─────────────────────────────────────────────
-        //  Recalcular resultNumber por CPR + norma
-        // ─────────────────────────────────────────────
-        var grupos = list
-            .GroupBy(r => new { r.idControlProcedureResult, r.controlOperation });
-
-        foreach (var g in grupos)
+        foreach (var row in baseList)
         {
-            int consecutivo = 0;
+            var sampleSize = row.SampleSize <= 0 ? 1 : row.SampleSize;
 
-            // Si algún día la BD trae resultNumber real, lo respetamos ordenando por él;
-            // hoy viene null, así que todos quedan en 0 y se usa el orden natural.
-            foreach (var row in g.OrderBy(r => SafeParseInt(r.resultNumber)))
+            // Si algún día viniera resultNumber desde la BD, lo respetamos
+            if (!string.IsNullOrEmpty(row.resultNumber))
             {
-                row.resultNumber = consecutivo.ToString();
-                consecutivo++;
+                finalList.Add(row);
+                continue;
+            }
+
+            // Siempre: 0..sampleSize-1, aunque sampleSize sea 1
+            for (int i = 0; i < sampleSize; i++)
+            {
+                finalList.Add(CloneRowWithResultNumber(row, i.ToString()));
             }
         }
 
-        return list;
+
+        return finalList;
     }
 
     // helper local (puede ser private static en la misma clase)
@@ -109,6 +112,41 @@ ORDER BY CPR.idControlProcedureResult, CPO.controlOperation, CPrvs.resultNumber;
     {
         if (int.TryParse(s, out var n)) return n;
         return 0;
+    }
+
+    private static ACPayloadRow CloneRowWithResultNumber(ACPayloadRow src, string resultNumber)
+    {
+        return new ACPayloadRow
+        {
+            manufacturingOrder = src.manufacturingOrder,
+            manufacturingPhase = src.manufacturingPhase,
+            batch = src.batch,
+            idControlProcedureResult = src.idControlProcedureResult,
+            isManual = src.isManual,
+            workplace = src.workplace,
+            launchingDate = src.launchingDate,
+            controlProcedure = src.controlProcedure,
+            controlProcedureVersion = src.controlProcedureVersion,
+            controlProcedureLevel = src.controlProcedureLevel,
+            controlProcedureNote = src.controlProcedureNote,
+            worker = src.worker,
+            controlOperation = src.controlOperation,
+            SampleSize = src.SampleSize,
+            controlOperationNote = src.controlOperationNote,
+            doesNotApply = src.doesNotApply,
+
+            // aquí aplicamos la regla
+            resultNumber = resultNumber,
+
+            // estos por ahora los dejamos igual (vendrán null
+            // y luego los llenarás desde Excel / UI)
+            resultAttribute = src.resultAttribute,
+            resultValue = src.resultValue,
+            resultPresetAttributeValue = src.resultPresetAttributeValue,
+            controlOperationResultValueNote = src.controlOperationResultValueNote,
+            controlProcedureLevelName = src.controlProcedureLevelName,
+            controlOperationType = src.controlOperationType
+        };
     }
 
 }

@@ -295,12 +295,15 @@ CPrvs.resultValue, CPrvs.minTolerance, CPrvs.maxTolerance, CPrrc.executionDate
             public string? controlProcedureNote { get; set; }
             public string? worker { get; set; }
             public string? controlOperation { get; set; }
+            public int SampleSize { get; set; }            
+            public int position { get; set; }
             public string? controlOperationNote { get; set; }
             public string? doesNotApply { get; set; }
             public string? resultNumber { get; set; }
             public string? resultAttribute { get; set; }
             public string? resultValue { get; set; }
             public string? resultPresetAttributeValue { get; set; }
+            public string? controlProcedureLevelName { get; set; }            
             public string? controlOperationResultValueNote { get; set; }
             public string controlOperationType { get; set; }
         }

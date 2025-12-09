@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using static dashboardQ40.Models.Models;
 using static dashboardQ40.Services.common;
+using System.Text.Json;
 
 namespace dashboardQ40.Services
 {
@@ -232,11 +233,15 @@ namespace dashboardQ40.Services
             var fe2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss");
 
             // Param names = como los declaraste en el query en Captor
-            var jsonBody =
-                "{ 'COMP': '" + company + "'" +
-                ", 'F1': '" + fe1 + "'" +
-                ", 'F2': '" + fe2 + "'" +
-                "}";
+            var requestBody = new
+            {
+                COMP = company,
+                F1 = fechaInicial.ToString("yyyy-MM-dd HH:mm:ss"),
+                F2 = fechaFinal.ToString("yyyy-MM-dd HH:mm:ss"),
+
+            };
+
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_BatchExtraRowDto>(
                 client,
@@ -256,10 +261,14 @@ namespace dashboardQ40.Services
         {
             HttpClient client = Method_Headers(token, url);
 
-            var jsonBody =
-                "{ 'COMP': '" + company + "'" +
-                ", 'BATCH': '" + batch + "'" +
-                "}";
+            
+            var requestBody = new
+            {
+                COMP = company,
+                BATCH = batch
+            };
+
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_AutoControlRowDto>(
                 client,
@@ -281,12 +290,15 @@ namespace dashboardQ40.Services
             HttpClient client = Method_Headers(token, url);
 
 
-            // Param names = como los declaraste en el query en Captor
-            var jsonBody =
-                "{ 'COMP': '" + company + "'" +
-                ", 'CODE': '" + productCode + "'" +
-                ", 'HR': '" + productHour + "'" +
-                "}";
+
+            var requestBody = new
+            {
+                COMP = company,
+                CODE = productCode,
+                HR = productHour
+            };
+
+            var jsonBody = JsonSerializer.Serialize(requestBody);
 
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_BatchExtraRowDto>(
                 client,

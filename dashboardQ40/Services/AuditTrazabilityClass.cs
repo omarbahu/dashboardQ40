@@ -11,6 +11,7 @@ using System.Data;
 using System.Text.Json;
 
 using dashboardQ40.Models;
+using DocumentFormat.OpenXml.Vml;
 
 namespace dashboardQ40.Services
 {
@@ -1319,7 +1320,15 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
         {
 
             HttpClient client = Method_Headers(token, url);
-            var jsonBody = "{ 'COMP': '" + company + "', 'LOTES': '" + lotes + "' }";
+            
+            var requestBody = new
+            {
+                COMP = company,
+                LOTES = lotes
+            };
+
+            var jsonBody = JsonSerializer.Serialize(requestBody);
+
             return await WebServiceHelper.SafePostAndDeserialize<result_Q_MateriaPrima>(
                 client,
                 client.BaseAddress.ToString(),
