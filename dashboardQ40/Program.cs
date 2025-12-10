@@ -61,6 +61,8 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromHours(8);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 // 🔧 Swagger (solo Dev)
@@ -75,7 +77,6 @@ builder.Services.Configure<VariablesYConfig>(builder.Configuration.GetSection("V
 
 // 🌍 HttpClient y AuthService
 builder.Services.AddHttpClient<AuthService>();
-builder.Services.AddTransient<AuthService>();
 
 builder.Services.Configure<ControlLimitsDefaults>(builder.Configuration.GetSection("ControlLimits:Defaults"));
 builder.Services.Configure<ControlLimitsWsOptions>(builder.Configuration.GetSection("ControlLimits:WebService"));

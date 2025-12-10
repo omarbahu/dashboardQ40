@@ -115,7 +115,7 @@ namespace dashboardQ40.Services
             {
                 //_logger.LogInformation(ex, "Error en crear solicitud: " + ex.ToString());
 
-                throw ex;
+                throw;
             }
         }
     }

@@ -10,9 +10,7 @@ namespace dashboardQ40.Services
 {
     public class XRchartsService
     {
-        // =========================================================
-        // 1) SELECT base (el mismo que probaste, con alias limpios)
-        // =========================================================
+        
         public static DataTable GetXRBaseRows(
             string company,
             DateTime from,

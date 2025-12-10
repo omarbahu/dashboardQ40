@@ -20,7 +20,7 @@ namespace dashboardQ40.Helpers
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
             return client;
         }
