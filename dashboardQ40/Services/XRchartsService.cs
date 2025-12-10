@@ -22,74 +22,83 @@ namespace dashboardQ40.Services
             string? reference = null,
             string? controlOperation = null)
         {
-            const string sql = @"
-SELECT
-  C.companyName,
-  CPrvs.workplace,
-  W.workplaceName,
-  MR.manufacturingReferenceName,
-  CPrvs.controlOperation,
-  CPrvs.controlOperationName,
-  CPrrc.idControlProcedureResult,
-  CPrvs.manufacturingReference,
-  CONCAT(CPrrc.idControlProcedureResult, '::', CPrvs.controlOperation) AS subgroupId,
-  CPrrc.executionDate,
-  CAST(CPrvs.resultValue AS decimal(18,6)) AS resultValue,
-  CAST(COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) AS decimal(18,6)) AS LSL,
-  CAST(COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) AS decimal(18,6)) AS USL,
-  CAST(CPrvs.nominalValue AS decimal(18,6)) AS Target,
-  CASE
-    WHEN COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) IS NULL
-         AND COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) IS NOT NULL THEN 'USL-only'
-    WHEN COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) IS NULL
-         AND COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) IS NOT NULL THEN 'LSL-only'
-    WHEN COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) IS NOT NULL
-         AND COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) IS NOT NULL THEN 'Two-sided'
-    ELSE 'No-spec'
-  END AS specType,
-  COUNT(*) OVER (PARTITION BY CPrrc.idControlProcedureResult, CPrvs.controlOperation) AS subgroupN
-FROM CProcResultWithValuesStatus AS CPrvs
-JOIN CPResultWithRefAndContext AS CPrrc
-  ON CPrvs.company = CPrrc.company
- AND CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
-JOIN Company AS C
-  ON CPrrc.company = C.company
-JOIN Workplace AS W
-  ON CPrvs.workplace = W.workplace
- AND W.company = CPrvs.company
-JOIN ManufacturingReference AS MR
-  ON MR.company = CPrvs.company
- AND MR.manufacturingReference = CPrvs.manufacturingReference
-WHERE
-  CPrvs.company = @company
-  AND CPrvs.controlOperationType = 1
-  AND CPrrc.executionDate BETWEEN @from AND @to
-  AND CPrvs.resultValue IS NOT NULL
-  AND (@workplace IS NULL OR CPrvs.workplace = @workplace)
-  --AND (@reference IS NULL OR CPrvs.manufacturingReference = @reference)
-  AND (@controlOperation IS NULL OR CPrvs.controlOperation = @controlOperation)
-ORDER BY
-  CPrvs.controlOperation,
-  CPrrc.executionDate,
-  resultValue;";
+            try
+            {
+                const string sql = @"
+            SELECT
+              C.companyName,
+              CPrvs.workplace,
+              W.workplaceName,
+              MR.manufacturingReferenceName,
+              CPrvs.controlOperation,
+              CPrvs.controlOperationName,
+              CPrrc.idControlProcedureResult,
+              CPrvs.manufacturingReference,
+              CONCAT(CPrrc.idControlProcedureResult, '::', CPrvs.controlOperation) AS subgroupId,
+              CPrrc.executionDate,
+              CAST(CPrvs.resultValue AS decimal(18,6)) AS resultValue,
+              CAST(COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) AS decimal(18,6)) AS LSL,
+              CAST(COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) AS decimal(18,6)) AS USL,
+              CAST(CPrvs.nominalValue AS decimal(18,6)) AS Target,
+              CASE
+                WHEN COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) IS NULL
+                     AND COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) IS NOT NULL THEN 'USL-only'
+                WHEN COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) IS NULL
+                     AND COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) IS NOT NULL THEN 'LSL-only'
+                WHEN COALESCE(CPrvs.clientMinValue, CPrvs.minTolerance) IS NOT NULL
+                     AND COALESCE(CPrvs.clientMaxValue, CPrvs.maxTolerance) IS NOT NULL THEN 'Two-sided'
+                ELSE 'No-spec'
+              END AS specType,
+              COUNT(*) OVER (PARTITION BY CPrrc.idControlProcedureResult, CPrvs.controlOperation) AS subgroupN
+            FROM CProcResultWithValuesStatus AS CPrvs
+            JOIN CPResultWithRefAndContext AS CPrrc
+              ON CPrvs.company = CPrrc.company
+             AND CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
+            JOIN Company AS C
+              ON CPrrc.company = C.company
+            JOIN Workplace AS W
+              ON CPrvs.workplace = W.workplace
+             AND W.company = CPrvs.company
+            JOIN ManufacturingReference AS MR
+              ON MR.company = CPrvs.company
+             AND MR.manufacturingReference = CPrvs.manufacturingReference
+            WHERE
+              CPrvs.company = @company
+              AND CPrvs.controlOperationType = 1
+              AND CPrrc.executionDate BETWEEN @from AND @to
+              AND CPrvs.resultValue IS NOT NULL
+              AND (@workplace IS NULL OR CPrvs.workplace = @workplace)
+              --AND (@reference IS NULL OR CPrvs.manufacturingReference = @reference)
+              AND (@controlOperation IS NULL OR CPrvs.controlOperation = @controlOperation)
+            ORDER BY
+              CPrvs.controlOperation,
+              CPrrc.executionDate,
+              resultValue;";
 
-            using var conn = new SqlConnection(connectionString);
-            using var cmd = new SqlCommand(sql, conn);
+                using var conn = new SqlConnection(connectionString);
+                using var cmd = new SqlCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@company", company);
-            cmd.Parameters.AddWithValue("@from", from);
-            cmd.Parameters.AddWithValue("@to", to);
-            cmd.Parameters.AddWithValue("@workplace", (object?)workplace ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@reference", (object?)reference ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@controlOperation", (object?)controlOperation ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@company", company);
+                cmd.Parameters.AddWithValue("@from", from);
+                cmd.Parameters.AddWithValue("@to", to);
+                cmd.Parameters.AddWithValue("@workplace", (object?)workplace ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@reference", (object?)reference ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@controlOperation", (object?)controlOperation ?? DBNull.Value);
 
-            // Log para copiar/pegar en SSMS
-            System.Diagnostics.Debug.WriteLine(BuildSimulatedQuery(sql, cmd));
+                // Log para copiar/pegar en SSMS
+                System.Diagnostics.Debug.WriteLine(BuildSimulatedQuery(sql, cmd));
 
-            var dt = new DataTable();
-            using var da = new SqlDataAdapter(cmd);
-            da.Fill(dt);
-            return dt;
+                var dt = new DataTable();
+                using var da = new SqlDataAdapter(cmd);
+                da.Fill(dt);
+                return dt;
+            }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error BD en GetXRBaseRows. company={company}, workplace={workplace}, ref={reference}, controlOperation={controlOperation}, {from}-{from}.",
+                    ex);
+            }
         }
 
         // ==========================================
@@ -103,37 +112,46 @@ ORDER BY
             string? workplace = null,
             string? reference = null)
         {
-            const string sql = @"
-SELECT DISTINCT
-  CPrvs.controlOperation,
-  CPrvs.controlOperationName
-FROM CProcResultWithValuesStatus AS CPrvs
-JOIN CPResultWithRefAndContext AS CPrrc
-  ON CPrvs.company = CPrrc.company
- AND CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
-WHERE CPrvs.company = @company
-  AND CPrvs.controlOperationType = 1
-  AND CPrrc.executionDate BETWEEN @from AND @to
-  AND CPrvs.resultValue IS NOT NULL
-  AND (@workplace IS NULL OR CPrvs.workplace = @workplace)
-  AND (@reference IS NULL OR CPrvs.manufacturingReference = @reference)
-ORDER BY CPrvs.controlOperation;";
+            try
+            {
+                const string sql = @"
+            SELECT DISTINCT
+              CPrvs.controlOperation,
+              CPrvs.controlOperationName
+            FROM CProcResultWithValuesStatus AS CPrvs
+            JOIN CPResultWithRefAndContext AS CPrrc
+              ON CPrvs.company = CPrrc.company
+             AND CPrvs.idControlProcedureResult = CPrrc.idControlProcedureResult
+            WHERE CPrvs.company = @company
+              AND CPrvs.controlOperationType = 1
+              AND CPrrc.executionDate BETWEEN @from AND @to
+              AND CPrvs.resultValue IS NOT NULL
+              AND (@workplace IS NULL OR CPrvs.workplace = @workplace)
+              AND (@reference IS NULL OR CPrvs.manufacturingReference = @reference)
+            ORDER BY CPrvs.controlOperation;";
 
-            using var conn = new SqlConnection(connectionString);
-            using var cmd = new SqlCommand(sql, conn);
+                using var conn = new SqlConnection(connectionString);
+                using var cmd = new SqlCommand(sql, conn);
 
-            cmd.Parameters.AddWithValue("@company", company);
-            cmd.Parameters.AddWithValue("@from", from);
-            cmd.Parameters.AddWithValue("@to", to);
-            cmd.Parameters.AddWithValue("@workplace", (object?)workplace ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@reference", (object?)reference ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@company", company);
+                cmd.Parameters.AddWithValue("@from", from);
+                cmd.Parameters.AddWithValue("@to", to);
+                cmd.Parameters.AddWithValue("@workplace", (object?)workplace ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@reference", (object?)reference ?? DBNull.Value);
 
-            System.Diagnostics.Debug.WriteLine(BuildSimulatedQuery(sql, cmd));
+                System.Diagnostics.Debug.WriteLine(BuildSimulatedQuery(sql, cmd));
 
-            var dt = new DataTable();
-            using var da = new SqlDataAdapter(cmd);
-            da.Fill(dt);
-            return dt;
+                var dt = new DataTable();
+                using var da = new SqlDataAdapter(cmd);
+                da.Fill(dt);
+                return dt;
+            }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error BD en GetVariables. company={company}, workplace={workplace}, ref={reference}, {from}-{from}.",
+                    ex);
+            }
         }
 
         // ==================================================
@@ -167,6 +185,7 @@ ORDER BY CPrvs.controlOperation;";
             }
 
             return result;
+
         }
 
         // ==================================================

@@ -37,8 +37,9 @@ namespace dashboardQ40.Services
     string company, DateTime fromUtc, DateTime toUtc, string cs)
         {
             var agg = new List<AggRow>();
-
-            string sql = @"
+            try
+            {
+                string sql = @"
 ;WITH raw AS (
   SELECT
  -- Línea
@@ -103,31 +104,38 @@ SELECT
 FROM agg a
 ORDER BY a.Process, a.Part, a.Test;";
 
-            using var conn = new SqlConnection(cs);
-            conn.Open();
-            using var cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@company", company);
-            cmd.Parameters.AddWithValue("@from", fromUtc);
-            cmd.Parameters.AddWithValue("@to", toUtc);
+                using var conn = new SqlConnection(cs);
+                conn.Open();
+                using var cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@company", company);
+                cmd.Parameters.AddWithValue("@from", fromUtc);
+                cmd.Parameters.AddWithValue("@to", toUtc);
 
-            using var rd = cmd.ExecuteReader();
-            while (rd.Read())
-            {
-                agg.Add(new AggRow(
-                    Part: rd.GetString(0),
-                    Process: rd.GetString(1),
-                    Test: rd.GetString(2),
-                    Subgroups: rd.GetInt32(3),
-                    Mean: rd.IsDBNull(4) ? double.NaN : rd.GetDouble(4),
-                    Rbar: rd.IsDBNull(5) ? double.NaN : rd.GetDouble(5),
-                    Nobs: rd.GetInt32(6),
-                    n_min: rd.GetInt32(7),
-                    n_max: rd.GetInt32(8),
-                    FirstTs: rd.GetDateTime(9),
-                    LastTs: rd.GetDateTime(10)
-                ));
+                using var rd = cmd.ExecuteReader();
+                while (rd.Read())
+                {
+                    agg.Add(new AggRow(
+                        Part: rd.GetString(0),
+                        Process: rd.GetString(1),
+                        Test: rd.GetString(2),
+                        Subgroups: rd.GetInt32(3),
+                        Mean: rd.IsDBNull(4) ? double.NaN : rd.GetDouble(4),
+                        Rbar: rd.IsDBNull(5) ? double.NaN : rd.GetDouble(5),
+                        Nobs: rd.GetInt32(6),
+                        n_min: rd.GetInt32(7),
+                        n_max: rd.GetInt32(8),
+                        FirstTs: rd.GetDateTime(9),
+                        LastTs: rd.GetDateTime(10)
+                    ));
+                }
+                return agg;
             }
-            return agg;
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error BD en QueryAggOnly. company={company}, fromUtc={fromUtc}, toUtc={toUtc}, connectionString={cs}.",
+                    ex);
+            }
         }
 
 
@@ -137,8 +145,9 @@ ORDER BY a.Process, a.Part, a.Test;";
             string company, DateTime fromUtc, DateTime toUtc, string cs)
         {
             var dict = new Dictionary<(string Part, string Test), Spec>();
-
-            string sql = @"
+            try
+            {
+                string sql = @"
 SELECT
   MR.manufacturingReferenceName AS Part,
   CPrvs.controlOperationName    AS Test,
@@ -157,30 +166,37 @@ WHERE CPrvs.company = @company
   AND (TRY_CONVERT(float, CPrvs.minTolerance) IS NOT NULL OR TRY_CONVERT(float, CPrvs.maxTolerance) IS NOT NULL)
 GROUP BY MR.manufacturingReferenceName, CPrvs.controlOperationName;";
 
-            using var conn = new SqlConnection(cs);
-            conn.Open();
-            using var cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@company", company);
-            cmd.Parameters.AddWithValue("@from", fromUtc);
-            cmd.Parameters.AddWithValue("@to", toUtc);
+                using var conn = new SqlConnection(cs);
+                conn.Open();
+                using var cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@company", company);
+                cmd.Parameters.AddWithValue("@from", fromUtc);
+                cmd.Parameters.AddWithValue("@to", toUtc);
 
-            using var rd = cmd.ExecuteReader();
-            while (rd.Read())
-            {
-                var part = rd.GetString(0);
-                var test = rd.GetString(1);
-                var lsl = rd.IsDBNull(2) ? double.NaN : rd.GetDouble(2);
-                var usl = rd.IsDBNull(3) ? double.NaN : rd.GetDouble(3);
-                var tgt = rd.IsDBNull(4) ? double.NaN : rd.GetDouble(4);
+                using var rd = cmd.ExecuteReader();
+                while (rd.Read())
+                {
+                    var part = rd.GetString(0);
+                    var test = rd.GetString(1);
+                    var lsl = rd.IsDBNull(2) ? double.NaN : rd.GetDouble(2);
+                    var usl = rd.IsDBNull(3) ? double.NaN : rd.GetDouble(3);
+                    var tgt = rd.IsDBNull(4) ? double.NaN : rd.GetDouble(4);
 
-                // Si no hay target, usa el centro del intervalo
-                if (double.IsNaN(tgt) && !double.IsNaN(lsl) && !double.IsNaN(usl))
-                    tgt = (lsl + usl) / 2.0;
+                    // Si no hay target, usa el centro del intervalo
+                    if (double.IsNaN(tgt) && !double.IsNaN(lsl) && !double.IsNaN(usl))
+                        tgt = (lsl + usl) / 2.0;
 
-                if (!double.IsNaN(lsl) && !double.IsNaN(usl))
-                    dict[(part, test)] = new Spec(lsl, usl, tgt);
+                    if (!double.IsNaN(lsl) && !double.IsNaN(usl))
+                        dict[(part, test)] = new Spec(lsl, usl, tgt);
+                }
+                return dict;
             }
-            return dict;
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error BD en LoadSpecsFromPeriod. company={company}, fromUtc={fromUtc}, toUtc={toUtc}, connectionString={cs}.",
+                    ex);
+            }
         }
 
         // =========  CÁLCULOS  =========
@@ -189,6 +205,11 @@ GROUP BY MR.manufacturingReferenceName, CPrvs.controlOperationName;";
             Dictionary<(string Part, string Test), Spec> specs)
         {
             var outList = new List<CapabilityRow>();
+            if (aggRows == null || aggRows.Count == 0)
+                return new List<CapabilityRow>();
+
+            if (sgRows == null) sgRows = new List<SgRow>();
+            if (specs == null) specs = new Dictionary<(string Part, string Test), Spec>();
 
             // Índice del detalle por Part/Process/Test
             var sgIndex = sgRows.GroupBy(s => (s.Part, s.Process, s.Test))

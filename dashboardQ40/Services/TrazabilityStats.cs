@@ -8,18 +8,7 @@ namespace dashboardQ40.Services
 {
     public class TrazabilityStats
     {
-        public class StatResult
-        {
-            public string Batch { get; set; } = "";
-            public string Variable { get; set; } = "";
-            public int Conteo { get; set; }
-            public int Defectos { get; set; }
-            public double Media { get; set; }
-            public double Sigma { get; set; }
-            public double Cp { get; set; }
-            public double Cpk { get; set; }
-        }
-
+       
         // ✔ Versión antigua, por compatibilidad
         public static List<VariableEstadistica> CalcularEstadisticas(DataTable checklist)
         {
@@ -67,7 +56,10 @@ namespace dashboardQ40.Services
                     continue; // por ahora solo numéricas
 
                 // 1) Intentar usar batch directo
-                string lote = row["batch"]?.ToString() ?? "";
+                string lote = checklist.Columns.Contains("batch")
+                    ? row["batch"]?.ToString() ?? ""
+                    : "";
+
 
                 // 2) Si el batch viene vacío, usar manufacturingReference para buscar el lote
                 if (string.IsNullOrWhiteSpace(lote) &&
@@ -85,7 +77,9 @@ namespace dashboardQ40.Services
                 if (string.IsNullOrWhiteSpace(lote))
                     continue;
 
-                string variable = row["controlOperationName"].ToString();
+                string variable = row["controlOperationName"]?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(variable)) continue;
+
                 string key = lote + "|" + variable;
 
                 if (!valoresPorGrupo.ContainsKey(key))

@@ -18,21 +18,22 @@ namespace dashboardQ40.Services
 {
     public class AuditTrazabilityClass
     {
-      
-        public static List<RegistroMateriaPrima> ObtenerDatosMateriaPrima(string company, List<long> lotes, Dictionary<long, LoteDescripcionInfo> descripciones, string connectionString)
+
+        public static List<RegistroMateriaPrima> ObtenerDatosMateriaPrima(
+    string company,
+    List<long> lotes,
+    Dictionary<long, LoteDescripcionInfo> descripciones,
+    string connectionString)
         {
             var resultados = new List<RegistroMateriaPrima>();
-
-            // Diccionario para registrar qué lotes sí se encontraron
             var encontrados = new HashSet<long>();
 
-            using (var conn = new SqlConnection(connectionString))
+            if (string.IsNullOrWhiteSpace(company) || lotes == null || lotes.Count == 0)
+                return resultados;
+
+            try
             {
-                conn.Open();
-
-                string lotesInClause = string.Join(",", lotes.Select(l => l.ToString()));
-
-                string query = $@"
+                const string sql = @"
             SELECT 
                 referenceMovement,
                 supplier,
@@ -41,116 +42,134 @@ namespace dashboardQ40.Services
                 realQuantityInParcel,
                 entryFromProvider
             FROM [Captor4ArcaPro].[dbo].[EntryFromProvider]
-            WHERE company = @company AND referenceMovement IN ({lotesInClause})
-        ";
+            WHERE company = @company
+                AND referenceMovement IN @lotes;";
 
-                using (var cmd = new SqlCommand(query, conn))
+                using var conn = new SqlConnection(connectionString);
+                conn.Open();
+
+                var rows = conn.Query(sql, new { company, lotes });
+
+                foreach (var row in rows)
                 {
-                    cmd.Parameters.AddWithValue("@company", company);
+                    long loteId = (long)row.referenceMovement;
+                    encontrados.Add(loteId);
 
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            long loteId = Convert.ToInt64(reader["referenceMovement"]);
-                            encontrados.Add(loteId);
-
-                            resultados.Add(new RegistroMateriaPrima
-                            {
-                                Descripcion = descripciones.ContainsKey(loteId)
-        ? descripciones[loteId].ManufacturingReferenceName
-        : "Sin descripción",
-
-                                Proveedor = reader["supplier"]?.ToString() ?? "",
-                                LoteExterno = reader["supplierBatch"]?.ToString() ?? "",
-
-                                // LoteInterno usa el BatchIdentifier
-                                LoteInterno = descripciones.ContainsKey(loteId)
-        ? descripciones[loteId].BatchName
-        : loteId.ToString(), // fallback si no está
-                                FechaRecepcion = reader["issueDate"] != DBNull.Value
-                                    ? Convert.ToDateTime(reader["issueDate"]).ToString("dd/MM/yyyy")
-                                    : "",
-                                Cantidad = reader["realQuantityInParcel"]?.ToString() ?? ""
-                            });
-                        }
-                    }
-                }
-            }
-
-            // Agregar los que NO se encontraron
-            foreach (var kvp in descripciones)
-            {
-                if (!encontrados.Contains(kvp.Key))
-                {
                     resultados.Add(new RegistroMateriaPrima
                     {
-                        Descripcion = kvp.Value.ManufacturingReferenceName,
-                        Proveedor = "",
-                        LoteExterno = "",
-                        LoteInterno = kvp.Value.BatchName, // usa BatchIdentifier aquí
-                        FechaRecepcion = "",
-                        Cantidad = ""
+                        Descripcion = descripciones != null && descripciones.ContainsKey(loteId)
+                            ? descripciones[loteId].ManufacturingReferenceName
+                            : "Sin descripción",
+
+                        Proveedor = row.supplier?.ToString() ?? "",
+                        LoteExterno = row.supplierBatch?.ToString() ?? "",
+                        LoteInterno = descripciones != null && descripciones.ContainsKey(loteId)
+                            ? descripciones[loteId].BatchName
+                            : loteId.ToString(),
+
+                        FechaRecepcion = row.issueDate != null
+                            ? Convert.ToDateTime(row.issueDate).ToString("dd/MM/yyyy")
+                            : "",
+
+                        Cantidad = row.realQuantityInParcel?.ToString() ?? ""
                     });
+                }
+            }
+            catch (SqlException ex)
+            {
+                // Aquí idealmente ILogger
+                throw new InvalidOperationException(
+                    $"Error BD en ObtenerDatosMateriaPrima. company={company}, lotes={lotes.Count}.", ex);
+            }
+            if (descripciones != null)
+            {
+                foreach (var kvp in descripciones)
+                {
+                    if (!encontrados.Contains(kvp.Key))
+                    {
+                        resultados.Add(new RegistroMateriaPrima
+                        {
+                            Descripcion = kvp.Value.ManufacturingReferenceName,
+                            Proveedor = "",
+                            LoteExterno = "",
+                            LoteInterno = kvp.Value.BatchName,
+                            FechaRecepcion = "",
+                            Cantidad = ""
+                        });
+                    }
                 }
             }
 
             return resultados;
         }
 
+
         public static async Task<int> GuardarReporteAsync(ReporteTrazabilidad m, string connectionString)
         {
-            // Toma los tipos tal cual vienen del DTO
-            var fechaHora = m.FechaHora;                  // DateTime
-            var horaInicio = m.HoraInicio;                 // TimeSpan?
-            var horaFin = m.HoraFin;                    // TimeSpan?
-            var horaQueja = (TimeSpan?)m.horaQueja;       // TimeSpan (lo vuelvo nullable para DB)
-
-            // JSON flexible
-            var extra = new
+            try
             {
-                motivo = m.MotivoTrazabilidad,
-                porcEfic = m.PorcEficProductoTerminado,
-                usuarioVobo = m.UsuarioVobo
-            };
-            var extraJson = JsonSerializer.Serialize(extra);
+                // Toma los tipos tal cual vienen del DTO
+                var fechaHora = m.FechaHora;                  // DateTime
+                var horaInicio = m.HoraInicio;                 // TimeSpan?
+                var horaFin = m.HoraFin;                    // TimeSpan?
+                var horaQueja = (TimeSpan?)m.horaQueja;       // TimeSpan (lo vuelvo nullable para DB)
 
-            const string sql = @"
-INSERT INTO dbo.reporte_trazabilidad
-(
-    country_code, plant_code, fecha_hora, hora_inicio, hora_fin,
-    motivo_trazabilidad, traza_producto_mp, porc_efic_producto_terminado,
-    lote, revision, usuario_vobo, hora_queja, [status], extra_data
-)
-VALUES
-(
-    @country, @plant, @fecha_hora, @hora_inicio, @hora_fin,
-    @motivo, @traza_mp, @porc_efic,
-    @lote, @revision, @usuario_vobo, @hora_queja, @status, @extra
-);
-SELECT CAST(SCOPE_IDENTITY() AS int);";
+                // JSON flexible
+                var extra = new
+                {
+                    motivo = m.MotivoTrazabilidad,
+                    porcEfic = m.PorcEficProductoTerminado,
+                    usuarioVobo = m.UsuarioVobo
+                };
+                var extraJson = JsonSerializer.Serialize(extra);
 
-            using var cn = new SqlConnection(connectionString);
-            await cn.OpenAsync();
+                const string sql = @"
+                INSERT INTO dbo.reporte_trazabilidad
+                (
+                    country_code, plant_code, fecha_hora, hora_inicio, hora_fin,
+                    motivo_trazabilidad, traza_producto_mp, porc_efic_producto_terminado,
+                    lote, revision, usuario_vobo, hora_queja, [status], extra_data
+                )
+                VALUES
+                (
+                    @country, @plant, @fecha_hora, @hora_inicio, @hora_fin,
+                    @motivo, @traza_mp, @porc_efic,
+                    @lote, @revision, @usuario_vobo, @hora_queja, @status, @extra
+                );
+                SELECT CAST(SCOPE_IDENTITY() AS int);";
 
-            using var cmd = new SqlCommand(sql, cn);
-            cmd.Parameters.AddWithValue("@country", (object?)m.country ?? DBNull.Value);  // acepta null si aún no lo mandas
-            cmd.Parameters.AddWithValue("@plant", (object?)m.company ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@fecha_hora", fechaHora);
-            cmd.Parameters.AddWithValue("@hora_inicio", horaInicio);
-            cmd.Parameters.AddWithValue("@hora_fin", horaFin);
-            cmd.Parameters.AddWithValue("@motivo", (object?)m.MotivoTrazabilidad ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@traza_mp", m.TrazaProductoMp);
-            cmd.Parameters.AddWithValue("@porc_efic", (object?)m.PorcEficProductoTerminado ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@lote", (object?)m.Lote ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@revision", (object?)m.Revision ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@usuario_vobo", (object?)m.UsuarioVobo ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@hora_queja", horaQueja);
-            cmd.Parameters.AddWithValue("@status", "Draft"); // o "Final", como decidas
-            cmd.Parameters.AddWithValue("@extra", (object?)extraJson ?? DBNull.Value);
+                using var cn = new SqlConnection(connectionString);
+                await cn.OpenAsync();
 
-            var newId = (int)await cmd.ExecuteScalarAsync();
-            return newId;
+                using var cmd = new SqlCommand(sql, cn);
+                cmd.Parameters.AddWithValue("@country", (object?)m.country ?? DBNull.Value);  // acepta null si aún no lo mandas
+                cmd.Parameters.AddWithValue("@plant", (object?)m.company ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@fecha_hora", fechaHora);
+                cmd.Parameters.AddWithValue("@hora_inicio", horaInicio);
+                cmd.Parameters.AddWithValue("@hora_fin", horaFin);
+                cmd.Parameters.AddWithValue("@motivo", (object?)m.MotivoTrazabilidad ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@traza_mp", m.TrazaProductoMp);
+                cmd.Parameters.AddWithValue("@porc_efic", (object?)m.PorcEficProductoTerminado ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@lote", (object?)m.Lote ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@revision", (object?)m.Revision ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@usuario_vobo", (object?)m.UsuarioVobo ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@hora_queja", horaQueja);
+                cmd.Parameters.AddWithValue("@status", "Draft"); // o "Final", como decidas
+                cmd.Parameters.AddWithValue("@extra", (object?)extraJson ?? DBNull.Value);
+
+                var newId = (int)await cmd.ExecuteScalarAsync();
+                return newId;
+            }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error BD guardando reporte. lote={m?.Lote}, company={m?.company}.", ex);
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException(
+                    "Error serializando extra_data en GuardarReporteAsync.", ex);
+            }
         }
 
 
@@ -607,7 +626,7 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
 
             return new BloqueLotesPrincipalesModel
             {
-                TituloBloque = "TRATAMIENDO DE AGUA (NÚM. BATCH)",
+                TituloBloque = "SANEO (NÚM. BATCH)",
                 EncabezadosSku = encabezados,
                 Registros = registros
             };
@@ -693,84 +712,91 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
                 string connectionString
             ) where TModel : new()
             {
-                var config = configuration.GetSection($"ExcelToSqlMappings:{bloque}")
+                try
+                {
+                    var config = configuration.GetSection($"ExcelToSqlMappings:{bloque}")
                                           .Get<SqlMappingConfig>();
 
-                var resultados = new List<TModel>();
-                var encontrados = new HashSet<long>();
+                    var resultados = new List<TModel>();
+                    var encontrados = new HashSet<long>();
 
-                // Reemplazar placeholders en el query
-                string query = config.Query;
-                foreach (var param in parametros)
-                {
-                    if (param.Key.StartsWith("{")) // Reemplazo directo (como {lotes})
-                        query = query.Replace(param.Key, param.Value.ToString());
-                }
-
-                using var conn = new SqlConnection(connectionString);
-                using var cmd = new SqlCommand(query, conn);
-
-                // Solo parámetros con @ se agregan a SqlCommand
-                foreach (var param in parametros.Where(p => p.Key.StartsWith("@")))
-                    cmd.Parameters.AddWithValue(param.Key, param.Value);
-
-                conn.Open();
-                using var reader = cmd.ExecuteReader();
-
-                var props = typeof(TModel).GetProperties();
-
-                while (reader.Read())
-                {
-                    var modelo = new TModel();
-
-                    foreach (var map in config.ColumnMappings)
+                    // Reemplazar placeholders en el query
+                    string query = config.Query;
+                    foreach (var param in parametros)
                     {
-                        var prop = props.FirstOrDefault(p => p.Name == map.Key);
-                        if (prop != null && reader[map.Value] != DBNull.Value)
-                        {
-                            var value = reader[map.Value];
-                            if (prop.PropertyType == typeof(string))
-                                value = value.ToString();
-
-                            prop.SetValue(modelo, value);
-                        }
+                        if (param.Key.StartsWith("{")) // Reemplazo directo (como {lotes})
+                            query = query.Replace(param.Key, param.Value.ToString());
                     }
 
-                    // Añadir Descripcion desde diccionario
-                    if (props.Any(p => p.Name == "Descripcion"))
-                    {
-                        var id = Convert.ToInt64(reader[config.DescripcionField]);
-                        encontrados.Add(id);
+                    using var conn = new SqlConnection(connectionString);
+                    using var cmd = new SqlCommand(query, conn);
 
-                        var propDesc = props.First(p => p.Name == "Descripcion");
-                        string descripcion = descripciones.ContainsKey(id) ? descripciones[id] : "Sin descripción";
-                        propDesc.SetValue(modelo, descripcion);
-                    }
+                    // Solo parámetros con @ se agregan a SqlCommand
+                    foreach (var param in parametros.Where(p => p.Key.StartsWith("@")))
+                        cmd.Parameters.AddWithValue(param.Key, param.Value);
 
-                    resultados.Add(modelo);
-                }
-                if (descripciones != null)
-                {
-                    // Agregar los no encontrados
-                    foreach (var kvp in descripciones)
+                    conn.Open();
+                    using var reader = cmd.ExecuteReader();
+
+                    var props = typeof(TModel).GetProperties();
+
+                    while (reader.Read())
                     {
-                        if (!encontrados.Contains(kvp.Key))
+                        var modelo = new TModel();
+
+                        foreach (var map in config.ColumnMappings)
                         {
-                            var modelo = new TModel();
-                            var propDesc = props.FirstOrDefault(p => p.Name == "Descripcion");
-                            propDesc?.SetValue(modelo, kvp.Value);
-
-                            foreach (var prop in props)
+                            var prop = props.FirstOrDefault(p => p.Name == map.Key);
+                            if (prop != null && reader[map.Value] != DBNull.Value)
                             {
-                                if (prop.Name != "Descripcion")
-                                    prop.SetValue(modelo, "");
-                            }
+                                var value = reader[map.Value];
+                                if (prop.PropertyType == typeof(string))
+                                    value = value.ToString();
 
-                            resultados.Add(modelo);
+                                prop.SetValue(modelo, value);
+                            }
+                        }
+
+                        // Añadir Descripcion desde diccionario
+                        if (props.Any(p => p.Name == "Descripcion"))
+                        {
+                            var id = Convert.ToInt64(reader[config.DescripcionField]);
+                            encontrados.Add(id);
+
+                            var propDesc = props.First(p => p.Name == "Descripcion");
+                            string descripcion = descripciones.ContainsKey(id) ? descripciones[id] : "Sin descripción";
+                            propDesc.SetValue(modelo, descripcion);
+                        }
+
+                        resultados.Add(modelo);
+                    }
+                    if (descripciones != null)
+                    {
+                        // Agregar los no encontrados
+                        foreach (var kvp in descripciones)
+                        {
+                            if (!encontrados.Contains(kvp.Key))
+                            {
+                                var modelo = new TModel();
+                                var propDesc = props.FirstOrDefault(p => p.Name == "Descripcion");
+                                propDesc?.SetValue(modelo, kvp.Value);
+
+                                foreach (var prop in props)
+                                {
+                                    if (prop.Name != "Descripcion")
+                                        prop.SetValue(modelo, "");
+                                }
+
+                                resultados.Add(modelo);
+                            }
                         }
                     }
+                    return resultados;
                 }
-                return resultados;
+                catch (SqlException ex)
+                {
+                    throw new InvalidOperationException($"Error BD ejecutando bloque '{bloque}'.", ex);
+                }
             }
 
 
@@ -779,15 +805,22 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
    Dictionary<string, object> parametros,
    string connectionString)
             {
-                using var conn = new SqlConnection(connectionString);
-                using var cmd = new SqlCommand(sql, conn);
+                try
+                {
+                    using var conn = new SqlConnection(connectionString);
+                    using var cmd = new SqlCommand(sql, conn);
 
-                foreach (var p in parametros)
-                    cmd.Parameters.AddWithValue(p.Key, p.Value ?? DBNull.Value);
+                    foreach (var p in parametros)
+                        cmd.Parameters.AddWithValue(p.Key, p.Value ?? DBNull.Value);
 
-                conn.Open();
-                var result = cmd.ExecuteScalar();
-                return result?.ToString();
+                    conn.Open();
+                    var result = cmd.ExecuteScalar();
+                    return result?.ToString();
+                }
+                catch (SqlException ex)
+                {
+                    throw new InvalidOperationException("Error BD en EjecutarEscalar.", ex);
+                }
             }
 
         }
@@ -932,148 +965,144 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
     TimeSpan horaQueja,
     string company,
     string connStr,
-    IConfiguration _configuration, string bloque, string titulobloque, string query) // 👈 aquí
-
+    IConfiguration _configuration,
+    string bloque,
+    string titulobloque,
+    string query)
         {
             var nodoPadre = trazabilidadNodos.FirstOrDefault(x => x.Batch == batchPadre);
             DateTime fechaProduccion = nodoPadre?.StartDate.Date ?? DateTime.Today;
             DateTime fechaHoraQueja = fechaProduccion + horaQueja;
 
-         
             var nodosJarabeSimple = trazabilidadNodos
-                .Where(n => n.ManufacturingFamily.ToUpper().Contains(bloque)) 
+                .Where(n => n.ManufacturingFamily.ToUpper().Contains(bloque))
                 .OrderBy(n => n.StartDate)
                 .ToList();
-            if (nodosJarabeSimple.Count() > 0)
+
+            if (nodosJarabeSimple.Count == 0)
             {
-
-
-                var jarabeActivo = nodosJarabeSimple
-                    .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
-
-                var lotesSeleccionados = new List<TrazabilidadNode>();
-                if (jarabeActivo != null)
+                return new BloqueAnalisisFisicoquimicoModel
                 {
-                    lotesSeleccionados.Add(jarabeActivo);
-                    var anteriores = nodosJarabeSimple
-                        .Where(n => n.EndDate < jarabeActivo.StartDate)
-                        .OrderByDescending(n => n.EndDate)
-                        .Take(4)
-                        .ToList();
-                    lotesSeleccionados.AddRange(anteriores);
-                }
-                else
-                {
-                    lotesSeleccionados = nodosJarabeSimple;
-                }
+                    TituloBloque = titulobloque,
+                    EncabezadosSku = new List<string>(),
+                    Registros = new List<RegistroAnalisisFisicoquimico>()
+                };
+            }
 
-                int totalColumnas = Math.Max(2, lotesSeleccionados.Count);
-                while (lotesSeleccionados.Count < totalColumnas)
-                    lotesSeleccionados.Add(null);
+            var jarabeActivo = nodosJarabeSimple
+                .FirstOrDefault(n => fechaHoraQueja >= n.StartDate && fechaHoraQueja <= n.EndDate);
 
-                var encabezados = new List<string>();
-                for (int i = 0; i < totalColumnas; i++)
-                    encabezados.Add(i == 0 ? "SKU QUEJA" : "ANTERIOR");
-
-                // 2. Ejecutar query SQL
-                var parametros = new Dictionary<string, object>
+            var lotesSeleccionados = new List<TrazabilidadNode>();
+            if (jarabeActivo != null)
             {
-                { "@company", company },
-                { "{lotes}", string.Join(",", lotesSeleccionados.Where(l => l != null).Select(l => l.Batch)) }
-            };
+                lotesSeleccionados.Add(jarabeActivo);
+                var anteriores = nodosJarabeSimple
+                    .Where(n => n.EndDate < jarabeActivo.StartDate)
+                    .OrderByDescending(n => n.EndDate)
+                    .Take(4)
+                    .ToList();
+                lotesSeleccionados.AddRange(anteriores);
+            }
+            else
+            {
+                lotesSeleccionados = nodosJarabeSimple;
+            }
 
-                var resultados = DynamicSqlService.EjecutarQuery<ResultadoAnalisisFisicoquimico>(
-                    query,
+            int totalColumnas = Math.Max(2, lotesSeleccionados.Count);
+            while (lotesSeleccionados.Count < totalColumnas)
+                lotesSeleccionados.Add(null);
+
+            var encabezados = new List<string>();
+            for (int i = 0; i < totalColumnas; i++)
+                encabezados.Add(i == 0 ? "SKU QUEJA" : "ANTERIOR");
+
+            // Ejecutar query SQL
+            var parametros = new Dictionary<string, object>
+    {
+        { "@company", company },
+        { "{lotes}", string.Join(",", lotesSeleccionados.Where(l => l != null).Select(l => l.Batch)) }
+    };
+
+            var resultados = DynamicSqlService.EjecutarQuery<ResultadoAnalisisFisicoquimico>(
+                query,
                 parametros,
-                    null,
-                    _configuration,
-                    connStr
-                );
+                null,
+                _configuration,
+                connStr
+            );
 
-                // 3. Obtener lista única de parámetros (campos verticales)
-                var nombresParametros = resultados
+            // Obtener lista única de parámetros normalizados
+            var nombresParametros = resultados
                 .Select(r => r.OperacionNombre)
                 .Where(n => !string.IsNullOrWhiteSpace(n))
-                .Select(Norm)                 // <- normalizamos
+                .Select(Norm)
                 .Distinct()
                 .OrderBy(n => n)
                 .ToList();
 
-                var registros = nombresParametros
-                    .Select(nombre => new RegistroAnalisisFisicoquimico
-                    {
-                        DescripcionParametro = nombre,  // ya normalizado
-                        ValoresPorLote = new List<string>()
-                    })
-                    .ToList();
-
-                // 3.1 Índice por (Lote, Operación normalizada) -> último resultado
-                //    Si tienes un campo de fecha en ResultadoAnalisisFisicoquimico (usa el correcto abajo)
-                var index = resultados
-                  .Where(r => ToLong(r.Lote).HasValue)
-                  .GroupBy(r => (Lote: ToLong(r.Lote).Value, Op: Norm(r.OperacionNombre)))
-                  .ToDictionary(
-                      g => g.Key,
-                      g => g.First()   // simplemente el primero
-                  );
-
-
-                // 4. Llenar columnas
-                // 4. Llenar columnas
-                foreach (var lote in lotesSeleccionados)
+            var registros = nombresParametros
+                .Select(nombre => new RegistroAnalisisFisicoquimico
                 {
-                    foreach (var registro in registros)
-                    {
-                        if (lote == null)
-                        {
-                            registro.ValoresPorLote.Add("");
-                            continue;
-                        }
+                    DescripcionParametro = nombre,
+                    ValoresPorLote = new List<string>()
+                })
+                .ToList();
 
-                        var key = (Lote: lote.Batch, Op: registro.DescripcionParametro); // ambos ya homogeneizados
-                        index.TryGetValue(key, out var resultado);
+            // Índice por (Lote, Operación normalizada)
+            var index = resultados
+                .Where(r => ToLong(r.Lote).HasValue)
+                .GroupBy(r => (Lote: ToLong(r.Lote).Value, Op: Norm(r.OperacionNombre)))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.First()
+                );
 
-                        if (resultado == null)
-                        {
-                            registro.ValoresPorLote.Add("");
-                            continue;
-                        }
-
-                        string valorFinal;
-                        if (resultado.TipoOperacion == 1)
-                        {
-                            valorFinal = string.IsNullOrWhiteSpace(resultado.Valor) ? "" : resultado.Valor;
-                        }
-                        else if (resultado.TipoOperacion == 2)
-                        {
-                            valorFinal = resultado.Atributo == "1" ? "✔"
-                                       : resultado.Atributo == "0" ? "✘"
-                                       : "";
-                        }
-                        else
-                        {
-                            valorFinal = "";
-                        }
-
-                        registro.ValoresPorLote.Add(valorFinal);
-                    }
-                }
-
-                return new BloqueAnalisisFisicoquimicoModel
-                {
-                    TituloBloque = titulobloque,
-                    EncabezadosSku = encabezados,
-                    Registros = registros
-                };
-            } else
+            // Llenar columnas
+            foreach (var lote in lotesSeleccionados)
             {
-                return new BloqueAnalisisFisicoquimicoModel
+                foreach (var registro in registros)
                 {
-                    TituloBloque = titulobloque,
-                    EncabezadosSku = null,
-                    Registros = null
-                };
+                    if (lote == null)
+                    {
+                        registro.ValoresPorLote.Add("");
+                        continue;
+                    }
+
+                    var key = (Lote: lote.Batch, Op: registro.DescripcionParametro);
+                    index.TryGetValue(key, out var resultado);
+
+                    if (resultado == null)
+                    {
+                        registro.ValoresPorLote.Add("");
+                        continue;
+                    }
+
+                    string valorFinal;
+                    if (resultado.TipoOperacion == 1)
+                    {
+                        valorFinal = string.IsNullOrWhiteSpace(resultado.Valor) ? "" : resultado.Valor;
+                    }
+                    else if (resultado.TipoOperacion == 2)
+                    {
+                        valorFinal = resultado.Atributo == "1" ? "✔"
+                                   : resultado.Atributo == "0" ? "✘"
+                                   : "";
+                    }
+                    else
+                    {
+                        valorFinal = "";
+                    }
+
+                    registro.ValoresPorLote.Add(valorFinal);
+                }
             }
+
+            return new BloqueAnalisisFisicoquimicoModel
+            {
+                TituloBloque = titulobloque,
+                EncabezadosSku = encabezados,
+                Registros = registros
+            };
         }
 
 
@@ -1201,14 +1230,17 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
 
             if (startDate == null || endDate == null) return result;
 
-            var middleDate = startDate.Value.AddSeconds((endDate.Value - startDate.Value).TotalSeconds / 2);
-
-            using (var connection = new SqlConnection(connectionString))
+            try
             {
-                await connection.OpenAsync();
 
-                // 1. Obtener lista de operaciones únicas
-                var operaciones = await connection.QueryAsync<(string ControlOperation, string ControlOperationName)>(@"
+                var middleDate = startDate.Value.AddSeconds((endDate.Value - startDate.Value).TotalSeconds / 2);
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // 1. Obtener lista de operaciones únicas
+                    var operaciones = await connection.QueryAsync<(string ControlOperation, string ControlOperationName)>(@"
     SELECT DISTINCT CPO.controlOperation, CPO.controlOperationName
     FROM ControlProcedureResult CPR
     INNER JOIN ControlProcedureOperation CPO
@@ -1220,19 +1252,19 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
       AND CPrvs.workplace = @Workplace
       AND CPR.manufacturingOrder = @Reference
       AND CPrvs.resultValue IS NOT NULL",
-     new
-     {
-         StartDate = startDate,
-         EndDate = endDate,
-         Workplace = workplace,
-         Company = company,
-         Reference = manufacturingReference
-     });
+         new
+         {
+             StartDate = startDate,
+             EndDate = endDate,
+             Workplace = workplace,
+             Company = company,
+             Reference = manufacturingReference
+         });
 
 
-                foreach (var operacion in operaciones)
-                {
-                    var inicio = await connection.QueryFirstOrDefaultAsync<string>(@"
+                    foreach (var operacion in operaciones)
+                    {
+                        var inicio = await connection.QueryFirstOrDefaultAsync<string>(@"
                 SELECT TOP 1 CPrvs.resultValue
                 FROM ControlProcedureResult CPR
                 INNER JOIN ControlProcedureOperation CPO
@@ -1245,17 +1277,17 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
                   AND CPO.controlOperation = @OperacionId
                   AND CPrvs.launchingDate BETWEEN @StartDate AND @EndDate
                 ORDER BY CPrvs.launchingDate ASC",
-                        new
-                        {
-                            StartDate = startDate,
-                            EndDate = endDate,
-                            Workplace = workplace,
-                            Company = company,
-                            Reference = manufacturingReference,
-                            OperacionId = operacion.ControlOperation
-                        });
+                            new
+                            {
+                                StartDate = startDate,
+                                EndDate = endDate,
+                                Workplace = workplace,
+                                Company = company,
+                                Reference = manufacturingReference,
+                                OperacionId = operacion.ControlOperation
+                            });
 
-                    var medio = await connection.QueryFirstOrDefaultAsync<string>(@"
+                        var medio = await connection.QueryFirstOrDefaultAsync<string>(@"
                 SELECT TOP 1 CPrvs.resultValue
                 FROM ControlProcedureResult CPR
                 INNER JOIN ControlProcedureOperation CPO
@@ -1268,18 +1300,18 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
                   AND CPO.controlOperation = @OperacionId
                   AND CPrvs.launchingDate BETWEEN @StartDate AND @EndDate
                 ORDER BY ABS(DATEDIFF(SECOND, CPrvs.launchingDate, @MiddleDate))",
-                        new
-                        {
-                            StartDate = startDate,
-                            EndDate = endDate,
-                            Workplace = workplace,
-                            Company = company,
-                            Reference = manufacturingReference,
-                            OperacionId = operacion.ControlOperation,
-                            MiddleDate = middleDate
-                        });
+                            new
+                            {
+                                StartDate = startDate,
+                                EndDate = endDate,
+                                Workplace = workplace,
+                                Company = company,
+                                Reference = manufacturingReference,
+                                OperacionId = operacion.ControlOperation,
+                                MiddleDate = middleDate
+                            });
 
-                    var fin = await connection.QueryFirstOrDefaultAsync<string>(@"
+                        var fin = await connection.QueryFirstOrDefaultAsync<string>(@"
                 SELECT TOP 1 CPrvs.resultValue
                 FROM ControlProcedureResult CPR
                 INNER JOIN ControlProcedureOperation CPO
@@ -1292,51 +1324,71 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
                   AND CPO.controlOperation = @OperacionId
                   AND CPrvs.launchingDate BETWEEN @StartDate AND @EndDate
                 ORDER BY CPrvs.launchingDate DESC",
-                        new
+                            new
+                            {
+                                StartDate = startDate,
+                                EndDate = endDate,
+                                Workplace = workplace,
+                                Company = company,
+                                Reference = manufacturingReference,
+                                OperacionId = operacion.ControlOperation
+                            });
+
+                        result.Add(new PruebaLiberacionRow
                         {
-                            StartDate = startDate,
-                            EndDate = endDate,
-                            Workplace = workplace,
-                            Company = company,
-                            Reference = manufacturingReference,
-                            OperacionId = operacion.ControlOperation
+                            ControlOperationName = operacion.ControlOperationName,
+                            InicioCorrida = inicio,
+                            MedioCorrida = medio,
+                            FinCorrida = fin
                         });
-
-                    result.Add(new PruebaLiberacionRow
-                    {
-                        ControlOperationName = operacion.ControlOperationName,
-                        InicioCorrida = inicio,
-                        MedioCorrida = medio,
-                        FinCorrida = fin
-                    });
+                    }
                 }
-            }
 
-            return result;
+                return result;
+            }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error BD en PruebasLiberacionJT. company={company}, workplace={workplace}, ref={manufacturingReference}, {startDate}-{endDate}.",
+                    ex);
+            }
         }
 
         // ---- WS -----
 
         public static async Task<result_Q_MateriaPrima> getBloqueMateriaPrima(string token, string url, string company, string trazalog, string query, string lotes)
         {
-
-            HttpClient client = Method_Headers(token, url);
-            
-            var requestBody = new
+            try
             {
-                COMP = company,
-                LOTES = lotes
-            };
 
-            var jsonBody = JsonSerializer.Serialize(requestBody);
+                HttpClient client = Method_Headers(token, url);
 
-            return await WebServiceHelper.SafePostAndDeserialize<result_Q_MateriaPrima>(
-                client,
-                client.BaseAddress.ToString(),
-                jsonBody,
-                query,
-                trazalog
-            );
+                var requestBody = new
+                {
+                    COMP = company,
+                    LOTES = lotes
+                };
+
+                var jsonBody = JsonSerializer.Serialize(requestBody);
+
+                return await WebServiceHelper.SafePostAndDeserialize<result_Q_MateriaPrima>(
+                    client,
+                    client.BaseAddress.ToString(),
+                    jsonBody,
+                    query,
+                    trazalog
+                );
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new InvalidOperationException(
+                    $"Error HTTP en getBloqueMateriaPrima. company={company}.", ex);
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException(
+                    "Error deserializando respuesta de getBloqueMateriaPrima.", ex);
+            }
         }
 
         // ------------ 
